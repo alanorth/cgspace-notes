@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CGSpace Notes</title>
+    <link>https://alanorth.github.io/cgspace-notes/</link>
+    <description>Recent content on CGSpace Notes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 23 Nov 2015 17:00:57 +0300</lastBuildDate>
+    <atom:link href="https://alanorth.github.io/cgspace-notes/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>November, 2015</title>
+      <link>https://alanorth.github.io/cgspace-notes/2015-11/</link>
+      <pubDate>Mon, 23 Nov 2015 17:00:57 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2015-11/</guid>
+      <description>
+
+&lt;h2 id=&#34;2015-11-22:3d03b850f8126f80d8144c2e17ea0ae7&#34;&gt;2015-11-22&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CGSpace went down&lt;/li&gt;
+&lt;li&gt;Looks like DSpace exhausted its PostgreSQL connection pool&lt;/li&gt;
+&lt;li&gt;Last week I had increased the limit from 30 to 60, which seemed to help, but now there are many more idle connections:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspace
+78
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;For now I have increased the limit from 60 to 90, run updates, and rebooted the server&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2015-11-24:3d03b850f8126f80d8144c2e17ea0ae7&#34;&gt;2015-11-24&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CGSpace went down again&lt;/li&gt;
+&lt;li&gt;Getting emails from uptimeRobot and uptimeButler that it&amp;rsquo;s down, and Google Webmaster Tools is sending emails that there is an increase in crawl errors&lt;/li&gt;
+&lt;li&gt;Looks like there are still a bunch of idle PostgreSQL connections:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspace
+96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;For some reason the number of idle connections is very high since we upgraded to DSpace 5&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2015-11-25:3d03b850f8126f80d8144c2e17ea0ae7&#34;&gt;2015-11-25&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Troubleshoot the DSpace 5 OAI breakage caused by nginx routing config&lt;/li&gt;
+&lt;li&gt;The OAI application requests stylesheets and javascript files with the path &lt;code&gt;/oai/static/css&lt;/code&gt;, which gets matched here:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# static assets we can load from the file system directly with nginx
+location ~ /(themes|static|aspects/ReportingSuite) {
+    try_files $uri @tomcat;
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The document root is relative to the xmlui app, so this gets a 404—I&amp;rsquo;m not sure why it doesn&amp;rsquo;t pass to &lt;code&gt;@tomcat&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Anyways, I can&amp;rsquo;t find any URIs with path &lt;code&gt;/static&lt;/code&gt;, and the more important point is to handle all the static theme assets, so we can just remove &lt;code&gt;static&lt;/code&gt; from the regex for now (who cares if we can&amp;rsquo;t use nginx to send Etags for OAI CSS!)&lt;/li&gt;
+&lt;li&gt;Also, I noticed we aren&amp;rsquo;t setting CSP headers on the static assets, because in nginx headers are inherited in child blocks, but if you use &lt;code&gt;add_header&lt;/code&gt; in a child block it doesn&amp;rsquo;t inherit the others&lt;/li&gt;
+&lt;li&gt;We simply need to add &lt;code&gt;include extra-security.conf;&lt;/code&gt; to the above location block (but research and test first)&lt;/li&gt;
+&lt;li&gt;We should add WOFF assets to the list of things to set expires for:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;location ~* \.(?:ico|css|js|gif|jpe?g|png|woff)$ {
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We should also add &lt;code&gt;aspects/Statistics&lt;/code&gt; to the location block for static assets (minus &lt;code&gt;static&lt;/code&gt; from above):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;location ~ /(themes|aspects/ReportingSuite|aspects/Statistics) {
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Need to check &lt;code&gt;/about&lt;/code&gt; on CGSpace, as it&amp;rsquo;s blank on my local test server and we might need to add something there&lt;/li&gt;
+&lt;li&gt;CGSpace has been up and down all day due to PostgreSQL idle connections (current DSpace pool is 90):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspace
+93
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I looked closer at the idle connections and saw that many have been idle for hours (current time on server is &lt;code&gt;2015-11-25T20:20:42+0000&lt;/code&gt;):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | less -S
+datid | datname  |  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |          xact_start           |
+-------+----------+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-------------------------------+---
+20951 | cgspace  | 10966 |    18205 | cgspace  |                  | 127.0.0.1   |                 |       37731 | 2015-11-25 13:13:02.837624+00 |                               | 20
+20951 | cgspace  | 10967 |    18205 | cgspace  |                  | 127.0.0.1   |                 |       37737 | 2015-11-25 13:13:03.069421+00 |                               | 20
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;There is a relevant Jira issue about this: &lt;a href=&#34;https://jira.duraspace.org/browse/DS-1458&#34;&gt;https://jira.duraspace.org/browse/DS-1458&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;It seems there is some sense changing DSpace&amp;rsquo;s default &lt;code&gt;db.maxidle&lt;/code&gt; from unlimited (-1) to something like 8 (Tomcat default) or 10 (Confluence default)&lt;/li&gt;
+&lt;li&gt;Change &lt;code&gt;db.maxidle&lt;/code&gt; from -1 to 10, reduce &lt;code&gt;db.maxconnections&lt;/code&gt; from 90 to 50, and restart postgres and tomcat7&lt;/li&gt;
+&lt;li&gt;Also redeploy DSpace Test with a clean sync of CGSpace and mirror these database settings there as well&lt;/li&gt;
+&lt;li&gt;Also deploy the nginx fixes for the &lt;code&gt;try_files&lt;/code&gt; location block as well as the expires block&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2015-11-26:3d03b850f8126f80d8144c2e17ea0ae7&#34;&gt;2015-11-26&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CGSpace behaving much better since changing &lt;code&gt;db.maxidle&lt;/code&gt; yesterday, but still two up/down notices from monitoring this morning (better than 50!)&lt;/li&gt;
+&lt;li&gt;CCAFS colleagues mentioned that the REST API is very slow, 24 seconds for one item&lt;/li&gt;
+&lt;li&gt;Not as bad for me, but still unsustainable if you have to get many:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+8.415
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Monitoring e-mailed in the evening to say CGSpace was down&lt;/li&gt;
+&lt;li&gt;Idle connections in PostgreSQL again:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep cgspace | grep -c idle
+66
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;At the time, the current DSpace pool size was 50&amp;hellip;&lt;/li&gt;
+&lt;li&gt;I reduced the pool back to the default of 30, and reduced the &lt;code&gt;db.maxidle&lt;/code&gt; settings from 10 to 8&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;2015-11-29:3d03b850f8126f80d8144c2e17ea0ae7&#34;&gt;2015-11-29&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Still more alerts that CGSpace has been up and down all day&lt;/li&gt;
+&lt;li&gt;Current database settings for DSpace:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;db.maxconnections = 30
+db.maxwait = 5000
+db.maxidle = 8
+db.statementpool = true
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And idle connections:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep cgspace | grep -c idle
+49
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Perhaps I need to start drastically increasing the connection limits—like to 300—to see if DSpace&amp;rsquo;s thirst can ever be quenched&lt;/li&gt;
+&lt;li&gt;On another note, SUNScholar&amp;rsquo;s notes suggest adjusting some other postgres variables: &lt;a href=&#34;http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database&#34;&gt;http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;This might help with REST API speed (which I mentioned above and still need to do real tests)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
