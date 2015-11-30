@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <meta property="og:title" content=" November, 2015 &middot;  CGSpace Notes" />
+  
+  <meta property="og:site_name" content="CGSpace Notes" />
+  <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2015-11/" />
+  
+  
+  <meta property="og:type" content="article" />
+  
+  <meta property="og:article:published_time" content="2015-11-23T17:00:57&#43;03:00" />
+  
+  <meta property="og:article:tag" content="notes" />
+  
+  
+
+  <title>
+     November, 2015 &middot;  CGSpace Notes
+  </title>
+
+  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notescss/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notescss/main.css" />
+  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notescss/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notescss/github.css" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400" type="text/css">
+  <link rel="shortcut icon" href="https://alanorth.github.io/cgspace-notesimages/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://alanorth.github.io/cgspace-notesimages/apple-touch-icon.png" />
+  
+</head>
+<body>
+    <header class="global-header"  style="background-image:url( /images/bg.jpg )">
+    <section class="header-text">
+      <h1><a href="https://alanorth.github.io/cgspace-notes">CGSpace Notes</a></h1>
+      
+      <div class="sns-links hidden-print">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+      
+      <a href="https://alanorth.github.io/cgspace-notes" class="btn-header btn-back hidden-xs">
+        <i class="fa fa-angle-left" aria-hidden="true"></i>
+        &nbsp;Home
+      </a>
+      
+      
+    </section>
+  </header>
+  <main class="container">
+
+
+<article>
+  <header>
+    <h1 class="text-primary">November, 2015</h1>
+    <div class="post-meta clearfix">
+      <div class="post-date pull-left">
+        Posted on
+        <time datetime="2015-11-23T17:00:57&#43;03:00">
+          Nov 23, 2015
+        </time>
+      </div>
+      <div class="pull-right">
+        
+        <span class="post-tag small"><a href="https://alanorth.github.io/cgspace-notes/tags/notes">#notes</a></span>
+        
+      </div>
+    </div>
+  </header>
+  <section>
+    
+
+<h2 id="2015-11-22:3d03b850f8126f80d8144c2e17ea0ae7">2015-11-22</h2>
+
+<ul>
+<li>CGSpace went down</li>
+<li>Looks like DSpace exhausted its PostgreSQL connection pool</li>
+<li>Last week I had increased the limit from 30 to 60, which seemed to help, but now there are many more idle connections:</li>
+</ul>
+
+<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
+78
+</code></pre>
+
+<ul>
+<li>For now I have increased the limit from 60 to 90, run updates, and rebooted the server</li>
+</ul>
+
+<h2 id="2015-11-24:3d03b850f8126f80d8144c2e17ea0ae7">2015-11-24</h2>
+
+<ul>
+<li>CGSpace went down again</li>
+<li>Getting emails from uptimeRobot and uptimeButler that it&rsquo;s down, and Google Webmaster Tools is sending emails that there is an increase in crawl errors</li>
+<li>Looks like there are still a bunch of idle PostgreSQL connections:</li>
+</ul>
+
+<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
+96
+</code></pre>
+
+<ul>
+<li>For some reason the number of idle connections is very high since we upgraded to DSpace 5</li>
+</ul>
+
+<h2 id="2015-11-25:3d03b850f8126f80d8144c2e17ea0ae7">2015-11-25</h2>
+
+<ul>
+<li>Troubleshoot the DSpace 5 OAI breakage caused by nginx routing config</li>
+<li>The OAI application requests stylesheets and javascript files with the path <code>/oai/static/css</code>, which gets matched here:</li>
+</ul>
+
+<pre><code># static assets we can load from the file system directly with nginx
+location ~ /(themes|static|aspects/ReportingSuite) {
+    try_files $uri @tomcat;
+...
+</code></pre>
+
+<ul>
+<li>The document root is relative to the xmlui app, so this gets a 404—I&rsquo;m not sure why it doesn&rsquo;t pass to <code>@tomcat</code></li>
+<li>Anyways, I can&rsquo;t find any URIs with path <code>/static</code>, and the more important point is to handle all the static theme assets, so we can just remove <code>static</code> from the regex for now (who cares if we can&rsquo;t use nginx to send Etags for OAI CSS!)</li>
+<li>Also, I noticed we aren&rsquo;t setting CSP headers on the static assets, because in nginx headers are inherited in child blocks, but if you use <code>add_header</code> in a child block it doesn&rsquo;t inherit the others</li>
+<li>We simply need to add <code>include extra-security.conf;</code> to the above location block (but research and test first)</li>
+<li>We should add WOFF assets to the list of things to set expires for:</li>
+</ul>
+
+<pre><code>location ~* \.(?:ico|css|js|gif|jpe?g|png|woff)$ {
+</code></pre>
+
+<ul>
+<li>We should also add <code>aspects/Statistics</code> to the location block for static assets (minus <code>static</code> from above):</li>
+</ul>
+
+<pre><code>location ~ /(themes|aspects/ReportingSuite|aspects/Statistics) {
+</code></pre>
+
+<ul>
+<li>Need to check <code>/about</code> on CGSpace, as it&rsquo;s blank on my local test server and we might need to add something there</li>
+<li>CGSpace has been up and down all day due to PostgreSQL idle connections (current DSpace pool is 90):</li>
+</ul>
+
+<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
+93
+</code></pre>
+
+<ul>
+<li>I looked closer at the idle connections and saw that many have been idle for hours (current time on server is <code>2015-11-25T20:20:42+0000</code>):</li>
+</ul>
+
+<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | less -S
+datid | datname  |  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |          xact_start           |
+-------+----------+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-------------------------------+---
+20951 | cgspace  | 10966 |    18205 | cgspace  |                  | 127.0.0.1   |                 |       37731 | 2015-11-25 13:13:02.837624+00 |                               | 20
+20951 | cgspace  | 10967 |    18205 | cgspace  |                  | 127.0.0.1   |                 |       37737 | 2015-11-25 13:13:03.069421+00 |                               | 20
+...
+</code></pre>
+
+<ul>
+<li>There is a relevant Jira issue about this: <a href="https://jira.duraspace.org/browse/DS-1458">https://jira.duraspace.org/browse/DS-1458</a></li>
+<li>It seems there is some sense changing DSpace&rsquo;s default <code>db.maxidle</code> from unlimited (-1) to something like 8 (Tomcat default) or 10 (Confluence default)</li>
+<li>Change <code>db.maxidle</code> from -1 to 10, reduce <code>db.maxconnections</code> from 90 to 50, and restart postgres and tomcat7</li>
+<li>Also redeploy DSpace Test with a clean sync of CGSpace and mirror these database settings there as well</li>
+<li>Also deploy the nginx fixes for the <code>try_files</code> location block as well as the expires block</li>
+</ul>
+
+<h2 id="2015-11-26:3d03b850f8126f80d8144c2e17ea0ae7">2015-11-26</h2>
+
+<ul>
+<li>CGSpace behaving much better since changing <code>db.maxidle</code> yesterday, but still two up/down notices from monitoring this morning (better than 50!)</li>
+<li>CCAFS colleagues mentioned that the REST API is very slow, 24 seconds for one item</li>
+<li>Not as bad for me, but still unsustainable if you have to get many:</li>
+</ul>
+
+<pre><code>$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+8.415
+</code></pre>
+
+<ul>
+<li>Monitoring e-mailed in the evening to say CGSpace was down</li>
+<li>Idle connections in PostgreSQL again:</li>
+</ul>
+
+<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
+66
+</code></pre>
+
+<ul>
+<li>At the time, the current DSpace pool size was 50&hellip;</li>
+<li>I reduced the pool back to the default of 30, and reduced the <code>db.maxidle</code> settings from 10 to 8</li>
+</ul>
+
+<h1 id="2015-11-29:3d03b850f8126f80d8144c2e17ea0ae7">2015-11-29</h1>
+
+<ul>
+<li>Still more alerts that CGSpace has been up and down all day</li>
+<li>Current database settings for DSpace:</li>
+</ul>
+
+<pre><code>db.maxconnections = 30
+db.maxwait = 5000
+db.maxidle = 8
+db.statementpool = true
+</code></pre>
+
+<ul>
+<li>And idle connections:</li>
+</ul>
+
+<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
+49
+</code></pre>
+
+<ul>
+<li>Perhaps I need to start drastically increasing the connection limits—like to 300—to see if DSpace&rsquo;s thirst can ever be quenched</li>
+<li>On another note, SUNScholar&rsquo;s notes suggest adjusting some other postgres variables: <a href="http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database">http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database</a></li>
+<li>This might help with REST API speed (which I mentioned above and still need to do real tests)</li>
+</ul>
+
+  </section>
+  <footer>
+    
+    <section class="author-info row">
+      <div class="author-avatar col-md-2">
+        
+      </div>
+      <div class="author-meta col-md-6">
+        
+        
+      </div>
+      
+    </section>
+    <ul class="pager">
+      
+      <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+      
+      
+      <li class="next disabled"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+      
+    </ul>
+  </footer>
+</article>
+
+  </main>
+  <footer class="container global-footer">
+    <div class="copyright-note pull-left">
+      
+    </div>
+    <div class="sns-links hidden-print">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <script src="https://alanorth.github.io/cgspace-notesjs/highlight.pack.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  
+  
+</body>
+</html>
+
