@@ -113,7 +113,22 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 &lt;li&gt;I restarted Tomcat and postgres&amp;hellip;&lt;/li&gt;
 &lt;li&gt;Atmire commented that we should raise the JVM heap size by ~500M, so it is now &lt;code&gt;-Xms3584m -Xmx3584m&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;We weren&amp;rsquo;t out of heap yet, but it&amp;rsquo;s probably fair enough that the DSpace 5 upgrade (and new Atmire modules) requires more memory so it&amp;rsquo;s ok&lt;/li&gt;
+&lt;li&gt;A possible side effect is that I see that the REST API is twice as fast for the request above now:&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+1.368
+$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+0.968
+$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+1.006
+$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+0.849
+$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+0.806
+$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+0.854
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
