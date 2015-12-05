@@ -129,6 +129,27 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 0.854
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2015-12-05:012a628feed6d64ae1151cbd6151ccd6&#34;&gt;2015-12-05&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CGSpace has been up and down all day and REST API is completely unresponsive&lt;/li&gt;
+&lt;li&gt;PostgreSQL idle connections are currently:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;postgres@linode01:~$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep cgspace | grep -c idle
+28
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I have reverted all the pgtune tweaks from the other day, as they didn&amp;rsquo;t fix the stability issues, so I&amp;rsquo;d rather not have them introducing more variables into the equation&lt;/li&gt;
+&lt;li&gt;The PostgreSQL stats from Munin all point to something database-related with the DSpace 5 upgrade around mid–late November&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;../images/2015/12/postgres_bgwriter-year.png&#34; alt=&#34;PostgreSQL bgwriter (year)&#34; /&gt;
+&lt;img src=&#34;../images/2015/12/postgres_cache_cgspace-year.png&#34; alt=&#34;PostgreSQL cache (year)&#34; /&gt;
+&lt;img src=&#34;../images/2015/12/postgres_locks_cgspace-year.png&#34; alt=&#34;PostgreSQL locks (year)&#34; /&gt;
+&lt;img src=&#34;../images/2015/12/postgres_scans_cgspace-year.png&#34; alt=&#34;PostgreSQL scans *year)&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     

@@ -192,6 +192,27 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 0.854
 </code></pre>
 
+<h2 id="2015-12-05:012a628feed6d64ae1151cbd6151ccd6">2015-12-05</h2>
+
+<ul>
+<li>CGSpace has been up and down all day and REST API is completely unresponsive</li>
+<li>PostgreSQL idle connections are currently:</li>
+</ul>
+
+<pre><code>postgres@linode01:~$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
+28
+</code></pre>
+
+<ul>
+<li>I have reverted all the pgtune tweaks from the other day, as they didn&rsquo;t fix the stability issues, so I&rsquo;d rather not have them introducing more variables into the equation</li>
+<li>The PostgreSQL stats from Munin all point to something database-related with the DSpace 5 upgrade around mid–late November</li>
+</ul>
+
+<p><img src="../images/2015/12/postgres_bgwriter-year.png" alt="PostgreSQL bgwriter (year)" />
+<img src="../images/2015/12/postgres_cache_cgspace-year.png" alt="PostgreSQL cache (year)" />
+<img src="../images/2015/12/postgres_locks_cgspace-year.png" alt="PostgreSQL locks (year)" />
+<img src="../images/2015/12/postgres_scans_cgspace-year.png" alt="PostgreSQL scans *year)" /></p>
+
   </section>
   <footer>
     
