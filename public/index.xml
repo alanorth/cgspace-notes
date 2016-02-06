@@ -31,6 +31,45 @@
 &lt;li&gt;Not only are there 49,000 countries, we have some blanks (25)&amp;hellip;&lt;/li&gt;
 &lt;li&gt;Also, lots of things like &amp;ldquo;COTE D`LVOIRE&amp;rdquo; and &amp;ldquo;COTE D IVOIRE&amp;rdquo;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-02-06:124a59adbaa8ef13e1518d003fc03981&#34;&gt;2016-02-06&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Found a way to get items with null/empty metadata values from SQL&lt;/li&gt;
+&lt;li&gt;First, find the &lt;code&gt;metadata_field_id&lt;/code&gt; for the field you want from the &lt;code&gt;metadatafieldregistry&lt;/code&gt; table:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select * from metadatafieldregistry;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In this case our country field is 78&lt;/li&gt;
+&lt;li&gt;Now find all resources with type 2 (item) that have null/empty values for that field:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=78 and (text_value=&#39;&#39; OR text_value IS NULL);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Then you can find the handle that owns it from its &lt;code&gt;resource_id&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = &#39;22678&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s 25 items so editing in the web UI is annoying, let&amp;rsquo;s try SQL!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# delete from metadatavalue where metadata_field_id=78 and text_value=&#39;&#39;;
+DELETE 25
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After that perhaps a regular &lt;code&gt;dspace index-discovery&lt;/code&gt; (no -b) &lt;em&gt;should&lt;/em&gt; suffice&amp;hellip;&lt;/li&gt;
+&lt;li&gt;Hmm, I indexed, cleared the Cocoon cache, and restarted Tomcat but the 25 &amp;ldquo;|||&amp;rdquo; countries are still there&lt;/li&gt;
+&lt;li&gt;Maybe I need to do a full re-index&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
