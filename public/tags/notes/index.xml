@@ -70,7 +70,45 @@ DELETE 25
 &lt;li&gt;Hmm, I indexed, cleared the Cocoon cache, and restarted Tomcat but the 25 &amp;ldquo;|||&amp;rdquo; countries are still there&lt;/li&gt;
 &lt;li&gt;Maybe I need to do a full re-index&amp;hellip;&lt;/li&gt;
 &lt;li&gt;Yep! The full re-index seems to work.&lt;/li&gt;
+&lt;li&gt;Process the empty countries on CGSpace&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-02-07:124a59adbaa8ef13e1518d003fc03981&#34;&gt;2016-02-07&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Working on cleaning up Abenet&amp;rsquo;s DAGRIS data with OpenRefine&lt;/li&gt;
+&lt;li&gt;I discovered two really nice functions in OpenRefine: &lt;code&gt;value.trim()&lt;/code&gt; and &lt;code&gt;value.escape(&amp;quot;javascript&amp;quot;)&lt;/code&gt; which shows whitespace characters like &lt;code&gt;\r\n&lt;/code&gt;!&lt;/li&gt;
+&lt;li&gt;For some reason when you import an Excel file into OpenRefine it exports dates like 1949 to 1949.0 in the CSV&lt;/li&gt;
+&lt;li&gt;I re-import the resulting CSV and run a GREL on the date issued column: &lt;code&gt;value.replace(&amp;quot;\.0&amp;quot;, &amp;quot;&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;I need to start running DSpace in Mac OS X instead of a Linux VM&lt;/li&gt;
+&lt;li&gt;Install PostgreSQL from homebrew and configure:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ postgres -D /opt/brew/var/postgres
+$ createuser --pwprompt dspacetest
+$ createdb -O dspacetest --encoding=UNICODE dspacetest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After building and running a &lt;code&gt;fresh_install&lt;/code&gt; I symlinked the webapps into Tomcat&amp;rsquo;s webapps folder:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mv /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT.orig
+$ ln -sfv ~/dspace/webapps/xmlui /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT
+$ ln -sfv ~/dspace/webapps/rest /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/rest
+$ ln -sfv ~/dspace/webapps/jspui /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/jspui
+$ ln -sfv ~/dspace/webapps/oai /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/oai
+$ ln -sfv ~/dspace/webapps/solr /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/solr
+$ /opt/brew/Cellar/tomcat/8.0.30/bin/catalina start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Add CATALINA_OPTS in &lt;code&gt;/opt/brew/Cellar/tomcat/8.0.30/libexec/bin/setenv.sh&lt;/code&gt;, as this script is sourced by the &lt;code&gt;catalina&lt;/code&gt; startup script&lt;/li&gt;
+&lt;li&gt;For example:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;CATALINA_OPTS=&amp;quot;-Djava.awt.headless=true -Xms2048m -Xmx2048m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

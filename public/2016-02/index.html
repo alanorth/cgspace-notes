@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="keywords" content="">
+<meta name="author" content="Alan Orth">
+<meta name="generator" content="Hugo 0.16-DEV" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700" type="text/css">
+<link rel="alternate" href="/index.xml" type="application/rss+xml" title="CGSpace Notes">
+<title>February, 2016 - CGSpace Notes</title>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <a class="path" href="/cgspace-notes/">[CGSpace Notes]</a>
+    <span class="caret"># _</span>
+  </div>
+</header>
+
+<div class="container">
+
+
+<main role="main" class="article">
+  
+<article class="single" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="meta">
+
+    <span class="key">published on</span>
+    <span class="val"><time itemprop="datePublished" datetime="2016-02-05">February 05, 2016</time></span>
+
+
+
+    <br>
+    <span class="key">tags:</span>
+    <span class="val">
+
+        <a href="/cgspace-notes/tags/notes">notes</a>
+
+    </span>
+
+  </div>
+  <h1 class="headline" itemprop="headline">February, 2016</h1>
+  <section class="body" itemprop="articleBody">
+    
+
+<h2 id="2016-02-05:124a59adbaa8ef13e1518d003fc03981">2016-02-05</h2>
+
+<ul>
+<li>Looking at some DAGRIS data for Abenet Yabowork</li>
+<li>Lots of issues with spaces, newlines, etc causing the import to fail</li>
+<li>I noticed we have a very <em>interesting</em> list of countries on CGSpace:</li>
+</ul>
+
+<p><img src="../images/2016/02/cgspace-countries.png" alt="CGSpace country list" /></p>
+
+<ul>
+<li>Not only are there 49,000 countries, we have some blanks (25)&hellip;</li>
+<li>Also, lots of things like &ldquo;COTE D`LVOIRE&rdquo; and &ldquo;COTE D IVOIRE&rdquo;</li>
+</ul>
+
+<h2 id="2016-02-06:124a59adbaa8ef13e1518d003fc03981">2016-02-06</h2>
+
+<ul>
+<li>Found a way to get items with null/empty metadata values from SQL</li>
+<li>First, find the <code>metadata_field_id</code> for the field you want from the <code>metadatafieldregistry</code> table:</li>
+</ul>
+
+<pre><code>dspacetest=# select * from metadatafieldregistry;
+</code></pre>
+
+<ul>
+<li>In this case our country field is 78</li>
+<li>Now find all resources with type 2 (item) that have null/empty values for that field:</li>
+</ul>
+
+<pre><code>dspacetest=# select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=78 and (text_value='' OR text_value IS NULL);
+</code></pre>
+
+<ul>
+<li>Then you can find the handle that owns it from its <code>resource_id</code>:</li>
+</ul>
+
+<pre><code>dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = '22678';
+</code></pre>
+
+<ul>
+<li>It&rsquo;s 25 items so editing in the web UI is annoying, let&rsquo;s try SQL!</li>
+</ul>
+
+<pre><code>dspacetest=# delete from metadatavalue where metadata_field_id=78 and text_value='';
+DELETE 25
+</code></pre>
+
+<ul>
+<li>After that perhaps a regular <code>dspace index-discovery</code> (no -b) <em>should</em> suffice&hellip;</li>
+<li>Hmm, I indexed, cleared the Cocoon cache, and restarted Tomcat but the 25 &ldquo;|||&rdquo; countries are still there</li>
+<li>Maybe I need to do a full re-index&hellip;</li>
+<li>Yep! The full re-index seems to work.</li>
+<li>Process the empty countries on CGSpace</li>
+</ul>
+
+<h2 id="2016-02-07:124a59adbaa8ef13e1518d003fc03981">2016-02-07</h2>
+
+<ul>
+<li>Working on cleaning up Abenet&rsquo;s DAGRIS data with OpenRefine</li>
+<li>I discovered two really nice functions in OpenRefine: <code>value.trim()</code> and <code>value.escape(&quot;javascript&quot;)</code> which shows whitespace characters like <code>\r\n</code>!</li>
+<li>For some reason when you import an Excel file into OpenRefine it exports dates like 1949 to 1949.0 in the CSV</li>
+<li>I re-import the resulting CSV and run a GREL on the date issued column: <code>value.replace(&quot;\.0&quot;, &quot;&quot;)</code></li>
+<li>I need to start running DSpace in Mac OS X instead of a Linux VM</li>
+<li>Install PostgreSQL from homebrew and configure:</li>
+</ul>
+
+<pre><code>$ postgres -D /opt/brew/var/postgres
+$ createuser --pwprompt dspacetest
+$ createdb -O dspacetest --encoding=UNICODE dspacetest
+</code></pre>
+
+<ul>
+<li>After building and running a <code>fresh_install</code> I symlinked the webapps into Tomcat&rsquo;s webapps folder:</li>
+</ul>
+
+<pre><code>$ mv /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT.orig
+$ ln -sfv ~/dspace/webapps/xmlui /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT
+$ ln -sfv ~/dspace/webapps/rest /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/rest
+$ ln -sfv ~/dspace/webapps/jspui /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/jspui
+$ ln -sfv ~/dspace/webapps/oai /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/oai
+$ ln -sfv ~/dspace/webapps/solr /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/solr
+$ /opt/brew/Cellar/tomcat/8.0.30/bin/catalina start
+</code></pre>
+
+<ul>
+<li>Add CATALINA_OPTS in <code>/opt/brew/Cellar/tomcat/8.0.30/libexec/bin/setenv.sh</code>, as this script is sourced by the <code>catalina</code> startup script</li>
+<li>For example:</li>
+</ul>
+
+<pre><code>CATALINA_OPTS=&quot;-Djava.awt.headless=true -Xms2048m -Xmx2048m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8&quot;
+</code></pre>
+
+  </section>
+</article>
+
+</main>
+
+
+</div>
+
+<footer>
+  <div class="container">
+    <span class="copyright">&copy; 2016  CGSpace Notes - <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
+
