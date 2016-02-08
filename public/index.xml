@@ -81,12 +81,22 @@ DELETE 25
 &lt;li&gt;For some reason when you import an Excel file into OpenRefine it exports dates like 1949 to 1949.0 in the CSV&lt;/li&gt;
 &lt;li&gt;I re-import the resulting CSV and run a GREL on the date issued column: &lt;code&gt;value.replace(&amp;quot;\.0&amp;quot;, &amp;quot;&amp;quot;)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;I need to start running DSpace in Mac OS X instead of a Linux VM&lt;/li&gt;
-&lt;li&gt;Install PostgreSQL from homebrew and configure:&lt;/li&gt;
+&lt;li&gt;Install PostgreSQL from homebrew, then configure and import CGSpace database dump:&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;$ postgres -D /opt/brew/var/postgres
+$ createuser --superuser postgres
 $ createuser --pwprompt dspacetest
 $ createdb -O dspacetest --encoding=UNICODE dspacetest
+$ psql postgres
+postgres=# alter user dspacetest createuser;
+postgres=# \q
+$ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-02-07.backup 
+$ psql postgres
+postgres=# alter user dspacetest nocreateuser;
+postgres=# \q
+$ vacuumdb dspacetest
+$ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -108,6 +118,13 @@ $ /opt/brew/Cellar/tomcat/8.0.30/bin/catalina start
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;CATALINA_OPTS=&amp;quot;-Djava.awt.headless=true -Xms2048m -Xmx2048m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After verifying that the site is working, start a full index:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ~/dspace/bin/dspace index-discovery -b
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
