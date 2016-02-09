@@ -136,6 +136,57 @@ $ /opt/brew/Cellar/tomcat/8.0.30/bin/catalina start
 
 &lt;p&gt;&lt;img src=&#34;../images/2016/02/submit-button-ilri.png&#34; alt=&#34;ILRI submission buttons&#34; /&gt;
 &lt;img src=&#34;../images/2016/02/submit-button-drylands.png&#34; alt=&#34;Drylands submission buttons&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;2016-02-09:124a59adbaa8ef13e1518d003fc03981&#34;&gt;2016-02-09&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Re-sync DSpace Test with CGSpace&lt;/li&gt;
+&lt;li&gt;Help Sisay with OpenRefine&lt;/li&gt;
+&lt;li&gt;Enable HTTPS on DSpace Test using Let&amp;rsquo;s Encrypt:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cd ~/src/git
+$ git clone https://github.com/letsencrypt/letsencrypt
+$ cd letsencrypt
+$ sudo service nginx stop
+# add port 443 to firewall rules
+$ ./letsencrypt-auto certonly --standalone -d dspacetest.cgiar.org
+$ sudo service nginx start
+$ ansible-playbook dspace.yml -l linode02 -t nginx,firewall -u aorth --ask-become-pass
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We should install it in /opt/letsencrypt and then script the renewal script, but first we have to wire up some variables and template stuff based on the script here: &lt;a href=&#34;https://letsencrypt.org/howitworks/&#34;&gt;https://letsencrypt.org/howitworks/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;I had to export some CIAT items that were being cleaned up on the test server and I noticed their &lt;code&gt;dc.contributor.author&lt;/code&gt; fields have DSpace 5 authority index UUIDs&amp;hellip;&lt;/li&gt;
+&lt;li&gt;To clean those up in OpenRefine I used this GREL expression: &lt;code&gt;value.replace(/::\w{8}-\w{4}-\w{4}-\w{4}-\w{12}::600/,&amp;quot;&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Getting more and more hangs on DSpace Test, seemingly random but also during CSV import&lt;/li&gt;
+&lt;li&gt;Logs don&amp;rsquo;t always show anything right when it fails, but eventually one of these appears:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;org.dspace.discovery.SearchServiceException: Error while processing facet fields: java.lang.OutOfMemoryError: Java heap space
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;or&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Caused by: java.util.NoSuchElementException: Timeout waiting for idle object
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Right now DSpace Test&amp;rsquo;s Tomcat heap is set to 1536m and we have quite a bit of free RAM:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# free -m
+             total       used       free     shared    buffers     cached
+Mem:          3950       3902         48          9         37       1311
+-/+ buffers/cache:       2552       1397
+Swap:          255         57        198
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So I&amp;rsquo;ll bump up the Tomcat heap to 2048 (CGSpace production server is using 3GB)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
