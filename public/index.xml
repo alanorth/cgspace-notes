@@ -291,6 +291,31 @@ CIAT_COLOMBIA_000169_Técnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_
 &lt;li&gt;Need to rename files to have no accents or umlauts, etc&amp;hellip;&lt;/li&gt;
 &lt;li&gt;Useful custom text facet for URLs ending with &amp;ldquo;.pdf&amp;rdquo;: &lt;code&gt;value.endsWith(&amp;quot;.pdf&amp;quot;)&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-02-22:124a59adbaa8ef13e1518d003fc03981&#34;&gt;2016-02-22&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;To change Spanish accents to ASCII in OpenRefine:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;value.replace(&#39;ó&#39;,&#39;o&#39;).replace(&#39;í&#39;,&#39;i&#39;).replace(&#39;á&#39;,&#39;a&#39;).replace(&#39;é&#39;,&#39;e&#39;).replace(&#39;ñ&#39;,&#39;n&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;But actually, the accents might not be an issue, as I can successfully import files containing Spanish accents on my Mac&lt;/li&gt;
+&lt;li&gt;On closer inspection, I can import files with the following names on Linux (DSpace Test):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Bitstream: tést.pdf
+Bitstream: tést señora.pdf
+Bitstream: tést señora alimentación.pdf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Seems it could be something with the HFS+ filesystem actually, as it&amp;rsquo;s not UTF-8 (&lt;a href=&#34;http://www.cio.com/article/2868393/linus-torvalds-apples-hfs-is-probably-the-worst-file-system-ever.html&#34;&gt;it&amp;rsquo;s something like UCS-2&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;HFS+ stores filenames as a string, and filenames with accents get stored as &lt;a href=&#34;https://blog.vrypan.net/2012/11/13/hfsplus-unicode-and-accented-chars/&#34;&gt;character+accent&lt;/a&gt; whereas Linux&amp;rsquo;s ext4 stores them as an array of bytes&lt;/li&gt;
+&lt;li&gt;Running the SAFBuilder on Mac OS X works if you&amp;rsquo;re going to import the resulting bundle on Mac OS X, but if your DSpace is running on Linux you need to run the SAFBuilder there where the filesystem&amp;rsquo;s encoding matches&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
