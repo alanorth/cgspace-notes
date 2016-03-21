@@ -156,6 +156,40 @@
 &lt;ul&gt;
 &lt;li&gt;Also, it looks like adding &lt;code&gt;-sharpen 0x1.0&lt;/code&gt; really improves the quality of the image for only a few KB&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-03-21:5a28ddf3ee658c043c064ccddb151717&#34;&gt;2016-03-21&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix 66 site errors in Google&amp;rsquo;s webmaster tools&lt;/li&gt;
+&lt;li&gt;I looked at a bunch of them and they were old URLs, weird things linked from non-existent items, etc, so I just marked them all as fixed&lt;/li&gt;
+&lt;li&gt;We also have 1,300 &amp;ldquo;soft 404&amp;rdquo; errors for URLs like: &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/440/browse?type=bioversity&#34;&gt;https://cgspace.cgiar.org/handle/10568/440/browse?type=bioversity&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;ve marked them as fixed as well since the ones I tested were working fine&lt;/li&gt;
+&lt;li&gt;This raises another question, as many of these pages are linked from Discovery search results and might create a duplicate content problem&amp;hellip;&lt;/li&gt;
+&lt;li&gt;Results pages like this give items that Google already knows from the sitemap: &lt;a href=&#34;https://cgspace.cgiar.org/discover?filtertype=author&amp;amp;filter_relational_operator=equals&amp;amp;filter=Orth%2C+A&#34;&gt;https://cgspace.cgiar.org/discover?filtertype=author&amp;amp;filter_relational_operator=equals&amp;amp;filter=Orth%2C+A&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;There are some access denied errors on JSPUI links (of course! we forbid them!), but I&amp;rsquo;m not sure why Google is trying to index them&amp;hellip;&lt;/li&gt;
+&lt;li&gt;For example:
+
+&lt;ul&gt;
+&lt;li&gt;This: &lt;a href=&#34;https://cgspace.cgiar.org/jspui/bitstream/10568/809/1/main-page.pdf&#34;&gt;https://cgspace.cgiar.org/jspui/bitstream/10568/809/1/main-page.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Linked from: &lt;a href=&#34;https://cgspace.cgiar.org/jspui/handle/10568/809&#34;&gt;https://cgspace.cgiar.org/jspui/handle/10568/809&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;I will mark these errors as resolved because they are returning HTTP 403 on purpose, for a long time!&lt;/li&gt;
+&lt;li&gt;Google says the first time it saw this particular error was September 29, 2015&amp;hellip; so maybe it accidentally saw it somehow&amp;hellip;&lt;/li&gt;
+&lt;li&gt;On a related note, we have 51,000 items indexed from the sitemap, but 500,000 items in the Google index, so we DEFINITELY have a problem with duplicate content&lt;/li&gt;
+&lt;li&gt;Turns out this is a problem with DSpace&amp;rsquo;s &lt;code&gt;robots.txt&lt;/code&gt;, and there&amp;rsquo;s a Jira ticket since December, 2015: &lt;a href=&#34;https://jira.duraspace.org/browse/DS-2962&#34;&gt;https://jira.duraspace.org/browse/DS-2962&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;I am not sure if I want to apply it yet&lt;/li&gt;
+&lt;li&gt;For now I&amp;rsquo;ve just set a bunch of these dynamic pages to not appear in search results by using the URL Parameters tool in Webmaster Tools&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;../images/2016/03/url-parameters.png&#34; alt=&#34;URL parameters cause millions of dynamic pages&#34; /&gt;
+&lt;img src=&#34;../images/2016/03/url-parameters2.png&#34; alt=&#34;Setting pages with the filter_0 param not to show in search results&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Move AVCD collection to new community and update &lt;code&gt;move_collection.sh&lt;/code&gt; script: &lt;a href=&#34;https://gist.github.com/alanorth/392c4660e8b022d99dfa&#34;&gt;https://gist.github.com/alanorth/392c4660e8b022d99dfa&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;It seems Feedburner can do HTTPS now, so we might be able to update our feeds and simplify the nginx configs&lt;/li&gt;
+&lt;li&gt;De-deploy CGSpace with latest &lt;code&gt;5_x-prod&lt;/code&gt; branch&lt;/li&gt;
+&lt;li&gt;Run updates on CGSpace and reboot server (new kernel, &lt;code&gt;4.5.0&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

@@ -219,6 +219,40 @@
 <li>Also, it looks like adding <code>-sharpen 0x1.0</code> really improves the quality of the image for only a few KB</li>
 </ul>
 
+<h2 id="2016-03-21:5a28ddf3ee658c043c064ccddb151717">2016-03-21</h2>
+
+<ul>
+<li>Fix 66 site errors in Google&rsquo;s webmaster tools</li>
+<li>I looked at a bunch of them and they were old URLs, weird things linked from non-existent items, etc, so I just marked them all as fixed</li>
+<li>We also have 1,300 &ldquo;soft 404&rdquo; errors for URLs like: <a href="https://cgspace.cgiar.org/handle/10568/440/browse?type=bioversity">https://cgspace.cgiar.org/handle/10568/440/browse?type=bioversity</a></li>
+<li>I&rsquo;ve marked them as fixed as well since the ones I tested were working fine</li>
+<li>This raises another question, as many of these pages are linked from Discovery search results and might create a duplicate content problem&hellip;</li>
+<li>Results pages like this give items that Google already knows from the sitemap: <a href="https://cgspace.cgiar.org/discover?filtertype=author&amp;filter_relational_operator=equals&amp;filter=Orth%2C+A">https://cgspace.cgiar.org/discover?filtertype=author&amp;filter_relational_operator=equals&amp;filter=Orth%2C+A</a>.</li>
+<li>There are some access denied errors on JSPUI links (of course! we forbid them!), but I&rsquo;m not sure why Google is trying to index them&hellip;</li>
+<li>For example:
+
+<ul>
+<li>This: <a href="https://cgspace.cgiar.org/jspui/bitstream/10568/809/1/main-page.pdf">https://cgspace.cgiar.org/jspui/bitstream/10568/809/1/main-page.pdf</a></li>
+<li>Linked from: <a href="https://cgspace.cgiar.org/jspui/handle/10568/809">https://cgspace.cgiar.org/jspui/handle/10568/809</a></li>
+</ul></li>
+<li>I will mark these errors as resolved because they are returning HTTP 403 on purpose, for a long time!</li>
+<li>Google says the first time it saw this particular error was September 29, 2015&hellip; so maybe it accidentally saw it somehow&hellip;</li>
+<li>On a related note, we have 51,000 items indexed from the sitemap, but 500,000 items in the Google index, so we DEFINITELY have a problem with duplicate content</li>
+<li>Turns out this is a problem with DSpace&rsquo;s <code>robots.txt</code>, and there&rsquo;s a Jira ticket since December, 2015: <a href="https://jira.duraspace.org/browse/DS-2962">https://jira.duraspace.org/browse/DS-2962</a></li>
+<li>I am not sure if I want to apply it yet</li>
+<li>For now I&rsquo;ve just set a bunch of these dynamic pages to not appear in search results by using the URL Parameters tool in Webmaster Tools</li>
+</ul>
+
+<p><img src="../images/2016/03/url-parameters.png" alt="URL parameters cause millions of dynamic pages" />
+<img src="../images/2016/03/url-parameters2.png" alt="Setting pages with the filter_0 param not to show in search results" /></p>
+
+<ul>
+<li>Move AVCD collection to new community and update <code>move_collection.sh</code> script: <a href="https://gist.github.com/alanorth/392c4660e8b022d99dfa">https://gist.github.com/alanorth/392c4660e8b022d99dfa</a></li>
+<li>It seems Feedburner can do HTTPS now, so we might be able to update our feeds and simplify the nginx configs</li>
+<li>De-deploy CGSpace with latest <code>5_x-prod</code> branch</li>
+<li>Run updates on CGSpace and reboot server (new kernel, <code>4.5.0</code>)</li>
+</ul>
+
   </section>
   <footer>
     
