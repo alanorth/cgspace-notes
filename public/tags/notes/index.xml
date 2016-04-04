@@ -6,8 +6,59 @@
     <description>Recent content in Notes on CGSpace Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 02 Mar 2016 16:50:00 +0300</lastBuildDate>
+    <lastBuildDate>Mon, 04 Apr 2016 11:06:00 +0300</lastBuildDate>
     <atom:link href="/cgspace-notes/tags/notes/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>April, 2016</title>
+      <link>/cgspace-notes/2016-04/</link>
+      <pubDate>Mon, 04 Apr 2016 11:06:00 +0300</pubDate>
+      
+      <guid>/cgspace-notes/2016-04/</guid>
+      <description>
+
+&lt;h2 id=&#34;2016-04-04:c88be15f5b2f07c85f7742556a955e47&#34;&gt;2016-04-04&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looking at log file use on CGSpace and notice that we need to work on our cron setup a bit&lt;/li&gt;
+&lt;li&gt;We are backing up all logs in the log folder, including useless stuff like solr, cocoon, handle-plugin, etc&lt;/li&gt;
+&lt;li&gt;After running DSpace for over five years I&amp;rsquo;ve never needed to look in any other log file than dspace.log, leave alone one from last year!&lt;/li&gt;
+&lt;li&gt;This will save us a few gigs of backup space we&amp;rsquo;re paying for on S3&lt;/li&gt;
+&lt;li&gt;Also, I noticed the &lt;code&gt;checker&lt;/code&gt; log has some errors we should pay attention to:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Run start time: 03/06/2016 04:00:22
+Error retrieving bitstream ID 71274 from asset store.
+java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290601546459645925328536011917633626 (Too many open files)
+        at java.io.FileInputStream.open(Native Method)
+        at java.io.FileInputStream.&amp;lt;init&amp;gt;(FileInputStream.java:146)
+        at edu.sdsc.grid.io.local.LocalFileInputStream.open(LocalFileInputStream.java:171)
+        at edu.sdsc.grid.io.GeneralFileInputStream.&amp;lt;init&amp;gt;(GeneralFileInputStream.java:145)
+        at edu.sdsc.grid.io.local.LocalFileInputStream.&amp;lt;init&amp;gt;(LocalFileInputStream.java:139)
+        at edu.sdsc.grid.io.FileFactory.newFileInputStream(FileFactory.java:630)
+        at org.dspace.storage.bitstore.BitstreamStorageManager.retrieve(BitstreamStorageManager.java:525)
+        at org.dspace.checker.BitstreamDAO.getBitstream(BitstreamDAO.java:60)
+        at org.dspace.checker.CheckerCommand.processBitstream(CheckerCommand.java:303)
+        at org.dspace.checker.CheckerCommand.checkBitstream(CheckerCommand.java:171)
+        at org.dspace.checker.CheckerCommand.process(CheckerCommand.java:120)
+        at org.dspace.app.checker.ChecksumChecker.main(ChecksumChecker.java:236)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:606)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:225)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:77)
+******************************************************
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So this would be the &lt;code&gt;tomcat7&lt;/code&gt; Unix user, who seems to have a default limit of 1024 files in its shell&lt;/li&gt;
+&lt;li&gt;For what it&amp;rsquo;s worth, we have been setting the actual Tomcat 7 process&amp;rsquo; limit to 16384 for a few years (in &lt;code&gt;/etc/default/tomcat7&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Looks like cron will read limits from &lt;code&gt;/etc/security/limits.*&lt;/code&gt; so we can do something for the tomcat7 user there&lt;/li&gt;
+&lt;li&gt;Submit pull request for Tomcat 7 limits in Ansible dspace role (&lt;a href=&#34;https://github.com/ilri/rmg-ansible-public/pull/30&#34;&gt;#30&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>March, 2016</title>
