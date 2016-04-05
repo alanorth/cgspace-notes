@@ -57,6 +57,23 @@ java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290
 &lt;li&gt;Looks like cron will read limits from &lt;code&gt;/etc/security/limits.*&lt;/code&gt; so we can do something for the tomcat7 user there&lt;/li&gt;
 &lt;li&gt;Submit pull request for Tomcat 7 limits in Ansible dspace role (&lt;a href=&#34;https://github.com/ilri/rmg-ansible-public/pull/30&#34;&gt;#30&lt;/a&gt;)&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-04-05:c88be15f5b2f07c85f7742556a955e47&#34;&gt;2016-04-05&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Reduce Amazon S3 storage used for logs from 46 GB to 6GB by deleting a bunch of logs we don&amp;rsquo;t need!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# s3cmd ls s3://cgspace.cgiar.org/log/ &amp;gt; /tmp/s3-logs.txt
+# grep checker.log /tmp/s3-logs.txt | awk &#39;{print $4}&#39; | xargs s3cmd del
+# grep cocoon.log /tmp/s3-logs.txt | awk &#39;{print $4}&#39; | xargs s3cmd del
+# grep handle-plugin.log /tmp/s3-logs.txt | awk &#39;{print $4}&#39; | xargs s3cmd del
+# grep solr.log /tmp/s3-logs.txt | awk &#39;{print $4}&#39; | xargs s3cmd del
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Also, adjust the cron jobs for backups so they only backup &lt;code&gt;dspace.log&lt;/code&gt; and some stats files (.dat)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
