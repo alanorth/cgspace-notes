@@ -73,6 +73,21 @@ java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290
 
 &lt;ul&gt;
 &lt;li&gt;Also, adjust the cron jobs for backups so they only backup &lt;code&gt;dspace.log&lt;/code&gt; and some stats files (.dat)&lt;/li&gt;
+&lt;li&gt;Try to do some metadata field migrations using the Atmire batch UI (&lt;code&gt;dc.Species&lt;/code&gt; → &lt;code&gt;cg.species&lt;/code&gt;) but it took several hours and even missed a few records&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-04-06:c88be15f5b2f07c85f7742556a955e47&#34;&gt;2016-04-06&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A better way to move metadata on this scale is via SQL, for example &lt;code&gt;dc.type.output&lt;/code&gt; → &lt;code&gt;dc.type&lt;/code&gt; (their IDs in the metadatafieldregistry are 66 and 109, respectively):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set metadata_field_id=109 where metadata_field_id=66;
+UPDATE 40852
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After that an &lt;code&gt;index-discovery -bf&lt;/code&gt; is required&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
