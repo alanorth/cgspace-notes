@@ -219,6 +219,27 @@ dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and t
 <li>Listings and Reports is still not returning reliable data for <code>dc.type</code></li>
 <li>I think we need to ask Atmire, as their documentation isn&rsquo;t too clear on the format of the filter configs</li>
 <li>Alternatively, I want to see if I move all the data from <code>dc.type.output</code> to <code>dc.type</code> and then re-index, if it behaves better</li>
+<li>Looking at our <code>input-forms.xml</code> I see we have two sets of ILRI subjects, but one has a few extra subjects</li>
+<li>Remove one set of ILRI subjects and remove duplicate <code>VALUE CHAINS</code> from existing list (<a href="https://github.com/ilri/DSpace/pull/216">#216</a>)</li>
+<li>I decided to keep the set of subjects that had <code>FMD</code> and <code>RANGELANDS</code> added, as it appears to have been requested to have been added, and might be the newer list</li>
+<li>I found 226 blank metadatavalues:</li>
+</ul>
+
+<pre><code>dspacetest# select * from metadatavalue where resource_type_id=2 and text_value='';
+</code></pre>
+
+<ul>
+<li>I think we should delete them and do a full re-index:</li>
+</ul>
+
+<pre><code>dspacetest=# delete from metadatavalue where resource_type_id=2 and text_value='';
+DELETE 226
+</code></pre>
+
+<ul>
+<li>In other news, moving the <code>dc.type.output</code> to <code>dc.type</code> and re-indexing seems to have fixed the Listings and Reports issue from above</li>
+<li>Unfortunately this isn&rsquo;t a very good solution, because Listings and Reports config should allow us to filter on <code>dc.type.*</code> but the documentation isn&rsquo;t very clear and I couldn&rsquo;t reach Atmire today</li>
+<li>We want to do the <code>dc.type.output</code> move on CGSpace anyways, but we should wait as it might affect other external people!</li>
 </ul>
 
   </section>

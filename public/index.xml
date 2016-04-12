@@ -157,6 +157,27 @@ dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and t
 &lt;li&gt;Listings and Reports is still not returning reliable data for &lt;code&gt;dc.type&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;I think we need to ask Atmire, as their documentation isn&amp;rsquo;t too clear on the format of the filter configs&lt;/li&gt;
 &lt;li&gt;Alternatively, I want to see if I move all the data from &lt;code&gt;dc.type.output&lt;/code&gt; to &lt;code&gt;dc.type&lt;/code&gt; and then re-index, if it behaves better&lt;/li&gt;
+&lt;li&gt;Looking at our &lt;code&gt;input-forms.xml&lt;/code&gt; I see we have two sets of ILRI subjects, but one has a few extra subjects&lt;/li&gt;
+&lt;li&gt;Remove one set of ILRI subjects and remove duplicate &lt;code&gt;VALUE CHAINS&lt;/code&gt; from existing list (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/216&#34;&gt;#216&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;I decided to keep the set of subjects that had &lt;code&gt;FMD&lt;/code&gt; and &lt;code&gt;RANGELANDS&lt;/code&gt; added, as it appears to have been requested to have been added, and might be the newer list&lt;/li&gt;
+&lt;li&gt;I found 226 blank metadatavalues:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest# select * from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I think we should delete them and do a full re-index:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+DELETE 226
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In other news, moving the &lt;code&gt;dc.type.output&lt;/code&gt; to &lt;code&gt;dc.type&lt;/code&gt; and re-indexing seems to have fixed the Listings and Reports issue from above&lt;/li&gt;
+&lt;li&gt;Unfortunately this isn&amp;rsquo;t a very good solution, because Listings and Reports config should allow us to filter on &lt;code&gt;dc.type.*&lt;/code&gt; but the documentation isn&amp;rsquo;t very clear and I couldn&amp;rsquo;t reach Atmire today&lt;/li&gt;
+&lt;li&gt;We want to do the &lt;code&gt;dc.type.output&lt;/code&gt; move on CGSpace anyways, but we should wait as it might affect other external people!&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
