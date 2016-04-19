@@ -336,6 +336,34 @@ javax.ws.rs.WebApplicationException
 <li>After restarting Tomcat a few more of these errors were logged but the application was up</li>
 </ul>
 
+<h2 id="2016-04-19:c88be15f5b2f07c85f7742556a955e47">2016-04-19</h2>
+
+<ul>
+<li>Get handles for items that are using a given metadata field, ie <code>dc.Species.animal</code> (105):</li>
+</ul>
+
+<pre><code># select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=105);
+   handle
+-------------
+ 10568/10298
+ 10568/16413
+ 10568/16774
+ 10568/34487
+</code></pre>
+
+<ul>
+<li>Delete metadata values for <code>dc.GRP</code> and <code>dc.icsubject.icrafsubject</code>:</li>
+</ul>
+
+<pre><code># delete from metadatavalue where resource_type_id=2 and metadata_field_id=96;
+# delete from metadatavalue where resource_type_id=2 and metadata_field_id=83;
+</code></pre>
+
+<ul>
+<li>They are old ICRAF fields and we haven&rsquo;t used them since 2011 or so</li>
+<li>Also delete them from the metadata registry</li>
+</ul>
+
   </section>
   <footer>
     

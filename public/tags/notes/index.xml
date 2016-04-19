@@ -273,6 +273,34 @@ javax.ws.rs.WebApplicationException
 &lt;li&gt;Everything else in the system looked normal (50GB disk space available, nothing weird in dmesg, etc)&lt;/li&gt;
 &lt;li&gt;After restarting Tomcat a few more of these errors were logged but the application was up&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-04-19:c88be15f5b2f07c85f7742556a955e47&#34;&gt;2016-04-19&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Get handles for items that are using a given metadata field, ie &lt;code&gt;dc.Species.animal&lt;/code&gt; (105):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=105);
+   handle
+-------------
+ 10568/10298
+ 10568/16413
+ 10568/16774
+ 10568/34487
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Delete metadata values for &lt;code&gt;dc.GRP&lt;/code&gt; and &lt;code&gt;dc.icsubject.icrafsubject&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# delete from metadatavalue where resource_type_id=2 and metadata_field_id=96;
+# delete from metadatavalue where resource_type_id=2 and metadata_field_id=83;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;They are old ICRAF fields and we haven&amp;rsquo;t used them since 2011 or so&lt;/li&gt;
+&lt;li&gt;Also delete them from the metadata registry&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
