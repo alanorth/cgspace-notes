@@ -300,6 +300,34 @@ javax.ws.rs.WebApplicationException
 &lt;ul&gt;
 &lt;li&gt;They are old ICRAF fields and we haven&amp;rsquo;t used them since 2011 or so&lt;/li&gt;
 &lt;li&gt;Also delete them from the metadata registry&lt;/li&gt;
+&lt;li&gt;CGSpace went down again, &lt;code&gt;dspace.log&lt;/code&gt; had this:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;2016-04-19 15:02:17,025 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I restarted Tomcat and PostgreSQL and now it&amp;rsquo;s back up&lt;/li&gt;
+&lt;li&gt;I bet this is the same crash as yesterday, but I only saw the errors in &lt;code&gt;catalina.out&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Looks to be related to this, from &lt;code&gt;dspace.log&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;2016-04-19 15:16:34,670 ERROR org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We have 18,000 of these errors right now&amp;hellip;&lt;/li&gt;
+&lt;li&gt;Delete a few more old metadata values: &lt;code&gt;dc.Species.animal&lt;/code&gt;, &lt;code&gt;dc.type.journal&lt;/code&gt;, and &lt;code&gt;dc.publicationcategory&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# delete from metadatavalue where resource_type_id=2 and metadata_field_id=105;
+# delete from metadatavalue where resource_type_id=2 and metadata_field_id=85;
+# delete from metadatavalue where resource_type_id=2 and metadata_field_id=95;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And then remove them from the metadata registry&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>

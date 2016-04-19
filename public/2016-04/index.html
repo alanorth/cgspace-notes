@@ -362,6 +362,34 @@ javax.ws.rs.WebApplicationException
 <ul>
 <li>They are old ICRAF fields and we haven&rsquo;t used them since 2011 or so</li>
 <li>Also delete them from the metadata registry</li>
+<li>CGSpace went down again, <code>dspace.log</code> had this:</li>
+</ul>
+
+<pre><code>2016-04-19 15:02:17,025 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+</code></pre>
+
+<ul>
+<li>I restarted Tomcat and PostgreSQL and now it&rsquo;s back up</li>
+<li>I bet this is the same crash as yesterday, but I only saw the errors in <code>catalina.out</code></li>
+<li>Looks to be related to this, from <code>dspace.log</code>:</li>
+</ul>
+
+<pre><code>2016-04-19 15:16:34,670 ERROR org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
+</code></pre>
+
+<ul>
+<li>We have 18,000 of these errors right now&hellip;</li>
+<li>Delete a few more old metadata values: <code>dc.Species.animal</code>, <code>dc.type.journal</code>, and <code>dc.publicationcategory</code>:</li>
+</ul>
+
+<pre><code># delete from metadatavalue where resource_type_id=2 and metadata_field_id=105;
+# delete from metadatavalue where resource_type_id=2 and metadata_field_id=85;
+# delete from metadatavalue where resource_type_id=2 and metadata_field_id=95;
+</code></pre>
+
+<ul>
+<li>And then remove them from the metadata registry</li>
 </ul>
 
   </section>
