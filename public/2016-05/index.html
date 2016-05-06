@@ -121,6 +121,34 @@
 <li>Hmm, also disk space is full</li>
 <li>I decided to blow away the solr indexes, since they are 50GB and we don&rsquo;t really need all the Atmire stuff there right now</li>
 <li>I will re-generate the Discovery indexes after re-deploying</li>
+<li>Testing <code>renew-letsencrypt.sh</code> script for nginx</li>
+</ul>
+
+<pre><code>#!/usr/bin/env bash
+
+readonly SERVICE_BIN=/usr/sbin/service
+readonly LETSENCRYPT_BIN=/opt/letsencrypt/letsencrypt-auto
+
+# stop nginx so LE can listen on port 443
+$SERVICE_BIN nginx stop
+
+$LETSENCRYPT_BIN renew -nvv --standalone --standalone-supported-challenges tls-sni-01 &gt; /var/log/letsencrypt/renew.log 2&gt;&amp;1
+
+LE_RESULT=$?
+
+$SERVICE_BIN nginx start
+
+if [[ &quot;$LE_RESULT&quot; != 0 ]]; then
+    echo 'Automated renewal failed:'
+
+    cat /var/log/letsencrypt/renew.log
+
+    exit 1
+fi
+</code></pre>
+
+<ul>
+<li>Seems to work well</li>
 </ul>
 
   </section>
