@@ -237,6 +237,23 @@ fi
 <li>I&rsquo;ve removed <code>dc.title.jtitle</code> from the list for now because there&rsquo;s no use moving it out of DC until we know where it will go (see discussion yesterday)</li>
 </ul>
 
+<h2 id="2016-05-18:b7bf1a0f8f2415a40e1e11e343b04c0d">2016-05-18</h2>
+
+<ul>
+<li>Work on 707 CCAFS records</li>
+<li>They have thumbnails on Flickr and elsewhere</li>
+<li>In OpenRefine I created a new <code>filename</code> column based on the <code>thumbnail</code> column with the following GREL:</li>
+</ul>
+
+<pre><code>if(cells['thumbnails'].value.contains('hqdefault'), cells['thumbnails'].value.split('/')[-2] + '.jpg', cells['thumbnails'].value.split('/')[-1])
+</code></pre>
+
+<ul>
+<li>Because ~400 records had the same filename on Flickr (hqdefault.jpg) but different UUIDs in the URL</li>
+<li>So for the <code>hqdefault.jpg</code> ones I just take the UUID (-2) and use it as the filename</li>
+<li>Before importing with SAFBuilder I tested adding &ldquo;__bundle:THUMBNAIL&rdquo; to the <code>filename</code> column and it works fine</li>
+</ul>
+
   </section>
   <footer>
     
