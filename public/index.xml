@@ -362,6 +362,79 @@ UPDATE 14
 &lt;li&gt;I found a thread on the mailing list talking about it and there is bug report and a patch: &lt;a href=&#34;https://jira.duraspace.org/browse/DS-2740&#34;&gt;https://jira.duraspace.org/browse/DS-2740&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;The patch applies successfully on DSpace 5.1 so I will try it later&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-06-03:6783872e82b68b1517e00f494e6b6504&#34;&gt;2016-06-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Investigating the CCAFS authority issue, I exported the metadata for the Videos collection&lt;/li&gt;
+&lt;li&gt;The top two authors are:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500
+CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So the only difference is the &amp;ldquo;confidence&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Ok, well THAT is interesting:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like &#39;%Orth, %&#39;;
+ text_value |              authority               | confidence
+------------+--------------------------------------+------------
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, Alan |                                      |         -1
+ Orth, Alan |                                      |         -1
+ Orth, Alan |                                      |         -1
+ Orth, Alan |                                      |         -1
+ Orth, A.   | 05c2c622-d252-4efb-b9ed-95a07d3adf11 |         -1
+ Orth, A.   | 05c2c622-d252-4efb-b9ed-95a07d3adf11 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, Alan | ad281dbf-ef81-4007-96c3-a7f5d2eaa6d9 |        600
+ Orth, Alan | ad281dbf-ef81-4007-96c3-a7f5d2eaa6d9 |        600
+(13 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And now an actually relevent example:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39; and confidence = 500;
+ count
+-------
+   707
+(1 row)
+
+dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39; and confidence != 500;
+ count
+-------
+   253
+(1 row)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Trying something experimental:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set confidence=500 where metadata_field_id=3 and text_value like &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39;;
+UPDATE 960
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And then re-indexing authority and Discovery&amp;hellip;?&lt;/li&gt;
+&lt;li&gt;After Discovery reindex the CCAFS authors are all together in the Authors sidebar facet&lt;/li&gt;
+&lt;li&gt;The docs for the ORCiD and Authority stuff for DSpace 5 mention changing the browse indexes to use the Authority as well:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;webui.browse.index.2 = author:metadataAuthority:dc.contributor.author:authority
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;That would only be for the &amp;ldquo;Browse by&amp;rdquo; function&amp;hellip; so we&amp;rsquo;ll have to see what effect that has later&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

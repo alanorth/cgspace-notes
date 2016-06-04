@@ -118,6 +118,79 @@ UPDATE 14
 <li>The patch applies successfully on DSpace 5.1 so I will try it later</li>
 </ul>
 
+<h2 id="2016-06-03:6783872e82b68b1517e00f494e6b6504">2016-06-03</h2>
+
+<ul>
+<li>Investigating the CCAFS authority issue, I exported the metadata for the Videos collection</li>
+<li>The top two authors are:</li>
+</ul>
+
+<pre><code>CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500
+CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600
+</code></pre>
+
+<ul>
+<li>So the only difference is the &ldquo;confidence&rdquo;</li>
+<li>Ok, well THAT is interesting:</li>
+</ul>
+
+<pre><code>dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %';
+ text_value |              authority               | confidence
+------------+--------------------------------------+------------
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, Alan |                                      |         -1
+ Orth, Alan |                                      |         -1
+ Orth, Alan |                                      |         -1
+ Orth, Alan |                                      |         -1
+ Orth, A.   | 05c2c622-d252-4efb-b9ed-95a07d3adf11 |         -1
+ Orth, A.   | 05c2c622-d252-4efb-b9ed-95a07d3adf11 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
+ Orth, Alan | ad281dbf-ef81-4007-96c3-a7f5d2eaa6d9 |        600
+ Orth, Alan | ad281dbf-ef81-4007-96c3-a7f5d2eaa6d9 |        600
+(13 rows)
+</code></pre>
+
+<ul>
+<li>And now an actually relevent example:</li>
+</ul>
+
+<pre><code>dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like 'CGIAR Research Program on Climate Change, Agriculture and Food Security' and confidence = 500;
+ count
+-------
+   707
+(1 row)
+
+dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like 'CGIAR Research Program on Climate Change, Agriculture and Food Security' and confidence != 500;
+ count
+-------
+   253
+(1 row)
+</code></pre>
+
+<ul>
+<li>Trying something experimental:</li>
+</ul>
+
+<pre><code>dspacetest=# update metadatavalue set confidence=500 where metadata_field_id=3 and text_value like 'CGIAR Research Program on Climate Change, Agriculture and Food Security';
+UPDATE 960
+</code></pre>
+
+<ul>
+<li>And then re-indexing authority and Discovery&hellip;?</li>
+<li>After Discovery reindex the CCAFS authors are all together in the Authors sidebar facet</li>
+<li>The docs for the ORCiD and Authority stuff for DSpace 5 mention changing the browse indexes to use the Authority as well:</li>
+</ul>
+
+<pre><code>webui.browse.index.2 = author:metadataAuthority:dc.contributor.author:authority
+</code></pre>
+
+<ul>
+<li>That would only be for the &ldquo;Browse by&rdquo; function&hellip; so we&rsquo;ll have to see what effect that has later</li>
+</ul>
+
   </section>
   <footer>
     
