@@ -64,6 +64,32 @@
   <hr/>
   <article>
   <header>
+    <h2><a href="/cgspace-notes/2016-06/">June, 2016</a></h2>
+    <div class="post-meta clearfix">
+      <div class="post-date pull-left">
+        Posted on
+        <time datetime="2016-06-01T10:53:00&#43;03:00">
+          Jun 1, 2016
+        </time>
+      </div>
+    </div>
+  </header>
+  <div>
+    2016-06-01 Experimenting with IFPRI OAI (we want to harvest their publications) After reading the ContentDM documentation I found IFPRI&rsquo;s OAI endpoint: http://ebrary.ifpri.org/oai/oai.php After reading the OAI documentation and testing with an OAI validator I found out how to get their publications This is their publications set: http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc You can see the others by using the OAI ListSets verb: http://ebrary.ifpri.org/oai/oai.php?verb=ListSets Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in dc.identifier.fund to cg.identifier.cpwfproject and then the rest to dc.description.sponsorship dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA'); UPDATE 497 dspacetest=# update metadatavalue set metadata_field_id=29 where metadata_field_id=75; UPDATE 14 Fix a few minor miscellaneous issues in dspace.cfg (#227) 2016-06-02 Testing the configuration and theme changes for the upcoming metadata migration and I found some issues with cg.coverage.admin-unit Seems that the Browse configuration in dspace.cfg can&rsquo;t handle the &lsquo;-&rsquo; in the field name: webui.browse.index.12 = subregion:metadata:cg.coverage.admin-unit:text But actually, I think since DSpace 4 or 5 (we are 5.1) the Browse indexes come from Discovery (defined in discovery.xml) so this is really just a parsing error I&rsquo;ve sent a message to the DSpace mailing list to ask about the Browse index definition A user was having problems with submission and from the stacktrace it looks like a Sherpa/Romeo issue I found a thread on the mailing list talking about it and there is bug report and a patch: https://jira.duraspace.org/browse/DS-2740 The patch applies successfully on DSpace 5.1 so I will try it later 2016-06-03 Investigating the CCAFS authority issue, I exported the metadata for the Videos collection The top two authors are: CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500 CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600 So the only difference is the &ldquo;confidence&rdquo; Ok, well THAT is interesting: dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %'; text_value | authority | confidence ------------+--------------------------------------+------------ Orth, A.
+  </div>
+  
+  <footer>
+    <ul class="pager">
+      <li class="next"><a href="/cgspace-notes/2016-06/">Read more <span aria-hidden="true">&raquo;</span></a></li>
+    </ul>
+  </footer>
+  
+</article>
+
+  
+  <hr/>
+  <article>
+  <header>
     <h2><a href="/cgspace-notes/2016-05/">May, 2016</a></h2>
     <div class="post-meta clearfix">
       <div class="post-date pull-left">
@@ -81,32 +107,6 @@
   <footer>
     <ul class="pager">
       <li class="next"><a href="/cgspace-notes/2016-05/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  <hr/>
-  <article>
-  <header>
-    <h2><a href="/cgspace-notes/2016-06/">June, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-05-01T10:53:00&#43;03:00">
-          May 1, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-06-01 Experimenting with IFPRI OAI (we want to harvest their publications) After reading the ContentDM documentation I found IFPRI&rsquo;s OAI endpoint: http://ebrary.ifpri.org/oai/oai.php After reading the OAI documentation and testing with an OAI validator I found out how to get their publications This is their publications set: http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc You can see the others by using the OAI ListSets verb: http://ebrary.ifpri.org/oai/oai.php?verb=ListSets Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in dc.identifier.fund to cg.identifier.cpwfproject and then the rest to dc.description.sponsorship dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA'); UPDATE 497 dspacetest=# update metadatavalue set metadata_field_id=29 where metadata_field_id=75; UPDATE 14 Fix a few minor miscellaneous issues in dspace.cfg (#227) 2016-06-02 Testing the configuration and theme changes for the upcoming metadata migration and I found some issues with cg.coverage.admin-unit Seems that the Browse configuration in dspace.cfg can&rsquo;t handle the &lsquo;-&rsquo; in the field name: webui.browse.index.12 = subregion:metadata:cg.coverage.admin-unit:text But actually, I think since DSpace 4 or 5 (we are 5.1) the Browse indexes come from Discovery (defined in discovery.xml) so this is really just a parsing error I&rsquo;ve sent a message to the DSpace mailing list to ask about the Browse index definition A user was having problems with submission and from the stacktrace it looks like a Sherpa/Romeo issue I found a thread on the mailing list talking about it and there is bug report and a patch: https://jira.duraspace.org/browse/DS-2740 The patch applies successfully on DSpace 5.1 so I will try it later 2016-06-03 Investigating the CCAFS authority issue, I exported the metadata for the Videos collection The top two authors are: CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500 CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600 So the only difference is the &ldquo;confidence&rdquo; Ok, well THAT is interesting: dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %'; text_value | authority | confidence ------------+--------------------------------------+------------ Orth, A.
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="/cgspace-notes/2016-06/">Read more <span aria-hidden="true">&raquo;</span></a></li>
     </ul>
   </footer>
   
