@@ -191,6 +191,31 @@ UPDATE 960
 &lt;li&gt;This means we don&amp;rsquo;t see it when harvesting via OAI or REST, for example&lt;/li&gt;
 &lt;li&gt;They opened a feature ticket on the DSpace tracker to ask for support of this: &lt;a href=&#34;https://jira.duraspace.org/browse/DS-3239&#34;&gt;https://jira.duraspace.org/browse/DS-3239&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-06-10:6783872e82b68b1517e00f494e6b6504&#34;&gt;2016-06-10&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Investigating authority confidences&lt;/li&gt;
+&lt;li&gt;It looks like the values are documented in &lt;code&gt;Choices.java&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Experiment with setting all 960 CCAFS author values to be 500:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# SELECT authority, confidence FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value = &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39;;
+
+dspacetest=# UPDATE metadatavalue set confidence = 500 where resource_type_id=2 AND metadata_field_id=3 AND text_value = &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39;;
+UPDATE 960
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After the database edit, I did a full Discovery re-index&lt;/li&gt;
+&lt;li&gt;And now there are exactly 960 items in the authors facet for &amp;lsquo;CGIAR Research Program on Climate Change, Agriculture and Food Security&amp;rsquo;&lt;/li&gt;
+&lt;li&gt;Now I ran the same on CGSpace&lt;/li&gt;
+&lt;li&gt;Merge controlled vocabulary functionality for animal breeds to &lt;code&gt;5_x-prod&lt;/code&gt; (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/236&#34;&gt;#236&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Write python script to update metadata values in batch via PostgreSQL: &lt;a href=&#34;https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897&#34;&gt;fix-metadata-values.py&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;We need to use this to correct some pretty ugly values in fields like &lt;code&gt;dc.description.sponsorship&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Merge item display tweaks from earlier this week (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/231&#34;&gt;#231&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Merge controlled vocabulary functionality for subregions (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/238&#34;&gt;#238&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

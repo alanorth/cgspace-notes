@@ -254,6 +254,31 @@ UPDATE 960
 <li>They opened a feature ticket on the DSpace tracker to ask for support of this: <a href="https://jira.duraspace.org/browse/DS-3239">https://jira.duraspace.org/browse/DS-3239</a></li>
 </ul>
 
+<h2 id="2016-06-10:6783872e82b68b1517e00f494e6b6504">2016-06-10</h2>
+
+<ul>
+<li>Investigating authority confidences</li>
+<li>It looks like the values are documented in <code>Choices.java</code></li>
+<li>Experiment with setting all 960 CCAFS author values to be 500:</li>
+</ul>
+
+<pre><code>dspacetest=# SELECT authority, confidence FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value = 'CGIAR Research Program on Climate Change, Agriculture and Food Security';
+
+dspacetest=# UPDATE metadatavalue set confidence = 500 where resource_type_id=2 AND metadata_field_id=3 AND text_value = 'CGIAR Research Program on Climate Change, Agriculture and Food Security';
+UPDATE 960
+</code></pre>
+
+<ul>
+<li>After the database edit, I did a full Discovery re-index</li>
+<li>And now there are exactly 960 items in the authors facet for &lsquo;CGIAR Research Program on Climate Change, Agriculture and Food Security&rsquo;</li>
+<li>Now I ran the same on CGSpace</li>
+<li>Merge controlled vocabulary functionality for animal breeds to <code>5_x-prod</code> (<a href="https://github.com/ilri/DSpace/pull/236">#236</a>)</li>
+<li>Write python script to update metadata values in batch via PostgreSQL: <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a></li>
+<li>We need to use this to correct some pretty ugly values in fields like <code>dc.description.sponsorship</code></li>
+<li>Merge item display tweaks from earlier this week (<a href="https://github.com/ilri/DSpace/pull/231">#231</a>)</li>
+<li>Merge controlled vocabulary functionality for subregions (<a href="https://github.com/ilri/DSpace/pull/238">#238</a>)</li>
+</ul>
+
   </section>
   <footer>
     
