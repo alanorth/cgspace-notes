@@ -364,6 +364,43 @@ $ ./delete-metadata-values.py -i investors-delete-82.csv -f dc.description.spons
 <pre><code>dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=126 group by text_value order by count desc) to /tmp/contributors-june28.csv with csv;
 </code></pre>
 
+<ul>
+<li>Re-evaluate <code>dc.contributor.corporate</code> and it seems we will move it to <code>dc.contributor.author</code> as this is more in line with how editors are actually using it</li>
+</ul>
+
+<h2 id="2016-06-29:6783872e82b68b1517e00f494e6b6504">2016-06-29</h2>
+
+<ul>
+<li>Test run of <code>migrate-fields.sh</code> with the following re-mappings:</li>
+</ul>
+
+<pre><code>72  55  #dc.source
+86  230 #cg.contributor.crp
+91  211 #cg.contributor.affiliation
+94  212 #cg.species
+107 231 #cg.coverage.subregion
+126 3   #dc.contributor.author
+73  219 #cg.identifier.url
+74  220 #cg.identifier.doi
+79  222 #cg.identifier.googleurl
+89  223 #cg.identifier.dataurl
+</code></pre>
+
+<ul>
+<li>Run all cleanups and deletions of <code>dc.contributor.corporate</code> on CGSpace:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i Corporate-Authors-Fix-121.csv -f dc.contributor.corporate -t 'Correct style' -m 126 -d cgspace -u cgspace -p 'fuuu'
+$ ./fix-metadata-values.py -i Corporate-Authors-Fix-PB.csv -f dc.contributor.corporate -t 'should be' -m 126 -d cgspace -u cgspace -p 'fuuu'
+$ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-Delete-13.csv -m 126 -u cgspace -d cgspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Re-deploy CGSpace and DSpace Test with latest June changes</li>
+<li>Run all system updates on the servers and reboot</li>
+<li>Start working on config changes for phase three of the metadata migrations</li>
+</ul>
+
   </section>
   <footer>
     

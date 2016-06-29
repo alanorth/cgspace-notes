@@ -301,6 +301,43 @@ $ ./delete-metadata-values.py -i investors-delete-82.csv -f dc.description.spons
 
 &lt;pre&gt;&lt;code&gt;dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=126 group by text_value order by count desc) to /tmp/contributors-june28.csv with csv;
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Re-evaluate &lt;code&gt;dc.contributor.corporate&lt;/code&gt; and it seems we will move it to &lt;code&gt;dc.contributor.author&lt;/code&gt; as this is more in line with how editors are actually using it&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-06-29:6783872e82b68b1517e00f494e6b6504&#34;&gt;2016-06-29&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Test run of &lt;code&gt;migrate-fields.sh&lt;/code&gt; with the following re-mappings:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;72  55  #dc.source
+86  230 #cg.contributor.crp
+91  211 #cg.contributor.affiliation
+94  212 #cg.species
+107 231 #cg.coverage.subregion
+126 3   #dc.contributor.author
+73  219 #cg.identifier.url
+74  220 #cg.identifier.doi
+79  222 #cg.identifier.googleurl
+89  223 #cg.identifier.dataurl
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Run all cleanups and deletions of &lt;code&gt;dc.contributor.corporate&lt;/code&gt; on CGSpace:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i Corporate-Authors-Fix-121.csv -f dc.contributor.corporate -t &#39;Correct style&#39; -m 126 -d cgspace -u cgspace -p &#39;fuuu&#39;
+$ ./fix-metadata-values.py -i Corporate-Authors-Fix-PB.csv -f dc.contributor.corporate -t &#39;should be&#39; -m 126 -d cgspace -u cgspace -p &#39;fuuu&#39;
+$ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-Delete-13.csv -m 126 -u cgspace -d cgspace -p &#39;fuuu&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Re-deploy CGSpace and DSpace Test with latest June changes&lt;/li&gt;
+&lt;li&gt;Run all system updates on the servers and reboot&lt;/li&gt;
+&lt;li&gt;Start working on config changes for phase three of the metadata migrations&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
