@@ -335,9 +335,31 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 
 &lt;ul&gt;
 &lt;li&gt;Re-deploy CGSpace and DSpace Test with latest June changes&lt;/li&gt;
+&lt;li&gt;Now the sharing and Altmetric bits are more prominent:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;../images/2016/06/xmlui-altmetric-sharing.png&#34; alt=&#34;DSpace 5.1 XMLUI With Altmetric Badge&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
 &lt;li&gt;Run all system updates on the servers and reboot&lt;/li&gt;
 &lt;li&gt;Start working on config changes for phase three of the metadata migrations&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-06-30:6783872e82b68b1517e00f494e6b6504&#34;&gt;2016-06-30&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Wow, there are 95 authors in the database who have &amp;lsquo;,&amp;rsquo; at the end of their name:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;#select text_value from  metadatavalue where metadata_field_id=3 and text_value like &#39;%,&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We need to use something like this to fix them, need to write a proper regex later:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# update metadatavalue set text_value = regexp_replace(text_value, &#39;(Poole, J),&#39;, &#39;\1&#39;) where text_value = &#39;Poole, J,&#39;;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

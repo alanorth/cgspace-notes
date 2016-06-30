@@ -397,9 +397,31 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 
 <ul>
 <li>Re-deploy CGSpace and DSpace Test with latest June changes</li>
+<li>Now the sharing and Altmetric bits are more prominent:</li>
+</ul>
+
+<p><img src="../images/2016/06/xmlui-altmetric-sharing.png" alt="DSpace 5.1 XMLUI With Altmetric Badge" /></p>
+
+<ul>
 <li>Run all system updates on the servers and reboot</li>
 <li>Start working on config changes for phase three of the metadata migrations</li>
 </ul>
+
+<h2 id="2016-06-30:6783872e82b68b1517e00f494e6b6504">2016-06-30</h2>
+
+<ul>
+<li>Wow, there are 95 authors in the database who have &lsquo;,&rsquo; at the end of their name:</li>
+</ul>
+
+<pre><code>#select text_value from  metadatavalue where metadata_field_id=3 and text_value like '%,';
+</code></pre>
+
+<ul>
+<li>We need to use something like this to fix them, need to write a proper regex later:</li>
+</ul>
+
+<pre><code># update metadatavalue set text_value = regexp_replace(text_value, '(Poole, J),', '\1') where text_value = 'Poole, J,';
+</code></pre>
 
   </section>
   <footer>
