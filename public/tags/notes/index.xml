@@ -21,7 +21,16 @@
 
 &lt;ul&gt;
 &lt;li&gt;Add &lt;code&gt;dc.description.sponsorship&lt;/code&gt; to Discovery sidebar facets and make investors clickable in item view (&lt;a href=&#34;https://github.com/ilri/DSpace/issues/232&#34;&gt;#232&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;I think this query should find and replace all authors that have &amp;ldquo;,&amp;rdquo; at the end of their names (there were 95 matching the select before):&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^.+?),$&#39;, &#39;\1&#39;) where metadata_field_id=3 and text_value ~ &#39;^.+?,$&#39;;
+UPDATE 95
+dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and text_value ~ &#39;^.+?,$&#39;;
+ text_value
+------------
+(0 rows)
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
@@ -367,7 +376,7 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 &lt;li&gt;Wow, there are 95 authors in the database who have &amp;lsquo;,&amp;rsquo; at the end of their name:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;#select text_value from  metadatavalue where metadata_field_id=3 and text_value like &#39;%,&#39;;
+&lt;pre&gt;&lt;code&gt;# select text_value from  metadatavalue where metadata_field_id=3 and text_value like &#39;%,&#39;;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;

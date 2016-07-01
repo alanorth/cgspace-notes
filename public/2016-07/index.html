@@ -83,7 +83,16 @@
 
 <ul>
 <li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
+<li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names (there were 95 matching the select before):</li>
 </ul>
+
+<pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and text_value ~ '^.+?,$';
+UPDATE 95
+dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and text_value ~ '^.+?,$';
+ text_value
+------------
+(0 rows)
+</code></pre>
 
   </section>
   <footer>
