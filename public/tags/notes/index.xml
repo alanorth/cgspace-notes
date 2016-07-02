@@ -21,7 +21,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;Add &lt;code&gt;dc.description.sponsorship&lt;/code&gt; to Discovery sidebar facets and make investors clickable in item view (&lt;a href=&#34;https://github.com/ilri/DSpace/issues/232&#34;&gt;#232&lt;/a&gt;)&lt;/li&gt;
-&lt;li&gt;I think this query should find and replace all authors that have &amp;ldquo;,&amp;rdquo; at the end of their names (there were 95 matching the select before):&lt;/li&gt;
+&lt;li&gt;I think this query should find and replace all authors that have &amp;ldquo;,&amp;rdquo; at the end of their names:&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^.+?),$&#39;, &#39;\1&#39;) where metadata_field_id=3 and text_value ~ &#39;^.+?,$&#39;;
@@ -31,6 +31,16 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 ------------
 (0 rows)
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In this case the select query was showing 95 results before the update&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-07-02:edc14796891c14dec087b4bb89c38aa9&#34;&gt;2016-07-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Comment on DSpace Jira ticket about author lookup search text (&lt;a href=&#34;https://jira.duraspace.org/browse/DS-2329&#34;&gt;DS-2329&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
@@ -383,7 +393,7 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 &lt;li&gt;We need to use something like this to fix them, need to write a proper regex later:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;# update metadatavalue set text_value = regexp_replace(text_value, &#39;(Poole, J),&#39;, &#39;\1&#39;) where text_value = &#39;Poole, J,&#39;;
+&lt;pre&gt;&lt;code&gt;# update metadatavalue set text_value = regexp_replace(text_value, &#39;(Poole, J),&#39;, &#39;\1&#39;) where metadata_field_id=3 and text_value = &#39;Poole, J,&#39;;
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
