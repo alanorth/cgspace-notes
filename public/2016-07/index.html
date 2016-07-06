@@ -128,6 +128,43 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <li>I will merge it to <code>5_x-prod</code></li>
 </ul>
 
+<h2 id="2016-07-06:edc14796891c14dec087b4bb89c38aa9">2016-07-06</h2>
+
+<ul>
+<li>Delete 23 blank metadata values from CGSpace:</li>
+</ul>
+
+<pre><code>cgspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+DELETE 23
+</code></pre>
+
+<ul>
+<li>Complete phase three of metadata migration, for the following fields:
+
+<ul>
+<li>dc.title.jtitle → dc.source</li>
+<li>dc.crsubject.crpsubject → cg.contributor.crp</li>
+<li>dc.contributor.affiliation → cg.contributor.affiliation</li>
+<li>dc.Species → cg.species</li>
+<li>dc.srplace.subregion → cg.coverage.subregion</li>
+<li>dc.contributor.corporate → dc.contributor.author</li>
+<li>dc.identifier.url → cg.identifier.url</li>
+<li>dc.identifier.doi → cg.identifier.doi</li>
+<li>dc.identifier.googleurl → cg.identifier.googleurl</li>
+<li>dc.identifier.dataurl → cg.identifier.dataurl</li>
+</ul></li>
+<li>Also, run fixes and deletes for species and author affiliations (over 1000 corrections!)</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 212 -d dspace -u dspace -p 'fuuu'
+./fix-metadata-values.py -i Affiliations-Fix-1045-Peter-Abenet.csv -f dc.contributor.affiliation -t Correct -m 211 -d dspace -u dspace -p 'fuuu'
+./delete-metadata-values.py -f dc.contributor.affiliation -i Affiliations-Delete-Peter-Abenet.csv -m 211 -u dspace -d dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>I then ran all server updates and rebooted the server</li>
+</ul>
+
   </section>
   <footer>
     
