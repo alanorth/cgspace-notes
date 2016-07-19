@@ -186,7 +186,35 @@ $ ./delete-metadata-values.py -f dc.contributor.author -i /tmp/Authors-Delete-UT
 <ul>
 <li>Adjust identifiers in XMLUI item display to be more prominent</li>
 <li>Add species and breed to the XMLUI item display</li>
+<li>CGSpace crashed late at night and the DSpace logs were showing:</li>
 </ul>
+
+<pre><code>2016-07-18 20:26:30,941 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+...
+</code></pre>
+
+<ul>
+<li>I suspect it&rsquo;s someone hitting REST too much:</li>
+</ul>
+
+<pre><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+    710 66.249.78.38
+   1781 181.118.144.29
+  24904 70.32.99.142
+</code></pre>
+
+<ul>
+<li>I just blocked access to <code>/rest</code> for that last IP for now:</li>
+</ul>
+
+<pre><code>     # log rest requests
+     location /rest {
+         access_log /var/log/nginx/rest.log;
+         proxy_pass http://127.0.0.1:8443;
+         deny 70.32.99.142;
+     }
+</code></pre>
 
   </section>
   <footer>

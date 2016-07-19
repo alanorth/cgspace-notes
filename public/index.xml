@@ -124,7 +124,35 @@ $ ./delete-metadata-values.py -f dc.contributor.author -i /tmp/Authors-Delete-UT
 &lt;ul&gt;
 &lt;li&gt;Adjust identifiers in XMLUI item display to be more prominent&lt;/li&gt;
 &lt;li&gt;Add species and breed to the XMLUI item display&lt;/li&gt;
+&lt;li&gt;CGSpace crashed late at night and the DSpace logs were showing:&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;2016-07-18 20:26:30,941 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I suspect it&amp;rsquo;s someone hitting REST too much:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+    710 66.249.78.38
+   1781 181.118.144.29
+  24904 70.32.99.142
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I just blocked access to &lt;code&gt;/rest&lt;/code&gt; for that last IP for now:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;     # log rest requests
+     location /rest {
+         access_log /var/log/nginx/rest.log;
+         proxy_pass http://127.0.0.1:8443;
+         deny 70.32.99.142;
+     }
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
