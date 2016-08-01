@@ -83,6 +83,26 @@
 
 <ul>
 <li>Add updated distribution license from Sisay (<a href="https://github.com/ilri/DSpace/issues/259">#259</a>)</li>
+<li>Play with upgrading Mirage 2 dependencies in <code>bower.json</code> because most are several versions of out date</li>
+<li>Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more</li>
+<li>bower stuff is a dead end, waste of time, too many issues</li>
+<li>Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of <code>fonts</code>)</li>
+<li>Start working on DSpace 5.1 → 5.5 port:</li>
+</ul>
+
+<pre><code>$ git checkout -b 55new 5_x-prod
+$ git reset --hard ilri/5_x-prod
+$ git rebase -i dspace-5.5
+</code></pre>
+
+<ul>
+<li>Lots of conflicts that don&rsquo;t make sense (ie, shouldn&rsquo;t conflict!)</li>
+<li>This file in particular conflicts almost 10 times: <code>dspace/modules/xmlui-mirage2/src/main/webapp/themes/CGIAR/styles/_style.scss</code></li>
+<li>Checking out a clean branch at 5.5 and cherry-picking our commits works where that file would normally have a conflict</li>
+<li>Seems to be related to merge commits</li>
+<li><code>git rebase --preserve-merges</code> doesn&rsquo;t seem to help</li>
+<li>Eventually I just turned on git rerere and solved the conflicts and completed the 403 commit rebase</li>
+<li>The 5.5 code now builds but doesn&rsquo;t run (white page in Tomcat)</li>
 </ul>
 
   </section>
