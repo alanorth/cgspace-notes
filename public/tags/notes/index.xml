@@ -74,6 +74,43 @@ $ git rebase -i dspace-5.5
 &lt;ul&gt;
 &lt;li&gt;Finally figured out how to remove &amp;ldquo;View/Open&amp;rdquo; and &amp;ldquo;Bitstreams&amp;rdquo; from the item view&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-08-07&#34;&gt;2016-08-07&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Start working on Ubuntu 16.04 Ansible playbook for Tomcat 8, PostgreSQL 9.5, Oracle 8, etc&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-08-08&#34;&gt;2016-08-08&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Still troubleshooting Atmire modules on DSpace 5.5&lt;/li&gt;
+&lt;li&gt;Vanilla DSpace 5.5 works on Tomcat 7&amp;hellip;&lt;/li&gt;
+&lt;li&gt;Ooh, and vanilla DSpace 5.5 works on Tomcat 8 with Java 8!&lt;/li&gt;
+&lt;li&gt;Some notes about setting up Tomcat 8, since it&amp;rsquo;s new on this machine&amp;hellip;&lt;/li&gt;
+&lt;li&gt;Install latest Oracle Java 8 JDK&lt;/li&gt;
+&lt;li&gt;Create &lt;code&gt;setenv.sh&lt;/code&gt; in Tomcat 8 &lt;code&gt;libexec/bin&lt;/code&gt; directory:
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;CATALINA_OPTS=&amp;quot;-Djava.awt.headless=true -Xms3072m -Xmx3072m -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -Dfile.encoding=UTF-8&amp;quot;
+CATALINA_OPTS=&amp;quot;$CATALINA_OPTS -Djava.library.path=/opt/brew/Cellar/tomcat-native/1.2.8/lib&amp;quot;
+
+JRE_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Edit Tomcat 8 &lt;code&gt;server.xml&lt;/code&gt; to add regular HTTP listener for solr&lt;/li&gt;
+&lt;li&gt;Symlink webapps:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ rm -rf /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/ROOT
+$ ln -sv ~/dspace/webapps/xmlui /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/ROOT
+$ ln -sv ~/dspace/webapps/oai /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/oai
+$ ln -sv ~/dspace/webapps/jspui /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/jspui
+$ ln -sv ~/dspace/webapps/rest /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/rest
+$ ln -sv ~/dspace/webapps/solr /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/solr
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

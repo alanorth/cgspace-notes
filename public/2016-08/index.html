@@ -137,6 +137,43 @@ $ git rebase -i dspace-5.5
 <li>Finally figured out how to remove &ldquo;View/Open&rdquo; and &ldquo;Bitstreams&rdquo; from the item view</li>
 </ul>
 
+<h2 id="2016-08-07">2016-08-07</h2>
+
+<ul>
+<li>Start working on Ubuntu 16.04 Ansible playbook for Tomcat 8, PostgreSQL 9.5, Oracle 8, etc</li>
+</ul>
+
+<h2 id="2016-08-08">2016-08-08</h2>
+
+<ul>
+<li>Still troubleshooting Atmire modules on DSpace 5.5</li>
+<li>Vanilla DSpace 5.5 works on Tomcat 7&hellip;</li>
+<li>Ooh, and vanilla DSpace 5.5 works on Tomcat 8 with Java 8!</li>
+<li>Some notes about setting up Tomcat 8, since it&rsquo;s new on this machine&hellip;</li>
+<li>Install latest Oracle Java 8 JDK</li>
+<li>Create <code>setenv.sh</code> in Tomcat 8 <code>libexec/bin</code> directory:
+<br /></li>
+</ul>
+
+<pre><code>CATALINA_OPTS=&quot;-Djava.awt.headless=true -Xms3072m -Xmx3072m -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -Dfile.encoding=UTF-8&quot;
+CATALINA_OPTS=&quot;$CATALINA_OPTS -Djava.library.path=/opt/brew/Cellar/tomcat-native/1.2.8/lib&quot;
+
+JRE_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home
+</code></pre>
+
+<ul>
+<li>Edit Tomcat 8 <code>server.xml</code> to add regular HTTP listener for solr</li>
+<li>Symlink webapps:</li>
+</ul>
+
+<pre><code>$ rm -rf /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/ROOT
+$ ln -sv ~/dspace/webapps/xmlui /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/ROOT
+$ ln -sv ~/dspace/webapps/oai /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/oai
+$ ln -sv ~/dspace/webapps/jspui /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/jspui
+$ ln -sv ~/dspace/webapps/rest /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/rest
+$ ln -sv ~/dspace/webapps/solr /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/solr
+</code></pre>
+
   </section>
   <footer>
     
