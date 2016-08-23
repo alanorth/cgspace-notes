@@ -298,6 +298,40 @@ Database Driver: PostgreSQL Native Driver version PostgreSQL 9.1 JDBC4 (build 90
 <li>So I&rsquo;m not sure why they have problems when we move to DSpace 5.5 (even the 5.1 migrations themselves show as &ldquo;Missing&rdquo;)</li>
 </ul>
 
+<h2 id="2016-08-23">2016-08-23</h2>
+
+<ul>
+<li>Help Paola from CCAFS with her thumbnails again</li>
+<li>Talk to Atmire about the DSpace 5.5 issue, and it seems to be caused by a bug in FlywayDB</li>
+<li>They said I should delete the Atmire migrations
+<br /></li>
+</ul>
+
+<pre><code>dspacetest=# delete from schema_version where description =  'Atmire CUA 4 migration' and version='5.1.2015.12.03.2';
+dspacetest=# delete from schema_version where description =  'Atmire MQM migration' and version='5.1.2015.12.03.3';
+</code></pre>
+
+<ul>
+<li>After that DSpace starts up by XMLUI now has unrelated issues that I need to solve!</li>
+</ul>
+
+<pre><code>org.apache.avalon.framework.configuration.ConfigurationException: Type 'ThemeResourceReader' does not exist for 'map:read' at jndi:/localhost/themes/0_CGIAR/sitemap.xmap:136:77
+context:/jndi:/localhost/themes/0_CGIAR/sitemap.xmap - 136:77
+</code></pre>
+
+<ul>
+<li>Looks like we&rsquo;re missing some stuff in the XMLUI module&rsquo;s <code>sitemap.xmap</code>, as well as in each of our XMLUI themes</li>
+<li>Diff them with these to get the <code>ThemeResourceReader</code> changes:
+
+<ul>
+<li><code>dspace-xmlui/src/main/webapp/sitemap.xmap</code></li>
+<li><code>dspace-xmlui-mirage2/src/main/webapp/sitemap.xmap</code></li>
+</ul></li>
+<li>Then we had some NullPointerException from the SolrLogger class, which is apparently part of Atmire&rsquo;s CUA module</li>
+<li>I tried with a small version bump to CUA but it didn&rsquo;t work (version <code>5.5-4.1.1-0</code>)</li>
+<li>Also, I started looking into huge pages to prepare for PostgreSQL 9.5, but it seems Linode&rsquo;s kernels don&rsquo;t enable them</li>
+</ul>
+
   </section>
   <footer>
     

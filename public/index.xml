@@ -235,6 +235,40 @@ Database Driver: PostgreSQL Native Driver version PostgreSQL 9.1 JDBC4 (build 90
 &lt;ul&gt;
 &lt;li&gt;So I&amp;rsquo;m not sure why they have problems when we move to DSpace 5.5 (even the 5.1 migrations themselves show as &amp;ldquo;Missing&amp;rdquo;)&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-08-23&#34;&gt;2016-08-23&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Help Paola from CCAFS with her thumbnails again&lt;/li&gt;
+&lt;li&gt;Talk to Atmire about the DSpace 5.5 issue, and it seems to be caused by a bug in FlywayDB&lt;/li&gt;
+&lt;li&gt;They said I should delete the Atmire migrations
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# delete from schema_version where description =  &#39;Atmire CUA 4 migration&#39; and version=&#39;5.1.2015.12.03.2&#39;;
+dspacetest=# delete from schema_version where description =  &#39;Atmire MQM migration&#39; and version=&#39;5.1.2015.12.03.3&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After that DSpace starts up by XMLUI now has unrelated issues that I need to solve!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;org.apache.avalon.framework.configuration.ConfigurationException: Type &#39;ThemeResourceReader&#39; does not exist for &#39;map:read&#39; at jndi:/localhost/themes/0_CGIAR/sitemap.xmap:136:77
+context:/jndi:/localhost/themes/0_CGIAR/sitemap.xmap - 136:77
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looks like we&amp;rsquo;re missing some stuff in the XMLUI module&amp;rsquo;s &lt;code&gt;sitemap.xmap&lt;/code&gt;, as well as in each of our XMLUI themes&lt;/li&gt;
+&lt;li&gt;Diff them with these to get the &lt;code&gt;ThemeResourceReader&lt;/code&gt; changes:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;dspace-xmlui/src/main/webapp/sitemap.xmap&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dspace-xmlui-mirage2/src/main/webapp/sitemap.xmap&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Then we had some NullPointerException from the SolrLogger class, which is apparently part of Atmire&amp;rsquo;s CUA module&lt;/li&gt;
+&lt;li&gt;I tried with a small version bump to CUA but it didn&amp;rsquo;t work (version &lt;code&gt;5.5-4.1.1-0&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Also, I started looking into huge pages to prepare for PostgreSQL 9.5, but it seems Linode&amp;rsquo;s kernels don&amp;rsquo;t enable them&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
