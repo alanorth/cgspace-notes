@@ -38,6 +38,12 @@ distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Eth
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
+&lt;li&gt;Changing the DSpace LDAP config to use &lt;code&gt;OU=ILRIHUB&lt;/code&gt; seems to work:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;../images/2016/09/ilri-ldap-users.png&#34; alt=&#34;DSpace groups based on LDAP DN&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
 &lt;li&gt;Notes for local PostgreSQL database recreation from production snapshot:&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -49,6 +55,88 @@ $ psql dspacetest -c &#39;alter user dspacetest nocreateuser;&#39;
 $ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost
 $ vacuumdb dspacetest
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Some names that I thought I fixed in July seem not to be:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Poole, %&#39;;
+      text_value       |              authority               | confidence
+-----------------------+--------------------------------------+------------
+ Poole, Elizabeth Jane | b6efa27f-8829-4b92-80fe-bc63e03e3ccb |        600
+ Poole, Elizabeth Jane | 41628f42-fc38-4b38-b473-93aec9196326 |        600
+ Poole, Elizabeth Jane | 83b82da0-f652-4ebc-babc-591af1697919 |        600
+ Poole, Elizabeth Jane | c3a22456-8d6a-41f9-bba0-de51ef564d45 |        600
+ Poole, E.J.           | c3a22456-8d6a-41f9-bba0-de51ef564d45 |        600
+ Poole, E.J.           | 0fbd91b9-1b71-4504-8828-e26885bf8b84 |        600
+(6 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;At least a few of these actually have the correct ORCID, but I will unify the authority to be c3a22456-8d6a-41f9-bba0-de51ef564d45&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set authority=&#39;c3a22456-8d6a-41f9-bba0-de51ef564d45&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Poole, %&#39;;
+UPDATE 69
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And for Peter Ballantyne:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Ballantyne, %&#39;;
+    text_value     |              authority               | confidence
+-------------------+--------------------------------------+------------
+ Ballantyne, Peter | 2dcbcc7b-47b0-4fd7-bef9-39d554494081 |        600
+ Ballantyne, Peter | 4f04ca06-9a76-4206-bd9c-917ca75d278e |        600
+ Ballantyne, P.G.  | 4f04ca06-9a76-4206-bd9c-917ca75d278e |        600
+ Ballantyne, Peter | ba5f205b-b78b-43e5-8e80-0c9a1e1ad2ca |        600
+ Ballantyne, Peter | 20f21160-414c-4ecf-89ca-5f2cb64e75c1 |        600
+(5 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Again, a few have the correct ORCID, but there should only be one authority&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set authority=&#39;4f04ca06-9a76-4206-bd9c-917ca75d278e&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Ballantyne, %&#39;;
+UPDATE 58
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And for me:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Orth, A%&#39;;
+ text_value |              authority               | confidence
+------------+--------------------------------------+------------
+ Orth, Alan | 4884def0-4d7e-4256-9dd4-018cd60a5871 |        600
+ Orth, A.   | 4884def0-4d7e-4256-9dd4-018cd60a5871 |        600
+ Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+(3 rows)
+dspacetest=# update metadatavalue set authority=&#39;1a1943a0-3f87-402f-9afe-e52fb46a513e&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Orth, %&#39;;
+UPDATE 11
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And for CCAFS author Bruce Campbell that I had discussed with CCAFS earlier this week:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set authority=&#39;0e414b4c-4671-4a23-b570-6077aca647d8&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Campbell, B%&#39;;
+UPDATE 166
+dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Campbell, B%&#39;;
+       text_value       |              authority               | confidence
+------------------------+--------------------------------------+------------
+ Campbell, Bruce        | 0e414b4c-4671-4a23-b570-6077aca647d8 |        600
+ Campbell, Bruce Morgan | 0e414b4c-4671-4a23-b570-6077aca647d8 |        600
+ Campbell, B.           | 0e414b4c-4671-4a23-b570-6077aca647d8 |        600
+ Campbell, B.M.         | 0e414b4c-4671-4a23-b570-6077aca647d8 |        600
+(4 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After updating the Authority indexes (&lt;code&gt;bin/dspace index-authority&lt;/code&gt;) everything looks good&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
