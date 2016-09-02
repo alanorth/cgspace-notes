@@ -6,8 +6,51 @@
     <description>Recent content in Notes on CGSpace Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Aug 2016 15:53:00 +0300</lastBuildDate>
+    <lastBuildDate>Thu, 01 Sep 2016 15:53:00 +0300</lastBuildDate>
     <atom:link href="https://alanorth.github.io/cgspace-notes/tags/notes/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>September, 2016</title>
+      <link>https://alanorth.github.io/cgspace-notes/2016-09/</link>
+      <pubDate>Thu, 01 Sep 2016 15:53:00 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2016-09/</guid>
+      <description>
+
+&lt;h2 id=&#34;2016-09-01&#34;&gt;2016-09-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors&lt;/li&gt;
+&lt;li&gt;Discuss how the migration of CGIAR&amp;rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace&lt;/li&gt;
+&lt;li&gt;We had been using &lt;code&gt;DC=ILRI&lt;/code&gt; to determine whether a user was ILRI or not&lt;/li&gt;
+&lt;li&gt;It looks like we might be able to use OUs now, instead of DCs:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &amp;quot;dc=cgiarad,dc=org&amp;quot; -D &amp;quot;admigration1@cgiarad.org&amp;quot; -W &amp;quot;(sAMAccountName=admigration1)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;User who has been migrated to the root vs user still in the hierarchical structure:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;distinguishedName: CN=Last\, First (ILRI),OU=ILRI Kenya Employees,OU=ILRI Kenya,OU=ILRIHUB,DC=CGIARAD,DC=ORG
+distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Ethiopia,DC=ILRI,DC=CGIARAD,DC=ORG
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Notes for local PostgreSQL database recreation from production snapshot:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dropdb dspacetest
+$ createdb -O dspacetest --encoding=UNICODE dspacetest
+$ psql dspacetest -c &#39;alter user dspacetest createuser;&#39;
+$ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-09-01.backup
+$ psql dspacetest -c &#39;alter user dspacetest nocreateuser;&#39;
+$ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost
+$ vacuumdb dspacetest
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>August, 2016</title>
