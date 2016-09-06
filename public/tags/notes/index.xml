@@ -138,6 +138,70 @@ dspacetest=# select distinct text_value, authority, confidence from metadatavalu
 &lt;li&gt;After updating the Authority indexes (&lt;code&gt;bin/dspace index-authority&lt;/code&gt;) everything looks good&lt;/li&gt;
 &lt;li&gt;Run authority updates on CGSpace&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-09-05&#34;&gt;2016-09-05&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After one week of logging TLS connections on CGSpace:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# zgrep &amp;quot;DES-CBC3&amp;quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
+217
+# zcat -f -- /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
+1164376
+# zgrep &amp;quot;DES-CBC3&amp;quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | awk &#39;{print $6}&#39; | sort | uniq
+TLSv1/DES-CBC3-SHA
+TLSv1/EDH-RSA-DES-CBC3-SHA
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So this represents &lt;code&gt;0.02%&lt;/code&gt; of 1.16M connections over a one-week period&lt;/li&gt;
+&lt;li&gt;Transforming some filenames in OpenRefine so they can have a useful description for SAFBuilder:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;value + &amp;quot;__description:&amp;quot; + cells[&amp;quot;dc.type&amp;quot;].value
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This gives you, for example: &lt;code&gt;Mainstreaming gender in agricultural R&amp;amp;D.pdf__description:Brief&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-09-06&#34;&gt;2016-09-06&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Trying to import the records for CIAT from yesterday, but having filename encoding issues from their zip file&lt;/li&gt;
+&lt;li&gt;Create a zip on Mac OS X from a SAF bundle containing only one record with one PDF:
+
+&lt;ul&gt;
+&lt;li&gt;Filename: Complementing Farmers Genetic Knowledge Farmer Breeding Workshop in Turipaná, Colombia.pdf&lt;/li&gt;
+&lt;li&gt;Imports fine on DSpace running on Mac OS X&lt;/li&gt;
+&lt;li&gt;Fails to import on DSpace running on Linux with error &lt;code&gt;No such file or directory&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Change diacritic in file name from á to a and re-create SAF bundle and zip
+
+&lt;ul&gt;
+&lt;li&gt;Success on both Mac OS X and Linux&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Looks like on the Mac OS X file system the file names represent á as: a (U+0061) +  ́ (U+0301)&lt;/li&gt;
+&lt;li&gt;See: &lt;a href=&#34;http://www.fileformat.info/info/unicode/char/e1/index.htm&#34;&gt;http://www.fileformat.info/info/unicode/char/e1/index.htm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;See: &lt;a href=&#34;http://demo.icu-project.org/icu-bin/nbrowser?t=%C3%A1&amp;amp;s=&amp;amp;uv=0&#34;&gt;http://demo.icu-project.org/icu-bin/nbrowser?t=%C3%A1&amp;amp;s=&amp;amp;uv=0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;If I unzip the original zip from CIAT on Windows, re-zip it with 7zip on Windows, and then unzip it on Linux directly, the file names seem to be proper UTF-8&lt;/li&gt;
+&lt;li&gt;We should definitely clean filenames so they don&amp;rsquo;t use characters that are tricky to process in CSV and shell scripts, like: &lt;code&gt;,&lt;/code&gt;, &lt;code&gt;&#39;&lt;/code&gt;, and &lt;code&gt;&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;value.replace(&amp;quot;&#39;&amp;quot;,&amp;quot;&amp;quot;).replace(&amp;quot;,&amp;quot;,&amp;quot;&amp;quot;).replace(&#39;&amp;quot;&#39;,&#39;&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I need to write a Python script to match that for renaming files in the file system&lt;/li&gt;
+&lt;li&gt;When importing SAF bundles it seems you can specify the target collection on the command line using &lt;code&gt;-c 10568/4003&lt;/code&gt; or in the &lt;code&gt;collections&lt;/code&gt; file inside each item in the bundle&lt;/li&gt;
+&lt;li&gt;Seems that the latter method causes a null pointer exception, so I will just have to use the former method&lt;/li&gt;
+&lt;li&gt;In the end I was able to import the files after unzipping them ONLY on Linux
+
+&lt;ul&gt;
+&lt;li&gt;The CSV file was giving file names in UTF-8, and unzipping the zip on Mac OS X and transferring it was converting the file names to Unicode equivalence like I saw above&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

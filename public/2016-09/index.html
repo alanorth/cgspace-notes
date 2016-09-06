@@ -201,6 +201,70 @@ dspacetest=# select distinct text_value, authority, confidence from metadatavalu
 <li>Run authority updates on CGSpace</li>
 </ul>
 
+<h2 id="2016-09-05">2016-09-05</h2>
+
+<ul>
+<li>After one week of logging TLS connections on CGSpace:</li>
+</ul>
+
+<pre><code># zgrep &quot;DES-CBC3&quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
+217
+# zcat -f -- /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
+1164376
+# zgrep &quot;DES-CBC3&quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | awk '{print $6}' | sort | uniq
+TLSv1/DES-CBC3-SHA
+TLSv1/EDH-RSA-DES-CBC3-SHA
+</code></pre>
+
+<ul>
+<li>So this represents <code>0.02%</code> of 1.16M connections over a one-week period</li>
+<li>Transforming some filenames in OpenRefine so they can have a useful description for SAFBuilder:</li>
+</ul>
+
+<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+</code></pre>
+
+<ul>
+<li>This gives you, for example: <code>Mainstreaming gender in agricultural R&amp;D.pdf__description:Brief</code></li>
+</ul>
+
+<h2 id="2016-09-06">2016-09-06</h2>
+
+<ul>
+<li>Trying to import the records for CIAT from yesterday, but having filename encoding issues from their zip file</li>
+<li>Create a zip on Mac OS X from a SAF bundle containing only one record with one PDF:
+
+<ul>
+<li>Filename: Complementing Farmers Genetic Knowledge Farmer Breeding Workshop in Turipaná, Colombia.pdf</li>
+<li>Imports fine on DSpace running on Mac OS X</li>
+<li>Fails to import on DSpace running on Linux with error <code>No such file or directory</code></li>
+</ul></li>
+<li>Change diacritic in file name from á to a and re-create SAF bundle and zip
+
+<ul>
+<li>Success on both Mac OS X and Linux&hellip;</li>
+</ul></li>
+<li>Looks like on the Mac OS X file system the file names represent á as: a (U+0061) +  ́ (U+0301)</li>
+<li>See: <a href="http://www.fileformat.info/info/unicode/char/e1/index.htm">http://www.fileformat.info/info/unicode/char/e1/index.htm</a></li>
+<li>See: <a href="http://demo.icu-project.org/icu-bin/nbrowser?t=%C3%A1&amp;s=&amp;uv=0">http://demo.icu-project.org/icu-bin/nbrowser?t=%C3%A1&amp;s=&amp;uv=0</a></li>
+<li>If I unzip the original zip from CIAT on Windows, re-zip it with 7zip on Windows, and then unzip it on Linux directly, the file names seem to be proper UTF-8</li>
+<li>We should definitely clean filenames so they don&rsquo;t use characters that are tricky to process in CSV and shell scripts, like: <code>,</code>, <code>'</code>, and <code>&quot;</code></li>
+</ul>
+
+<pre><code>value.replace(&quot;'&quot;,&quot;&quot;).replace(&quot;,&quot;,&quot;&quot;).replace('&quot;','')
+</code></pre>
+
+<ul>
+<li>I need to write a Python script to match that for renaming files in the file system</li>
+<li>When importing SAF bundles it seems you can specify the target collection on the command line using <code>-c 10568/4003</code> or in the <code>collections</code> file inside each item in the bundle</li>
+<li>Seems that the latter method causes a null pointer exception, so I will just have to use the former method</li>
+<li>In the end I was able to import the files after unzipping them ONLY on Linux
+
+<ul>
+<li>The CSV file was giving file names in UTF-8, and unzipping the zip on Mac OS X and transferring it was converting the file names to Unicode equivalence like I saw above</li>
+</ul></li>
+</ul>
+
   </section>
   <footer>
     
