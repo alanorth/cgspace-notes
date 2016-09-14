@@ -339,6 +339,68 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 </code></pre>
 
+<ul>
+<li>Looking at REST requests, it seems there is one IP hitting us nonstop:</li>
+</ul>
+
+<pre><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+    820 50.87.54.15
+  12872 70.32.99.142
+  25744 70.32.83.92
+# awk '{print $1}' /var/log/nginx/rest.log.1  | sort -n | uniq -c | sort -h | tail -n 3
+   7966 181.118.144.29
+  54706 70.32.99.142
+ 109412 70.32.83.92
+</code></pre>
+
+<ul>
+<li>Those are the same IPs that were hitting us heavily in July, 2016 as well&hellip;</li>
+<li>I think the stability issues are definitely from REST</li>
+<li>Crashed AGAIN, errors from dspace.log:</li>
+</ul>
+
+<pre><code>2016-09-14 14:31:43,069 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+</code></pre>
+
+<ul>
+<li>And more heap space errors:</li>
+</ul>
+
+<pre><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
+19
+</code></pre>
+
+<ul>
+<li>There are no more rest requests since the last crash, so maybe there are other things causing this.</li>
+<li>Hmm, I noticed a shitload of IPs from 180.76.0.0/16 are connecting to both CGSpace and DSpace Test (58 unique IPs concurrently!)</li>
+<li>They seem to be coming from Baidu, and so far during today alone account for <sup>1</sup>&frasl;<sub>6</sub> of every connection:</li>
+</ul>
+
+<pre><code># grep -c ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-14
+29084
+# grep -c ip_addr=180.76.15 /home/cgspace.cgiar.org/log/dspace.log.2016-09-14
+5192
+</code></pre>
+
+<ul>
+<li>Other recent days are the same&hellip; hmmm.</li>
+<li>From the activity control panel I can see 58 unique IPs hitting the site <em>concurrently</em>, which has GOT to hurt our stability</li>
+<li>A list of all 2000 unique IPs from CGSpace logs today:</li>
+</ul>
+
+<pre><code># grep ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-11 | awk -F: '{print $5}' | sort -n | uniq -c | sort -h | tail -n 100
+</code></pre>
+
+<ul>
+<li>Looking at the top 20 IPs or so, most are Yahoo, MSN, Google, Baidu, TurnitIn (iParadigm), etc&hellip; do we have any real users?</li>
+<li>Generate a list of all Affiliations for Peter Ballantyne to go through, make corrections, and create a lookup list from:</li>
+</ul>
+
+<pre><code>dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc)
+ to /tmp/affiliations.csv with csv;
+</code></pre>
+
   </section>
   <footer>
     
