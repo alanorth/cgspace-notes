@@ -401,6 +401,73 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
  to /tmp/affiliations.csv with csv;
 </code></pre>
 
+<ul>
+<li>Looking into the Catalina logs again around the time of the first crash, I see:</li>
+</ul>
+
+<pre><code>Wed Sep 14 09:47:27 UTC 2016 | Query:id: 78581 AND type:2
+Wed Sep 14 09:47:28 UTC 2016 | Updating : 6/6 docs.
+Commit
+Commit done
+dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-193&quot; java.lang.OutOfMemoryError: Java heap space
+</code></pre>
+
+<ul>
+<li>And after that I see a bunch of &ldquo;pool error Timeout waiting for idle object&rdquo;</li>
+<li>Later, near the time of the next crash I see:</li>
+</ul>
+
+<pre><code>dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+Wed Sep 14 11:29:55 UTC 2016 | Query:id: 79078 AND type:2
+Wed Sep 14 11:30:20 UTC 2016 | Updating : 6/6 docs.
+Commit
+Commit done
+Sep 14, 2016 11:32:22 AM com.sun.jersey.server.wadl.generators.WadlGeneratorJAXBGrammarGenerator buildModelAndSchemas
+SEVERE: Failed to generate the schema for the JAX-B elements
+com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 2 counts of IllegalAnnotationExceptions
+java.util.Map is an interface, and JAXB can't handle interfaces.
+        this problem is related to the following location:
+                at java.util.Map
+                at public java.util.Map com.atmire.dspace.rest.common.Statlet.getRender()
+                at com.atmire.dspace.rest.common.Statlet
+java.util.Map does not have a no-arg default constructor.
+        this problem is related to the following location:
+                at java.util.Map
+                at public java.util.Map com.atmire.dspace.rest.common.Statlet.getRender()
+                at com.atmire.dspace.rest.common.Statlet
+</code></pre>
+
+<ul>
+<li>Then 20 minutes later another outOfMemoryError:</li>
+</ul>
+
+<pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
+        at java.lang.StringCoding.decode(StringCoding.java:215)
+</code></pre>
+
+<ul>
+<li>Perhaps these particular issues <em>are</em> memory issues, the munin graphs definitely show some weird purging/allocating behavior starting this week</li>
+</ul>
+
+<p><img src="../images/2016/09/tomcat_jvm-day.png" alt="Tomcat JVM usage day" />
+<img src="../images/2016/09/tomcat_jvm-week.png" alt="Tomcat JVM usage week" />
+<img src="../images/2016/09/tomcat_jvm-month.png" alt="Tomcat JVM usage month" /></p>
+
+<ul>
+<li>And really, we did reduce the memory of CGSpace in late 2015, so maybe we should just increase it again, now that our usage is higher and we are having memory errors in the logs</li>
+<li>Oh great, the configuration on the actual server is different than in configuration management!</li>
+<li>Seems we added a bunch of settings to the <code>/etc/default/tomcat7</code> in December, 2015 and never updated our ansible repository:</li>
+</ul>
+
+<pre><code>JAVA_OPTS=&quot;-Djava.awt.headless=true -Xms3584m -Xmx3584m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -XX:-UseGCOverheadLimit -XX:MaxGCPauseMillis=250 -XX:GCTimeRatio=9 -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:InitiatingHeapOccupancyPercent=75 -XX:+UseLargePages -XX:+AggressiveOpts&quot;
+</code></pre>
+
+<ul>
+<li>So I&rsquo;m going to bump the heap +512m and remove all the other experimental shit (and update ansible!)</li>
+<li>Increased JVM heap to 4096m on CGSpace (linode01)</li>
+</ul>
+
   </section>
   <footer>
     

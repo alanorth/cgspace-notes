@@ -338,6 +338,73 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 &lt;pre&gt;&lt;code&gt;dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc)
  to /tmp/affiliations.csv with csv;
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looking into the Catalina logs again around the time of the first crash, I see:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Wed Sep 14 09:47:27 UTC 2016 | Query:id: 78581 AND type:2
+Wed Sep 14 09:47:28 UTC 2016 | Updating : 6/6 docs.
+Commit
+Commit done
+dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+Exception in thread &amp;quot;http-bio-127.0.0.1-8081-exec-193&amp;quot; java.lang.OutOfMemoryError: Java heap space
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And after that I see a bunch of &amp;ldquo;pool error Timeout waiting for idle object&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Later, near the time of the next crash I see:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+Wed Sep 14 11:29:55 UTC 2016 | Query:id: 79078 AND type:2
+Wed Sep 14 11:30:20 UTC 2016 | Updating : 6/6 docs.
+Commit
+Commit done
+Sep 14, 2016 11:32:22 AM com.sun.jersey.server.wadl.generators.WadlGeneratorJAXBGrammarGenerator buildModelAndSchemas
+SEVERE: Failed to generate the schema for the JAX-B elements
+com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 2 counts of IllegalAnnotationExceptions
+java.util.Map is an interface, and JAXB can&#39;t handle interfaces.
+        this problem is related to the following location:
+                at java.util.Map
+                at public java.util.Map com.atmire.dspace.rest.common.Statlet.getRender()
+                at com.atmire.dspace.rest.common.Statlet
+java.util.Map does not have a no-arg default constructor.
+        this problem is related to the following location:
+                at java.util.Map
+                at public java.util.Map com.atmire.dspace.rest.common.Statlet.getRender()
+                at com.atmire.dspace.rest.common.Statlet
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Then 20 minutes later another outOfMemoryError:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Exception in thread &amp;quot;http-bio-127.0.0.1-8081-exec-25&amp;quot; java.lang.OutOfMemoryError: Java heap space
+        at java.lang.StringCoding.decode(StringCoding.java:215)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Perhaps these particular issues &lt;em&gt;are&lt;/em&gt; memory issues, the munin graphs definitely show some weird purging/allocating behavior starting this week&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;../images/2016/09/tomcat_jvm-day.png&#34; alt=&#34;Tomcat JVM usage day&#34; /&gt;
+&lt;img src=&#34;../images/2016/09/tomcat_jvm-week.png&#34; alt=&#34;Tomcat JVM usage week&#34; /&gt;
+&lt;img src=&#34;../images/2016/09/tomcat_jvm-month.png&#34; alt=&#34;Tomcat JVM usage month&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And really, we did reduce the memory of CGSpace in late 2015, so maybe we should just increase it again, now that our usage is higher and we are having memory errors in the logs&lt;/li&gt;
+&lt;li&gt;Oh great, the configuration on the actual server is different than in configuration management!&lt;/li&gt;
+&lt;li&gt;Seems we added a bunch of settings to the &lt;code&gt;/etc/default/tomcat7&lt;/code&gt; in December, 2015 and never updated our ansible repository:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;JAVA_OPTS=&amp;quot;-Djava.awt.headless=true -Xms3584m -Xmx3584m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -XX:-UseGCOverheadLimit -XX:MaxGCPauseMillis=250 -XX:GCTimeRatio=9 -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:InitiatingHeapOccupancyPercent=75 -XX:+UseLargePages -XX:+AggressiveOpts&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So I&amp;rsquo;m going to bump the heap +512m and remove all the other experimental shit (and update ansible!)&lt;/li&gt;
+&lt;li&gt;Increased JVM heap to 4096m on CGSpace (linode01)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
