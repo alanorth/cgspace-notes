@@ -299,6 +299,46 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <pre><code>org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object                                                       at org.apache.commons.dbcp.PoolingDataSource.getConnection(PoolingDataSource.java:114)
 </code></pre>
 
+<ul>
+<li>I enabled logging of requests to <code>/rest</code> again</li>
+</ul>
+
+<h2 id="2016-09-14">2016-09-14</h2>
+
+<ul>
+<li>CGSpace crashed again, errors from <code>catalina.out</code>:</li>
+</ul>
+
+<pre><code>org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+        at org.apache.commons.dbcp.PoolingDataSource.getConnection(PoolingDataSource.java:114)
+</code></pre>
+
+<ul>
+<li>I restarted Tomcat and it was ok again</li>
+<li>CGSpace crashed a few hours later, errors from <code>catalina.out</code>:</li>
+</ul>
+
+<pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
+        at java.lang.StringCoding.decode(StringCoding.java:215)
+</code></pre>
+
+<ul>
+<li>We haven&rsquo;t seen that in quite a while&hellip;</li>
+<li>Indeed, in a month of logs it only occurs 15 times:</li>
+</ul>
+
+<pre><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
+15
+</code></pre>
+
+<ul>
+<li>I also see a bunch of errors from dspace.log:</li>
+</ul>
+
+<pre><code>2016-09-14 12:23:07,981 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+</code></pre>
+
   </section>
   <footer>
     
