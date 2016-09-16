@@ -477,6 +477,50 @@ java.util.Map does not have a no-arg default constructor.
 
 <p><img src="../images/2016/09/google-webmaster-tools-index.png" alt="Google Webmaster Tools for CGSpace" /></p>
 
+<h2 id="2016-09-16">2016-09-16</h2>
+
+<ul>
+<li>CGSpace crashed again, and there are TONS of heap space errors but the datestamps aren&rsquo;t on those lines so I&rsquo;m not sure if they were yesterday:</li>
+</ul>
+
+<pre><code>dn:CN=Orentlicher\, Natalie (CIAT),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+Thu Sep 15 18:45:25 UTC 2016 | Query:id: 55785 AND type:2
+Thu Sep 15 18:45:26 UTC 2016 | Updating : 100/218 docs.
+Thu Sep 15 18:45:26 UTC 2016 | Updating : 200/218 docs.
+Thu Sep 15 18:45:27 UTC 2016 | Updating : 218/218 docs.
+Commit
+Commit done
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-247&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-241&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-243&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-258&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-268&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-263&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;http-bio-127.0.0.1-8081-exec-280&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &quot;Thread-54216&quot; org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Exception writing document id 7feaa95d-8e1f-4f45-80bb
+-e14ef82ee224 to the index; possible analysis error.
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+        at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
+        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:116)
+        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:102)
+        at com.atmire.statistics.SolrLogThread.run(SourceFile:25)
+</code></pre>
+
+<ul>
+<li>I bumped the heap space from 4096m to 5120m to see if this is <em>really</em> about heap speace or not.</li>
+<li>Looking into some of these errors that I&rsquo;ve seen this week but haven&rsquo;t noticed before:</li>
+</ul>
+
+<pre><code># zcat -f -- /var/log/tomcat7/catalina.* | grep -c 'Failed to generate the schema for the JAX-B elements'
+113
+</code></pre>
+
+<ul>
+<li>I&rsquo;ve sent a message to Atmire about the Solr error to see if it&rsquo;s related to their batch update module</li>
+</ul>
+
   </section>
   <footer>
     
