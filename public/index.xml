@@ -333,11 +333,10 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 
 &lt;ul&gt;
 &lt;li&gt;Looking at the top 20 IPs or so, most are Yahoo, MSN, Google, Baidu, TurnitIn (iParadigm), etc&amp;hellip; do we have any real users?&lt;/li&gt;
-&lt;li&gt;Generate a list of all Affiliations for Peter Ballantyne to go through, make corrections, and create a lookup list from:&lt;/li&gt;
+&lt;li&gt;Generate a list of all author affiliations for Peter Ballantyne to go through, make corrections, and create a lookup list from:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc)
- to /tmp/affiliations.csv with csv;
+&lt;pre&gt;&lt;code&gt;dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -457,6 +456,21 @@ Exception in thread &amp;quot;Thread-54216&amp;quot; org.apache.solr.client.solr
 
 &lt;ul&gt;
 &lt;li&gt;I&amp;rsquo;ve sent a message to Atmire about the Solr error to see if it&amp;rsquo;s related to their batch update module&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-09-19&#34;&gt;2016-09-19&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Work on cleanups for author affiliations after Peter sent me his list of corrections/deletions:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i affiliations_pb-322-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p fuuu
+$ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2-deletions.csv -m 211 -u dspace-d dspace-p fuuu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After that we need to take the top ~300 and make a controlled vocabulary for it&lt;/li&gt;
+&lt;li&gt;I dumped a list of the top 300 affiliations from the database, sorted it alphabetically in OpenRefine, and created a controlled vocabulary for it (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/267&#34;&gt;#267&lt;/a&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
