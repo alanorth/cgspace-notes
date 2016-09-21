@@ -1,378 +1,184 @@
 <!DOCTYPE html>
-<html lang="en-us">
-<head prefix="og: http://ogp.me/ns#">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-  <meta property="og:title" content=" CGSpace Notes" />
-  
-  <meta property="og:site_name" content="CGSpace Notes" />
-  <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/" />
-  
-  
-  <meta property="og:type" content="website" />
-  
+<html lang="en">
 
-  <title>
-     CGSpace Notes
-  </title>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notes/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notes/css/main.css" />
-  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notes/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="https://alanorth.github.io/cgspace-notes/css/github.css" />
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400" type="text/css">
-  <link rel="shortcut icon" href="https://alanorth.github.io/cgspace-notes/images/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://alanorth.github.io/cgspace-notes/images/apple-touch-icon.png" />
-  
-  <link href="https://alanorth.github.io/cgspace-notes/index.xml" rel="alternate" type="application/rss+xml" title="CGSpace Notes" />
-  
-</head>
+    
+
+
+
+    <meta name="description" content="">
+    <meta name="author" content="Alan Orth">
+
+    <!-- OpenGraph Metadata: http://ogp.me/ -->
+    <meta property="og:title" content="CGSpace Notes">
+    <meta property="og:description" content="">
+
+    
+    <meta property="og:type" content="blog">
+    
+
+    <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/">
+
+    <!-- Metadata for Twitter: https://dev.twitter.com/cards/markup -->
+    
+    <meta property="twitter:card" content="summary">
+    
+    
+    <meta property="twitter:title" content="CGSpace Notes">
+    <meta property="twitter:description" content="">
+
+    <meta name="generator" content="Hugo 0.16" />
+
+
+    <base href="https://alanorth.github.io/cgspace-notes/">
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/">
+
+    <title>CGSpace Notes</title>
+
+    <!-- combined, minified CSS -->
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.css" rel="stylesheet">
+
+    <!-- RSS 2.0 feed of posts -->
+    <link href="https://alanorth.github.io/cgspace-notes/post/index.xml" type="application/rss+xml" rel="alternate">
+  </head>
+
 <body>
-    <header class="global-header"  style="background-image:url( /images/bg.jpg )">
-    <section class="header-text">
-      <h1><a href="https://alanorth.github.io/cgspace-notes/">CGSpace Notes</a></h1>
-      
-      <div class="sns-links hidden-print">
-  
-  
-  
-  
-  
-  
-  
-  
-  
-</div>
 
-      
-      
-      <a href="https://alanorth.github.io/cgspace-notes/index.xml" class="btn-header btn-subscribe hidden-xs">
-        <i class="fa fa-rss" aria-hidden="true"></i>
-        &nbsp;Subscribe
-      </a>
-      
-    </section>
-  </header>
-  <main class="container">
-
-<div class="article-list">
-  
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-09/">September, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-09-01T15:53:00&#43;03:00">
-          Sep 1, 2016
-        </time>
-      </div>
+  <div class="blog-masthead">
+    <div class="container">
+      <nav class="nav blog-nav">
+        <a class="nav-link active" href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        
+      </nav>
     </div>
-  </header>
-  <div>
-    2016-09-01 Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace We had been using DC=ILRI to determine whether a user was ILRI or not It looks like we might be able to use OUs now, instead of DCs: $ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot; User who has been migrated to the root vs user still in the hierarchical structure: distinguishedName: CN=Last\, First (ILRI),OU=ILRI Kenya Employees,OU=ILRI Kenya,OU=ILRIHUB,DC=CGIARAD,DC=ORG distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Ethiopia,DC=ILRI,DC=CGIARAD,DC=ORG Changing the DSpace LDAP config to use OU=ILRIHUB seems to work: Notes for local PostgreSQL database recreation from production snapshot: $ dropdb dspacetest $ createdb -O dspacetest --encoding=UNICODE dspacetest $ psql dspacetest -c 'alter user dspacetest createuser;' $ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-09-01.backup $ psql dspacetest -c 'alter user dspacetest nocreateuser;' $ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost $ vacuumdb dspacetest Some names that I thought I fixed in July seem not to be: dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %'; text_value | authority | confidence -----------------------+--------------------------------------+------------ Poole, Elizabeth Jane | b6efa27f-8829-4b92-80fe-bc63e03e3ccb | 600 Poole, Elizabeth Jane | 41628f42-fc38-4b38-b473-93aec9196326 | 600 Poole, Elizabeth Jane | 83b82da0-f652-4ebc-babc-591af1697919 | 600 Poole, Elizabeth Jane | c3a22456-8d6a-41f9-bba0-de51ef564d45 | 600 Poole, E.J.
   </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-09/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
 
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-08/">August, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-08-01T15:53:00&#43;03:00">
-          Aug 1, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-08-01 Add updated distribution license from Sisay (#259) Play with upgrading Mirage 2 dependencies in bower.json because most are several versions of out date Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more bower stuff is a dead end, waste of time, too many issues Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of fonts) Start working on DSpace 5.1 → 5.5 port: $ git checkout -b 55new 5_x-prod $ git reset --hard ilri/5_x-prod $ git rebase -i dspace-5.5 Lots of conflicts that don&rsquo;t make sense (ie, shouldn&rsquo;t conflict!) This file in particular conflicts almost 10 times: dspace/modules/xmlui-mirage2/src/main/webapp/themes/CGIAR/styles/_style.scss Checking out a clean branch at 5.5 and cherry-picking our commits works where that file would normally have a conflict Seems to be related to merge commits git rebase --preserve-merges doesn&rsquo;t seem to help Eventually I just turned on git rerere and solved the conflicts and completed the 403 commit rebase The 5.5 code now builds but doesn&rsquo;t run (white page in Tomcat) 2016-08-02 Ask Atmire for help with DSpace 5.5 issue Vanilla DSpace 5.5 deploys and runs fine Playing with DSpace in Ubuntu 16.04 and Tomcat 7 Everything is still fucked up, even vanilla DSpace 5.5 2016-08-04 Ask on DSpace mailing list about duplicate authors, Discovery and author text values Atmire responded with some new DSpace 5.5 ready versions to try for their modules 2016-08-05 Fix item display incorrectly displaying Species when Breeds were present (#260) Experiment with fixing more authors, like Delia Grace: dspacetest=# update metadatavalue set authority='0b4fcbc1-d930-4319-9b4d-ea1553cca70b', confidence=600 where metadata_field_id=3 and text_value='Grace, D.'; 2016-08-06 Finally figured out how to remove &ldquo;View/Open&rdquo; and &ldquo;Bitstreams&rdquo; from the item view 2016-08-07 Start working on Ubuntu 16.04 Ansible playbook for Tomcat 8, PostgreSQL 9.5, Oracle 8, etc 2016-08-08 Still troubleshooting Atmire modules on DSpace 5.5 Vanilla DSpace 5.5 works on Tomcat 7&hellip; Ooh, and vanilla DSpace 5.5 works on Tomcat 8 with Java 8!
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-08/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-07/">July, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-07-01T10:53:00&#43;03:00">
-          Jul 1, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-07-01 Add dc.description.sponsorship to Discovery sidebar facets and make investors clickable in item view (#232) I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names: dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$'; UPDATE 95 dspacetest=# select text_value from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$'; text_value ------------ (0 rows) In this case the select query was showing 95 results before the update 2016-07-02 Comment on DSpace Jira ticket about author lookup search text (DS-2329) 2016-07-04 Seems the database&rsquo;s author authority values mean nothing without the authority Solr core from the host where they were created!
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-07/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-06/">June, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-06-01T10:53:00&#43;03:00">
-          Jun 1, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-06-01 Experimenting with IFPRI OAI (we want to harvest their publications) After reading the ContentDM documentation I found IFPRI&rsquo;s OAI endpoint: http://ebrary.ifpri.org/oai/oai.php After reading the OAI documentation and testing with an OAI validator I found out how to get their publications This is their publications set: http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc You can see the others by using the OAI ListSets verb: http://ebrary.ifpri.org/oai/oai.php?verb=ListSets Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in dc.identifier.fund to cg.identifier.cpwfproject and then the rest to dc.description.sponsorship dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA'); UPDATE 497 dspacetest=# update metadatavalue set metadata_field_id=29 where metadata_field_id=75; UPDATE 14 Fix a few minor miscellaneous issues in dspace.cfg (#227) 2016-06-02 Testing the configuration and theme changes for the upcoming metadata migration and I found some issues with cg.coverage.admin-unit Seems that the Browse configuration in dspace.cfg can&rsquo;t handle the &lsquo;-&rsquo; in the field name: webui.browse.index.12 = subregion:metadata:cg.coverage.admin-unit:text But actually, I think since DSpace 4 or 5 (we are 5.1) the Browse indexes come from Discovery (defined in discovery.xml) so this is really just a parsing error I&rsquo;ve sent a message to the DSpace mailing list to ask about the Browse index definition A user was having problems with submission and from the stacktrace it looks like a Sherpa/Romeo issue I found a thread on the mailing list talking about it and there is bug report and a patch: https://jira.duraspace.org/browse/DS-2740 The patch applies successfully on DSpace 5.1 so I will try it later 2016-06-03 Investigating the CCAFS authority issue, I exported the metadata for the Videos collection The top two authors are: CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500 CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600 So the only difference is the &ldquo;confidence&rdquo; Ok, well THAT is interesting: dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %'; text_value | authority | confidence ------------+--------------------------------------+------------ Orth, A.
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-06/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-05/">May, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-05-01T23:06:00&#43;03:00">
-          May 1, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-05-01 Since yesterday there have been 10,000 REST errors and the site has been unstable again I have blocked access to the API now There are 3,000 IPs accessing the REST API in a 24-hour period! # awk '{print $1}' /var/log/nginx/rest.log | uniq | wc -l 3168 The two most often requesters are in Ethiopia and Colombia: 213.55.99.121 and 181.118.144.29 100% of the requests coming from Ethiopia are like this and result in an HTTP 500: GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1 For now I&rsquo;ll block just the Ethiopian IP The owner of that application has said that the NaN (not a number) is an error in his code and he&rsquo;ll fix it 2016-05-03 Update nginx to 1.10.x branch on CGSpace Fix a reference to dc.type.output in Discovery that I had missed when we migrated to dc.type last month (#223) 2016-05-06 DSpace Test is down, catalina.out has lots of messages about heap space from some time yesterday (!) It looks like Sisay was doing some batch imports Hmm, also disk space is full I decided to blow away the solr indexes, since they are 50GB and we don&rsquo;t really need all the Atmire stuff there right now I will re-generate the Discovery indexes after re-deploying Testing renew-letsencrypt.sh script for nginx #!/usr/bin/env bash readonly SERVICE_BIN=/usr/sbin/service readonly LETSENCRYPT_BIN=/opt/letsencrypt/letsencrypt-auto # stop nginx so LE can listen on port 443 $SERVICE_BIN nginx stop $LETSENCRYPT_BIN renew -nvv --standalone --standalone-supported-challenges tls-sni-01 &gt; /var/log/letsencrypt/renew.log 2&gt;&amp;1 LE_RESULT=$?
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-05/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-04/">April, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-04-04T11:06:00&#43;03:00">
-          Apr 4, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-04-04 Looking at log file use on CGSpace and notice that we need to work on our cron setup a bit We are backing up all logs in the log folder, including useless stuff like solr, cocoon, handle-plugin, etc After running DSpace for over five years I&rsquo;ve never needed to look in any other log file than dspace.log, leave alone one from last year! This will save us a few gigs of backup space we&rsquo;re paying for on S3 Also, I noticed the checker log has some errors we should pay attention to: Run start time: 03/06/2016 04:00:22 Error retrieving bitstream ID 71274 from asset store.
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-04/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-03/">March, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-03-02T16:50:00&#43;03:00">
-          Mar 2, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-03-02 Looking at issues with author authorities on CGSpace For some reason we still have the index-lucene-update cron job active on CGSpace, but I&rsquo;m pretty sure we don&rsquo;t need it as of the latest few versions of Atmire&rsquo;s Listings and Reports module Reinstall my local (Mac OS X) DSpace stack with Tomcat 7, PostgreSQL 9.3, and Java JDK 1.7 to match environment on CGSpace server 2016-03-07 Troubleshooting the issues with the slew of commits for Atmire modules in #182 Their changes on 5_x-dev branch work, but it is messy as hell with merge commits and old branch base When I rebase their branch on the latest 5_x-prod I get blank white pages I identified one commit that causes the issue and let them know Restart DSpace Test, as it seems to have crashed after Sisay tried to import some CSV or zip or something: Exception in thread &quot;Lucene Merge Thread #19&quot; org.apache.lucene.index.MergePolicy$MergeException: java.io.IOException: No space left on device 2016-03-08 Add a few new filters to Atmire&rsquo;s Listings and Reports module (#180) We had also wanted to add a few to the Content and Usage module but I have to ask the editors which ones they were 2016-03-10 Disable the lucene cron job on CGSpace as it shouldn&rsquo;t be needed anymore Discuss ORCiD and duplicate authors on Yammer Request new documentation for Atmire CUA and L&amp;R modules, as ours are from 2013 Walk Sisay through some data cleaning workflows in OpenRefine Start cleaning up the configuration for Atmire&rsquo;s CUA module (#184) It is very messed up because some labels are incorrect, fields are missing, etc Update documentation for Atmire modules 2016-03-11 As I was looking at the CUA config I realized our Discovery config is all messed up and confusing I&rsquo;ve opened an issue to track some of that work (#186) I did some major cleanup work on Discovery and XMLUI stuff related to the dc.type indexes (#187) We had been confusing dc.type (a Dublin Core value) with dc.type.output (a value we invented) for a few years and it had permeated all aspects of our data, indexes, item displays, etc.
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-03/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-02/">February, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-02-05T13:18:00&#43;03:00">
-          Feb 5, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-02-05 Looking at some DAGRIS data for Abenet Yabowork Lots of issues with spaces, newlines, etc causing the import to fail I noticed we have a very interesting list of countries on CGSpace: Not only are there 49,000 countries, we have some blanks (25)&hellip; Also, lots of things like &ldquo;COTE D`LVOIRE&rdquo; and &ldquo;COTE D IVOIRE&rdquo; 2016-02-06 Found a way to get items with null/empty metadata values from SQL First, find the metadata_field_id for the field you want from the metadatafieldregistry table: dspacetest=# select * from metadatafieldregistry; In this case our country field is 78 Now find all resources with type 2 (item) that have null/empty values for that field: dspacetest=# select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=78 and (text_value='' OR text_value IS NULL); Then you can find the handle that owns it from its resource_id: dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = '22678'; It&rsquo;s 25 items so editing in the web UI is annoying, let&rsquo;s try SQL!
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-02/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2016-01/">January, 2016</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2016-01-13T13:18:00&#43;03:00">
-          Jan 13, 2016
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2016-01-13 Move ILRI collection 10568/12503 from 10568/27869 to 10568/27629 using the move_collections.sh script I wrote last year. I realized it is only necessary to clear the Cocoon cache after moving collections—rather than reindexing—as no metadata has changed, and therefore no search or browse indexes need to be updated. Update GitHub wiki for documentation of maintenance tasks. 2016-01-14 Update CCAFS project identifiers in input-forms.xml Run system updates and restart the server 2016-01-18 Change &ldquo;Extension material&rdquo; to &ldquo;Extension Material&rdquo; in input-forms.xml (a mistake that fell through the cracks when we fixed the others in DSpace 4 era) 2016-01-19 Work on tweaks and updates for the social sharing icons on item pages: add Delicious and Mendeley (from Academicons), make links open in new windows, and set the icon color to the theme&rsquo;s primary color (#157) Tweak date-based facets to show more values in drill-down ranges (#162) Need to remember to clear the Cocoon cache after deployment or else you don&rsquo;t see the new ranges immediately Set up recipe on IFTTT to tweet new items from the CGSpace Atom feed to my twitter account Altmetrics&rsquo; support for Handles is kinda weak, so they can&rsquo;t associate our items with DOIs until they are tweeted or blogged, etc first.
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2016-01/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-  
-  <hr/>
-  
-  <article>
-  <header>
-    <h2><a href="https://alanorth.github.io/cgspace-notes/2015-12/">December, 2015</a></h2>
-    <div class="post-meta clearfix">
-      <div class="post-date pull-left">
-        Posted on
-        <time datetime="2015-12-02T13:18:00&#43;03:00">
-          Dec 2, 2015
-        </time>
-      </div>
-    </div>
-  </header>
-  <div>
-    2015-12-02 Replace lzop with xz in log compression cron jobs on DSpace Test—it uses less space: # cd /home/dspacetest.cgiar.org/log # ls -lh dspace.log.2015-11-18* -rw-rw-r-- 1 tomcat7 tomcat7 2.0M Nov 18 23:59 dspace.log.2015-11-18 -rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo -rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz I had used lrzip once, but it needs more memory and is harder to use as it requires the lrztar
-  </div>
-  
-  <footer>
-    <ul class="pager">
-      <li class="next"><a href="https://alanorth.github.io/cgspace-notes/2015-12/">Read more <span aria-hidden="true">&raquo;</span></a></li>
-    </ul>
-  </footer>
-  
-</article>
-
-  
-</div>
-<nav class="pagination" role="navigation">
-
-  <hr />
-
-
-  <span class="page-number">Page 1 of 2</span>
-
-<a class="older-posts" href="/page/2/">Older Posts <span aria-hidden="true">&raquo;</span></a>
-
-</nav>
-
-  </main>
-  <footer class="container global-footer">
-    <div class="copyright-note pull-left">
+  <header class="blog-header">
+    <div class="container">
+      <h1 class="blog-title"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
       
     </div>
-    <div class="sns-links hidden-print">
-  
-  
-  
-  
-  
-  
-  
-  
-  
-</div>
+  </header>
 
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-8 blog-main">
+
+        
+
+  
+
+  
+    <article class="blog-post">
+  <header>
+    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-09/" title="September, 2016">September, 2016</a></h2>
+    <p class="blog-post-meta"><time datetime="2016-09-01T15:53:00&#43;03:00">Thu Sep 01, 2016</time> by <a href="#">Alan Orth</a></p>
+  </header>
+  2016-09-01 Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace We had been using DC=ILRI to determine whether a user was ILRI or not It looks like we might be able to use OUs now, instead of DCs: $ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot; User who has been migrated to the root vs user still in the hierarchical structure: distinguishedName: CN=Last\, First (ILRI),OU=ILRI Kenya Employees,OU=ILRI Kenya,OU=ILRIHUB,DC=CGIARAD,DC=ORG distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Ethiopia,DC=ILRI,DC=CGIARAD,DC=ORG Changing the DSpace LDAP config to use OU=ILRIHUB seems to work: Notes for local PostgreSQL database recreation from production snapshot: $ dropdb dspacetest $ createdb -O dspacetest --encoding=UNICODE dspacetest $ psql dspacetest -c 'alter user dspacetest createuser;' $ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-09-01.backup $ psql dspacetest -c 'alter user dspacetest nocreateuser;' $ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost $ vacuumdb dspacetest Some names that I thought I fixed in July seem not to be: dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %'; text_value | authority | confidence -----------------------+--------------------------------------+------------ Poole, Elizabeth Jane | b6efa27f-8829-4b92-80fe-bc63e03e3ccb | 600 Poole, Elizabeth Jane | 41628f42-fc38-4b38-b473-93aec9196326 | 600 Poole, Elizabeth Jane | 83b82da0-f652-4ebc-babc-591af1697919 | 600 Poole, Elizabeth Jane | c3a22456-8d6a-41f9-bba0-de51ef564d45 | 600 Poole, E.J.
+  <a href='https://alanorth.github.io/cgspace-notes/2016-09/'>Read more →</a>
+</article> 
+
+  
+    <article class="blog-post">
+  <header>
+    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-08/" title="August, 2016">August, 2016</a></h2>
+    <p class="blog-post-meta"><time datetime="2016-08-01T15:53:00&#43;03:00">Mon Aug 01, 2016</time> by <a href="#">Alan Orth</a></p>
+  </header>
+  2016-08-01 Add updated distribution license from Sisay (#259) Play with upgrading Mirage 2 dependencies in bower.json because most are several versions of out date Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more bower stuff is a dead end, waste of time, too many issues Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of fonts) Start working on DSpace 5.1 → 5.5 port: $ git checkout -b 55new 5_x-prod $ git reset --hard ilri/5_x-prod $ git rebase -i dspace-5.5 Lots of conflicts that don&rsquo;t make sense (ie, shouldn&rsquo;t conflict!) This file in particular conflicts almost 10 times: dspace/modules/xmlui-mirage2/src/main/webapp/themes/CGIAR/styles/_style.scss Checking out a clean branch at 5.5 and cherry-picking our commits works where that file would normally have a conflict Seems to be related to merge commits git rebase --preserve-merges doesn&rsquo;t seem to help Eventually I just turned on git rerere and solved the conflicts and completed the 403 commit rebase The 5.5 code now builds but doesn&rsquo;t run (white page in Tomcat) 2016-08-02 Ask Atmire for help with DSpace 5.5 issue Vanilla DSpace 5.5 deploys and runs fine Playing with DSpace in Ubuntu 16.04 and Tomcat 7 Everything is still fucked up, even vanilla DSpace 5.5 2016-08-04 Ask on DSpace mailing list about duplicate authors, Discovery and author text values Atmire responded with some new DSpace 5.5 ready versions to try for their modules 2016-08-05 Fix item display incorrectly displaying Species when Breeds were present (#260) Experiment with fixing more authors, like Delia Grace: dspacetest=# update metadatavalue set authority='0b4fcbc1-d930-4319-9b4d-ea1553cca70b', confidence=600 where metadata_field_id=3 and text_value='Grace, D.'; 2016-08-06 Finally figured out how to remove &ldquo;View/Open&rdquo; and &ldquo;Bitstreams&rdquo; from the item view 2016-08-07 Start working on Ubuntu 16.04 Ansible playbook for Tomcat 8, PostgreSQL 9.5, Oracle 8, etc 2016-08-08 Still troubleshooting Atmire modules on DSpace 5.5 Vanilla DSpace 5.5 works on Tomcat 7&hellip; Ooh, and vanilla DSpace 5.5 works on Tomcat 8 with Java 8!
+  <a href='https://alanorth.github.io/cgspace-notes/2016-08/'>Read more →</a>
+</article> 
+
+  
+    <article class="blog-post">
+  <header>
+    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-07/" title="July, 2016">July, 2016</a></h2>
+    <p class="blog-post-meta"><time datetime="2016-07-01T10:53:00&#43;03:00">Fri Jul 01, 2016</time> by <a href="#">Alan Orth</a></p>
+  </header>
+  2016-07-01 Add dc.description.sponsorship to Discovery sidebar facets and make investors clickable in item view (#232) I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names: dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$'; UPDATE 95 dspacetest=# select text_value from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$'; text_value ------------ (0 rows) In this case the select query was showing 95 results before the update 2016-07-02 Comment on DSpace Jira ticket about author lookup search text (DS-2329) 2016-07-04 Seems the database&rsquo;s author authority values mean nothing without the authority Solr core from the host where they were created!
+  <a href='https://alanorth.github.io/cgspace-notes/2016-07/'>Read more →</a>
+</article> 
+
+  
+    <article class="blog-post">
+  <header>
+    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-06/" title="June, 2016">June, 2016</a></h2>
+    <p class="blog-post-meta"><time datetime="2016-06-01T10:53:00&#43;03:00">Wed Jun 01, 2016</time> by <a href="#">Alan Orth</a></p>
+  </header>
+  2016-06-01 Experimenting with IFPRI OAI (we want to harvest their publications) After reading the ContentDM documentation I found IFPRI&rsquo;s OAI endpoint: http://ebrary.ifpri.org/oai/oai.php After reading the OAI documentation and testing with an OAI validator I found out how to get their publications This is their publications set: http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc You can see the others by using the OAI ListSets verb: http://ebrary.ifpri.org/oai/oai.php?verb=ListSets Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in dc.identifier.fund to cg.identifier.cpwfproject and then the rest to dc.description.sponsorship dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA'); UPDATE 497 dspacetest=# update metadatavalue set metadata_field_id=29 where metadata_field_id=75; UPDATE 14 Fix a few minor miscellaneous issues in dspace.cfg (#227) 2016-06-02 Testing the configuration and theme changes for the upcoming metadata migration and I found some issues with cg.coverage.admin-unit Seems that the Browse configuration in dspace.cfg can&rsquo;t handle the &lsquo;-&rsquo; in the field name: webui.browse.index.12 = subregion:metadata:cg.coverage.admin-unit:text But actually, I think since DSpace 4 or 5 (we are 5.1) the Browse indexes come from Discovery (defined in discovery.xml) so this is really just a parsing error I&rsquo;ve sent a message to the DSpace mailing list to ask about the Browse index definition A user was having problems with submission and from the stacktrace it looks like a Sherpa/Romeo issue I found a thread on the mailing list talking about it and there is bug report and a patch: https://jira.duraspace.org/browse/DS-2740 The patch applies successfully on DSpace 5.1 so I will try it later 2016-06-03 Investigating the CCAFS authority issue, I exported the metadata for the Videos collection The top two authors are: CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500 CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600 So the only difference is the &ldquo;confidence&rdquo; Ok, well THAT is interesting: dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %'; text_value | authority | confidence ------------+--------------------------------------+------------ Orth, A.
+  <a href='https://alanorth.github.io/cgspace-notes/2016-06/'>Read more →</a>
+</article> 
+
+  
+    <article class="blog-post">
+  <header>
+    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-05/" title="May, 2016">May, 2016</a></h2>
+    <p class="blog-post-meta"><time datetime="2016-05-01T23:06:00&#43;03:00">Sun May 01, 2016</time> by <a href="#">Alan Orth</a></p>
+  </header>
+  2016-05-01 Since yesterday there have been 10,000 REST errors and the site has been unstable again I have blocked access to the API now There are 3,000 IPs accessing the REST API in a 24-hour period! # awk '{print $1}' /var/log/nginx/rest.log | uniq | wc -l 3168 The two most often requesters are in Ethiopia and Colombia: 213.55.99.121 and 181.118.144.29 100% of the requests coming from Ethiopia are like this and result in an HTTP 500: GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1 For now I&rsquo;ll block just the Ethiopian IP The owner of that application has said that the NaN (not a number) is an error in his code and he&rsquo;ll fix it 2016-05-03 Update nginx to 1.10.x branch on CGSpace Fix a reference to dc.type.output in Discovery that I had missed when we migrated to dc.type last month (#223) 2016-05-06 DSpace Test is down, catalina.out has lots of messages about heap space from some time yesterday (!) It looks like Sisay was doing some batch imports Hmm, also disk space is full I decided to blow away the solr indexes, since they are 50GB and we don&rsquo;t really need all the Atmire stuff there right now I will re-generate the Discovery indexes after re-deploying Testing renew-letsencrypt.sh script for nginx #!/usr/bin/env bash readonly SERVICE_BIN=/usr/sbin/service readonly LETSENCRYPT_BIN=/opt/letsencrypt/letsencrypt-auto # stop nginx so LE can listen on port 443 $SERVICE_BIN nginx stop $LETSENCRYPT_BIN renew -nvv --standalone --standalone-supported-challenges tls-sni-01 &gt; /var/log/letsencrypt/renew.log 2&gt;&amp;1 LE_RESULT=$?
+  <a href='https://alanorth.github.io/cgspace-notes/2016-05/'>Read more →</a>
+</article> 
+
+  
+
+
+
+      </div> <!-- /.blog-main -->
+
+      
+        <aside class="col-sm-3 offset-sm-1 blog-sidebar">
+  
+
+  
+
+  <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="/cgspace-notes/2016-09/">September, 2016</a></li>
+      
+      <li><a href="/cgspace-notes/2016-08/">August, 2016</a></li>
+      
+      <li><a href="/cgspace-notes/2016-07/">July, 2016</a></li>
+      
+      <li><a href="/cgspace-notes/2016-06/">June, 2016</a></li>
+      
+      <li><a href="/cgspace-notes/2016-05/">May, 2016</a></li>
+      
+    </ol>
+  </section>
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+      
+
+    </div> <!-- /.row -->
+  </div> <!-- /.container -->
+
+  <footer class="blog-footer">
+    <p>
+      Blog template built by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+    </p>
   </footer>
 
-  <script src="https://alanorth.github.io/cgspace-notes/js/highlight.pack.js"></script>
-  <script>
-    hljs.initHighlightingOnLoad();
-  </script>
-  
-  
 </body>
+
 </html>
-
-
