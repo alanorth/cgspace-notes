@@ -531,7 +531,7 @@ Exception in thread &quot;Thread-54216&quot; org.apache.solr.client.solrj.impl.H
 </ul>
 
 <pre><code>$ ./fix-metadata-values.py -i affiliations_pb-322-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p fuuu
-$ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2-deletions.csv -m 211 -u dspace-d dspace-p fuuu
+$ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2-deletions.csv -m 211 -u dspace -d dspace -p fuuu
 </code></pre>
 
 <ul>
@@ -585,8 +585,8 @@ $ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2
 <li>Start processing the fixes to <code>dc.description.sponsorship</code> from Peter Ballantyne:</li>
 </ul>
 
-<pre><code>$ ./fix-metadata-values.py -i sponsors-fix-23.csv -f dc.description.sponsorship -t correct -m 29 -d dspacetest -u dspacetest -p fuuu
-$ ./delete-metadata-values.py -i sponsors-delete-8.csv -f dc.description.sponsorship -m 29 -d dspacetest -u dspacetest -p fuuu
+<pre><code>$ ./fix-metadata-values.py -i sponsors-fix-23.csv -f dc.description.sponsorship -t correct -m 29 -d dspace -u dspace -p fuuu
+$ ./delete-metadata-values.py -i sponsors-delete-8.csv -f dc.description.sponsorship -m 29 -d dspace -u dspace -p fuuu
 </code></pre>
 
 <ul>
@@ -598,6 +598,26 @@ $ ./delete-metadata-values.py -i sponsors-delete-8.csv -f dc.description.sponsor
 
 <ul>
 <li>Update controlled vocabulary for sponsorship based on the latest corrected values from the database</li>
+</ul>
+
+<h2 id="2016-09-25">2016-09-25</h2>
+
+<ul>
+<li>Merge accession date improvements for CUA module (<a href="https://github.com/ilri/DSpace/pull/275">#275</a>)</li>
+<li>Merge addition of accession date to Discovery search filters (<a href="https://github.com/ilri/DSpace/pull/276">#276</a>)</li>
+<li>Merge updates to sponsorship controlled vocabulary (<a href="https://github.com/ilri/DSpace/pull/277">#277</a>)</li>
+<li>I&rsquo;ve been trying to add a search filter for <code>dc.description</code> so the IITA people can search for some tags they use there, but for some reason the filter never shows up in Atmire&rsquo;s CUA</li>
+<li>Not sure if it&rsquo;s something like we already have too many filters there (30), or the filter name is reserved, etc&hellip;</li>
+<li>Generate a list of ILRI subjects for Peter and Abenet to look through/fix:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=203 group by text_value order by count desc) to /tmp/ilrisubjects.csv with csv;
+</code></pre>
+
+<ul>
+<li>Regenerate Discovery indexes a few times after playing with <code>discovery.xml</code> index definitions (syntax, parameters, etc).</li>
+<li>Merge changes to boolean logic in Solr search (<a href="https://github.com/ilri/DSpace/pull/274">#274</a>)</li>
+<li>Run all sponsorship and affiliation fixes on CGSpace, deploy latest <code>5_x-prod</code> branch, and re-index Discovery on CGSpace</li>
 </ul>
 
 
