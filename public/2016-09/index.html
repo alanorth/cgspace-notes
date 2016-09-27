@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
+    
+
+
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-    
-
-
 
     <meta name="description" content="">
     <meta name="author" content="Alan Orth">
@@ -79,7 +79,11 @@
       <article class="blog-post">
         <header>
           <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-09/" title="September, 2016">September, 2016</a></h2>
-          <p class="blog-post-meta"><time datetime="2016-09-01T15:53:00&#43;03:00">Thu Sep 01, 2016</time> by <a href="#">Alan Orth</a></p>
+          <p class="blog-post-meta"><time datetime="2016-09-01T15:53:00&#43;03:00">Thu Sep 01, 2016</time> by Alan Orth in 
+
+            <i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">notes</a>
+
+</p>
         </header>
         
 
@@ -632,6 +636,42 @@ OCSP Response Data:
 
 <ul>
 <li>I&rsquo;ve been monitoring this for almost two years in this GitHub issue: <a href="https://github.com/ilri/DSpace/issues/38">https://github.com/ilri/DSpace/issues/38</a></li>
+</ul>
+
+<h2 id="2016-09-27">2016-09-27</h2>
+
+<ul>
+<li>Discuss fixing some ORCIDs for CCAFS author Sonja Vermeulen with Magdalena Haman</li>
+<li>This author has a few variations:</li>
+</ul>
+
+<pre><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeu
+len, S%';
+</code></pre>
+
+<ul>
+<li>And it looks like <code>fe4b719f-6cc4-4d65-8504-7a83130b9f83</code> is the authority with the correct ORCID linked</li>
+</ul>
+
+<pre><code>dspacetest=# update metadatavalue set authority='fe4b719f-6cc4-4d65-8504-7a83130b9f83w', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+UPDATE 101
+</code></pre>
+
+<ul>
+<li>Hmm, now her name is missing from the authors facet and only shows the authority ID</li>
+<li>On the production server there is an item with her ORCID but it is using a different authority: f01f7b7b-be3f-4df7-a61d-b73c067de88d</li>
+<li>Maybe I used the wrong one&hellip; I need to look again at the production database</li>
+<li>On a clean snapshot of the database I see the correct authority should be <code>f01f7b7b-be3f-4df7-a61d-b73c067de88d</code>, not <code>fe4b719f-6cc4-4d65-8504-7a83130b9f83</code></li>
+<li>Updating her authorities again and reindexing:</li>
+</ul>
+
+<pre><code>dspacetest=# update metadatavalue set authority='f01f7b7b-be3f-4df7-a61d-b73c067de88d', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+UPDATE 101
+</code></pre>
+
+<ul>
+<li>Use GitHub icon from Font Awesome instead of a PNG to save one extra network request</li>
+<li>Fix reference to <code>dc.type.*</code> in Atmire CUA module, as we now only index <code>dc.type</code> for &ldquo;Output type&rdquo;</li>
 </ul>
 
 

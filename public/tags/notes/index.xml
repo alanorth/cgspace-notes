@@ -567,6 +567,42 @@ OCSP Response Data:
 &lt;ul&gt;
 &lt;li&gt;I&amp;rsquo;ve been monitoring this for almost two years in this GitHub issue: &lt;a href=&#34;https://github.com/ilri/DSpace/issues/38&#34;&gt;https://github.com/ilri/DSpace/issues/38&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-09-27&#34;&gt;2016-09-27&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Discuss fixing some ORCIDs for CCAFS author Sonja Vermeulen with Magdalena Haman&lt;/li&gt;
+&lt;li&gt;This author has a few variations:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeu
+len, S%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And it looks like &lt;code&gt;fe4b719f-6cc4-4d65-8504-7a83130b9f83&lt;/code&gt; is the authority with the correct ORCID linked&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set authority=&#39;fe4b719f-6cc4-4d65-8504-7a83130b9f83w&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeulen, S%&#39;;
+UPDATE 101
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Hmm, now her name is missing from the authors facet and only shows the authority ID&lt;/li&gt;
+&lt;li&gt;On the production server there is an item with her ORCID but it is using a different authority: f01f7b7b-be3f-4df7-a61d-b73c067de88d&lt;/li&gt;
+&lt;li&gt;Maybe I used the wrong one&amp;hellip; I need to look again at the production database&lt;/li&gt;
+&lt;li&gt;On a clean snapshot of the database I see the correct authority should be &lt;code&gt;f01f7b7b-be3f-4df7-a61d-b73c067de88d&lt;/code&gt;, not &lt;code&gt;fe4b719f-6cc4-4d65-8504-7a83130b9f83&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Updating her authorities again and reindexing:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set authority=&#39;f01f7b7b-be3f-4df7-a61d-b73c067de88d&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeulen, S%&#39;;
+UPDATE 101
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Use GitHub icon from Font Awesome instead of a PNG to save one extra network request&lt;/li&gt;
+&lt;li&gt;Fix reference to &lt;code&gt;dc.type.*&lt;/code&gt; in Atmire CUA module, as we now only index &lt;code&gt;dc.type&lt;/code&gt; for &amp;ldquo;Output type&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
