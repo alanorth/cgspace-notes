@@ -83,7 +83,18 @@
 
 </p>
   </header>
-  2016-09-01 Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace We had been using DC=ILRI to determine whether a user was ILRI or not It looks like we might be able to use OUs now, instead of DCs: $ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot; User who has been migrated to the root vs user still in the hierarchical structure: distinguishedName: CN=Last\, First (ILRI),OU=ILRI Kenya Employees,OU=ILRI Kenya,OU=ILRIHUB,DC=CGIARAD,DC=ORG distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Ethiopia,DC=ILRI,DC=CGIARAD,DC=ORG Changing the DSpace LDAP config to use OU=ILRIHUB seems to work: Notes for local PostgreSQL database recreation from production snapshot: $ dropdb dspacetest $ createdb -O dspacetest --encoding=UNICODE dspacetest $ psql dspacetest -c 'alter user dspacetest createuser;' $ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-09-01.backup $ psql dspacetest -c 'alter user dspacetest nocreateuser;' $ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost $ vacuumdb dspacetest Some names that I thought I fixed in July seem not to be: dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %'; text_value | authority | confidence -----------------------+--------------------------------------+------------ Poole, Elizabeth Jane | b6efa27f-8829-4b92-80fe-bc63e03e3ccb | 600 Poole, Elizabeth Jane | 41628f42-fc38-4b38-b473-93aec9196326 | 600 Poole, Elizabeth Jane | 83b82da0-f652-4ebc-babc-591af1697919 | 600 Poole, Elizabeth Jane | c3a22456-8d6a-41f9-bba0-de51ef564d45 | 600 Poole, E.J.
+  <h2 id="2016-09-01">2016-09-01</h2>
+
+<ul>
+<li>Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors</li>
+<li>Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace</li>
+<li>We had been using <code>DC=ILRI</code> to determine whether a user was ILRI or not</li>
+<li>It looks like we might be able to use OUs now, instead of DCs:</li>
+</ul>
+
+<pre><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
+</code></pre>
+
   <a href='https://alanorth.github.io/cgspace-notes/2016-09/'>Read more →</a>
 </article> 
 
@@ -97,7 +108,22 @@
 
 </p>
   </header>
-  2016-08-01 Add updated distribution license from Sisay (#259) Play with upgrading Mirage 2 dependencies in bower.json because most are several versions of out date Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more bower stuff is a dead end, waste of time, too many issues Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of fonts) Start working on DSpace 5.1 → 5.5 port: $ git checkout -b 55new 5_x-prod $ git reset --hard ilri/5_x-prod $ git rebase -i dspace-5.5 Lots of conflicts that don&rsquo;t make sense (ie, shouldn&rsquo;t conflict!) This file in particular conflicts almost 10 times: dspace/modules/xmlui-mirage2/src/main/webapp/themes/CGIAR/styles/_style.scss Checking out a clean branch at 5.5 and cherry-picking our commits works where that file would normally have a conflict Seems to be related to merge commits git rebase --preserve-merges doesn&rsquo;t seem to help Eventually I just turned on git rerere and solved the conflicts and completed the 403 commit rebase The 5.5 code now builds but doesn&rsquo;t run (white page in Tomcat) 2016-08-02 Ask Atmire for help with DSpace 5.5 issue Vanilla DSpace 5.5 deploys and runs fine Playing with DSpace in Ubuntu 16.04 and Tomcat 7 Everything is still fucked up, even vanilla DSpace 5.5 2016-08-04 Ask on DSpace mailing list about duplicate authors, Discovery and author text values Atmire responded with some new DSpace 5.5 ready versions to try for their modules 2016-08-05 Fix item display incorrectly displaying Species when Breeds were present (#260) Experiment with fixing more authors, like Delia Grace: dspacetest=# update metadatavalue set authority='0b4fcbc1-d930-4319-9b4d-ea1553cca70b', confidence=600 where metadata_field_id=3 and text_value='Grace, D.'; 2016-08-06 Finally figured out how to remove &ldquo;View/Open&rdquo; and &ldquo;Bitstreams&rdquo; from the item view 2016-08-07 Start working on Ubuntu 16.04 Ansible playbook for Tomcat 8, PostgreSQL 9.5, Oracle 8, etc 2016-08-08 Still troubleshooting Atmire modules on DSpace 5.5 Vanilla DSpace 5.5 works on Tomcat 7&hellip; Ooh, and vanilla DSpace 5.5 works on Tomcat 8 with Java 8!
+  <h2 id="2016-08-01">2016-08-01</h2>
+
+<ul>
+<li>Add updated distribution license from Sisay (<a href="https://github.com/ilri/DSpace/issues/259">#259</a>)</li>
+<li>Play with upgrading Mirage 2 dependencies in <code>bower.json</code> because most are several versions of out date</li>
+<li>Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more</li>
+<li>bower stuff is a dead end, waste of time, too many issues</li>
+<li>Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of <code>fonts</code>)</li>
+<li>Start working on DSpace 5.1 → 5.5 port:</li>
+</ul>
+
+<pre><code>$ git checkout -b 55new 5_x-prod
+$ git reset --hard ilri/5_x-prod
+$ git rebase -i dspace-5.5
+</code></pre>
+
   <a href='https://alanorth.github.io/cgspace-notes/2016-08/'>Read more →</a>
 </article> 
 
@@ -111,7 +137,25 @@
 
 </p>
   </header>
-  2016-07-01 Add dc.description.sponsorship to Discovery sidebar facets and make investors clickable in item view (#232) I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names: dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$'; UPDATE 95 dspacetest=# select text_value from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$'; text_value ------------ (0 rows) In this case the select query was showing 95 results before the update 2016-07-02 Comment on DSpace Jira ticket about author lookup search text (DS-2329) 2016-07-04 Seems the database&rsquo;s author authority values mean nothing without the authority Solr core from the host where they were created!
+  <h2 id="2016-07-01">2016-07-01</h2>
+
+<ul>
+<li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
+<li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</li>
+</ul>
+
+<pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
+UPDATE 95
+dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
+ text_value
+------------
+(0 rows)
+</code></pre>
+
+<ul>
+<li>In this case the select query was showing 95 results before the update</li>
+</ul>
+
   <a href='https://alanorth.github.io/cgspace-notes/2016-07/'>Read more →</a>
 </article> 
 
@@ -125,7 +169,17 @@
 
 </p>
   </header>
-  2016-06-01 Experimenting with IFPRI OAI (we want to harvest their publications) After reading the ContentDM documentation I found IFPRI&rsquo;s OAI endpoint: http://ebrary.ifpri.org/oai/oai.php After reading the OAI documentation and testing with an OAI validator I found out how to get their publications This is their publications set: http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc You can see the others by using the OAI ListSets verb: http://ebrary.ifpri.org/oai/oai.php?verb=ListSets Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in dc.identifier.fund to cg.identifier.cpwfproject and then the rest to dc.description.sponsorship dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA'); UPDATE 497 dspacetest=# update metadatavalue set metadata_field_id=29 where metadata_field_id=75; UPDATE 14 Fix a few minor miscellaneous issues in dspace.cfg (#227) 2016-06-02 Testing the configuration and theme changes for the upcoming metadata migration and I found some issues with cg.coverage.admin-unit Seems that the Browse configuration in dspace.cfg can&rsquo;t handle the &lsquo;-&rsquo; in the field name: webui.browse.index.12 = subregion:metadata:cg.coverage.admin-unit:text But actually, I think since DSpace 4 or 5 (we are 5.1) the Browse indexes come from Discovery (defined in discovery.xml) so this is really just a parsing error I&rsquo;ve sent a message to the DSpace mailing list to ask about the Browse index definition A user was having problems with submission and from the stacktrace it looks like a Sherpa/Romeo issue I found a thread on the mailing list talking about it and there is bug report and a patch: https://jira.duraspace.org/browse/DS-2740 The patch applies successfully on DSpace 5.1 so I will try it later 2016-06-03 Investigating the CCAFS authority issue, I exported the metadata for the Videos collection The top two authors are: CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::500 CGIAR Research Program on Climate Change, Agriculture and Food Security::acd00765-02f1-4b5b-92fa-bfa3877229ce::600 So the only difference is the &ldquo;confidence&rdquo; Ok, well THAT is interesting: dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %'; text_value | authority | confidence ------------+--------------------------------------+------------ Orth, A.
+  <h2 id="2016-06-01">2016-06-01</h2>
+
+<ul>
+<li>Experimenting with IFPRI OAI (we want to harvest their publications)</li>
+<li>After reading the <a href="https://www.oclc.org/support/services/contentdm/help/server-admin-help/oai-support.en.html">ContentDM documentation</a> I found IFPRI&rsquo;s OAI endpoint: <a href="http://ebrary.ifpri.org/oai/oai.php">http://ebrary.ifpri.org/oai/oai.php</a></li>
+<li>After reading the <a href="https://www.openarchives.org/OAI/openarchivesprotocol.html">OAI documentation</a> and testing with an <a href="http://validator.oaipmh.com/">OAI validator</a> I found out how to get their publications</li>
+<li>This is their publications set: <a href="http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc">http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc</a></li>
+<li>You can see the others by using the OAI <code>ListSets</code> verb: <a href="http://ebrary.ifpri.org/oai/oai.php?verb=ListSets">http://ebrary.ifpri.org/oai/oai.php?verb=ListSets</a></li>
+<li>Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in <code>dc.identifier.fund</code> to <code>cg.identifier.cpwfproject</code> and then the rest to <code>dc.description.sponsorship</code></li>
+</ul>
+
   <a href='https://alanorth.github.io/cgspace-notes/2016-06/'>Read more →</a>
 </article> 
 
@@ -139,7 +193,18 @@
 
 </p>
   </header>
-  2016-05-01 Since yesterday there have been 10,000 REST errors and the site has been unstable again I have blocked access to the API now There are 3,000 IPs accessing the REST API in a 24-hour period! # awk '{print $1}' /var/log/nginx/rest.log | uniq | wc -l 3168 The two most often requesters are in Ethiopia and Colombia: 213.55.99.121 and 181.118.144.29 100% of the requests coming from Ethiopia are like this and result in an HTTP 500: GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1 For now I&rsquo;ll block just the Ethiopian IP The owner of that application has said that the NaN (not a number) is an error in his code and he&rsquo;ll fix it 2016-05-03 Update nginx to 1.10.x branch on CGSpace Fix a reference to dc.type.output in Discovery that I had missed when we migrated to dc.type last month (#223) 2016-05-06 DSpace Test is down, catalina.out has lots of messages about heap space from some time yesterday (!) It looks like Sisay was doing some batch imports Hmm, also disk space is full I decided to blow away the solr indexes, since they are 50GB and we don&rsquo;t really need all the Atmire stuff there right now I will re-generate the Discovery indexes after re-deploying Testing renew-letsencrypt.sh script for nginx #!/usr/bin/env bash readonly SERVICE_BIN=/usr/sbin/service readonly LETSENCRYPT_BIN=/opt/letsencrypt/letsencrypt-auto # stop nginx so LE can listen on port 443 $SERVICE_BIN nginx stop $LETSENCRYPT_BIN renew -nvv --standalone --standalone-supported-challenges tls-sni-01 &gt; /var/log/letsencrypt/renew.log 2&gt;&amp;1 LE_RESULT=$?
+  <h2 id="2016-05-01">2016-05-01</h2>
+
+<ul>
+<li>Since yesterday there have been 10,000 REST errors and the site has been unstable again</li>
+<li>I have blocked access to the API now</li>
+<li>There are 3,000 IPs accessing the REST API in a 24-hour period!</li>
+</ul>
+
+<pre><code># awk '{print $1}' /var/log/nginx/rest.log  | uniq | wc -l
+3168
+</code></pre>
+
   <a href='https://alanorth.github.io/cgspace-notes/2016-05/'>Read more →</a>
 </article> 
 
