@@ -2,12 +2,50 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CGSpace Notes</title>
-    <link>https://alanorth.github.io/cgspace-notes/</link>
+    <link>https://alanorth.github.io/cgspace-notes/index.xml</link>
     <description>Recent content on CGSpace Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Sep 2016 15:53:00 +0300</lastBuildDate>
+    <lastBuildDate>Mon, 03 Oct 2016 15:53:00 +0300</lastBuildDate>
     <atom:link href="https://alanorth.github.io/cgspace-notes/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>October, 2016</title>
+      <link>https://alanorth.github.io/cgspace-notes/2016-10/</link>
+      <pubDate>Mon, 03 Oct 2016 15:53:00 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2016-10/</guid>
+      <description>
+
+&lt;h2 id=&#34;2016-10-03&#34;&gt;2016-10-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Testing adding &lt;a href=&#34;https://wiki.duraspace.org/display/DSDOC5x/ORCID+Integration#ORCIDIntegration-EditingexistingitemsusingBatchCSVEditing&#34;&gt;ORCIDs to a CSV&lt;/a&gt; file for a single item to see if the author orders get messed up&lt;/li&gt;
+&lt;li&gt;Need to test the following scenarios to see how author order is affected:
+
+&lt;ul&gt;
+&lt;li&gt;ORCIDs only&lt;/li&gt;
+&lt;li&gt;ORCIDs plus normal authors&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;I exported a random item&amp;rsquo;s metadata as CSV, deleted &lt;em&gt;all columns&lt;/em&gt; except id and collection, and made a new coloum called &lt;code&gt;ORCID:dc.contributor.author&lt;/code&gt; with the following random ORCIDs from the ORCID registry:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Hmm, with the &lt;code&gt;dc.contributor.author&lt;/code&gt; column removed, DSpace doesn&amp;rsquo;t detect any changes&lt;/li&gt;
+&lt;li&gt;With a blank &lt;code&gt;dc.contributor.author&lt;/code&gt; column, DSpace wants to remove all non-ORCID authors and add the new ORCID authors&lt;/li&gt;
+&lt;li&gt;I added the &lt;a href=&#34;https://github.com/ilri/DSpace/issues/234&#34;&gt;disclaimer text&lt;/a&gt; to the About page, then added a footer link to the disclaimer&amp;rsquo;s ID, but there is a Bootstrap issue that causes the page content to disappear when using in-page anchors: &lt;a href=&#34;https://github.com/twbs/bootstrap/issues/1768&#34;&gt;https://github.com/twbs/bootstrap/issues/1768&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;2016/10/bootstrap-issue.png&#34; alt=&#34;Bootstrap issue with in-page anchors&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looks like we&amp;rsquo;ll just have to add the text to the About page (without a link) or add a separate page&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>September, 2016</title>
@@ -15,9 +53,7 @@
       <pubDate>Thu, 01 Sep 2016 15:53:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-09/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-09-01&#34;&gt;2016-09-01&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-09-01&#34;&gt;2016-09-01&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors&lt;/li&gt;
@@ -28,6 +64,8 @@
 
 &lt;pre&gt;&lt;code&gt;$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &amp;quot;dc=cgiarad,dc=org&amp;quot; -D &amp;quot;admigration1@cgiarad.org&amp;quot; -W &amp;quot;(sAMAccountName=admigration1)&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;User who has been migrated to the root vs user still in the hierarchical structure:&lt;/li&gt;
@@ -637,15 +675,18 @@ $ ./delete-metadata-values.py -i ilrisubjects-delete-13.csv -f cg.subject.ilri -
 &lt;li&gt;Add &lt;code&gt;cg.identifier.ciatproject&lt;/code&gt; to metadata registry in preparation for CIAT project tag&lt;/li&gt;
 &lt;li&gt;Merge changes for CIAT project tag (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/282&#34;&gt;#282&lt;/a&gt;)&lt;/li&gt;
 &lt;li&gt;DSpace Test (linode02) became unresponsive for some reason, I had to hard reboot it from the Linode console&lt;/li&gt;
+&lt;li&gt;People on DSpace mailing list gave me a query to get authors from certain collections:&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select distinct text_value from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in (&#39;10568/5472&#39;, &#39;10568/5473&#39;)));
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;2016-09-30&#34;&gt;2016-09-30&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Deny access to REST API&amp;rsquo;s &lt;code&gt;find-by-metadata-field&lt;/code&gt; endpoint to protect against an upstream security issue (DS-3250)&lt;/li&gt;
 &lt;li&gt;There is a patch but it is only for 5.5 and doesn&amp;rsquo;t apply cleanly to 5.1&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -654,9 +695,7 @@ $ ./delete-metadata-values.py -i ilrisubjects-delete-13.csv -f cg.subject.ilri -
       <pubDate>Mon, 01 Aug 2016 15:53:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-08/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-08-01&#34;&gt;2016-08-01&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-08-01&#34;&gt;2016-08-01&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Add updated distribution license from Sisay (&lt;a href=&#34;https://github.com/ilri/DSpace/issues/259&#34;&gt;#259&lt;/a&gt;)&lt;/li&gt;
@@ -671,6 +710,8 @@ $ ./delete-metadata-values.py -i ilrisubjects-delete-13.csv -f cg.subject.ilri -
 $ git reset --hard ilri/5_x-prod
 $ git rebase -i dspace-5.5
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Lots of conflicts that don&amp;rsquo;t make sense (ie, shouldn&amp;rsquo;t conflict!)&lt;/li&gt;
@@ -979,8 +1020,7 @@ $ JAVA_OPTS=&amp;quot;-Dfile.encoding=UTF-8 -Xmx512m&amp;quot; /home/cgspace.cgi
 &lt;ul&gt;
 &lt;li&gt;Run corrections for Delia Grace and &lt;code&gt;CONGO, DR&lt;/code&gt;, and deploy August changes to CGSpace&lt;/li&gt;
 &lt;li&gt;Run all system updates and reboot the server&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -989,9 +1029,7 @@ $ JAVA_OPTS=&amp;quot;-Dfile.encoding=UTF-8 -Xmx512m&amp;quot; /home/cgspace.cgi
       <pubDate>Fri, 01 Jul 2016 10:53:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-07/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-07-01&#34;&gt;2016-07-01&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-07-01&#34;&gt;2016-07-01&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Add &lt;code&gt;dc.description.sponsorship&lt;/code&gt; to Discovery sidebar facets and make investors clickable in item view (&lt;a href=&#34;https://github.com/ilri/DSpace/issues/232&#34;&gt;#232&lt;/a&gt;)&lt;/li&gt;
@@ -1009,6 +1047,8 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 &lt;ul&gt;
 &lt;li&gt;In this case the select query was showing 95 results before the update&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2016-07-02&#34;&gt;2016-07-02&lt;/h2&gt;
 
@@ -1235,8 +1275,7 @@ discovery.index.authority.ignore-variants=true
 &lt;ul&gt;
 &lt;li&gt;Work on removing Dryland Systems and Humidtropics subjects from Discovery sidebar and Browse by&lt;/li&gt;
 &lt;li&gt;Also change &amp;ldquo;Subjects&amp;rdquo; to &amp;ldquo;AGROVOC keywords&amp;rdquo; in Discovery sidebar/search and Browse by (&lt;a href=&#34;https://github.com/ilri/DSpace/issues/257&#34;&gt;#257&lt;/a&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -1245,9 +1284,7 @@ discovery.index.authority.ignore-variants=true
       <pubDate>Wed, 01 Jun 2016 10:53:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-06/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-06-01&#34;&gt;2016-06-01&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-06-01&#34;&gt;2016-06-01&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Experimenting with IFPRI OAI (we want to harvest their publications)&lt;/li&gt;
@@ -1257,6 +1294,8 @@ discovery.index.authority.ignore-variants=true
 &lt;li&gt;You can see the others by using the OAI &lt;code&gt;ListSets&lt;/code&gt; verb: &lt;a href=&#34;http://ebrary.ifpri.org/oai/oai.php?verb=ListSets&#34;&gt;http://ebrary.ifpri.org/oai/oai.php?verb=ListSets&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in &lt;code&gt;dc.identifier.fund&lt;/code&gt; to &lt;code&gt;cg.identifier.cpwfproject&lt;/code&gt; and then the rest to &lt;code&gt;dc.description.sponsorship&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like &#39;PN%&#39; or text_value like &#39;PHASE%&#39; or text_value = &#39;CBA&#39; or text_value = &#39;IA&#39;);
 UPDATE 497
@@ -1589,8 +1628,7 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;# update metadatavalue set text_value = regexp_replace(text_value, &#39;(Poole, J),&#39;, &#39;\1&#39;) where metadata_field_id=3 and text_value = &#39;Poole, J,&#39;;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -1599,9 +1637,7 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
       <pubDate>Sun, 01 May 2016 23:06:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-05/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-05-01&#34;&gt;2016-05-01&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-05-01&#34;&gt;2016-05-01&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Since yesterday there have been 10,000 REST errors and the site has been unstable again&lt;/li&gt;
@@ -1612,6 +1648,8 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 &lt;pre&gt;&lt;code&gt;# awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | uniq | wc -l
 3168
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;The two most often requesters are in Ethiopia and Colombia: 213.55.99.121 and 181.118.144.29&lt;/li&gt;
@@ -1896,8 +1934,7 @@ sys     0m20.540s
 &lt;li&gt;Manually mapped the authors of a few old CCAFS records to the new CCAFS authority UUID and re-indexed authority indexes to see if it helps correct those items.&lt;/li&gt;
 &lt;li&gt;Re-sync DSpace Test data with CGSpace&lt;/li&gt;
 &lt;li&gt;Clean up and import ~65 more CTA items into CGSpace&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -1906,9 +1943,7 @@ sys     0m20.540s
       <pubDate>Mon, 04 Apr 2016 11:06:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-04/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-04-04&#34;&gt;2016-04-04&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-04-04&#34;&gt;2016-04-04&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Looking at log file use on CGSpace and notice that we need to work on our cron setup a bit&lt;/li&gt;
@@ -1917,6 +1952,8 @@ sys     0m20.540s
 &lt;li&gt;This will save us a few gigs of backup space we&amp;rsquo;re paying for on S3&lt;/li&gt;
 &lt;li&gt;Also, I noticed the &lt;code&gt;checker&lt;/code&gt; log has some errors we should pay attention to:&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;Run start time: 03/06/2016 04:00:22
 Error retrieving bitstream ID 71274 from asset store.
@@ -2357,8 +2394,7 @@ dspace.log.2016-04-27:7271
 
 &lt;ul&gt;
 &lt;li&gt;I will check the logs again in a few days to look for patterns, see who is accessing it, etc&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -2367,15 +2403,15 @@ dspace.log.2016-04-27:7271
       <pubDate>Wed, 02 Mar 2016 16:50:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-03/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-03-02&#34;&gt;2016-03-02&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-03-02&#34;&gt;2016-03-02&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Looking at issues with author authorities on CGSpace&lt;/li&gt;
 &lt;li&gt;For some reason we still have the &lt;code&gt;index-lucene-update&lt;/code&gt; cron job active on CGSpace, but I&amp;rsquo;m pretty sure we don&amp;rsquo;t need it as of the latest few versions of Atmire&amp;rsquo;s Listings and Reports module&lt;/li&gt;
 &lt;li&gt;Reinstall my local (Mac OS X) DSpace stack with Tomcat 7, PostgreSQL 9.3, and Java JDK 1.7 to match environment on CGSpace server&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2016-03-07&#34;&gt;2016-03-07&lt;/h2&gt;
 
@@ -2605,8 +2641,7 @@ dspace.log.2016-04-27:7271
 &lt;li&gt;We decided to proceed with some deletes first, then identify CGSpace-specific fields to clean/move to &lt;code&gt;cg.*&lt;/code&gt;, and then worry about broader changes to DC&lt;/li&gt;
 &lt;li&gt;Before we move or rename and fields we need to circulate a list of fields we intend to change to CCAFS, CWPF, etc who might be harvesting the fields&lt;/li&gt;
 &lt;li&gt;After all of this we need to start implementing controlled vocabularies for fields, either with the Javascript lookup or like existing ILRI subjects&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -2615,9 +2650,7 @@ dspace.log.2016-04-27:7271
       <pubDate>Fri, 05 Feb 2016 13:18:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-02/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-02-05&#34;&gt;2016-02-05&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-02-05&#34;&gt;2016-02-05&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Looking at some DAGRIS data for Abenet Yabowork&lt;/li&gt;
@@ -2631,6 +2664,8 @@ dspace.log.2016-04-27:7271
 &lt;li&gt;Not only are there 49,000 countries, we have some blanks (25)&amp;hellip;&lt;/li&gt;
 &lt;li&gt;Also, lots of things like &amp;ldquo;COTE D`LVOIRE&amp;rdquo; and &amp;ldquo;COTE D IVOIRE&amp;rdquo;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2016-02-06&#34;&gt;2016-02-06&lt;/h2&gt;
 
@@ -2939,8 +2974,7 @@ Bitstream: tést señora alimentación.pdf
 &lt;ul&gt;
 &lt;li&gt;Finally import the 1127 CIAT items into CGSpace: &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/35710&#34;&gt;https://cgspace.cgiar.org/handle/10568/35710&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Re-deploy CGSpace with the Google Scholar fix, but I&amp;rsquo;m waiting on the Atmire fixes for now, as the branch history is ugly&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -2949,15 +2983,15 @@ Bitstream: tést señora alimentación.pdf
       <pubDate>Wed, 13 Jan 2016 13:18:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-01/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-01-13&#34;&gt;2016-01-13&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-01-13&#34;&gt;2016-01-13&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Move ILRI collection &lt;code&gt;10568/12503&lt;/code&gt; from &lt;code&gt;10568/27869&lt;/code&gt; to &lt;code&gt;10568/27629&lt;/code&gt; using the &lt;a href=&#34;https://gist.github.com/alanorth/392c4660e8b022d99dfa&#34;&gt;move_collections.sh&lt;/a&gt; script I wrote last year.&lt;/li&gt;
 &lt;li&gt;I realized it is only necessary to clear the Cocoon cache after moving collections—rather than reindexing—as no metadata has changed, and therefore no search or browse indexes need to be updated.&lt;/li&gt;
 &lt;li&gt;Update GitHub wiki for documentation of &lt;a href=&#34;https://github.com/ilri/DSpace/wiki/Maintenance-Tasks&#34;&gt;maintenance tasks&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2016-01-14&#34;&gt;2016-01-14&lt;/h2&gt;
 
@@ -3034,8 +3068,7 @@ $ find SimpleArchiveForBio/ -iname &amp;ldquo;*.pdf&amp;rdquo; -exec basename {}
 &lt;li&gt;After:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&#34;2016/01/xmlui-subjects-after.png&#34; alt=&#34;XMLUI subjects after&#34; /&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;img src=&#34;2016/01/xmlui-subjects-after.png&#34; alt=&#34;XMLUI subjects after&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -3044,9 +3077,7 @@ $ find SimpleArchiveForBio/ -iname &amp;ldquo;*.pdf&amp;rdquo; -exec basename {}
       <pubDate>Wed, 02 Dec 2015 13:18:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2015-12/</guid>
-      <description>
-
-&lt;h2 id=&#34;2015-12-02&#34;&gt;2015-12-02&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2015-12-02&#34;&gt;2015-12-02&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Replace &lt;code&gt;lzop&lt;/code&gt; with &lt;code&gt;xz&lt;/code&gt; in log compression cron jobs on DSpace Test—it uses less space:&lt;/li&gt;
@@ -3058,6 +3089,8 @@ $ find SimpleArchiveForBio/ -iname &amp;ldquo;*.pdf&amp;rdquo; -exec basename {}
 -rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo
 -rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;I had used lrzip once, but it needs more memory and is harder to use as it requires the lrztar wrapper&lt;/li&gt;
@@ -3204,8 +3237,7 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 &lt;ul&gt;
 &lt;li&gt;Switch CGSpace log compression cron jobs from using lzop to xz—the compression isn&amp;rsquo;t as good, but it&amp;rsquo;s much faster and causes less IO/CPU load&lt;/li&gt;
 &lt;li&gt;Since we figured out (and fixed) the cause of the performance issue, I reverted Google Bot&amp;rsquo;s crawl rate to the &amp;ldquo;Let Google optimize&amp;rdquo; setting&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -3214,9 +3246,7 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
       <pubDate>Mon, 23 Nov 2015 17:00:57 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2015-11/</guid>
-      <description>
-
-&lt;h2 id=&#34;2015-11-22&#34;&gt;2015-11-22&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2015-11-22&#34;&gt;2015-11-22&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CGSpace went down&lt;/li&gt;
@@ -3227,6 +3257,8 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 &lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspace
 78
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;For now I have increased the limit from 60 to 90, run updates, and rebooted the server&lt;/li&gt;
@@ -3359,8 +3391,7 @@ db.statementpool = true
 &lt;li&gt;Perhaps I need to start drastically increasing the connection limits—like to 300—to see if DSpace&amp;rsquo;s thirst can ever be quenched&lt;/li&gt;
 &lt;li&gt;On another note, SUNScholar&amp;rsquo;s notes suggest adjusting some other postgres variables: &lt;a href=&#34;http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database&#34;&gt;http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;This might help with REST API speed (which I mentioned above and still need to do real tests)&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>
