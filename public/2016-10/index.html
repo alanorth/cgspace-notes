@@ -132,9 +132,21 @@ $ ./delete-metadata-values.py -i authors-delete-3.csv -f dc.contributor.author -
 
 <ul>
 <li>Remove old about page (<a href="https://github.com/ilri/DSpace/pull/284">#284</a>)</li>
+<li>CGSpace crashed a few times today</li>
+<li>Generate list of unique authors in CCAFS collections:</li>
+</ul>
+
+<pre><code>dspacetest=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/32729', '10568/5472', '10568/5473', '10568/10288', '10568/70974', '10568/3547', '10568/3549', '10568/3531','10568/16890','10568/5470','10568/3546', '10568/36024', '10568/66581', '10568/21789', '10568/5469', '10568/5468', '10568/3548', '10568/71053', '10568/25167'))) group by text_value order by count desc) to /tmp/ccafs-authors.csv with csv;
+</code></pre>
+
+<h2 id="2016-10-05">2016-10-05</h2>
+
+<ul>
+<li>Work on more infrastructure cleanups for Ansible DSpace role</li>
 </ul>
 
 
+        
         
       </article> 
 
