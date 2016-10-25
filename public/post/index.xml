@@ -182,11 +182,75 @@ $ git rebase -i dspace-5.5&lt;/p&gt;&lt;/li&gt;
 &lt;h2 id=&#34;2016-10-25&#34;&gt;2016-10-25&lt;/h2&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Move the LIVES community from the top level to an ILRI project&lt;/li&gt;
+&lt;li&gt;Move the LIVES community from the top level to the ILRI projects community&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;$ /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/27629 --child=10568/25101
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Start testing some things for DSpace 5.5, like command line metadata import, PDF media filter, and Atmire CUA&lt;/li&gt;
+&lt;li&gt;Start looking at batch fixing of &amp;ldquo;old&amp;rdquo; ILRI website links without www or https, for example:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select * from metadatavalue where resource_type_id=2 and text_value like &#39;http://ilri.org%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Also CCAFS has HTTPS and their links should use it where possible:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select * from metadatavalue where resource_type_id=2 and text_value like &#39;http://ccafs.cgiar.org%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And this will find community and collection HTML text that is using the old style PNG/JPG icons for RSS and email (we should be using Font Awesome icons instead):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select text_value from metadatavalue where resource_type_id in (3,4) and text_value like &#39;%Iconrss2.png%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Turns out there are shit tons of varieties of this, like with http, https, www, separate &lt;code&gt;&amp;lt;/img&amp;gt;&lt;/code&gt; tags, alignments, etc&lt;/li&gt;
+&lt;li&gt;Had to find all variations and replace them individually:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;&#39;,&#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;%&#39;;
+UPDATE 17
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;%&#39;;
+UPDATE 3
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;%&#39;;
+UPDATE 3
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/Iconrss2.png&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/Iconrss2.png&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;%&#39;;
+UPDATE 29
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/email.jpg&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/email.jpg&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;%&#39;;
+UPDATE 29
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/Iconrss2.png&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/Iconrss2.png&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/email.jpg&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/email.jpg&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/Iconrss2.png&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/Iconrss2.png&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;%&#39;;
+UPDATE 7
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/email.jpg&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/email.jpg&amp;quot;&amp;gt;&amp;lt;/img&amp;gt;%&#39;;
+UPDATE 7
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/email.jpg&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img align=&amp;quot;left&amp;quot; src=&amp;quot;https://ilri.org/images/email.jpg&amp;quot;/&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;https://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-rss fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/Iconrss2.png&amp;quot;/&amp;gt;%&#39;;
+UPDATE 1
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;&#39;, &#39;&amp;lt;span class=&amp;quot;fa fa-at fa-2x&amp;quot; aria-hidden=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&amp;lt;img valign=&amp;quot;center&amp;quot; align=&amp;quot;left&amp;quot; src=&amp;quot;http://www.ilri.org/images/email.jpg&amp;quot;/&amp;gt;%&#39;;
+UPDATE 1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Getting rid of these reduces the number of network requests each client makes on community/collection pages, and makes use of Font Awesome icons (which they are already loading anyways!)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
