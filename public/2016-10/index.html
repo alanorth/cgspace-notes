@@ -387,6 +387,20 @@ $ ./delete-metadata-values.py -i countries-delete-2.csv -f dc.coverage.country -
 <pre><code>$ ./fix-metadata-values.py -i /tmp/authors-fix-pb2.csv -f dc.contributor.author -t correct -m 3 -u dspace -d dspace -p fuuu
 </code></pre>
 
+<ul>
+<li>Run a few URL corrections for ilri.org and doi.org, etc:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://www.ilri.org','https://www.ilri.org') where resource_type_id=2 and text_value like '%http://www.ilri.org%';
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://mahider.ilri.org', 'https://cgspace.cgiar.org') where resource_type_id=2 and text_value like '%http://mahider.%.org%' and metadata_field_id not in (28);
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://dx.doi.org', 'https://dx.doi.org') where resource_type_id=2 and text_value like '%http://dx.doi.org%' and metadata_field_id not in (18,26,28,111);
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://doi.org', 'https://dx.doi.org') where resource_type_id=2 and text_value like '%http://doi.org%' and metadata_field_id not in (18,26,28,111);
+</code></pre>
+
+<ul>
+<li>I skipped metadata fields like citation and description</li>
+</ul>
+
 
         
         
