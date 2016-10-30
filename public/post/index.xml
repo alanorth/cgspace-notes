@@ -275,6 +275,44 @@ UPDATE 0
 &lt;ul&gt;
 &lt;li&gt;Run the same replacements on CGSpace&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-10-30&#34;&gt;2016-10-30&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix some messed up authors on CGSpace:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set authority=&#39;799da1d8-22f3-43f5-8233-3d2ef5ebf8a8&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Charleston, B.%&#39;;
+UPDATE 10
+dspace=# update metadatavalue set authority=&#39;e936f5c5-343d-4c46-aa91-7a1fff6277ed&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Knight-Jones%&#39;;
+UPDATE 36
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I updated the authority index but nothing seemed to change, so I&amp;rsquo;ll wait and do it again after I update Discovery below&lt;/li&gt;
+&lt;li&gt;Skype chat with Tsega about the &lt;a href=&#34;https://github.com/ilri/ckm-cgspace-contentdm-bridge&#34;&gt;IFPRI contentdm bridge&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;We tested harvesting OAI in an example collection to see how it works&lt;/li&gt;
+&lt;li&gt;Talk to Carlos Quiros about CG Core metadata in CGSpace&lt;/li&gt;
+&lt;li&gt;Get a list of countries from CGSpace so I can do some batch corrections:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=228 group by text_value order by count desc) to /tmp/countries.csv with csv;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix a bunch of countries in Open Refine and run the corrections on CGSpace:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i countries-fix-18.csv -f dc.coverage.country -t &#39;correct&#39; -m 228 -d dspace -u dspace -p fuuu
+$ ./delete-metadata-values.py -i countries-delete-2.csv -f dc.coverage.country -m 228 -d dspace -u dspace -p fuuu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Run a shit ton of author fixes from Peter Ballantyne that we&amp;rsquo;ve been cleaning up for two months:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/authors-fix-pb2.csv -f dc.contributor.author -t correct -m 3 -u dspace -d dspace -p fuuu
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
