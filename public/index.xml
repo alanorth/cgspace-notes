@@ -31,6 +31,41 @@
 &lt;li&gt;Migrate DSpace Test to DSpace 5.5 (&lt;a href=&#34;https://gist.github.com/alanorth/61013895c6efe7095d7f81000953d1cf&#34;&gt;notes&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Run all updates on DSpace Test and reboot the server&lt;/li&gt;
 &lt;li&gt;Looks like the OAI bug from DSpace 5.1 that caused validation at Base Search to fail is now fixed and DSpace Test passes validation! (&lt;a href=&#34;https://github.com/ilri/DSpace/issues/63&#34;&gt;#63&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Indexing Discovery on DSpace Test took 332 minutes, which is like five times as long as it usually takes&lt;/li&gt;
+&lt;li&gt;At the end it appeared to finish correctly but there were lots of errors right after it finished:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;2016-11-02 15:09:48,578 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76454 to Index
+2016-11-02 15:09:48,584 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Community: 10568/3202 to Index
+2016-11-02 15:09:48,589 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76455 to Index
+2016-11-02 15:09:48,590 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Community: 10568/51693 to Index
+2016-11-02 15:09:48,590 INFO  org.dspace.discovery.IndexClient @ Done with indexing
+2016-11-02 15:09:48,600 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76456 to Index
+2016-11-02 15:09:48,613 INFO  org.dspace.discovery.SolrServiceImpl @ Wrote Item: 10568/55536 to Index
+2016-11-02 15:09:48,616 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76457 to Index
+2016-11-02 15:09:48,634 ERROR com.atmire.dspace.discovery.AtmireSolrService @
+java.lang.NullPointerException
+        at org.dspace.discovery.SearchUtils.getDiscoveryConfiguration(SourceFile:57)
+        at org.dspace.discovery.SolrServiceImpl.buildDocument(SolrServiceImpl.java:824)
+        at com.atmire.dspace.discovery.AtmireSolrService.indexContent(AtmireSolrService.java:821)
+        at com.atmire.dspace.discovery.AtmireSolrService.updateIndex(AtmireSolrService.java:898)
+        at org.dspace.discovery.SolrServiceImpl.createIndex(SolrServiceImpl.java:370)
+        at org.dspace.storage.rdbms.DatabaseUtils$ReindexerThread.run(DatabaseUtils.java:945)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;DSpace is still up, and a few minutes later I see the default DSpace indexer is still running&lt;/li&gt;
+&lt;li&gt;Sure enough, looking back before the first one finished, I see output from both indexers interleaved in the log:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;2016-11-02 15:09:28,545 INFO  org.dspace.discovery.SolrServiceImpl @ Wrote Item: 10568/47242 to Index
+2016-11-02 15:09:28,633 INFO  org.dspace.discovery.SolrServiceImpl @ Wrote Item: 10568/60785 to Index
+2016-11-02 15:09:28,678 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (55695 of 55722): 43557
+2016-11-02 15:09:28,688 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (55703 of 55722): 34476
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I will raise a ticket with Atmire to ask them&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
