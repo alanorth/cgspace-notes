@@ -73,6 +73,35 @@ java.lang.NullPointerException
 &lt;ul&gt;
 &lt;li&gt;After re-deploying and re-indexing I didn&amp;rsquo;t see the same issue, and the indexing completed in 85 minutes, which is about how long it is supposed to take&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-11-07&#34;&gt;2016-11-07&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Horrible one liner to get Linode ID from certain Ansible host vars:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ grep -A 3 contact_info * | grep -E &amp;quot;(Orth|Sisay|Peter|Daniel|Tsega)&amp;quot; | awk -F&#39;-&#39; &#39;{print $1}&#39; | grep linode | uniq | xargs grep linode_id
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I noticed some weird CRPs in the database, and they don&amp;rsquo;t show up in Discovery for some reason, perhaps the &lt;code&gt;:&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;ll export these and fix them in batch:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=230 group by text_value order by count desc) to /tmp/crp.csv with csv;
+COPY 22
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Test running the replacements:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/CRPs.csv -f cg.contributor.crp -t correct -m 230 -d dspace -u dspace -p &#39;fuuu&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Add &lt;code&gt;AMR&lt;/code&gt; to ILRI subjects and remove one duplicate instance of IITA in author affiliations controlled vocabulary (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/288&#34;&gt;#288&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

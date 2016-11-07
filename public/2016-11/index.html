@@ -147,6 +147,35 @@ java.lang.NullPointerException
 <li>After re-deploying and re-indexing I didn&rsquo;t see the same issue, and the indexing completed in 85 minutes, which is about how long it is supposed to take</li>
 </ul>
 
+<h2 id="2016-11-07">2016-11-07</h2>
+
+<ul>
+<li>Horrible one liner to get Linode ID from certain Ansible host vars:</li>
+</ul>
+
+<pre><code>$ grep -A 3 contact_info * | grep -E &quot;(Orth|Sisay|Peter|Daniel|Tsega)&quot; | awk -F'-' '{print $1}' | grep linode | uniq | xargs grep linode_id
+</code></pre>
+
+<ul>
+<li>I noticed some weird CRPs in the database, and they don&rsquo;t show up in Discovery for some reason, perhaps the <code>:</code></li>
+<li>I&rsquo;ll export these and fix them in batch:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=230 group by text_value order by count desc) to /tmp/crp.csv with csv;
+COPY 22
+</code></pre>
+
+<ul>
+<li>Test running the replacements:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/CRPs.csv -f cg.contributor.crp -t correct -m 230 -d dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Add <code>AMR</code> to ILRI subjects and remove one duplicate instance of IITA in author affiliations controlled vocabulary (<a href="https://github.com/ilri/DSpace/pull/288">#288</a>)</li>
+</ul>
+
 
         
         
