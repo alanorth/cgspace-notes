@@ -186,7 +186,16 @@ COPY 22
 
 <ul>
 <li>I&rsquo;ve filed a ticket with Atmire</li>
+<li>Thinking about batch updates for ORCIDs and authors</li>
+<li>Playing with <a href="https://github.com/moonlitesolutions/SolrClient">SolrClient</a> in Python to query Solr</li>
+<li>All records in the authority core are either <code>authority_type:orcid</code> or <code>authority_type:person</code></li>
+<li>There is a <code>deleted</code> field and all items seem to be <code>false</code>, but might be important sanity check to remember</li>
+<li>The way to go is probably to have a CSV of author names and authority IDs, then to batch update them in PostgreSQL</li>
+<li>Dump of the top ~200 authors in CGSpace:</li>
 </ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=3 group by text_value order by count desc limit 210) to /tmp/210-authors.csv with csv;
+</code></pre>
 
 
         
