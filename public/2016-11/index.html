@@ -205,6 +205,102 @@ COPY 22
 <li>Also, I ran the corrections for CRPs from earlier this week</li>
 </ul>
 
+<h2 id="2016-11-10">2016-11-10</h2>
+
+<ul>
+<li>Helping Megan Zandstra and CIAT with some questions about the REST API</li>
+<li>Playing with <code>find-by-metadata-field</code>, this works:</li>
+</ul>
+
+<pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}'
+</code></pre>
+
+<ul>
+<li>But the results are deceiving because metadata fields can have text languages and your query must match exactly!</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, text_lang from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS';
+ text_value | text_lang
+------------+-----------
+ SEEDS      |
+ SEEDS      |
+ SEEDS      | en_US
+(3 rows)
+</code></pre>
+
+<ul>
+<li>So basically, the text language here could be null, blank, or en_US</li>
+<li>To query metadata with these properties, you can do:</li>
+</ul>
+
+<pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}' | jq length
+55
+$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;, &quot;language&quot;:&quot;&quot;}' | jq length
+34
+$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;, &quot;language&quot;:&quot;en_US&quot;}' | jq length
+</code></pre>
+
+<ul>
+<li>The results (55+34=89) don&rsquo;t seem to match those from the database:</li>
+</ul>
+
+<pre><code>dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS' and text_lang is null;
+ count
+-------
+    15
+dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS' and text_lang='';
+ count
+-------
+     4
+dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS' and text_lang='en_US';
+ count
+-------
+    66
+</code></pre>
+
+<ul>
+<li>So, querying from the API I get 55 + 34 = 89 results, but the database actually only has 85&hellip;</li>
+<li>And the <code>find-by-metadata-field</code> endpoint doesn&rsquo;t seem to have a way to get all items with the field, or a wildcard value</li>
+<li>I&rsquo;ll ask a question on the dspace-tech mailing list</li>
+<li>And speaking of <code>text_lang</code>, this is interesting:</li>
+</ul>
+
+<pre><code>dspacetest=# select distinct text_lang from metadatavalue where resource_type_id=2;
+ text_lang
+-----------
+
+ ethnob
+ en
+ spa
+ EN
+ es
+ frn
+ en_
+ en_US
+
+ EN_US
+ eng
+ en_U
+ fr
+(14 rows)
+</code></pre>
+
+<ul>
+<li>Generate a list of all these so I can fix them in batch:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_lang, count(*) from metadatavalue where resource_type_id=2 group by text_lang order by count desc) to /tmp/text-langs.csv with csv;
+COPY 14
+</code></pre>
+
+<ul>
+<li>Perhaps we need to fix them all in batch, or experiment with fixing only certain metadatavalues:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_lang='en_US' where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS';
+UPDATE 85
+</code></pre>
+
 
         
         

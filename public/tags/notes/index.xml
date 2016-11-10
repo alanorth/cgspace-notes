@@ -130,6 +130,102 @@ COPY 22
 &lt;li&gt;The error was &lt;code&gt;Timeout waiting for idle object&lt;/code&gt; but I haven&amp;rsquo;t looked into the Tomcat logs to see what happened&lt;/li&gt;
 &lt;li&gt;Also, I ran the corrections for CRPs from earlier this week&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-11-10&#34;&gt;2016-11-10&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Helping Megan Zandstra and CIAT with some questions about the REST API&lt;/li&gt;
+&lt;li&gt;Playing with &lt;code&gt;find-by-metadata-field&lt;/code&gt;, this works:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;}&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;But the results are deceiving because metadata fields can have text languages and your query must match exactly!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select distinct text_value, text_lang from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;SEEDS&#39;;
+ text_value | text_lang
+------------+-----------
+ SEEDS      |
+ SEEDS      |
+ SEEDS      | en_US
+(3 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So basically, the text language here could be null, blank, or en_US&lt;/li&gt;
+&lt;li&gt;To query metadata with these properties, you can do:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;}&#39; | jq length
+55
+$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;, &amp;quot;language&amp;quot;:&amp;quot;&amp;quot;}&#39; | jq length
+34
+$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;, &amp;quot;language&amp;quot;:&amp;quot;en_US&amp;quot;}&#39; | jq length
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The results (55+34=89) don&amp;rsquo;t seem to match those from the database:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;SEEDS&#39; and text_lang is null;
+ count
+-------
+    15
+dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;SEEDS&#39; and text_lang=&#39;&#39;;
+ count
+-------
+     4
+dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;SEEDS&#39; and text_lang=&#39;en_US&#39;;
+ count
+-------
+    66
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So, querying from the API I get 55 + 34 = 89 results, but the database actually only has 85&amp;hellip;&lt;/li&gt;
+&lt;li&gt;And the &lt;code&gt;find-by-metadata-field&lt;/code&gt; endpoint doesn&amp;rsquo;t seem to have a way to get all items with the field, or a wildcard value&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;ll ask a question on the dspace-tech mailing list&lt;/li&gt;
+&lt;li&gt;And speaking of &lt;code&gt;text_lang&lt;/code&gt;, this is interesting:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# select distinct text_lang from metadatavalue where resource_type_id=2;
+ text_lang
+-----------
+
+ ethnob
+ en
+ spa
+ EN
+ es
+ frn
+ en_
+ en_US
+
+ EN_US
+ eng
+ en_U
+ fr
+(14 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Generate a list of all these so I can fix them in batch:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_lang, count(*) from metadatavalue where resource_type_id=2 group by text_lang order by count desc) to /tmp/text-langs.csv with csv;
+COPY 14
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Perhaps we need to fix them all in batch, or experiment with fixing only certain metadatavalues:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_lang=&#39;en_US&#39; where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;SEEDS&#39;;
+UPDATE 85
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
