@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-11-01T09:21:00&#43;03:00" />
-<meta itemprop="wordCount" content="1200">
+<meta itemprop="wordCount" content="1341">
 
 
 
@@ -356,6 +356,39 @@ $ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: applica
 <ul>
 <li>I applied Atmire&rsquo;s suggestions to fix Listings and Reports for DSpace 5.5 and now it works</li>
 <li>There were some issues with the <code>dspace/modules/jspui/pom.xml</code>, which is annoying because all I did was rebase our working 5.1 code on top of 5.5, meaning Atmire&rsquo;s installation procedure must have changed</li>
+<li>So there is apparently this Tomcat native way to limit web crawlers to one session: <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve">Crawler Session Manager</a></li>
+<li>After adding that to <code>server.xml</code> bots matching the pattern in the configuration will all use ONE session, just like normal users:</li>
+</ul>
+
+<pre><code>$ http --print h https://dspacetest.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Language: en-US
+Content-Type: text/html;charset=utf-8
+Date: Mon, 14 Nov 2016 19:47:29 GMT
+Server: nginx
+Set-Cookie: JSESSIONID=323694E079A53D5D024F839290EDD7E8; Path=/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-Cocoon-Version: 2.2.0
+X-Robots-Tag: none
+
+$ http --print h https://dspacetest.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Language: en-US
+Content-Type: text/html;charset=utf-8
+Date: Mon, 14 Nov 2016 19:47:35 GMT
+Server: nginx
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-Cocoon-Version: 2.2.0
+</code></pre>
+
+<ul>
+<li>This means that when Google or Baidu slam you with tens of concurrent connections they will all map to ONE internal session, which saves RAM!</li>
 </ul>
 
 
