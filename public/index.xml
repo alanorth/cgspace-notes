@@ -213,7 +213,7 @@ dspace=# select count(text_value) from metadatavalue where resource_type_id=2 an
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Generate a list of all these so I can fix them in batch:&lt;/li&gt;
+&lt;li&gt;Generate a list of all these so I can maybe fix them in batch:&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_lang, count(*) from metadatavalue where resource_type_id=2 group by text_lang order by count desc) to /tmp/text-langs.csv with csv;
@@ -227,6 +227,38 @@ COPY 14
 &lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_lang=&#39;en_US&#39; where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;SEEDS&#39;;
 UPDATE 85
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The &lt;code&gt;fix-metadata.py&lt;/code&gt; script I have is meant for specific metadata values, so if I want to update some &lt;code&gt;text_lang&lt;/code&gt; values I should just do it directly in the database&lt;/li&gt;
+&lt;li&gt;For example, on a limited set:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_lang=NULL where resource_type_id=2 and metadata_field_id=203 and text_value=&#39;LIVESTOCK&#39; and text_lang=&#39;&#39;;
+UPDATE 420
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And assuming I want to do it for all fields:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set text_lang=NULL where resource_type_id=2 and text_lang=&#39;&#39;;
+UPDATE 183726
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After that restarted Tomcat and PostgreSQL (because I&amp;rsquo;m superstitious about caches) and now I see the following in REST API query:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;}&#39; | jq length
+71
+$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;, &amp;quot;language&amp;quot;:&amp;quot;&amp;quot;}&#39; | jq length
+0
+$ curl -s -H &amp;quot;accept: application/json&amp;quot; -H &amp;quot;Content-Type: application/json&amp;quot; -X POST &amp;quot;http://localhost:8080/rest/items/find-by-metadata-field&amp;quot; -d &#39;{&amp;quot;key&amp;quot;: &amp;quot;cg.subject.ilri&amp;quot;,&amp;quot;value&amp;quot;: &amp;quot;SEEDS&amp;quot;, &amp;quot;language&amp;quot;:&amp;quot;en_US&amp;quot;}&#39; | jq length
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Not sure what&amp;rsquo;s going on, but Discovery shows 83 values, and database shows 85, so I&amp;rsquo;m going to reindex Discovery just in case&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
