@@ -297,8 +297,70 @@ X-Cocoon-Version: 2.2.0
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
+&lt;li&gt;The first one gets a session, and any after that — within 60 seconds — will be internally mapped to the same session by Tomcat&lt;/li&gt;
 &lt;li&gt;This means that when Google or Baidu slam you with tens of concurrent connections they will all map to ONE internal session, which saves RAM!&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-11-15&#34;&gt;2016-11-15&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The Tomcat JVM heap looks really good after applying the Crawler Session Manager fix on DSpace Test last night:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;2016/11/dspacetest-tomcat-jvm-day.png&#34; alt=&#34;Tomcat JVM heap (day) after setting up the Crawler Session Manager&#34; /&gt;
+&lt;img src=&#34;2016/11/dspacetest-tomcat-jvm-week.png&#34; alt=&#34;Tomcat JVM heap (week) after setting up the Crawler Session Manager&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Seems the default regex doesn&amp;rsquo;t catch Baidu, though:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ http --print h https://dspacetest.cgiar.org &#39;User-Agent:Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&#39;
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Language: en-US
+Content-Type: text/html;charset=utf-8
+Date: Tue, 15 Nov 2016 08:49:54 GMT
+Server: nginx
+Set-Cookie: JSESSIONID=131409D143E8C01DE145C50FC748256E; Path=/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-Cocoon-Version: 2.2.0
+
+$ http --print h https://dspacetest.cgiar.org &#39;User-Agent:Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&#39;
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Language: en-US
+Content-Type: text/html;charset=utf-8
+Date: Tue, 15 Nov 2016 08:49:59 GMT
+Server: nginx
+Set-Cookie: JSESSIONID=F6403C084480F765ED787E41D2521903; Path=/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-Cocoon-Version: 2.2.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Adding Baiduspider to the list of user agents seems to work, and the final configuration should be:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;!-- Crawler Session Manager Valve helps mitigate damage done by web crawlers --&amp;gt;
+&amp;lt;Valve className=&amp;quot;org.apache.catalina.valves.CrawlerSessionManagerValve&amp;quot;
+       crawlerUserAgents=&amp;quot;.*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Baiduspider.*&amp;quot; /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looking at the bots that were active yesterday it seems the above regex should be sufficient:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ grep -o -E &#39;Mozilla/5\.0 \(compatible;.*\&amp;quot;&#39; /var/log/nginx/access.log | sort | uniq
+Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&amp;quot; &amp;quot;-&amp;quot;
+Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)&amp;quot; &amp;quot;-&amp;quot;
+Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)&amp;quot; &amp;quot;-&amp;quot;
+Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&amp;quot; &amp;quot;-&amp;quot;
+Mozilla/5.0 (compatible; YandexImages/3.0; +http://yandex.com/bots)&amp;quot; &amp;quot;-&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
