@@ -372,6 +372,49 @@ Mozilla/5.0 (compatible; YandexImages/3.0; +http://yandex.com/bots)&amp;quot; &a
 &lt;ul&gt;
 &lt;li&gt;We absolutely don&amp;rsquo;t use those modules, so we shouldn&amp;rsquo;t build them in the first place&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-11-17&#34;&gt;2016-11-17&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Generate a list of journal titles for Peter and Abenet to look through so we can make a controlled vocabulary out of them:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc) to /tmp/journal-titles.csv with csv;
+COPY 2515
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Send a message to users of the CGSpace REST API to notify them of upcoming upgrade so they can test their apps against DSpace Test&lt;/li&gt;
+&lt;li&gt;Test an update old, non-HTTPS links to the CCAFS website in CGSpace metadata:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://ccafs.cgiar.org&#39;,&#39;https://ccafs.cgiar.org&#39;) where resource_type_id=2 and text_value like &#39;%http://ccafs.cgiar.org%&#39;;
+UPDATE 164
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://ccafs.cgiar.org&#39;,&#39;https://ccafs.cgiar.org&#39;) where resource_type_id=2 and text_value like &#39;%http://ccafs.cgiar.org%&#39;;
+UPDATE 7
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Had to run it twice to get all (not sure about &amp;ldquo;global&amp;rdquo; regex in PostgreSQL)&lt;/li&gt;
+&lt;li&gt;Run the updates on CGSpace as well&lt;/li&gt;
+&lt;li&gt;Run through some collections and manually regenerate some PDF thumbnails for items from before 2016 on DSpace Test to compare with CGSpace&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m debating forcing the re-generation of ALL thumbnails, since some come from DSpace 3 and 4 when the thumbnailing wasn&amp;rsquo;t as good&lt;/li&gt;
+&lt;li&gt;The results were very good, I think that after we upgrade to 5.5 I will do it, perhaps one community / collection at a time:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ [dspace]/bin/dspace filter-media -f -i 10568/67156 -p &amp;quot;ImageMagick PDF Thumbnail&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In related news, I&amp;rsquo;m looking at thumbnails of thumbnails (the ones we uploaded manually before, and now DSpace&amp;rsquo;s media filter has made thumbnails of THEM):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select text_value from metadatavalue where text_value like &#39;%.jpg.jpg&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I&amp;rsquo;m not sure if there&amp;rsquo;s anything we can do, actually, because we would have to remove those from the thumbnail bundles, and replace them with the regular JPGs from the content bundle, and then remove them from the assetstore&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
