@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-11-01T09:21:00&#43;03:00" />
-<meta itemprop="wordCount" content="2210">
+<meta itemprop="wordCount" content="2445">
 
 
 
@@ -565,6 +565,41 @@ UPDATE 7
 <li>reboot server</li>
 </ul></li>
 <li>Need to do updates for ansible infrastructure role defaults, and switch the GitHub branch to the new 5.5 one</li>
+<li>Testing DSpace 5.5 on CGSpace, it seems CUA&rsquo;s export as XLS works for Usage statistics, but not Content statistics</li>
+<li>I will raise a bug with Atmire</li>
+</ul>
+
+<h2 id="2016-11-28">2016-11-28</h2>
+
+<ul>
+<li>One user says they are still getting a blank page when he logs in (just CGSpace header, but no community list)</li>
+<li>Looking at the Catlina logs I see there is some super long-running indexing process going on:</li>
+</ul>
+
+<pre><code>INFO: FrameworkServlet 'oai': initialization completed in 2600 ms
+[&gt;                                                  ] 0% time remaining: Calculating... timestamp: 2016-11-28 03:00:18
+[&gt;                                                  ] 0% time remaining: 11 hour(s) 57 minute(s) 46 seconds. timestamp: 2016-11-28 03:00:19
+[&gt;                                                  ] 0% time remaining: 23 hour(s) 4 minute(s) 28 seconds. timestamp: 2016-11-28 03:00:19
+[&gt;                                                  ] 0% time remaining: 15 hour(s) 35 minute(s) 23 seconds. timestamp: 2016-11-28 03:00:19
+[&gt;                                                  ] 0% time remaining: 14 hour(s) 5 minute(s) 56 seconds. timestamp: 2016-11-28 03:00:19
+[&gt;                                                  ] 0% time remaining: 11 hour(s) 23 minute(s) 49 seconds. timestamp: 2016-11-28 03:00:19
+[&gt;                                                  ] 0% time remaining: 11 hour(s) 21 minute(s) 57 seconds. timestamp: 2016-11-28 03:00:20
+</code></pre>
+
+<ul>
+<li>It says OAI, and seems to start at 3:00 AM, but I only see the <code>filter-media</code> cron job set to start then</li>
+<li>Double checking the <a href="https://wiki.duraspace.org/display/DSDOC5x/Upgrading+DSpace">DSpace 5.x upgrade notes</a> for anything I missed, or troubleshooting tips</li>
+<li>Running some manual processes just in case:</li>
+</ul>
+
+<pre><code>$ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/dcterms-types.xml
+$ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/dublin-core-types.xml
+$ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/eperson-types.xml
+$ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/workflow-types.xml
+</code></pre>
+
+<ul>
+<li>Start working on paper for KM4Dev journal</li>
 </ul>
 
 
