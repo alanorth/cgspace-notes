@@ -179,6 +179,33 @@ Result = The bitstream could not be found
 &lt;li&gt;The first one seems ok, but I don&amp;rsquo;t know what to make of the second one&amp;hellip;&lt;/li&gt;
 &lt;li&gt;I had a look and there is indeed no file with the second checksum in the assetstore (ie, looking in &lt;code&gt;[dspace-dir]/assetstore/99/59/30/...&lt;/code&gt;)&lt;/li&gt;
 &lt;li&gt;For what it&amp;rsquo;s worth, there is no item on DSpace Test or S3 backups with that checksum either&amp;hellip;&lt;/li&gt;
+&lt;li&gt;In other news, I&amp;rsquo;m looking at JVM settings from the Solr 4.10.2 release, from &lt;code&gt;bin/solr.in.sh&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# These GC settings have shown to work well for a number of common Solr workloads
+GC_TUNE=&amp;quot;-XX:-UseSuperWord \
+-XX:NewRatio=3 \
+-XX:SurvivorRatio=4 \
+-XX:TargetSurvivorRatio=90 \
+-XX:MaxTenuringThreshold=8 \
+-XX:+UseConcMarkSweepGC \
+-XX:+UseParNewGC \
+-XX:ConcGCThreads=4 -XX:ParallelGCThreads=4 \
+-XX:+CMSScavengeBeforeRemark \
+-XX:PretenureSizeThreshold=64m \
+-XX:CMSFullGCsBeforeCompaction=1 \
+-XX:+UseCMSInitiatingOccupancyOnly \
+-XX:CMSInitiatingOccupancyFraction=50 \
+-XX:CMSTriggerPermRatio=80 \
+-XX:CMSMaxAbortablePrecleanTime=6000 \
+-XX:+CMSParallelRemarkEnabled \
+-XX:+ParallelRefProcEnabled \
+-XX:+AggressiveOpts&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I need to try these because they are recommended by the Solr project itself&lt;/li&gt;
+&lt;li&gt;Also, as always, I need to read &lt;a href=&#34;https://wiki.apache.org/solr/ShawnHeisey&#34;&gt;Shawn Heisey&amp;rsquo;s wiki page on Solr&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>

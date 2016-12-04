@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="722">
+<meta itemprop="wordCount" content="816">
 
 
 
@@ -275,6 +275,33 @@ Result = The bitstream could not be found
 <li>The first one seems ok, but I don&rsquo;t know what to make of the second one&hellip;</li>
 <li>I had a look and there is indeed no file with the second checksum in the assetstore (ie, looking in <code>[dspace-dir]/assetstore/99/59/30/...</code>)</li>
 <li>For what it&rsquo;s worth, there is no item on DSpace Test or S3 backups with that checksum either&hellip;</li>
+<li>In other news, I&rsquo;m looking at JVM settings from the Solr 4.10.2 release, from <code>bin/solr.in.sh</code>:</li>
+</ul>
+
+<pre><code># These GC settings have shown to work well for a number of common Solr workloads
+GC_TUNE=&quot;-XX:-UseSuperWord \
+-XX:NewRatio=3 \
+-XX:SurvivorRatio=4 \
+-XX:TargetSurvivorRatio=90 \
+-XX:MaxTenuringThreshold=8 \
+-XX:+UseConcMarkSweepGC \
+-XX:+UseParNewGC \
+-XX:ConcGCThreads=4 -XX:ParallelGCThreads=4 \
+-XX:+CMSScavengeBeforeRemark \
+-XX:PretenureSizeThreshold=64m \
+-XX:CMSFullGCsBeforeCompaction=1 \
+-XX:+UseCMSInitiatingOccupancyOnly \
+-XX:CMSInitiatingOccupancyFraction=50 \
+-XX:CMSTriggerPermRatio=80 \
+-XX:CMSMaxAbortablePrecleanTime=6000 \
+-XX:+CMSParallelRemarkEnabled \
+-XX:+ParallelRefProcEnabled \
+-XX:+AggressiveOpts&quot;
+</code></pre>
+
+<ul>
+<li>I need to try these because they are recommended by the Solr project itself</li>
+<li>Also, as always, I need to read <a href="https://wiki.apache.org/solr/ShawnHeisey">Shawn Heisey&rsquo;s wiki page on Solr</a></li>
 </ul>
 
 
