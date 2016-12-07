@@ -253,6 +253,143 @@ UPDATE 561
 &lt;li&gt;In other news, it seems the batch edit patch is working, there are no more WARN errors in the logs and the batch edit seems to work&lt;/li&gt;
 &lt;li&gt;I need to check the CGSpace logs to see if there are still errors there, and then deploy/monitor it there&lt;/li&gt;
 &lt;li&gt;Paola from CCAFS mentioned she also has the &amp;ldquo;take task&amp;rdquo; bug on CGSpace&lt;/li&gt;
+&lt;li&gt;Reading about &lt;a href=&#34;https://www.postgresql.org/docs/9.5/static/runtime-config-resource.html&#34;&gt;&lt;code&gt;shared_buffers&lt;/code&gt; in PostgreSQL configuration&lt;/a&gt; (default is 128MB)&lt;/li&gt;
+&lt;li&gt;Looks like we have ~5GB of memory used by caches on the test server (after OS and JVM heap!), so we might as well bump up the buffers for Postgres&lt;/li&gt;
+&lt;li&gt;The docs say a good starting point for a dedicated server is 25% of the system RAM, and our server isn&amp;rsquo;t dedicated (also runs Solr, which can benefit from OS cache) so let&amp;rsquo;s try 1024MB&lt;/li&gt;
+&lt;li&gt;In other news, the authority reindexing keeps crashing (I was manually running it after the author updates above):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ time JAVA_OPTS=&amp;quot;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&amp;quot; /home/dspacetest.cgiar.org/bin/dspace index-authority
+Retrieving all data
+Initialize org.dspace.authority.indexer.DSpaceAuthorityIndexer
+Exception: null
+java.lang.NullPointerException
+        at org.dspace.authority.AuthorityValueGenerator.generateRaw(AuthorityValueGenerator.java:82)
+        at org.dspace.authority.AuthorityValueGenerator.generate(AuthorityValueGenerator.java:39)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.prepareNextValue(DSpaceAuthorityIndexer.java:201)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:132)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:159)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+        at org.dspace.authority.indexer.AuthorityIndexClient.main(AuthorityIndexClient.java:61)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+
+real    8m39.913s
+user    1m54.190s
+sys     0m22.647s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2016-12-07&#34;&gt;2016-12-07&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;For what it&amp;rsquo;s worth, after running the same SQL updates on my local test server, &lt;code&gt;index-authority&lt;/code&gt; runs and completes just fine&lt;/li&gt;
+&lt;li&gt;I will have to test more&lt;/li&gt;
+&lt;li&gt;Anyways, I noticed that some of the authority values I set actually have versions of author names we don&amp;rsquo;t want, ie &amp;ldquo;Grace, D.&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;For example, do a Solr query for &amp;ldquo;first_name:Grace&amp;rdquo; and look at the results&lt;/li&gt;
+&lt;li&gt;Querying that ID shows the fields that need to be changed:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;responseHeader&amp;quot;: {
+    &amp;quot;status&amp;quot;: 0,
+    &amp;quot;QTime&amp;quot;: 1,
+    &amp;quot;params&amp;quot;: {
+      &amp;quot;q&amp;quot;: &amp;quot;id:0b4fcbc1-d930-4319-9b4d-ea1553cca70b&amp;quot;,
+      &amp;quot;indent&amp;quot;: &amp;quot;true&amp;quot;,
+      &amp;quot;wt&amp;quot;: &amp;quot;json&amp;quot;,
+      &amp;quot;_&amp;quot;: &amp;quot;1481102189244&amp;quot;
+    }
+  },
+  &amp;quot;response&amp;quot;: {
+    &amp;quot;numFound&amp;quot;: 1,
+    &amp;quot;start&amp;quot;: 0,
+    &amp;quot;docs&amp;quot;: [
+      {
+        &amp;quot;id&amp;quot;: &amp;quot;0b4fcbc1-d930-4319-9b4d-ea1553cca70b&amp;quot;,
+        &amp;quot;field&amp;quot;: &amp;quot;dc_contributor_author&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;Grace, D.&amp;quot;,
+        &amp;quot;deleted&amp;quot;: false,
+        &amp;quot;creation_date&amp;quot;: &amp;quot;2016-11-10T15:13:40.318Z&amp;quot;,
+        &amp;quot;last_modified_date&amp;quot;: &amp;quot;2016-11-10T15:13:40.318Z&amp;quot;,
+        &amp;quot;authority_type&amp;quot;: &amp;quot;person&amp;quot;,
+        &amp;quot;first_name&amp;quot;: &amp;quot;D.&amp;quot;,
+        &amp;quot;last_name&amp;quot;: &amp;quot;Grace&amp;quot;
+      }
+    ]
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I think I can just update the &lt;code&gt;value&lt;/code&gt;, &lt;code&gt;first_name&lt;/code&gt;, and &lt;code&gt;last_name&lt;/code&gt; fields&amp;hellip;&lt;/li&gt;
+&lt;li&gt;The update syntax should be something like this, but I&amp;rsquo;m getting errors from Solr:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl &#39;localhost:8081/solr/authority/update?commit=true&amp;amp;wt=json&amp;amp;indent=true&#39; -H &#39;Content-type:application/json&#39; -d &#39;[{&amp;quot;id&amp;quot;:&amp;quot;1&amp;quot;,&amp;quot;price&amp;quot;:{&amp;quot;set&amp;quot;:100}}]&#39;
+{
+  &amp;quot;responseHeader&amp;quot;:{
+    &amp;quot;status&amp;quot;:400,
+    &amp;quot;QTime&amp;quot;:0},
+  &amp;quot;error&amp;quot;:{
+    &amp;quot;msg&amp;quot;:&amp;quot;Unexpected character &#39;[&#39; (code 91) in prolog; expected &#39;&amp;lt;&#39;\n at [row,col {unknown-source}]: [1,1]&amp;quot;,
+    &amp;quot;code&amp;quot;:400}}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;When I try using the XML format I get an error that the &lt;code&gt;updateLog&lt;/code&gt; needs to be configured for that core&lt;/li&gt;
+&lt;li&gt;Maybe I can just remove the authority UUID from the records, run the indexing again so it creates a new one for each name variant, then match them correctly?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set authority=null, confidence=-1 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Grace, D%&#39;;
+UPDATE 561
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Then I&amp;rsquo;ll reindex discovery and authority and see how the authority Solr core looks&lt;/li&gt;
+&lt;li&gt;After this, now there are authorities for some of the &amp;ldquo;Grace, D.&amp;rdquo; and &amp;ldquo;Grace, Delia&amp;rdquo; text_values in the database (the first version is actually the same authority that already exists in the core, so it was just added back to some text_values, but the second one is new):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl &#39;localhost:8081/solr/authority/select?q=id%3A18ea1525-2513-430a-8817-a834cd733fbc&amp;amp;wt=json&amp;amp;indent=true&#39;
+{
+  &amp;quot;responseHeader&amp;quot;:{
+    &amp;quot;status&amp;quot;:0,
+    &amp;quot;QTime&amp;quot;:0,
+    &amp;quot;params&amp;quot;:{
+      &amp;quot;q&amp;quot;:&amp;quot;id:18ea1525-2513-430a-8817-a834cd733fbc&amp;quot;,
+      &amp;quot;indent&amp;quot;:&amp;quot;true&amp;quot;,
+      &amp;quot;wt&amp;quot;:&amp;quot;json&amp;quot;}},
+  &amp;quot;response&amp;quot;:{&amp;quot;numFound&amp;quot;:1,&amp;quot;start&amp;quot;:0,&amp;quot;docs&amp;quot;:[
+      {
+        &amp;quot;id&amp;quot;:&amp;quot;18ea1525-2513-430a-8817-a834cd733fbc&amp;quot;,
+        &amp;quot;field&amp;quot;:&amp;quot;dc_contributor_author&amp;quot;,
+        &amp;quot;value&amp;quot;:&amp;quot;Grace, Delia&amp;quot;,
+        &amp;quot;deleted&amp;quot;:false,
+        &amp;quot;creation_date&amp;quot;:&amp;quot;2016-12-07T10:54:34.356Z&amp;quot;,
+        &amp;quot;last_modified_date&amp;quot;:&amp;quot;2016-12-07T10:54:34.356Z&amp;quot;,
+        &amp;quot;authority_type&amp;quot;:&amp;quot;person&amp;quot;,
+        &amp;quot;first_name&amp;quot;:&amp;quot;Delia&amp;quot;,
+        &amp;quot;last_name&amp;quot;:&amp;quot;Grace&amp;quot;}]
+  }}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So now I could set them all to this ID and the name would be ok, but there has to be a better way!&lt;/li&gt;
+&lt;li&gt;In this case it seems that since there were also two different IDs in the original database, I just picked the wrong one!&lt;/li&gt;
+&lt;li&gt;Better to use:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace#= update metadatavalue set text_value=&#39;Grace, Delia&#39;, authority=&#39;bfa61d7c-7583-4175-991c-2e7315000f0c&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Grace, D%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This proves that unifying author name varieties in authorities is easy, but fixing the name in the authority is tricky!&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
