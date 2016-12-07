@@ -391,7 +391,18 @@ UPDATE 561
 &lt;ul&gt;
 &lt;li&gt;This proves that unifying author name varieties in authorities is easy, but fixing the name in the authority is tricky!&lt;/li&gt;
 &lt;li&gt;Perhaps another way is to just add our own UUID to the authority field for the text_value we like, then re-index authority so they get synced from PostgreSQL to Solr, then set the other text_values to use that authority ID&lt;/li&gt;
+&lt;li&gt;Deploy MQM WARN fix on CGSpace (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/289&#34;&gt;#289&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Deploy &amp;ldquo;take task&amp;rdquo; hack/fix on CGSpace (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/290&#34;&gt;#290&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;I ran the following author corrections and then reindexed discovery:&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;update metadatavalue set authority=&#39;b041f2f4-19e7-4113-b774-0439baabd197&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Mora Benard%&#39;;
+update metadatavalue set text_value = &#39;Hoek, Rein van der&#39;, authority=&#39;4d6cbce2-6fd5-4b43-9363-58d18e7952c9&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Hoek, R%&#39;;
+update metadatavalue set text_value = &#39;Hoek, Rein van der&#39;, authority=&#39;4d6cbce2-6fd5-4b43-9363-58d18e7952c9&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;%an der Hoek%&#39; and text_value !~ &#39;^.*W\.?$&#39;;
+update metadatavalue set authority=&#39;18349f29-61b1-44d7-ac60-89e55546e812&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Thorne, P%&#39;;
+update metadatavalue set authority=&#39;0d8369bb-57f7-4b2f-92aa-af820b183aca&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Thornton, P%&#39;;
+update metadatavalue set text_value=&#39;Grace, Delia&#39;, authority=&#39;bfa61d7c-7583-4175-991c-2e7315000f0c&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Grace, D%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

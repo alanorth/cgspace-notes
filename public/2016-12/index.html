@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="1794">
+<meta itemprop="wordCount" content="1921">
 
 
 
@@ -488,7 +488,18 @@ UPDATE 561
 <ul>
 <li>This proves that unifying author name varieties in authorities is easy, but fixing the name in the authority is tricky!</li>
 <li>Perhaps another way is to just add our own UUID to the authority field for the text_value we like, then re-index authority so they get synced from PostgreSQL to Solr, then set the other text_values to use that authority ID</li>
+<li>Deploy MQM WARN fix on CGSpace (<a href="https://github.com/ilri/DSpace/pull/289">#289</a>)</li>
+<li>Deploy &ldquo;take task&rdquo; hack/fix on CGSpace (<a href="https://github.com/ilri/DSpace/pull/290">#290</a>)</li>
+<li>I ran the following author corrections and then reindexed discovery:</li>
 </ul>
+
+<pre><code>update metadatavalue set authority='b041f2f4-19e7-4113-b774-0439baabd197', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Mora Benard%';
+update metadatavalue set text_value = 'Hoek, Rein van der', authority='4d6cbce2-6fd5-4b43-9363-58d18e7952c9', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Hoek, R%';
+update metadatavalue set text_value = 'Hoek, Rein van der', authority='4d6cbce2-6fd5-4b43-9363-58d18e7952c9', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like '%an der Hoek%' and text_value !~ '^.*W\.?$';
+update metadatavalue set authority='18349f29-61b1-44d7-ac60-89e55546e812', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Thorne, P%';
+update metadatavalue set authority='0d8369bb-57f7-4b2f-92aa-af820b183aca', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Thornton, P%';
+update metadatavalue set text_value='Grace, Delia', authority='bfa61d7c-7583-4175-991c-2e7315000f0c', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';
+</code></pre>
 
 
   
