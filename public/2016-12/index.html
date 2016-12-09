@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="1921">
+<meta itemprop="wordCount" content="2314">
 
 
 
@@ -500,6 +500,75 @@ update metadatavalue set authority='18349f29-61b1-44d7-ac60-89e55546e812', confi
 update metadatavalue set authority='0d8369bb-57f7-4b2f-92aa-af820b183aca', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Thornton, P%';
 update metadatavalue set text_value='Grace, Delia', authority='bfa61d7c-7583-4175-991c-2e7315000f0c', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';
 </code></pre>
+
+<h2 id="2016-12-08">2016-12-08</h2>
+
+<ul>
+<li>Something weird happened and Peter Thorne&rsquo;s names all ended up as &ldquo;Thorne&rdquo;, I guess because the original authority had that as its name value:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like 'Thorne%';
+    text_value    |              authority               | confidence
+------------------+--------------------------------------+------------
+ Thorne, P.J.     | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+ Thorne           | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+ Thorne-Lyman, A. | 0781e13a-1dc8-4e3f-82e8-5c422b44a344 |         -1
+ Thorne, M. D.    | 54c52649-cefd-438d-893f-3bcef3702f07 |         -1
+ Thorne, P.J      | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+ Thorne, P.       | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+(6 rows)
+</code></pre>
+
+<ul>
+<li>I generated a new UUID using <code>uuidgen | tr [A-Z] [a-z]</code> and set it along with correct name variation for all records:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set authority='b2f7603d-2fb5-4018-923a-c4ec8d85b3bb', text_value='Thorne, P.J.' where resource_type_id=2 and metadata_field_id=3 and authority='18349f29-61b1-44d7-ac60-89e55546e812';
+UPDATE 43
+</code></pre>
+
+<ul>
+<li>Apparently we also need to normalize Phil Thornton&rsquo;s names to <code>Thornton, Philip K.</code>:
+<br /></li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value ~ '^Thornton[,\.]? P.*';
+     text_value      |              authority               | confidence
+---------------------+--------------------------------------+------------
+ Thornton, P         | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P K.      | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P K       | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton. P.K.      | 3e1e6639-d4fb-449e-9fce-ce06b5b0f702 |         -1
+ Thornton, P K .     | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P.K.      | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P.K       | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, Philip K  | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, Philip K. | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P. K.     | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+(10 rows)
+</code></pre>
+
+<ul>
+<li>Seems his original authorities are using an incorrect version of the name so I need to generate another UUID and tie it to the correct name, then reindex:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set authority='2df8136e-d8f4-4142-b58c-562337cab764', text_value='Thornton, Philip K.', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value ~ '^Thornton[,\.]? P.*';
+UPDATE 362
+</code></pre>
+
+<ul>
+<li>It seems that, when you are messing with authority and author text values in the database, it is better to run authority reindex first (postgres→solr authority core) and then Discovery reindex (postgres→solr Discovery core)</li>
+<li>Everything looks ok after authority and discovery reindex</li>
+<li>In other news, I think we should really be using more RAM for PostgreSQL&rsquo;s <code>shared_buffers</code></li>
+<li>The <a href="https://www.postgresql.org/docs/9.5/static/runtime-config-resource.html">PostgreSQL documentation</a> recommends using 25% of the system&rsquo;s RAM on dedicated systems, but we should use a bit less since we also have a massive JVM heap and also benefit from some RAM being used by the OS cache</li>
+</ul>
+
+<h2 id="2016-12-09">2016-12-09</h2>
+
+<ul>
+<li>More work on finishing rough draft of KM4Dev article</li>
+<li>Set PostgreSQL&rsquo;s <code>shared_buffers</code> on CGSpace to 10% of system RAM (1200MB)</li>
+</ul>
 
 
   

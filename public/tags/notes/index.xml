@@ -403,6 +403,75 @@ update metadatavalue set authority=&#39;18349f29-61b1-44d7-ac60-89e55546e812&#39
 update metadatavalue set authority=&#39;0d8369bb-57f7-4b2f-92aa-af820b183aca&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Thornton, P%&#39;;
 update metadatavalue set text_value=&#39;Grace, Delia&#39;, authority=&#39;bfa61d7c-7583-4175-991c-2e7315000f0c&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Grace, D%&#39;;
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2016-12-08&#34;&gt;2016-12-08&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Something weird happened and Peter Thorne&amp;rsquo;s names all ended up as &amp;ldquo;Thorne&amp;rdquo;, I guess because the original authority had that as its name value:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Thorne%&#39;;
+    text_value    |              authority               | confidence
+------------------+--------------------------------------+------------
+ Thorne, P.J.     | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+ Thorne           | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+ Thorne-Lyman, A. | 0781e13a-1dc8-4e3f-82e8-5c422b44a344 |         -1
+ Thorne, M. D.    | 54c52649-cefd-438d-893f-3bcef3702f07 |         -1
+ Thorne, P.J      | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+ Thorne, P.       | 18349f29-61b1-44d7-ac60-89e55546e812 |        600
+(6 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I generated a new UUID using &lt;code&gt;uuidgen | tr [A-Z] [a-z]&lt;/code&gt; and set it along with correct name variation for all records:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set authority=&#39;b2f7603d-2fb5-4018-923a-c4ec8d85b3bb&#39;, text_value=&#39;Thorne, P.J.&#39; where resource_type_id=2 and metadata_field_id=3 and authority=&#39;18349f29-61b1-44d7-ac60-89e55546e812&#39;;
+UPDATE 43
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Apparently we also need to normalize Phil Thornton&amp;rsquo;s names to &lt;code&gt;Thornton, Philip K.&lt;/code&gt;:
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value ~ &#39;^Thornton[,\.]? P.*&#39;;
+     text_value      |              authority               | confidence
+---------------------+--------------------------------------+------------
+ Thornton, P         | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P K.      | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P K       | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton. P.K.      | 3e1e6639-d4fb-449e-9fce-ce06b5b0f702 |         -1
+ Thornton, P K .     | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P.K.      | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P.K       | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, Philip K  | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, Philip K. | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+ Thornton, P. K.     | 0d8369bb-57f7-4b2f-92aa-af820b183aca |        600
+(10 rows)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Seems his original authorities are using an incorrect version of the name so I need to generate another UUID and tie it to the correct name, then reindex:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set authority=&#39;2df8136e-d8f4-4142-b58c-562337cab764&#39;, text_value=&#39;Thornton, Philip K.&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value ~ &#39;^Thornton[,\.]? P.*&#39;;
+UPDATE 362
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It seems that, when you are messing with authority and author text values in the database, it is better to run authority reindex first (postgres→solr authority core) and then Discovery reindex (postgres→solr Discovery core)&lt;/li&gt;
+&lt;li&gt;Everything looks ok after authority and discovery reindex&lt;/li&gt;
+&lt;li&gt;In other news, I think we should really be using more RAM for PostgreSQL&amp;rsquo;s &lt;code&gt;shared_buffers&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The &lt;a href=&#34;https://www.postgresql.org/docs/9.5/static/runtime-config-resource.html&#34;&gt;PostgreSQL documentation&lt;/a&gt; recommends using 25% of the system&amp;rsquo;s RAM on dedicated systems, but we should use a bit less since we also have a massive JVM heap and also benefit from some RAM being used by the OS cache&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-12-09&#34;&gt;2016-12-09&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;More work on finishing rough draft of KM4Dev article&lt;/li&gt;
+&lt;li&gt;Set PostgreSQL&amp;rsquo;s &lt;code&gt;shared_buffers&lt;/code&gt; on CGSpace to 10% of system RAM (1200MB)&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
