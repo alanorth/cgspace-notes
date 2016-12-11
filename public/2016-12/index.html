@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="2376">
+<meta itemprop="wordCount" content="2622">
 
 
 
@@ -577,6 +577,52 @@ dspace=# update metadatavalue set authority='2df8136e-d8f4-4142-b58c-562337cab76
 
 <ul>
 <li>The authority IDs were different now than when I was looking a few days ago so I had to adjust them here</li>
+</ul>
+
+<h2 id="2016-12-11">2016-12-11</h2>
+
+<ul>
+<li>After enabling a sizable <code>shared_buffers</code> for CGSpace&rsquo;s PostgreSQL configuration the number of connections to the database dropped significantly</li>
+</ul>
+
+<p><img src="2016/12/postgres_bgwriter-week.png" alt="postgres_bgwriter-week" />
+<img src="2016/12/postgres_connections_ALL-week.png" alt="postgres_connections_ALL-week" /></p>
+
+<ul>
+<li>Looking at CIAT records from last week again, they have a lot of double authors like:</li>
+</ul>
+
+<pre><code>International Center for Tropical Agriculture::3026b1de-9302-4f3e-85ab-ef48da024eb2::600
+International Center for Tropical Agriculture::3026b1de-9302-4f3e-85ab-ef48da024eb2::500
+International Center for Tropical Agriculture::3026b1de-9302-4f3e-85ab-ef48da024eb2::0
+</code></pre>
+
+<ul>
+<li>Some in the same <code>dc.contributor.author</code> field, and some in others like <code>dc.contributor.author[en_US]</code> etc</li>
+<li>Removing the duplicates in OpenRefine and uploading a CSV to DSpace says &ldquo;no changes detected&rdquo;</li>
+<li>Seems like the only way to sortof clean these up would be to start in SQL:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like 'International Center for Tropical Agriculture';
+                  text_value                   |              authority               | confidence
+-----------------------------------------------+--------------------------------------+------------
+ International Center for Tropical Agriculture | cc726b78-a2f4-4ee9-af98-855c2ea31c36 |         -1
+ International Center for Tropical Agriculture |                                      |        600
+ International Center for Tropical Agriculture | 3026b1de-9302-4f3e-85ab-ef48da024eb2 |        500
+ International Center for Tropical Agriculture | cc726b78-a2f4-4ee9-af98-855c2ea31c36 |        600
+ International Center for Tropical Agriculture |                                      |         -1
+ International Center for Tropical Agriculture | cc726b78-a2f4-4ee9-af98-855c2ea31c36 |        500
+ International Center for Tropical Agriculture | 3026b1de-9302-4f3e-85ab-ef48da024eb2 |        600
+ International Center for Tropical Agriculture | 3026b1de-9302-4f3e-85ab-ef48da024eb2 |         -1
+ International Center for Tropical Agriculture | 3026b1de-9302-4f3e-85ab-ef48da024eb2 |          0
+dspace=# update metadatavalue set authority='3026b1de-9302-4f3e-85ab-ef48da024eb2', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value = 'International Center for Tropical Agriculture';
+UPDATE 1693
+dspace=# update metadatavalue set authority='3026b1de-9302-4f3e-85ab-ef48da024eb2', text_value='International Center for Tropical Agriculture', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like '%CIAT%';
+UPDATE 35
+</code></pre>
+
+<ul>
+<li>Work on article for KM4Dev journal</li>
 </ul>
 
 
