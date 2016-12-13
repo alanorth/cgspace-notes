@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="2622">
+<meta itemprop="wordCount" content="2969">
 
 
 
@@ -623,6 +623,46 @@ UPDATE 35
 
 <ul>
 <li>Work on article for KM4Dev journal</li>
+</ul>
+
+<h2 id="2016-12-13">2016-12-13</h2>
+
+<ul>
+<li>Checking in on CGSpace postgres stats again, looks like the <code>shared_buffers</code> change from a few days ago really made a big impact:</li>
+</ul>
+
+<p><img src="2016/12/postgres_bgwriter-week-2016-12-13.png" alt="postgres_bgwriter-week" />
+<img src="2016/12/postgres_connections_ALL-week-2016-12-13.png" alt="postgres_connections_ALL-week" /></p>
+
+<ul>
+<li>Looking at logs, it seems we need to evaluate which logs we keep and for how long</li>
+<li>Basically the only ones we <em>need</em> are <code>dspace.log</code> because those are used for legacy statistics (need to keep for 1 month)</li>
+<li>Other logs will be an issue because they don&rsquo;t have date stamps</li>
+<li>I will add date stamps to the logs we&rsquo;re storing from the tomcat7 user&rsquo;s cron jobs at least, using: <code>$(date --iso-8601)</code></li>
+<li>Would probably be better to make custom logrotate files for them in the future</li>
+<li>Clean up some unneeded log files from 2014 (they weren&rsquo;t large, just don&rsquo;t need them)</li>
+<li>So basically, new cron jobs for logs should look something like this:</li>
+<li>Find any file named <code>*.log*</code> that isn&rsquo;t <code>dspace.log*</code>, isn&rsquo;t already zipped, and is older than one day, and zip it:</li>
+</ul>
+
+<pre><code># find /home/dspacetest.cgiar.org/log -regextype posix-extended -iregex &quot;.*\.log.*&quot; ! -iregex &quot;.*dspace\.log.*&quot; ! -iregex &quot;.*\.(gz|lrz|lzo|xz)&quot; ! -newermt &quot;Yesterday&quot; -exec schedtool -B -e ionice -c2 -n7 xz {} \;
+</code></pre>
+
+<ul>
+<li>Since there is <code>xzgrep</code> and <code>xzless</code> we can actually just zip them after one day, why not?!</li>
+<li>We can keep the zipped ones for two weeks just in case we need to look for errors, etc, and delete them after that</li>
+<li>I use <code>schedtool -B</code> and <code>ionice -c2 -n7</code> to set the CPU scheduling to <code>SCHED_BATCH</code> and the IO to best effort which should, in theory, impact important system processes like Tomcat and PostgreSQL less</li>
+<li>When the tasks are running you can see that the policies do apply:</li>
+</ul>
+
+<pre><code>$ schedtool $(ps aux | grep &quot;xz /home&quot; | grep -v grep | awk '{print $2}') &amp;&amp; ionice -p $(ps aux | grep &quot;xz /home&quot; | grep -v grep | awk '{print $2}')
+PID 17049: PRIO   0, POLICY B: SCHED_BATCH   , NICE   0, AFFINITY 0xf
+best-effort: prio 7
+</code></pre>
+
+<ul>
+<li>All in all this should free up a few gigs (we were at 9.3GB free when I started)</li>
+<li>Next thing to look at is whether we need Tomcat&rsquo;s access logs</li>
 </ul>
 
 

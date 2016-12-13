@@ -528,6 +528,46 @@ UPDATE 35
 &lt;ul&gt;
 &lt;li&gt;Work on article for KM4Dev journal&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2016-12-13&#34;&gt;2016-12-13&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Checking in on CGSpace postgres stats again, looks like the &lt;code&gt;shared_buffers&lt;/code&gt; change from a few days ago really made a big impact:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;2016/12/postgres_bgwriter-week-2016-12-13.png&#34; alt=&#34;postgres_bgwriter-week&#34; /&gt;
+&lt;img src=&#34;2016/12/postgres_connections_ALL-week-2016-12-13.png&#34; alt=&#34;postgres_connections_ALL-week&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looking at logs, it seems we need to evaluate which logs we keep and for how long&lt;/li&gt;
+&lt;li&gt;Basically the only ones we &lt;em&gt;need&lt;/em&gt; are &lt;code&gt;dspace.log&lt;/code&gt; because those are used for legacy statistics (need to keep for 1 month)&lt;/li&gt;
+&lt;li&gt;Other logs will be an issue because they don&amp;rsquo;t have date stamps&lt;/li&gt;
+&lt;li&gt;I will add date stamps to the logs we&amp;rsquo;re storing from the tomcat7 user&amp;rsquo;s cron jobs at least, using: &lt;code&gt;$(date --iso-8601)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Would probably be better to make custom logrotate files for them in the future&lt;/li&gt;
+&lt;li&gt;Clean up some unneeded log files from 2014 (they weren&amp;rsquo;t large, just don&amp;rsquo;t need them)&lt;/li&gt;
+&lt;li&gt;So basically, new cron jobs for logs should look something like this:&lt;/li&gt;
+&lt;li&gt;Find any file named &lt;code&gt;*.log*&lt;/code&gt; that isn&amp;rsquo;t &lt;code&gt;dspace.log*&lt;/code&gt;, isn&amp;rsquo;t already zipped, and is older than one day, and zip it:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# find /home/dspacetest.cgiar.org/log -regextype posix-extended -iregex &amp;quot;.*\.log.*&amp;quot; ! -iregex &amp;quot;.*dspace\.log.*&amp;quot; ! -iregex &amp;quot;.*\.(gz|lrz|lzo|xz)&amp;quot; ! -newermt &amp;quot;Yesterday&amp;quot; -exec schedtool -B -e ionice -c2 -n7 xz {} \;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Since there is &lt;code&gt;xzgrep&lt;/code&gt; and &lt;code&gt;xzless&lt;/code&gt; we can actually just zip them after one day, why not?!&lt;/li&gt;
+&lt;li&gt;We can keep the zipped ones for two weeks just in case we need to look for errors, etc, and delete them after that&lt;/li&gt;
+&lt;li&gt;I use &lt;code&gt;schedtool -B&lt;/code&gt; and &lt;code&gt;ionice -c2 -n7&lt;/code&gt; to set the CPU scheduling to &lt;code&gt;SCHED_BATCH&lt;/code&gt; and the IO to best effort which should, in theory, impact important system processes like Tomcat and PostgreSQL less&lt;/li&gt;
+&lt;li&gt;When the tasks are running you can see that the policies do apply:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ schedtool $(ps aux | grep &amp;quot;xz /home&amp;quot; | grep -v grep | awk &#39;{print $2}&#39;) &amp;amp;&amp;amp; ionice -p $(ps aux | grep &amp;quot;xz /home&amp;quot; | grep -v grep | awk &#39;{print $2}&#39;)
+PID 17049: PRIO   0, POLICY B: SCHED_BATCH   , NICE   0, AFFINITY 0xf
+best-effort: prio 7
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;All in all this should free up a few gigs (we were at 9.3GB free when I started)&lt;/li&gt;
+&lt;li&gt;Next thing to look at is whether we need Tomcat&amp;rsquo;s access logs&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
