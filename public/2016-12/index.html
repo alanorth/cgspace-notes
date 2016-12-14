@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="2983">
+<meta itemprop="wordCount" content="3232">
 
 
 
@@ -664,6 +664,75 @@ best-effort: prio 7
 <li>All in all this should free up a few gigs (we were at 9.3GB free when I started)</li>
 <li>Next thing to look at is whether we need Tomcat&rsquo;s access logs</li>
 <li>I just looked and it seems that we saved 10GB by zipping these logs</li>
+<li>Some users pointed out issues with the &ldquo;most popular&rdquo; stats on a community or collection</li>
+<li>This error appears in the logs when you try to view them:</li>
+</ul>
+
+<pre><code>2016-12-13 21:17:37,486 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.NoSuchMethodError: com.atmire.statistics.generator.DSpaceObjectDatasetGenerator.toDatasetQuery(Lorg/dspace/core/Context;)Lcom/atmire/statistics/content/DatasetQuery;
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:972)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:852)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:882)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:789)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:650)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:731)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.dspace.app.xmlui.cocoon.SetCharacterEncodingFilter.doFilter(SetCharacterEncodingFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter.doFilter(DSpaceCocoonServletFilter.java:274)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.dspace.app.xmlui.cocoon.servlet.multipart.DSpaceMultipartFilter.doFilter(DSpaceMultipartFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.dspace.utils.servlet.DSpaceWebappServletFilter.doFilter(DSpaceWebappServletFilter.java:78)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:221)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:180)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:956)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.NoSuchMethodError: com.atmire.statistics.generator.DSpaceObjectDatasetGenerator.toDatasetQuery(Lorg/dspace/core/Context;)Lcom/atmire/statistics/content/DatasetQuery;
+	at com.atmire.statistics.generator.TopNDSODatasetGenerator.toDatasetQuery(SourceFile:39)
+	at com.atmire.statistics.display.StatisticsDataVisitsMultidata.createDataset(SourceFile:108)
+	at org.dspace.statistics.content.StatisticsDisplay.createDataset(SourceFile:384)
+	at org.dspace.statistics.content.StatisticsDisplay.getDataset(SourceFile:404)
+	at com.atmire.statistics.mostpopular.JSONStatsMostPopularGenerator.generateJsonData(SourceFile:170)
+	at com.atmire.statistics.mostpopular.JSONStatsMostPopularGenerator.generate(SourceFile:246)
+	at com.atmire.app.xmlui.aspect.statistics.JSONStatsMostPopular.generate(JSONStatsMostPopular.java:145)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</code></pre>
+
+<ul>
+<li>It happens on development and production, so I will have to ask Atmire</li>
+<li>Most likely an issue with installation/configuration</li>
+</ul>
+
+<h2 id="2016-12-14">2016-12-14</h2>
+
+<ul>
+<li>Atmire sent a quick fix for the <code>last-update.txt</code> file not found error</li>
+<li>After applying pull request <a href="https://github.com/ilri/DSpace/pull/291">#291</a> on DSpace Test I no longer see the error in the logs after the <code>UpdateSolrStorageReports</code> task runs</li>
+<li>Also, I&rsquo;m toying with the idea of moving the <code>tomcat7</code> user&rsquo;s cron jobs to <code>/etc/cron.d</code> so we can manage them in Ansible</li>
+<li>Made a pull request with a template for the cron jobs (<a href="https://github.com/ilri/rmg-ansible-public/pull/75">#75</a>)</li>
+<li>Testing SMTP from the new CGSpace server and it&rsquo;s not working, I&rsquo;ll have to tell James</li>
 </ul>
 
 
