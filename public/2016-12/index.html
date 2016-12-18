@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="3423">
+<meta itemprop="wordCount" content="3706">
 
 
 
@@ -751,6 +751,43 @@ Caused by: java.lang.NoSuchMethodError: com.atmire.statistics.generator.DSpaceOb
 
 <p><img src="2016/12/batch-edit1.png" alt="Select all items with &quot;rangelands&quot; in metadata" />
 <img src="2016/12/batch-edit2.png" alt="Add RANGELANDS ILRI subject" /></p>
+
+<h2 id="2016-12-18">2016-12-18</h2>
+
+<ul>
+<li>Add four new CRP subjects for 2017 and sort the input forms alphabetically (<a href="https://github.com/ilri/DSpace/pull/294">#294</a>)</li>
+<li>Test the SMTP on the new server and it&rsquo;s working</li>
+<li>Last week, when we asked CGNET to update the DNS records this weekend, they misunderstood and did it immediately</li>
+<li>We quickly told them to undo it, but I just realized they didn&rsquo;t undo the IPv6 AAAA record!</li>
+<li>None of our users in African institutes will have IPv6, but some Europeans might, so I need to check if any submissions have been added since then</li>
+<li>Update some names and authorities in the database:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set authority='5ff35043-942e-4d0a-b377-4daed6e3c1a3', confidence=600, text_value='Duncan, Alan' where resource_type_id=2 and metadata_field_id=3 and text_value ~ '^.*Duncan,? A.*';
+UPDATE 204
+dspace=# update metadatavalue set authority='46804b53-ea30-4a85-9ccf-b79a35816fa9', confidence=600, text_value='Mekonnen, Kindu' where resource_type_id=2 and metadata_field_id=3 and text_value like '%Mekonnen, K%';
+UPDATE 89
+dspace=# update metadatavalue set authority='f840da02-26e7-4a74-b7ba-3e2b723f3684', confidence=600, text_value='Lukuyu, Ben A.' where resource_type_id=2 and metadata_field_id=3 and text_value like '%Lukuyu, B%';
+UPDATE 140
+</code></pre>
+
+<ul>
+<li>Generated a new UUID for Ben using <code>uuidgen | tr [A-Z] [a-z]</code> as the one in Solr had his ORCID but the name format was incorrect</li>
+<li>In theory DSpace should be able to check names from ORCID and update the records in the database, but I find that this doesn&rsquo;t work (see Jira bug <a href="https://jira.duraspace.org/browse/DS-3302">DS-3302</a>)</li>
+<li>I need to run these updates along with the other one for CIAT that I found last week</li>
+<li>Enable OCSP stapling for hosts &gt;= Ubuntu 16.04 in our Ansible playbooks (<a href="https://github.com/ilri/rmg-ansible-public/pull/76">#76</a>)</li>
+<li>Working for DSpace Test on the second response:</li>
+</ul>
+
+<pre><code>$ openssl s_client -connect dspacetest.cgiar.org:443 -servername dspacetest.cgiar.org -tls1_2 -tlsextdebug -status
+...
+OCSP response: no response sent
+$ openssl s_client -connect dspacetest.cgiar.org:443 -servername dspacetest.cgiar.org -tls1_2 -tlsextdebug -status
+...
+OCSP Response Data:
+...
+    Cert Status: good
+</code></pre>
 
 
   
