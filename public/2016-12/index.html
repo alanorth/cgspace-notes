@@ -30,7 +30,7 @@
 
 
 <meta itemprop="dateModified" content="2016-12-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="3706">
+<meta itemprop="wordCount" content="3908">
 
 
 
@@ -788,6 +788,58 @@ OCSP Response Data:
 ...
     Cert Status: good
 </code></pre>
+
+<ul>
+<li>Migrate CGSpace to new server, roughly following these steps:</li>
+<li>On old server:</li>
+</ul>
+
+<pre><code># service tomcat7 stop
+# /home/backup/scripts/postgres_backup.sh
+</code></pre>
+
+<ul>
+<li>On new server:</li>
+</ul>
+
+<pre><code># systemctl stop tomcat7
+# rsync -4 -av --delete 178.79.187.182:/home/cgspace.cgiar.org/assetstore/ /home/cgspace.cgiar.org/assetstore/
+# rsync -4 -av --delete 178.79.187.182:/home/backup/ /home/backup/
+# rsync -4 -av --delete 178.79.187.182:/home/cgspace.cgiar.org/solr/ /home/cgspace.cgiar.org/solr
+# su - postgres
+$ dropdb cgspace
+$ createdb -O cgspace --encoding=UNICODE cgspace
+$ psql cgspace -c 'alter user cgspace createuser;'
+$ pg_restore -O -U cgspace -d cgspace -W -h localhost /home/backup/postgres/cgspace_2016-12-18.backup
+$ psql cgspace -c 'alter user cgspace nocreateuser;'
+$ psql -U cgspace -f ~tomcat7/src/git/DSpace/dspace/etc/postgres/update-sequences.sql cgspace -h localhost
+$ vacuumdb cgspace
+$ psql cgspace
+postgres=# \i /tmp/author-authority-updates-2016-12-11.sql
+postgres=# \q
+$ exit
+# chown -R tomcat7:tomcat7 /home/cgspace.cgiar.org
+# rsync -4 -av 178.79.187.182:/home/cgspace.cgiar.org/log/*.dat /home/cgspace.cgiar.org/log/
+# rsync -4 -av 178.79.187.182:/home/cgspace.cgiar.org/log/dspace.log.2016-1[12]* /home/cgspace.cgiar.org/log/
+# su - tomcat7
+$ cd src/git/DSpace/dspace/target/dspace-installer
+$ ant update clean_backups
+$ exit
+# systemctl start tomcat7
+</code></pre>
+
+<ul>
+<li>It took about twenty minutes and afterwards I had to check a few things, like:
+
+<ul>
+<li>check and enable systemd timer for let&rsquo;s encrypt</li>
+<li>enable root cron jobs</li>
+<li>disable root cron jobs on old server after!</li>
+<li>enable tomcat7 cron jobs</li>
+<li>disable tomcat7 cron jobs on old server after!</li>
+<li>regenerate <code>sitebndl.zip</code> with new IP for handle server and submit it to Handle.net</li>
+</ul></li>
+</ul>
 
 
   
