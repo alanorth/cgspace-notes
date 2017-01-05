@@ -24,6 +24,88 @@
 &lt;li&gt;I tested on DSpace Test as well and it doesn&amp;rsquo;t work there either&lt;/li&gt;
 &lt;li&gt;I asked on the dspace-tech mailing list because it seems to be broken, and actually now I&amp;rsquo;m not sure if we&amp;rsquo;ve ever had the sharding task run successfully over all these years&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;2017-01-04&#34;&gt;2017-01-04&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I tried to shard my local dev instance and it fails the same way:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ JAVA_OPTS=&amp;quot;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&amp;quot; ~/dspace/bin/dspace stats-util -s
+Moving: 9318 into core statistics-2016
+Exception: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
+org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:566)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+        at org.dspace.statistics.SolrLogger.shardSolrIndex(SourceFile:2291)
+        at org.dspace.statistics.util.StatisticsClient.main(StatisticsClient.java:106)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+Caused by: org.apache.http.client.ClientProtocolException
+        at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:867)
+        at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+        at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:106)
+        at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:57)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:448)
+        ... 10 more
+Caused by: org.apache.http.client.NonRepeatableRequestException: Cannot retry request with a non-repeatable request entity.  The cause lists the reason the original request failed.
+        at org.apache.http.impl.client.DefaultRequestDirector.tryExecute(DefaultRequestDirector.java:659)
+        at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:487)
+        at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:863)
+        ... 14 more
+Caused by: java.net.SocketException: Broken pipe (Write failed)
+        at java.net.SocketOutputStream.socketWrite0(Native Method)
+        at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:109)
+        at java.net.SocketOutputStream.write(SocketOutputStream.java:153)
+        at org.apache.http.impl.io.AbstractSessionOutputBuffer.write(AbstractSessionOutputBuffer.java:181)
+        at org.apache.http.impl.io.ChunkedOutputStream.flushCacheWithAppend(ChunkedOutputStream.java:124)
+        at org.apache.http.impl.io.ChunkedOutputStream.write(ChunkedOutputStream.java:181)
+        at org.apache.http.entity.InputStreamEntity.writeTo(InputStreamEntity.java:132)
+        at org.apache.http.entity.HttpEntityWrapper.writeTo(HttpEntityWrapper.java:89)
+        at org.apache.http.impl.client.EntityEnclosingRequestWrapper$EntityWrapper.writeTo(EntityEnclosingRequestWrapper.java:108)
+        at org.apache.http.impl.entity.EntitySerializer.serialize(EntitySerializer.java:117)
+        at org.apache.http.impl.AbstractHttpClientConnection.sendRequestEntity(AbstractHttpClientConnection.java:265)
+        at org.apache.http.impl.conn.ManagedClientConnectionImpl.sendRequestEntity(ManagedClientConnectionImpl.java:203)
+        at org.apache.http.protocol.HttpRequestExecutor.doSendRequest(HttpRequestExecutor.java:236)
+        at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:121)
+        at org.apache.http.impl.client.DefaultRequestDirector.tryExecute(DefaultRequestDirector.java:685)
+        ... 16 more
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And the DSpace log shows:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2016
+2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Moving: 9318 records into core statistics-2016
+2017-01-04 22:39:07,310 INFO  org.apache.http.impl.client.SystemDefaultHttpClient @ I/O exception (java.net.SocketException) caught when processing request to {}-&amp;gt;http://localhost:8081: Broken pipe (Write failed)
+2017-01-04 22:39:07,310 INFO  org.apache.http.impl.client.SystemDefaultHttpClient @ Retrying request to {}-&amp;gt;http://localhost:8081
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Despite failing instantly, a &lt;code&gt;statistics-2016&lt;/code&gt; directory was created, but it only has a data dir (no conf)&lt;/li&gt;
+&lt;li&gt;The Tomcat access logs show more:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &amp;quot;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;amp;wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 200 107
+127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &amp;quot;GET /solr/statistics/select?q=*%3A*&amp;amp;rows=0&amp;amp;facet=true&amp;amp;facet.range=time&amp;amp;facet.range.start=NOW%2FYEAR-17YEARS&amp;amp;facet.range.end=NOW%2FYEAR%2B0YEARS&amp;amp;facet.range.gap=%2B1YEAR&amp;amp;facet.mincount=1&amp;amp;wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 200 423
+127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &amp;quot;GET /solr/admin/cores?action=STATUS&amp;amp;core=statistics-2016&amp;amp;indexInfo=true&amp;amp;wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 200 77
+127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &amp;quot;GET /solr/admin/cores?action=CREATE&amp;amp;name=statistics-2016&amp;amp;instanceDir=statistics&amp;amp;dataDir=%2FUsers%2Faorth%2Fdspace%2Fsolr%2Fstatistics-2016%2Fdata&amp;amp;wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 200 63
+127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &amp;quot;GET /solr/statistics/select?csv.mv.separator=%7C&amp;amp;q=*%3A*&amp;amp;fq=time%3A%28%5B2016%5C-01%5C-01T00%5C%3A00%5C%3A00Z+TO+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%5D+NOT+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%29&amp;amp;rows=10000&amp;amp;wt=csv HTTP/1.1&amp;quot; 200 4359517
+127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &amp;quot;GET /solr/statistics/admin/luke?show=schema&amp;amp;wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 200 16248
+127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &amp;quot;POST /solr//statistics-2016/update/csv?commit=true&amp;amp;softCommit=false&amp;amp;waitSearcher=true&amp;amp;f.previousWorkflowStep.split=true&amp;amp;f.previousWorkflowStep.separator=%7C&amp;amp;f.previousWorkflowStep.encapsulator=%22&amp;amp;f.actingGroupId.split=true&amp;amp;f.actingGroupId.separator=%7C&amp;amp;f.actingGroupId.encapsulator=%22&amp;amp;f.containerCommunity.split=true&amp;amp;f.containerCommunity.separator=%7C&amp;amp;f.containerCommunity.encapsulator=%22&amp;amp;f.range.split=true&amp;amp;f.range.separator=%7C&amp;amp;f.range.encapsulator=%22&amp;amp;f.containerItem.split=true&amp;amp;f.containerItem.separator=%7C&amp;amp;f.containerItem.encapsulator=%22&amp;amp;f.p_communities_map.split=true&amp;amp;f.p_communities_map.separator=%7C&amp;amp;f.p_communities_map.encapsulator=%22&amp;amp;f.ngram_query_search.split=true&amp;amp;f.ngram_query_search.separator=%7C&amp;amp;f.ngram_query_search.encapsulator=%22&amp;amp;f.containerBitstream.split=true&amp;amp;f.containerBitstream.separator=%7C&amp;amp;f.containerBitstream.encapsulator=%22&amp;amp;f.owningItem.split=true&amp;amp;f.owningItem.separator=%7C&amp;amp;f.owningItem.encapsulator=%22&amp;amp;f.actingGroupParentId.split=true&amp;amp;f.actingGroupParentId.separator=%7C&amp;amp;f.actingGroupParentId.encapsulator=%22&amp;amp;f.text.split=true&amp;amp;f.text.separator=%7C&amp;amp;f.text.encapsulator=%22&amp;amp;f.simple_query_search.split=true&amp;amp;f.simple_query_search.separator=%7C&amp;amp;f.simple_query_search.encapsulator=%22&amp;amp;f.owningComm.split=true&amp;amp;f.owningComm.separator=%7C&amp;amp;f.owningComm.encapsulator=%22&amp;amp;f.owner.split=true&amp;amp;f.owner.separator=%7C&amp;amp;f.owner.encapsulator=%22&amp;amp;f.filterquery.split=true&amp;amp;f.filterquery.separator=%7C&amp;amp;f.filterquery.encapsulator=%22&amp;amp;f.p_group_map.split=true&amp;amp;f.p_group_map.separator=%7C&amp;amp;f.p_group_map.encapsulator=%22&amp;amp;f.actorMemberGroupId.split=true&amp;amp;f.actorMemberGroupId.separator=%7C&amp;amp;f.actorMemberGroupId.encapsulator=%22&amp;amp;f.bitstreamId.split=true&amp;amp;f.bitstreamId.separator=%7C&amp;amp;f.bitstreamId.encapsulator=%22&amp;amp;f.group_name.split=true&amp;amp;f.group_name.separator=%7C&amp;amp;f.group_name.encapsulator=%22&amp;amp;f.p_communities_name.split=true&amp;amp;f.p_communities_name.separator=%7C&amp;amp;f.p_communities_name.encapsulator=%22&amp;amp;f.query.split=true&amp;amp;f.query.separator=%7C&amp;amp;f.query.encapsulator=%22&amp;amp;f.workflowStep.split=true&amp;amp;f.workflowStep.separator=%7C&amp;amp;f.workflowStep.encapsulator=%22&amp;amp;f.containerCollection.split=true&amp;amp;f.containerCollection.separator=%7C&amp;amp;f.containerCollection.encapsulator=%22&amp;amp;f.complete_query_search.split=true&amp;amp;f.complete_query_search.separator=%7C&amp;amp;f.complete_query_search.encapsulator=%22&amp;amp;f.p_communities_id.split=true&amp;amp;f.p_communities_id.separator=%7C&amp;amp;f.p_communities_id.encapsulator=%22&amp;amp;f.rangeDescription.split=true&amp;amp;f.rangeDescription.separator=%7C&amp;amp;f.rangeDescription.encapsulator=%22&amp;amp;f.group_id.split=true&amp;amp;f.group_id.separator=%7C&amp;amp;f.group_id.encapsulator=%22&amp;amp;f.bundleName.split=true&amp;amp;f.bundleName.separator=%7C&amp;amp;f.bundleName.encapsulator=%22&amp;amp;f.ngram_simplequery_search.split=true&amp;amp;f.ngram_simplequery_search.separator=%7C&amp;amp;f.ngram_simplequery_search.encapsulator=%22&amp;amp;f.group_map.split=true&amp;amp;f.group_map.separator=%7C&amp;amp;f.group_map.encapsulator=%22&amp;amp;f.owningColl.split=true&amp;amp;f.owningColl.separator=%7C&amp;amp;f.owningColl.encapsulator=%22&amp;amp;f.p_group_id.split=true&amp;amp;f.p_group_id.separator=%7C&amp;amp;f.p_group_id.encapsulator=%22&amp;amp;f.p_group_name.split=true&amp;amp;f.p_group_name.separator=%7C&amp;amp;f.p_group_name.encapsulator=%22&amp;amp;wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 409 156
+127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &amp;quot;POST /solr/datatables/update?wt=javabin&amp;amp;version=2 HTTP/1.1&amp;quot; 200 41
+127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &amp;quot;POST /solr/datatables/update HTTP/1.1&amp;quot; 200 40
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Very interesting&amp;hellip; it creates the core and then fails somehow&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
