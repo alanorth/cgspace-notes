@@ -28,7 +28,7 @@
 
 
 <meta itemprop="dateModified" content="2017-01-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="492">
+<meta itemprop="wordCount" content="605">
 
 
 
@@ -220,6 +220,24 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <ul>
 <li>I tried to clean up the duplicate mappings by exporting the item&rsquo;s metadata to CSV, editing, and re-importing, but DSpace said &ldquo;no changes were detected&rdquo;</li>
 <li>I&rsquo;ve asked on the dspace-tech mailing list to see if anyone can help</li>
+<li>I found an old post on the mailing list discussing a similar issue, and listing some SQL commands that might help</li>
+<li>For example, this shows 186 mappings for the item, the first three of which are real:</li>
+</ul>
+
+<pre><code>dspace=#  select * from collection2item where item_id = '80596';
+</code></pre>
+
+<ul>
+<li>Then I deleted the others:</li>
+</ul>
+
+<pre><code>dspace=# delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
+</code></pre>
+
+<ul>
+<li>And in the item view it now shows the correct mappings</li>
+<li>I will have to ask the DSpace people if this is a valid approach</li>
+<li>Finish looking at the Journal Title corrections of the top 500 Journal Titles so we can make a controlled vocabulary from it</li>
 </ul>
 
 

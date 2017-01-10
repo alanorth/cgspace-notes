@@ -126,6 +126,24 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 &lt;ul&gt;
 &lt;li&gt;I tried to clean up the duplicate mappings by exporting the item&amp;rsquo;s metadata to CSV, editing, and re-importing, but DSpace said &amp;ldquo;no changes were detected&amp;rdquo;&lt;/li&gt;
 &lt;li&gt;I&amp;rsquo;ve asked on the dspace-tech mailing list to see if anyone can help&lt;/li&gt;
+&lt;li&gt;I found an old post on the mailing list discussing a similar issue, and listing some SQL commands that might help&lt;/li&gt;
+&lt;li&gt;For example, this shows 186 mappings for the item, the first three of which are real:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=#  select * from collection2item where item_id = &#39;80596&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Then I deleted the others:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# delete from collection2item where item_id = &#39;80596&#39; and id not in (90792, 90806, 90807);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And in the item view it now shows the correct mappings&lt;/li&gt;
+&lt;li&gt;I will have to ask the DSpace people if this is a valid approach&lt;/li&gt;
+&lt;li&gt;Finish looking at the Journal Title corrections of the top 500 Journal Titles so we can make a controlled vocabulary from it&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
@@ -136,9 +154,7 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
       <pubDate>Fri, 02 Dec 2016 10:43:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-12/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-12-02&#34;&gt;2016-12-02&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-12-02&#34;&gt;2016-12-02&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CGSpace was down for five hours in the morning while I was sleeping&lt;/li&gt;
@@ -157,6 +173,8 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 &lt;li&gt;I&amp;rsquo;ve raised a ticket with Atmire to ask&lt;/li&gt;
 &lt;li&gt;Another worrying error from dspace.log is:&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.NoSuchMethodError: com.atmire.statistics.generator.DSpaceObjectDatasetGenerator.toDatasetQuery(Lorg/dspace/core/Context;)Lcom/atmire/statistics/content/DatasetQuery;
         at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:972)
@@ -891,8 +909,7 @@ $ exit
 
 &lt;ul&gt;
 &lt;li&gt;I will have to check later why the size keeps increasing&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -901,15 +918,15 @@ $ exit
       <pubDate>Tue, 01 Nov 2016 09:21:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-11/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-11-01&#34;&gt;2016-11-01&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-11-01&#34;&gt;2016-11-01&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Add &lt;code&gt;dc.type&lt;/code&gt; to the output options for Atmire&amp;rsquo;s Listings and Reports module (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/286&#34;&gt;#286&lt;/a&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2016/11/listings-and-reports.png&#34; alt=&#34;Listings and Reports with output type&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2016-11-02&#34;&gt;2016-11-02&lt;/h2&gt;
 
@@ -1444,8 +1461,7 @@ org.dspace.discovery.SearchServiceException: Error executing query
 &lt;li&gt;The &lt;code&gt;maxHttpHeaderSize&lt;/code&gt; fix worked on CGSpace (user is able to see the community list on the homepage)&lt;/li&gt;
 &lt;li&gt;The &amp;ldquo;take task&amp;rdquo; cache fix worked on DSpace Test but it&amp;rsquo;s not an official patch, so I&amp;rsquo;ll have to report the bug to DSpace people and try to get advice&lt;/li&gt;
 &lt;li&gt;More work on the KM4Dev Journal article&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -1454,9 +1470,7 @@ org.dspace.discovery.SearchServiceException: Error executing query
       <pubDate>Mon, 03 Oct 2016 15:53:00 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2016-10/</guid>
-      <description>
-
-&lt;h2 id=&#34;2016-10-03&#34;&gt;2016-10-03&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;2016-10-03&#34;&gt;2016-10-03&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Testing adding &lt;a href=&#34;https://wiki.duraspace.org/display/DSDOC5x/ORCID+Integration#ORCIDIntegration-EditingexistingitemsusingBatchCSVEditing&#34;&gt;ORCIDs to a CSV&lt;/a&gt; file for a single item to see if the author orders get messed up&lt;/li&gt;
@@ -1471,6 +1485,8 @@ org.dspace.discovery.SearchServiceException: Error executing query
 
 &lt;pre&gt;&lt;code&gt;0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Hmm, with the &lt;code&gt;dc.contributor.author&lt;/code&gt; column removed, DSpace doesn&amp;rsquo;t detect any changes&lt;/li&gt;
@@ -1765,8 +1781,7 @@ dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;h
 
 &lt;ul&gt;
 &lt;li&gt;I skipped metadata fields like citation and description&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
