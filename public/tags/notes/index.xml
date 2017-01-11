@@ -150,6 +150,42 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 
 &lt;ul&gt;
 &lt;li&gt;Maria found another item with duplicate mappings: &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/78658&#34;&gt;https://cgspace.cgiar.org/handle/10568/78658&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Error in &lt;code&gt;fix-metadata-values.py&lt;/code&gt; when it tries to print the value for Entwicklung &amp;amp; Ländlicher Raum:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Traceback (most recent call last):
+  File &amp;quot;./fix-metadata-values.py&amp;quot;, line 80, in &amp;lt;module&amp;gt;
+    print(&amp;quot;Fixing {} occurences of: {}&amp;quot;.format(records_to_fix, record[0]))
+UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode character u&#39;\xe4&#39; in position 15: ordinal not in range(128)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Seems we need to encode as UTF-8 before printing to screen, ie:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;print(&amp;quot;Fixing {} occurences of: {}&amp;quot;.format(records_to_fix, record[0].encode(&#39;utf-8&#39;)))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;See: &lt;a href=&#34;http://stackoverflow.com/a/36427358/487333&#34;&gt;http://stackoverflow.com/a/36427358/487333&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m actually not sure if we need to encode() the strings to UTF-8 before writing them to the database&amp;hellip; I&amp;rsquo;ve never had this issue before&lt;/li&gt;
+&lt;li&gt;Now back to cleaning up some journal titles so we can make the controlled vocabulary:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace-u dspace-p &#39;fuuu&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Now get the top 500 journal titles:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by cou
+nt desc limit 500) to /tmp/journal-titles.csv with csv;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The values are a bit dirty and outdated, since the file I had given to Abenet and Peter was from November&lt;/li&gt;
+&lt;li&gt;I will have to go through these and fix some more before making the controlled vocabulary&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>

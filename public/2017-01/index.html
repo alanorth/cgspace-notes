@@ -28,7 +28,7 @@
 
 
 <meta itemprop="dateModified" content="2017-01-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="614">
+<meta itemprop="wordCount" content="804">
 
 
 
@@ -244,6 +244,42 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 
 <ul>
 <li>Maria found another item with duplicate mappings: <a href="https://cgspace.cgiar.org/handle/10568/78658">https://cgspace.cgiar.org/handle/10568/78658</a></li>
+<li>Error in <code>fix-metadata-values.py</code> when it tries to print the value for Entwicklung &amp; Ländlicher Raum:</li>
+</ul>
+
+<pre><code>Traceback (most recent call last):
+  File &quot;./fix-metadata-values.py&quot;, line 80, in &lt;module&gt;
+    print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0]))
+UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15: ordinal not in range(128)
+</code></pre>
+
+<ul>
+<li>Seems we need to encode as UTF-8 before printing to screen, ie:</li>
+</ul>
+
+<pre><code>print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0].encode('utf-8')))
+</code></pre>
+
+<ul>
+<li>See: <a href="http://stackoverflow.com/a/36427358/487333">http://stackoverflow.com/a/36427358/487333</a></li>
+<li>I&rsquo;m actually not sure if we need to encode() the strings to UTF-8 before writing them to the database&hellip; I&rsquo;ve never had this issue before</li>
+<li>Now back to cleaning up some journal titles so we can make the controlled vocabulary:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace-u dspace-p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Now get the top 500 journal titles:</li>
+</ul>
+
+<pre><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by cou
+nt desc limit 500) to /tmp/journal-titles.csv with csv;
+</code></pre>
+
+<ul>
+<li>The values are a bit dirty and outdated, since the file I had given to Abenet and Peter was from November</li>
+<li>I will have to go through these and fix some more before making the controlled vocabulary</li>
 </ul>
 
 
