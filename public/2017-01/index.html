@@ -28,7 +28,7 @@
 
 
 <meta itemprop="dateModified" content="2017-01-02T10:43:00&#43;03:00" />
-<meta itemprop="wordCount" content="884">
+<meta itemprop="wordCount" content="1104">
 
 
 
@@ -299,6 +299,43 @@ nt desc limit 500) to /tmp/journal-titles.csv with csv;
 delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
 /* 1 incorrect mapping: https://cgspace.cgiar.org/handle/10568/78658 */
 delete from collection2item where id = '91082';
+</code></pre>
+
+<h2 id="2017-01-17">2017-01-17</h2>
+
+<ul>
+<li>Helping clean up some file names in the 232 CIAT records that Sisay worked on last week</li>
+<li>There are about 30 files with <code>%20</code> (space) and Spanish accents in the file name</li>
+<li>At first I thought we should fix these, but actually it is <a href="https://www.w3.org/TR/html4/appendix/notes.html#h-B.2.1">prescribed by the W3 working group to convert these to UTF8 and URL encode them</a>!</li>
+<li>And the file names don&rsquo;t really matter either, as long as the SAF Builder tool can read them—after that DSpace renames them with a hash in the assetstore</li>
+<li>Seems like the only ones I should replace are the <code>'</code> apostrophe characters, as <code>%27</code>:</li>
+</ul>
+
+<pre><code>value.replace(&quot;'&quot;,'%27')
+</code></pre>
+
+<ul>
+<li>Add the item&rsquo;s Type to the filename column as a hint to SAF Builder so it can set a more useful description field:</li>
+</ul>
+
+<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+</code></pre>
+
+<ul>
+<li>Test importing of the new CIAT records (actually there are 232, not 234):</li>
+</ul>
+
+<pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568
+/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
+</code></pre>
+
+<ul>
+<li>Many of the PDFs are 20, 30, 40, 50+ MB, which makes a total of 4GB</li>
+<li>These are scanned from paper and likely have no compression, so we should try to test if these compression techniques help without comprimising the quality too much:</li>
+</ul>
+
+<pre><code>$ convert -compress Zip -density 150x150 input.pdf output.pdf
+$ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf
 </code></pre>
 
 

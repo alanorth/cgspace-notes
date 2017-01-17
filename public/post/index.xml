@@ -207,6 +207,43 @@ delete from collection2item where item_id = &#39;80596&#39; and id not in (90792
 /* 1 incorrect mapping: https://cgspace.cgiar.org/handle/10568/78658 */
 delete from collection2item where id = &#39;91082&#39;;
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2017-01-17&#34;&gt;2017-01-17&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Helping clean up some file names in the 232 CIAT records that Sisay worked on last week&lt;/li&gt;
+&lt;li&gt;There are about 30 files with &lt;code&gt;%20&lt;/code&gt; (space) and Spanish accents in the file name&lt;/li&gt;
+&lt;li&gt;At first I thought we should fix these, but actually it is &lt;a href=&#34;https://www.w3.org/TR/html4/appendix/notes.html#h-B.2.1&#34;&gt;prescribed by the W3 working group to convert these to UTF8 and URL encode them&lt;/a&gt;!&lt;/li&gt;
+&lt;li&gt;And the file names don&amp;rsquo;t really matter either, as long as the SAF Builder tool can read them—after that DSpace renames them with a hash in the assetstore&lt;/li&gt;
+&lt;li&gt;Seems like the only ones I should replace are the &lt;code&gt;&#39;&lt;/code&gt; apostrophe characters, as &lt;code&gt;%27&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;value.replace(&amp;quot;&#39;&amp;quot;,&#39;%27&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Add the item&amp;rsquo;s Type to the filename column as a hint to SAF Builder so it can set a more useful description field:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;value + &amp;quot;__description:&amp;quot; + cells[&amp;quot;dc.type&amp;quot;].value
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Test importing of the new CIAT records (actually there are 232, not 234):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ JAVA_OPTS=&amp;quot;-Xmx512m -Dfile.encoding=UTF-8&amp;quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568
+/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;amp;&amp;gt; /tmp/ciat.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Many of the PDFs are 20, 30, 40, 50+ MB, which makes a total of 4GB&lt;/li&gt;
+&lt;li&gt;These are scanned from paper and likely have no compression, so we should try to test if these compression techniques help without comprimising the quality too much:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ convert -compress Zip -density 150x150 input.pdf output.pdf
+$ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
