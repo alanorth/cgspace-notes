@@ -180,8 +180,7 @@ UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode character u&#39;\xe4&
 &lt;li&gt;Now get the top 500 journal titles:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by cou
-nt desc limit 500) to /tmp/journal-titles.csv with csv;
+&lt;pre&gt;&lt;code&gt;dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -232,8 +231,7 @@ delete from collection2item where id = &#39;91082&#39;;
 &lt;li&gt;Test importing of the new CIAT records (actually there are 232, not 234):&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;$ JAVA_OPTS=&amp;quot;-Xmx512m -Dfile.encoding=UTF-8&amp;quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568
-/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;amp;&amp;gt; /tmp/ciat.log
+&lt;pre&gt;&lt;code&gt;$ JAVA_OPTS=&amp;quot;-Xmx512m -Dfile.encoding=UTF-8&amp;quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;amp;&amp;gt; /tmp/ciat.log
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -292,7 +290,19 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/fix-49-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p &#39;password&#39;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Create a new list of the top 500 journal titles from the database:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Then sort them in OpenRefine and create a controlled vocabulary by manually adding the XML markup, pull request (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/298&#34;&gt;#298&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;This would be the last issue remaining to close the meta issue about switching to controlled vocabularies (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/69&#34;&gt;#69&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
