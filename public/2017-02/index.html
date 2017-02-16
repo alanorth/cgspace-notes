@@ -92,7 +92,7 @@ Looks like we&rsquo;ll be using cg.identifier.ccafsprojectpii as the field name
   
   "headline": "February, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-02/",
-  "wordCount": "713",
+  "wordCount": "774",
   
   
   "datePublished": "2017-02-07T07:04:52-08:00",
@@ -289,14 +289,21 @@ UPDATE 58193
 <li>I noticed a few items that have incorrect DOI links (<code>dc.identifier.doi</code>), and after looking in the database I see there are over 100 that are missing the scheme or are just plain wrong:</li>
 </ul>
 
-<pre><code>dspace=# select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id=220 and text_value not like 'http%://%';
+<pre><code>dspace=# select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value not like 'http%://%';
 </code></pre>
 
 <ul>
-<li>This will replace any that begin with <code>10.</code>:</li>
+<li>This will replace any that begin with <code>10.</code> and change them to <code>https://dx.doi.org/10.</code>:</li>
 </ul>
 
 <pre><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '(^10\..+$)', 'https://dx.doi.org/\1') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like '10.%';
+</code></pre>
+
+<ul>
+<li>This will get any that begin with <code>doi:10.</code> and change them to <code>https://dx.doi.org/10.x</code>:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '^doi:(10\..+$)', 'https://dx.doi.org/\1') where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like 'doi:10%';
 </code></pre>
 
   

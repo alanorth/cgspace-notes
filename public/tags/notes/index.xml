@@ -136,14 +136,21 @@ UPDATE 58193
 &lt;li&gt;I noticed a few items that have incorrect DOI links (&lt;code&gt;dc.identifier.doi&lt;/code&gt;), and after looking in the database I see there are over 100 that are missing the scheme or are just plain wrong:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;dspace=# select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id=220 and text_value not like &#39;http%://%&#39;;
+&lt;pre&gt;&lt;code&gt;dspace=# select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value not like &#39;http%://%&#39;;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
-&lt;li&gt;This will replace any that begin with &lt;code&gt;10.&lt;/code&gt;:&lt;/li&gt;
+&lt;li&gt;This will replace any that begin with &lt;code&gt;10.&lt;/code&gt; and change them to &lt;code&gt;https://dx.doi.org/10.&lt;/code&gt;:&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^10\..+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;10.%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This will get any that begin with &lt;code&gt;doi:10.&lt;/code&gt; and change them to &lt;code&gt;https://dx.doi.org/10.x&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;^doi:(10\..+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;doi:10%&#39;;
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
