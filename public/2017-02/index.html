@@ -92,7 +92,7 @@ Looks like we&rsquo;ll be using cg.identifier.ccafsprojectpii as the field name
   
   "headline": "February, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-02/",
-  "wordCount": "553",
+  "wordCount": "629",
   
   
   "datePublished": "2017-02-07T07:04:52-08:00",
@@ -267,6 +267,26 @@ DELETE 1
 </ul>
 
 <p><img src="/cgspace-notes/2017/02/cpu-week.png" alt="CGSpace CPU" /></p>
+
+<ul>
+<li>Fix issue with duplicate declaration of in atmire-dspace-xmlui <code>pom.xml</code> (causing non-fatal warnings during the maven build)</li>
+<li>Experiment with making DSpace generate HTTPS handle links, first a change in dspace.cfg or the site&rsquo;s properties file:</li>
+</ul>
+
+<pre><code>handle.canonical.prefix = https://hdl.handle.net/
+</code></pre>
+
+<ul>
+<li>And then a SQL command to update existing records:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://hdl.handle.net', 'https://hdl.handle.net') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'uri');
+UPDATE 58193
+</code></pre>
+
+<ul>
+<li>Seems to work fine!</li>
+</ul>
 
   
 

@@ -114,7 +114,27 @@ DELETE 1
 &lt;li&gt;Especially because we only use 2 out of 8 CPUs basically:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2017/02/cpu-week.png&#34; alt=&#34;CGSpace CPU&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2017/02/cpu-week.png&#34; alt=&#34;CGSpace CPU&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix issue with duplicate declaration of in atmire-dspace-xmlui &lt;code&gt;pom.xml&lt;/code&gt; (causing non-fatal warnings during the maven build)&lt;/li&gt;
+&lt;li&gt;Experiment with making DSpace generate HTTPS handle links, first a change in dspace.cfg or the site&amp;rsquo;s properties file:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;handle.canonical.prefix = https://hdl.handle.net/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And then a SQL command to update existing records:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://hdl.handle.net&#39;, &#39;https://hdl.handle.net&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;uri&#39;);
+UPDATE 58193
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Seems to work fine!&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
