@@ -152,7 +152,59 @@ UPDATE 58193
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;^doi:(10\..+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;doi:10%&#39;;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix DOIs like &lt;code&gt;dx.doi.org/10.&lt;/code&gt; to be &lt;code&gt;https://dx.doi.org/10.&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^dx.doi.org/.+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;dx.doi.org/%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix DOIs like &lt;code&gt;http//&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;^http//(dx.doi.org/.+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;http//%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix DOIs like &lt;code&gt;dx.doi.org./&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^dx.doi.org\./.+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;dx.doi.org./%&#39;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Delete some invalid DOIs:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value in (&#39;DOI&#39;,&#39;CPWF Mekong&#39;,&#39;Bulawayo, Zimbabwe&#39;,&#39;bb&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fix some other random outliers:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.1016/j.aquaculture.2015.09.003&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;http:/dx.doi.org/10.1016/j.aquaculture.2015.09.003&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.5337/2016.200&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;doi: https://dx.doi.org/10.5337/2016.200&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/doi:10.1371/journal.pone.0062898&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;Http://dx.doi.org/doi:10.1371/journal.pone.0062898&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.10.1016/j.cosust.2013.11.012&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;http:dx.doi.10.1016/j.cosust.2013.11.012&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.1080/03632415.2014.883570&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;org/10.1080/03632415.2014.883570&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.15446/agron.colomb.v32n3.46052&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;Doi: 10.15446/agron.colomb.v32n3.46052&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And do another round of &lt;code&gt;http://&lt;/code&gt; → &lt;code&gt;https://&lt;/code&gt; cleanups:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://dx.doi.org&#39;, &#39;https://dx.doi.org&#39;) where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;http://dx.doi.org%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Run all DOI corrections on CGSpace&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
