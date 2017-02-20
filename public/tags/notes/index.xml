@@ -218,6 +218,20 @@ dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.15446/
 &lt;li&gt;Fix label of CCAFS subjects in Atmire Listings and Reports module&lt;/li&gt;
 &lt;li&gt;Help Sisay with SQL commands&lt;/li&gt;
 &lt;li&gt;Help Paola from CCAFS with the Atmire Listings and Reports module&lt;/li&gt;
+&lt;li&gt;Testing the &lt;code&gt;fix-metadata-values.py&lt;/code&gt; script on macOS and it seems like we don&amp;rsquo;t need to use &lt;code&gt;.encode(&#39;utf-8&#39;)&lt;/code&gt; anymore when printing strings to the screen&lt;/li&gt;
+&lt;li&gt;It seems this might have only been a temporary problem, as both Python 3.5.2 and 3.6.0 are able to print the problematic string &amp;ldquo;Entwicklung &amp;amp; Ländlicher Raum&amp;rdquo; without the &lt;code&gt;encode()&lt;/code&gt; call, but print it as a bytes when it &lt;em&gt;is&lt;/em&gt; used:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ python
+Python 3.6.0 (default, Dec 25 2016, 17:30:53)
+&amp;gt;&amp;gt;&amp;gt; print(&#39;Entwicklung &amp;amp; Ländlicher Raum&#39;)
+Entwicklung &amp;amp; Ländlicher Raum
+&amp;gt;&amp;gt;&amp;gt; print(&#39;Entwicklung &amp;amp; Ländlicher Raum&#39;.encode())
+b&#39;Entwicklung &amp;amp; L\xc3\xa4ndlicher Raum&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So for now I will remove the encode call from the script (though it was never used on the versions on the Linux hosts), leading me to believe it really &lt;em&gt;was&lt;/em&gt; a temporary problem, perhaps due to macOS or the Python build I was using.&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
