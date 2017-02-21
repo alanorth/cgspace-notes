@@ -92,7 +92,7 @@ Looks like we&rsquo;ll be using cg.identifier.ccafsprojectpii as the field name
   
   "headline": "February, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-02/",
-  "wordCount": "1347",
+  "wordCount": "1459",
   
   
   "datePublished": "2017-02-07T07:04:52-08:00",
@@ -385,6 +385,33 @@ b'Entwicklung &amp; L\xc3\xa4ndlicher Raum'
 
 <ul>
 <li>So for now I will remove the encode call from the script (though it was never used on the versions on the Linux hosts), leading me to believe it really <em>was</em> a temporary problem, perhaps due to macOS or the Python build I was using.</li>
+</ul>
+
+<h2 id="2017-02-21">2017-02-21</h2>
+
+<ul>
+<li>Testing regenerating PDF thumbnails, like I started in 2016-11</li>
+<li>It seems there is a bug in <code>filter-media</code> that causes it to process formats that aren&rsquo;t part of its configuration:</li>
+</ul>
+
+<pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16856 -p &quot;ImageMagick PDF Thumbnail&quot;
+File: earlywinproposal_esa_postharvest.pdf.jpg
+FILTERED: bitstream 13787 (item: 10568/16881) and created 'earlywinproposal_esa_postharvest.pdf.jpg'
+File: postHarvest.jpg.jpg
+FILTERED: bitstream 16524 (item: 10568/24655) and created 'postHarvest.jpg.jpg'
+</code></pre>
+
+<ul>
+<li>According to <code>dspace.cfg</code> the ImageMagick PDF Thumbnail plugin should only process PDFs:</li>
+</ul>
+
+<pre><code>filter.org.dspace.app.mediafilter.ImageMagickImageThumbnailFilter.inputFormats = BMP, GIF, image/png, JPG, TIFF, JPEG, JPEG 2000
+filter.org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.inputFormats = Adobe PDF
+</code></pre>
+
+<ul>
+<li>I&rsquo;ve sent a message to the mailing list and might file a Jira issue</li>
+<li>Ask Atmire about the failed interpolation of the <code>dspace.internalUrl</code> variable in <code>atmire-cua.cfg</code></li>
 </ul>
 
   
