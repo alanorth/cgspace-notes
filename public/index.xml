@@ -267,6 +267,22 @@ filter.org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.inputFormats = A
 &lt;ul&gt;
 &lt;li&gt;Atmire said I can add &lt;code&gt;dspace.internalUrl&lt;/code&gt; to my build properties and the error will go away&lt;/li&gt;
 &lt;li&gt;It should be the local URL for accessing Tomcat from the server&amp;rsquo;s own perspective, ie: &lt;a href=&#34;http://localhost:8080&#34;&gt;http://localhost:8080&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2017-02-26&#34;&gt;2017-02-26&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Find all fields with &amp;ldquo;&lt;a href=&#34;http://hdl.handle.net&amp;quot;&#34;&gt;http://hdl.handle.net&amp;quot;&lt;/a&gt; values (most are in &lt;code&gt;dc.identifier.uri&lt;/code&gt;, but some are in other URL-related fields like &lt;code&gt;cg.link.reference&lt;/code&gt;, &lt;code&gt;cg.identifier.dataurl&lt;/code&gt;, and &lt;code&gt;cg.identifier.url&lt;/code&gt;):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select distinct metadata_field_id from metadatavalue where resource_type_id=2 and text_value like &#39;http://hdl.handle.net%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://hdl.handle.net&#39;, &#39;https://hdl.handle.net&#39;) where resource_type_id=2 and metadata_field_id IN (25, 113, 179, 219, 220, 223) and text_value like &#39;http://hdl.handle.net%&#39;;
+UPDATE 58633
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This works but I&amp;rsquo;m thinking I&amp;rsquo;ll wait on the replacement as there are perhaps some other places that rely on &lt;code&gt;http://hdl.handle.net&lt;/code&gt; (grep the code, it&amp;rsquo;s scary how many things are hard coded)&lt;/li&gt;
+&lt;li&gt;Send message to dspace-tech mailing list with concerns about this&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
