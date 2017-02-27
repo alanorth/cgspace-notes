@@ -92,7 +92,7 @@ Looks like we&rsquo;ll be using cg.identifier.ccafsprojectpii as the field name
   
   "headline": "February, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-02/",
-  "wordCount": "1662",
+  "wordCount": "1822",
   
   
   "datePublished": "2017-02-07T07:04:52-08:00",
@@ -460,6 +460,45 @@ Certificate chain
 
 <ul>
 <li>For some reason it is now signed by a private certificate authority</li>
+<li>This error seems to have started on 2017-02-25:</li>
+</ul>
+
+<pre><code>$ grep -c &quot;unable to find valid certification path&quot; [dspace]/log/dspace.log.2017-02-*
+[dspace]/log/dspace.log.2017-02-01:0
+[dspace]/log/dspace.log.2017-02-02:0
+[dspace]/log/dspace.log.2017-02-03:0
+[dspace]/log/dspace.log.2017-02-04:0
+[dspace]/log/dspace.log.2017-02-05:0
+[dspace]/log/dspace.log.2017-02-06:0
+[dspace]/log/dspace.log.2017-02-07:0
+[dspace]/log/dspace.log.2017-02-08:0
+[dspace]/log/dspace.log.2017-02-09:0
+[dspace]/log/dspace.log.2017-02-10:0
+[dspace]/log/dspace.log.2017-02-11:0
+[dspace]/log/dspace.log.2017-02-12:0
+[dspace]/log/dspace.log.2017-02-13:0
+[dspace]/log/dspace.log.2017-02-14:0
+[dspace]/log/dspace.log.2017-02-15:0
+[dspace]/log/dspace.log.2017-02-16:0
+[dspace]/log/dspace.log.2017-02-17:0
+[dspace]/log/dspace.log.2017-02-18:0
+[dspace]/log/dspace.log.2017-02-19:0
+[dspace]/log/dspace.log.2017-02-20:0
+[dspace]/log/dspace.log.2017-02-21:0
+[dspace]/log/dspace.log.2017-02-22:0
+[dspace]/log/dspace.log.2017-02-23:0
+[dspace]/log/dspace.log.2017-02-24:0
+[dspace]/log/dspace.log.2017-02-25:7
+[dspace]/log/dspace.log.2017-02-26:8
+[dspace]/log/dspace.log.2017-02-27:90
+</code></pre>
+
+<ul>
+<li>Also, it seems that we need to use a different user for LDAP binds, as we&rsquo;re still using the temporary one from the root migration, so maybe we can go back to the previous user we were using</li>
+<li>So it looks like the certificate is invalid AND the bind users we had been using were deleted</li>
+<li>Biruk Debebe recreated the bind user and now we are just waiting for CGNET to update their certificates</li>
+<li>Regarding the <code>filter-media</code> issue I found earlier, it seems that the ImageMagick PDF plugin will also process JPGs if they are in the &ldquo;Content Files&rdquo; (aka <code>ORIGINAL</code>) bundle</li>
+<li>The problem likely lies in the logic of <code>ImageMagickThumbnailFilter.java</code>, as <code>ImageMagickPdfThumbnailFilter.java</code> extends it</li>
 </ul>
 
   

@@ -308,6 +308,45 @@ Certificate chain
 
 &lt;ul&gt;
 &lt;li&gt;For some reason it is now signed by a private certificate authority&lt;/li&gt;
+&lt;li&gt;This error seems to have started on 2017-02-25:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ grep -c &amp;quot;unable to find valid certification path&amp;quot; [dspace]/log/dspace.log.2017-02-*
+[dspace]/log/dspace.log.2017-02-01:0
+[dspace]/log/dspace.log.2017-02-02:0
+[dspace]/log/dspace.log.2017-02-03:0
+[dspace]/log/dspace.log.2017-02-04:0
+[dspace]/log/dspace.log.2017-02-05:0
+[dspace]/log/dspace.log.2017-02-06:0
+[dspace]/log/dspace.log.2017-02-07:0
+[dspace]/log/dspace.log.2017-02-08:0
+[dspace]/log/dspace.log.2017-02-09:0
+[dspace]/log/dspace.log.2017-02-10:0
+[dspace]/log/dspace.log.2017-02-11:0
+[dspace]/log/dspace.log.2017-02-12:0
+[dspace]/log/dspace.log.2017-02-13:0
+[dspace]/log/dspace.log.2017-02-14:0
+[dspace]/log/dspace.log.2017-02-15:0
+[dspace]/log/dspace.log.2017-02-16:0
+[dspace]/log/dspace.log.2017-02-17:0
+[dspace]/log/dspace.log.2017-02-18:0
+[dspace]/log/dspace.log.2017-02-19:0
+[dspace]/log/dspace.log.2017-02-20:0
+[dspace]/log/dspace.log.2017-02-21:0
+[dspace]/log/dspace.log.2017-02-22:0
+[dspace]/log/dspace.log.2017-02-23:0
+[dspace]/log/dspace.log.2017-02-24:0
+[dspace]/log/dspace.log.2017-02-25:7
+[dspace]/log/dspace.log.2017-02-26:8
+[dspace]/log/dspace.log.2017-02-27:90
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Also, it seems that we need to use a different user for LDAP binds, as we&amp;rsquo;re still using the temporary one from the root migration, so maybe we can go back to the previous user we were using&lt;/li&gt;
+&lt;li&gt;So it looks like the certificate is invalid AND the bind users we had been using were deleted&lt;/li&gt;
+&lt;li&gt;Biruk Debebe recreated the bind user and now we are just waiting for CGNET to update their certificates&lt;/li&gt;
+&lt;li&gt;Regarding the &lt;code&gt;filter-media&lt;/code&gt; issue I found earlier, it seems that the ImageMagick PDF plugin will also process JPGs if they are in the &amp;ldquo;Content Files&amp;rdquo; (aka &lt;code&gt;ORIGINAL&lt;/code&gt;) bundle&lt;/li&gt;
+&lt;li&gt;The problem likely lies in the logic of &lt;code&gt;ImageMagickThumbnailFilter.java&lt;/code&gt;, as &lt;code&gt;ImageMagickPdfThumbnailFilter.java&lt;/code&gt; extends it&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
