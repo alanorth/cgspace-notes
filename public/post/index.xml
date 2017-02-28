@@ -348,9 +348,31 @@ Certificate chain
 &lt;li&gt;Regarding the &lt;code&gt;filter-media&lt;/code&gt; issue I found earlier, it seems that the ImageMagick PDF plugin will also process JPGs if they are in the &amp;ldquo;Content Files&amp;rdquo; (aka &lt;code&gt;ORIGINAL&lt;/code&gt;) bundle&lt;/li&gt;
 &lt;li&gt;The problem likely lies in the logic of &lt;code&gt;ImageMagickThumbnailFilter.java&lt;/code&gt;, as &lt;code&gt;ImageMagickPdfThumbnailFilter.java&lt;/code&gt; extends it&lt;/li&gt;
 &lt;li&gt;Run CIAT corrections on CGSpace&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# update metadatavalue set authority=&#39;3026b1de-9302-4f3e-85ab-ef48da024eb2&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value = &#39;International Center for Tropical Agriculture&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
 &lt;li&gt;CGNET has fixed the certificate chain on their LDAP server&lt;/li&gt;
 &lt;li&gt;Redeploy CGSpace and DSpace Test to on latest &lt;code&gt;5_x-prod&lt;/code&gt; branch with fixes for LDAP bind user&lt;/li&gt;
 &lt;li&gt;Run all system updates on CGSpace server and reboot&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2017-02-28&#34;&gt;2017-02-28&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;After running the CIAT corrections and updating the Discovery and authority indexes, there is still no change in the number of items listed for CIAT in Discovery&lt;/li&gt;
+&lt;li&gt;Ah, this is probably because some items have the &lt;code&gt;International Center for Tropical Agriculture&lt;/code&gt; author twice, which I first noticed in 2016-12 but couldn&amp;rsquo;t figure out how to fix&lt;/li&gt;
+&lt;li&gt;I think I can do it by first exporting all metadatavalues that have the author &lt;code&gt;International Center for Tropical Agriculture&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select resource_id, metadata_value_id from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value=&#39;International Center for Tropical Agriculture&#39;) to /tmp/ciat.csv with csv;
+COPY 1968
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;And then using awk or uniq to either remove or print the lines that have a duplicate &lt;code&gt;resource_id&lt;/code&gt; (meaning they belong to the same item in DSpace and are therefore duplicates), and then using the &lt;code&gt;metadata_value_id&lt;/code&gt; to delete them&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
