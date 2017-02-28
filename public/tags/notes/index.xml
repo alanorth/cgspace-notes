@@ -371,8 +371,18 @@ COPY 1968
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
-&lt;li&gt;And then using awk or uniq to either remove or print the lines that have a duplicate &lt;code&gt;resource_id&lt;/code&gt; (meaning they belong to the same item in DSpace and are therefore duplicates), and then using the &lt;code&gt;metadata_value_id&lt;/code&gt; to delete them&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;li&gt;And then use awk to print the duplicate lines to a separate file:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ awk -F&#39;,&#39; &#39;seen[$1]++&#39; /tmp/ciat.csv &amp;gt; /tmp/ciat-dupes.csv
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;From that file I can create a list of 279 deletes and put them in a batch script like:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;delete from metadatavalue where resource_type_id=2 and metadata_field_id=3 and metadata_value_id=2742061;
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
