@@ -6,8 +6,23 @@
     <description>Recent content on CGSpace Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 07 Feb 2017 07:04:52 -0800</lastBuildDate>
+    <lastBuildDate>Wed, 01 Mar 2017 17:08:52 +0200</lastBuildDate>
     <atom:link href="https://alanorth.github.io/cgspace-notes/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>March, 2017</title>
+      <link>https://alanorth.github.io/cgspace-notes/2017-03/</link>
+      <pubDate>Wed, 01 Mar 2017 17:08:52 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2017-03/</guid>
+      <description>&lt;h2 id=&#34;2017-03-01&#34;&gt;2017-03-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Run the 279 CIAT author corrections on CGSpace&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>February, 2017</title>
@@ -5377,175 +5392,6 @@ $ find SimpleArchiveForBio/ -iname &amp;ldquo;*.pdf&amp;rdquo; -exec basename {}
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2016/01/xmlui-subjects-after.png&#34; alt=&#34;XMLUI subjects after&#34; /&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>December, 2015</title>
-      <link>https://alanorth.github.io/cgspace-notes/2015-12/</link>
-      <pubDate>Wed, 02 Dec 2015 13:18:00 +0300</pubDate>
-      
-      <guid>https://alanorth.github.io/cgspace-notes/2015-12/</guid>
-      <description>&lt;h2 id=&#34;2015-12-02&#34;&gt;2015-12-02&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Replace &lt;code&gt;lzop&lt;/code&gt; with &lt;code&gt;xz&lt;/code&gt; in log compression cron jobs on DSpace Test—it uses less space:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;# cd /home/dspacetest.cgiar.org/log
-# ls -lh dspace.log.2015-11-18*
--rw-rw-r-- 1 tomcat7 tomcat7 2.0M Nov 18 23:59 dspace.log.2015-11-18
--rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo
--rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;I had used lrzip once, but it needs more memory and is harder to use as it requires the lrztar wrapper&lt;/li&gt;
-&lt;li&gt;Need to remember to go check if everything is ok in a few days and then change CGSpace&lt;/li&gt;
-&lt;li&gt;CGSpace went down again (due to PostgreSQL idle connections of course)&lt;/li&gt;
-&lt;li&gt;Current database settings for DSpace are &lt;code&gt;db.maxconnections = 30&lt;/code&gt; and &lt;code&gt;db.maxidle = 8&lt;/code&gt;, yet idle connections are exceeding this:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep cgspace | grep -c idle
-39
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;I restarted PostgreSQL and Tomcat and it&amp;rsquo;s back&lt;/li&gt;
-&lt;li&gt;On a related note of why CGSpace is so slow, I decided to finally try the &lt;code&gt;pgtune&lt;/code&gt; script to tune the postgres settings:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;# apt-get install pgtune
-# pgtune -i /etc/postgresql/9.3/main/postgresql.conf -o postgresql.conf-pgtune
-# mv /etc/postgresql/9.3/main/postgresql.conf /etc/postgresql/9.3/main/postgresql.conf.orig 
-# mv postgresql.conf-pgtune /etc/postgresql/9.3/main/postgresql.conf
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;It introduced the following new settings:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;default_statistics_target = 50
-maintenance_work_mem = 480MB
-constraint_exclusion = on
-checkpoint_completion_target = 0.9
-effective_cache_size = 5632MB
-work_mem = 48MB
-wal_buffers = 8MB
-checkpoint_segments = 16
-shared_buffers = 1920MB
-max_connections = 80
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Now I need to go read PostgreSQL docs about these options, and watch memory settings in munin etc&lt;/li&gt;
-&lt;li&gt;For what it&amp;rsquo;s worth, now the REST API should be faster (because of these PostgreSQL tweaks):&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-1.474
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-2.141
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-1.685
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-1.995
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-1.786
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Last week it was an average of 8 seconds&amp;hellip; now this is &lt;sup&gt;1&lt;/sup&gt;&amp;frasl;&lt;sub&gt;4&lt;/sub&gt; of that&lt;/li&gt;
-&lt;li&gt;CCAFS noticed that one of their items displays only the Atmire statlets: &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/42445&#34;&gt;https://cgspace.cgiar.org/handle/10568/42445&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2015/12/ccafs-item-no-metadata.png&#34; alt=&#34;CCAFS item&#34; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;The authorizations for the item are all public READ, and I don&amp;rsquo;t see any errors in dspace.log when browsing that item&lt;/li&gt;
-&lt;li&gt;I filed a ticket on Atmire&amp;rsquo;s issue tracker&lt;/li&gt;
-&lt;li&gt;I also filed a ticket on Atmire&amp;rsquo;s issue tracker for the PostgreSQL stuff&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;2015-12-03&#34;&gt;2015-12-03&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;CGSpace very slow, and monitoring emailing me to say its down, even though I can load the page (very slowly)&lt;/li&gt;
-&lt;li&gt;Idle postgres connections look like this (with no change in DSpace db settings lately):&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep cgspace | grep -c idle
-29
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;I restarted Tomcat and postgres&amp;hellip;&lt;/li&gt;
-&lt;li&gt;Atmire commented that we should raise the JVM heap size by ~500M, so it is now &lt;code&gt;-Xms3584m -Xmx3584m&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;We weren&amp;rsquo;t out of heap yet, but it&amp;rsquo;s probably fair enough that the DSpace 5 upgrade (and new Atmire modules) requires more memory so it&amp;rsquo;s ok&lt;/li&gt;
-&lt;li&gt;A possible side effect is that I see that the REST API is twice as fast for the request above now:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-1.368
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.968
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-1.006
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.849
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.806
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.854
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;2015-12-05&#34;&gt;2015-12-05&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;CGSpace has been up and down all day and REST API is completely unresponsive&lt;/li&gt;
-&lt;li&gt;PostgreSQL idle connections are currently:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;postgres@linode01:~$ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep cgspace | grep -c idle
-28
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;I have reverted all the pgtune tweaks from the other day, as they didn&amp;rsquo;t fix the stability issues, so I&amp;rsquo;d rather not have them introducing more variables into the equation&lt;/li&gt;
-&lt;li&gt;The PostgreSQL stats from Munin all point to something database-related with the DSpace 5 upgrade around mid–late November&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2015/12/postgres_bgwriter-year.png&#34; alt=&#34;PostgreSQL bgwriter (year)&#34; /&gt;
-&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2015/12/postgres_cache_cgspace-year.png&#34; alt=&#34;PostgreSQL cache (year)&#34; /&gt;
-&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2015/12/postgres_locks_cgspace-year.png&#34; alt=&#34;PostgreSQL locks (year)&#34; /&gt;
-&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2015/12/postgres_scans_cgspace-year.png&#34; alt=&#34;PostgreSQL scans (year)&#34; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;2015-12-07&#34;&gt;2015-12-07&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Atmire sent &lt;a href=&#34;https://github.com/ilri/DSpace/pull/161&#34;&gt;some fixes&lt;/a&gt; to DSpace&amp;rsquo;s REST API code that was leaving contexts open (causing the slow performance and database issues)&lt;/li&gt;
-&lt;li&gt;After deploying the fix to CGSpace the REST API is consistently faster:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.675
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.599
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.588
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.566
-$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
-0.497
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;2015-12-08&#34;&gt;2015-12-08&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Switch CGSpace log compression cron jobs from using lzop to xz—the compression isn&amp;rsquo;t as good, but it&amp;rsquo;s much faster and causes less IO/CPU load&lt;/li&gt;
-&lt;li&gt;Since we figured out (and fixed) the cause of the performance issue, I reverted Google Bot&amp;rsquo;s crawl rate to the &amp;ldquo;Let Google optimize&amp;rdquo; setting&lt;/li&gt;
-&lt;/ul&gt;</description>
     </item>
     
   </channel>
