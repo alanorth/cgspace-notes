@@ -36,7 +36,7 @@
 &lt;p&gt;&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;This results in discolored thumbnails, sRGB and CMYK:&lt;/li&gt;
+&lt;li&gt;This results in discolored thumbnails when compared to the original PDF, for example sRGB and CMYK:&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2017/03/thumbnail-srgb.jpg&#34; alt=&#34;Thumbnail in sRGB colorspace&#34; /&gt;&lt;/p&gt;
@@ -45,7 +45,29 @@
 
 &lt;ul&gt;
 &lt;li&gt;I filed an issue for the color space thing: &lt;a href=&#34;https://jira.duraspace.org/browse/DS-3517&#34;&gt;DS-3517&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2017-03-03&#34;&gt;2017-03-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I created a patch for DS-3517 and made a pull request against upstream &lt;code&gt;dspace-5_x&lt;/code&gt;: &lt;a href=&#34;https://github.com/DSpace/DSpace/pull/1669&#34;&gt;https://github.com/DSpace/DSpace/pull/1669&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Looks like &lt;code&gt;-colorspace sRGB&lt;/code&gt; alone isn&amp;rsquo;t enough, we need to use profiles:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ convert -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf\[0\] alc_contrastes_desafios.pdf.jpg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This is a great resource describing the color stuff: &lt;a href=&#34;http://www.imagemagick.org/Usage/formats/#profiles&#34;&gt;http://www.imagemagick.org/Usage/formats/#profiles&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Somehow we need to detect the color system being used by the input file and handle each case differently&lt;/li&gt;
+&lt;li&gt;This is trivial with &lt;code&gt;identify&lt;/code&gt; (even by the &lt;a href=&#34;http://im4java.sourceforge.net/api/org/im4java/core/IMOps.html#identify&#34;&gt;Java ImageMagick API&lt;/a&gt;):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ identify -format &#39;%r\n&#39; alc_contrastes_desafios.pdf\[0\]
+DirectClass CMYK
+$ identify -format &#39;%r\n&#39; Africa\ group\ of\ negotiators.pdf\[0\]
+DirectClass sRGB Alpha
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>

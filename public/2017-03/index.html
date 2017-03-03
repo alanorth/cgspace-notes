@@ -82,7 +82,7 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
   
   "headline": "March, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-03/",
-  "wordCount": "113",
+  "wordCount": "218",
   
   
   "datePublished": "2017-03-01T17:08:52&#43;02:00",
@@ -178,7 +178,7 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 <p></p>
 
 <ul>
-<li>This results in discolored thumbnails, sRGB and CMYK:</li>
+<li>This results in discolored thumbnails when compared to the original PDF, for example sRGB and CMYK:</li>
 </ul>
 
 <p><img src="/cgspace-notes/2017/03/thumbnail-srgb.jpg" alt="Thumbnail in sRGB colorspace" /></p>
@@ -188,6 +188,28 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 <ul>
 <li>I filed an issue for the color space thing: <a href="https://jira.duraspace.org/browse/DS-3517">DS-3517</a></li>
 </ul>
+
+<h2 id="2017-03-03">2017-03-03</h2>
+
+<ul>
+<li>I created a patch for DS-3517 and made a pull request against upstream <code>dspace-5_x</code>: <a href="https://github.com/DSpace/DSpace/pull/1669">https://github.com/DSpace/DSpace/pull/1669</a></li>
+<li>Looks like <code>-colorspace sRGB</code> alone isn&rsquo;t enough, we need to use profiles:</li>
+</ul>
+
+<pre><code>$ convert -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf\[0\] alc_contrastes_desafios.pdf.jpg
+</code></pre>
+
+<ul>
+<li>This is a great resource describing the color stuff: <a href="http://www.imagemagick.org/Usage/formats/#profiles">http://www.imagemagick.org/Usage/formats/#profiles</a></li>
+<li>Somehow we need to detect the color system being used by the input file and handle each case differently</li>
+<li>This is trivial with <code>identify</code> (even by the <a href="http://im4java.sourceforge.net/api/org/im4java/core/IMOps.html#identify">Java ImageMagick API</a>):</li>
+</ul>
+
+<pre><code>$ identify -format '%r\n' alc_contrastes_desafios.pdf\[0\]
+DirectClass CMYK
+$ identify -format '%r\n' Africa\ group\ of\ negotiators.pdf\[0\]
+DirectClass sRGB Alpha
+</code></pre>
 
   
 
