@@ -23,6 +23,12 @@
 &lt;h2 id=&#34;2017-03-02&#34;&gt;2017-03-02&lt;/h2&gt;
 
 &lt;ul&gt;
+&lt;li&gt;Skype with Michael and Peter, discussing moving the CGIAR Library to CGSpace&lt;/li&gt;
+&lt;li&gt;CGIAR people possibly open to moving content, redirecting library.cgiar.org to CGSpace and letting CGSpace resolve their handles&lt;/li&gt;
+&lt;li&gt;They might come in at the top level in one &amp;ldquo;CGIAR System&amp;rdquo; community, or with several communities&lt;/li&gt;
+&lt;li&gt;I need to spend a bit of time looking at the multiple handle support in DSpace and see if new content can be minted in both handles, or just one?&lt;/li&gt;
+&lt;li&gt;Need to send Peter and Michael some notes about this in a few days&lt;/li&gt;
+&lt;li&gt;Also, need to consider talking to Atmire about hiring them to bring ORCiD metadata to REST / OAI&lt;/li&gt;
 &lt;li&gt;Filed an issue on DSpace issue tracker for the &lt;code&gt;filter-media&lt;/code&gt; bug that causes it to process JPGs even when limiting to the PDF thumbnail plugin: &lt;a href=&#34;https://jira.duraspace.org/browse/DS-3516&#34;&gt;DS-3516&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Discovered that the ImageMagic &lt;code&gt;filter-media&lt;/code&gt; plugin creates JPG thumbnails with the CMYK colorspace when the source PDF is using CMYK&lt;/li&gt;
 &lt;li&gt;Interestingly, it seems DSpace 4.x&amp;rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&amp;rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/51999&#34;&gt;&lt;sup&gt;10568&lt;/sup&gt;&amp;frasl;&lt;sub&gt;51999&lt;/sub&gt;&lt;/a&gt;):&lt;/li&gt;
@@ -53,12 +59,15 @@
 &lt;li&gt;Looks like &lt;code&gt;-colorspace sRGB&lt;/code&gt; alone isn&amp;rsquo;t enough, we need to use profiles:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;$ convert -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf\[0\] alc_contrastes_desafios.pdf.jpg
+&lt;pre&gt;&lt;code&gt;$ convert alc_contrastes_desafios.pdf\[0\] -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf.jpg
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
+&lt;li&gt;This reads the input file, applies the CMYK profile, applies the RGB profile, then writes the file&lt;/li&gt;
+&lt;li&gt;Note that you should set the first profile immediately after the input file&lt;/li&gt;
+&lt;li&gt;Also, it is better to use profiles than setting &lt;code&gt;-colorspace&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;This is a great resource describing the color stuff: &lt;a href=&#34;http://www.imagemagick.org/Usage/formats/#profiles&#34;&gt;http://www.imagemagick.org/Usage/formats/#profiles&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Somehow we need to detect the color system being used by the input file and handle each case differently&lt;/li&gt;
+&lt;li&gt;Somehow we need to detect the color system being used by the input file and handle each case differently (with profiles)&lt;/li&gt;
 &lt;li&gt;This is trivial with &lt;code&gt;identify&lt;/code&gt; (even by the &lt;a href=&#34;http://im4java.sourceforge.net/api/org/im4java/core/IMOps.html#identify&#34;&gt;Java ImageMagick API&lt;/a&gt;):&lt;/li&gt;
 &lt;/ul&gt;
 
