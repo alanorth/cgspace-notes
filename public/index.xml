@@ -78,6 +78,14 @@ $ identify -format &#39;%r\n&#39; Africa\ group\ of\ negotiators.pdf\[0\]
 DirectClass sRGB Alpha
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;h2 id=&#34;2017-03-04&#34;&gt;2017-03-04&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Spent more time looking at the ImageMagick CMYK issue&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;default_cmyk.icc&lt;/code&gt; and &lt;code&gt;default_rgb.icc&lt;/code&gt; files are both part of the Ghostscript GPL distribution, but according to DSpace&amp;rsquo;s &lt;code&gt;LICENSES_THIRD_PARTY&lt;/code&gt; file, DSpace doesn&amp;rsquo;t allow distribution of dependencies that are licensed solely under the GPL&lt;/li&gt;
+&lt;li&gt;So this issue is kinda pointless now, as the ICC profiles are absolutely necessary to make a meaningful CMYK→sRGB conversion&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&#34;2017-03-05&#34;&gt;2017-03-05&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -91,6 +99,50 @@ DirectClass sRGB Alpha
 
 &lt;ul&gt;
 &lt;li&gt;But there are hundreds of combinations of fields and values (like &lt;code&gt;dc.subject&lt;/code&gt; and all the center subjects), and we can&amp;rsquo;t use wildcards in REST!&lt;/li&gt;
+&lt;li&gt;Reading about enabling multiple handle prefixes in DSpace&lt;/li&gt;
+&lt;li&gt;There is a mailing list thread from 2011 about it: &lt;a href=&#34;http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html&#34;&gt;http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;And a comment from Atmire&amp;rsquo;s Bram about it on the DSpace wiki: &lt;a href=&#34;https://wiki.duraspace.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296&#34;&gt;https://wiki.duraspace.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Bram mentions an undocumented configuration option &lt;code&gt;handle.plugin.checknameauthority&lt;/code&gt;, but I noticed another one in &lt;code&gt;dspace.cfg&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# List any additional prefixes that need to be managed by this handle server
+# (as for examle handle prefix coming from old dspace repository merged in
+# that repository)
+# handle.additional.prefixes = prefix1[, prefix2]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Because of this I noticed that our Handle server&amp;rsquo;s &lt;code&gt;config.dct&lt;/code&gt; was potentially misconfigured!&lt;/li&gt;
+&lt;li&gt;We had some default values still present:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;quot;300:0.NA/YOUR_NAMING_AUTHORITY&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I&amp;rsquo;ve changed them to the following and restarted the handle server:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;quot;300:0.NA/10568&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In looking at all the configs I just noticed that we are not providing a DOI in the Google-specific metadata crosswalk&lt;/li&gt;
+&lt;li&gt;From &lt;code&gt;dspace/config/crosswalks/google-metadata.properties&lt;/code&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;google.citation_doi = cg.identifier.doi
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This works, and makes DSpace output the following metadata on the item view page:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;meta content=&amp;quot;https://dx.doi.org/10.1186/s13059-017-1153-y&amp;quot; name=&amp;quot;citation_doi&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Submitted and merged pull request for this: &lt;a href=&#34;https://github.com/ilri/DSpace/pull/305&#34;&gt;https://github.com/ilri/DSpace/pull/305&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
