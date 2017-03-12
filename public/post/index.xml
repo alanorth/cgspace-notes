@@ -186,6 +186,23 @@ DirectClass sRGB Alpha
 
 &lt;pre&gt;&lt;code&gt;dspace=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;description&#39; and qualifier = &#39;sponsorship&#39;) group by text_value order by count desc) to /tmp/sponsorship.csv with csv;
 COPY 285
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2017-03-12&#34;&gt;2017-03-12&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Test the sponsorship fixes and deletes from Peter:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i Investors-Fix-51.csv -f dc.description.sponsorship -t Action -m 29 -d dspace -u dspace -p fuuuu
+$ ./delete-metadata-values.py -i Investors-Delete-121.csv -f dc.description.sponsorship -m 29 -d dspace -u dspace -p fuuu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Generate a new list of unique sponsors so we can update the controlled vocabulary:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;description&#39; and qualifier = &#39;sponsorship&#39;)) to /tmp/sponsorship.csv with csv;
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
