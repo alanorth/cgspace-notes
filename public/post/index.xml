@@ -24,7 +24,46 @@
 
 &lt;p&gt;&lt;img src=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2017/04/dc-rights.png&#34; alt=&#34;dc.rights in the submission form&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;ul&gt;
+&lt;li&gt;Remove redundant/duplicate text in the DSpace submission license&lt;/li&gt;
+&lt;li&gt;Testing the CMYK patch on a collection with 650 items:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &amp;quot;ImageMagick PDF Thumbnail&amp;quot; -v &amp;gt;&amp;amp; /tmp/filter-media-cmyk.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;2017-04-03&#34;&gt;2017-04-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Continue testing the CMYK patch on more communities:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ [dspace]/bin/dspace filter-media -f -i 10568/1 -p &amp;quot;ImageMagick PDF Thumbnail&amp;quot; -v &amp;gt;&amp;gt; /tmp/filter-media-cmyk.txt 2&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So far there are almost 500:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ grep -c profile /tmp/filter-media-cmyk.txt
+484
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Looking at the CG Core document again, I&amp;rsquo;ll send some feedback to Peter and Abenet:
+
+&lt;ul&gt;
+&lt;li&gt;We use cg.contributor.crp to indicate the CRP(s) affiliated with the item&lt;/li&gt;
+&lt;li&gt;DSpace has dc.date.available, but this field isn&amp;rsquo;t particularly meaningful other than as an automatic timestamp at the time of item accession (and is identical to dc.date.accessioned)&lt;/li&gt;
+&lt;li&gt;dc.relation exists in CGSpace, but isn&amp;rsquo;t used—rather dc.relation.ispartofseries, which is used ~5,000 times to Series name and number within that series&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Also, I&amp;rsquo;m noticing some weird outliers in &lt;code&gt;cg.coverage.region&lt;/code&gt;, need to remember to go correct these later:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=227;
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>

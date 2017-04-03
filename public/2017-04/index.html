@@ -15,6 +15,14 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 
 
 
+
+Remove redundant/duplicate text in the DSpace submission license
+Testing the CMYK patch on a collection with 650 items:
+
+
+$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-04/" />
@@ -22,7 +30,7 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-02T17:08:52&#43;02:00"/>
+<meta property="article:modified_time" content="2017-04-02T17:57:26&#43;03:00"/>
 
 
 
@@ -51,6 +59,14 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 
 
 
+
+Remove redundant/duplicate text in the DSpace submission license
+Testing the CMYK patch on a collection with 650 items:
+
+
+$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+
+
 "/>
 
 <meta name="generator" content="Hugo 0.19" />
@@ -63,9 +79,9 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "33",
+  "wordCount": "197",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-02T17:08:52&#43;02:00",
+  "dateModified": "2017-04-02T17:57:26&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -138,7 +154,46 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 
 <p><img src="/cgspace-notes/2017/04/dc-rights.png" alt="dc.rights in the submission form" /></p>
 
+<ul>
+<li>Remove redundant/duplicate text in the DSpace submission license</li>
+<li>Testing the CMYK patch on a collection with 650 items:</li>
+</ul>
+
+<pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+</code></pre>
+
 <p></p>
+
+<h2 id="2017-04-03">2017-04-03</h2>
+
+<ul>
+<li>Continue testing the CMYK patch on more communities:</li>
+</ul>
+
+<pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/1 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&gt; /tmp/filter-media-cmyk.txt 2&gt;&amp;1
+</code></pre>
+
+<ul>
+<li>So far there are almost 500:</li>
+</ul>
+
+<pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
+484
+</code></pre>
+
+<ul>
+<li>Looking at the CG Core document again, I&rsquo;ll send some feedback to Peter and Abenet:
+
+<ul>
+<li>We use cg.contributor.crp to indicate the CRP(s) affiliated with the item</li>
+<li>DSpace has dc.date.available, but this field isn&rsquo;t particularly meaningful other than as an automatic timestamp at the time of item accession (and is identical to dc.date.accessioned)</li>
+<li>dc.relation exists in CGSpace, but isn&rsquo;t used—rather dc.relation.ispartofseries, which is used ~5,000 times to Series name and number within that series</li>
+</ul></li>
+<li>Also, I&rsquo;m noticing some weird outliers in <code>cg.coverage.region</code>, need to remember to go correct these later:</li>
+</ul>
+
+<pre><code>dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=227;
+</code></pre>
 
   
 
