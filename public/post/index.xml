@@ -73,6 +73,39 @@
 
 &lt;pre&gt;&lt;code&gt;$ grep -c profile /tmp/filter-media-cmyk.txt
 1584
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Trying to find a way to get the number of items submitted by a certain user in 2016&lt;/li&gt;
+&lt;li&gt;It&amp;rsquo;s not possible in the DSpace search / module interfaces, but might be able to be derived from &lt;code&gt;dc.description.provenance&lt;/code&gt;, as that field contains the name and email of the submitter/approver, ie:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Submitted by Francesca Giampieri (fgiampieri) on 2016-01-19T13:56:43Z^M
+No. of bitstreams: 1^M
+ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 (MD5)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This SQL query returns fields that were submitted or approved by giampieri in 2016 and contain a &amp;ldquo;checksum&amp;rdquo; (ie, there was a bitstream in the submission):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^(Submitted|Approved).*giampieri.*2016-.*checksum.*&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Then this one does the same, but for fields that don&amp;rsquo;t contain checksums (ie, there was no bitstream in the submission):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^(Submitted|Approved).*giampieri.*2016-.*&#39; and text_value !~ &#39;^(Submitted|Approved).*giampieri.*2016-.*checksum.*&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;For some reason there seem to be way too many fields, for example there are 498 + 13 here, which is 511 items for just this one user.&lt;/li&gt;
+&lt;li&gt;It looks like there can be a scenario where the user submitted AND approved it, so some records might be doubled&amp;hellip;&lt;/li&gt;
+&lt;li&gt;In that case it might just be better to see how many the user submitted (both &lt;em&gt;with&lt;/em&gt; and &lt;em&gt;without&lt;/em&gt; bitstreams):&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^(Submitted).*giampieri.*2016-.*&#39;;
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     

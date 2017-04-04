@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-03T13:16:24&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-04T15:05:54&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "226",
+  "wordCount": "451",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-03T13:16:24&#43;03:00",
+  "dateModified": "2017-04-04T15:05:54&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -202,6 +202,39 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 <pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
 1584
+</code></pre>
+
+<ul>
+<li>Trying to find a way to get the number of items submitted by a certain user in 2016</li>
+<li>It&rsquo;s not possible in the DSpace search / module interfaces, but might be able to be derived from <code>dc.description.provenance</code>, as that field contains the name and email of the submitter/approver, ie:</li>
+</ul>
+
+<pre><code>Submitted by Francesca Giampieri (fgiampieri) on 2016-01-19T13:56:43Z^M
+No. of bitstreams: 1^M
+ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 (MD5)
+</code></pre>
+
+<ul>
+<li>This SQL query returns fields that were submitted or approved by giampieri in 2016 and contain a &ldquo;checksum&rdquo; (ie, there was a bitstream in the submission):</li>
+</ul>
+
+<pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
+</code></pre>
+
+<ul>
+<li>Then this one does the same, but for fields that don&rsquo;t contain checksums (ie, there was no bitstream in the submission):</li>
+</ul>
+
+<pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*' and text_value !~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
+</code></pre>
+
+<ul>
+<li>For some reason there seem to be way too many fields, for example there are 498 + 13 here, which is 511 items for just this one user.</li>
+<li>It looks like there can be a scenario where the user submitted AND approved it, so some records might be doubled&hellip;</li>
+<li>In that case it might just be better to see how many the user submitted (both <em>with</em> and <em>without</em> bitstreams):</li>
+</ul>
+
+<pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted).*giampieri.*2016-.*';
 </code></pre>
 
   
