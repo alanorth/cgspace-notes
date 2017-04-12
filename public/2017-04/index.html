@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-10T17:25:12&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-11T20:46:03&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "784",
+  "wordCount": "1063",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-10T17:25:12&#43;03:00",
+  "dateModified": "2017-04-11T20:46:03&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -288,6 +288,54 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 
 <ul>
 <li>Looking at the item from CIFOR it hasn&rsquo;t been updated yet, maybe they aren&rsquo;t running the cron job</li>
+</ul>
+
+<h2 id="2017-04-12">2017-04-12</h2>
+
+<ul>
+<li>CIFOR says they have cleaned their OAI cache and run the import again, but I still don&rsquo;t see any updates in their OAI</li>
+<li>Looking at CIFOR&rsquo;s OAI using different metadata formats, like qualified Dublin Core and DSpace Intermediate Metadata:
+
+<ul>
+<li>QDC: <a href="https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=qdc///col_11463_6/900">https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=qdc///col_11463_6/900</a></li>
+<li>DIM: <a href="https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=dim///col_11463_6/900">https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=dim///col_11463_6/900</a></li>
+</ul></li>
+<li>Looking at one of CGSpace&rsquo;s items in OAI it doesn&rsquo;t seem that metadata fields other than those in the DC schema are exported:
+
+<ul>
+<li><a href="https://cgspace.cgiar.org/handle/10568/33346?show=full">https://cgspace.cgiar.org/handle/10568/33346?show=full</a></li>
+<li><a href="https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=dim&amp;set=col_10568_68619">https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=dim&amp;set=col_10568_68619</a></li>
+</ul></li>
+<li>Side note: WTF, I just saw an item on CGSpace&rsquo;s OAI that is using <code>dc.cplace.country</code> and <code>dc.rplace.region</code>, which we stopped using in 2016 after the metadata migrations:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/04/cplace.png" alt="stale metadata in OAI" /></p>
+
+<ul>
+<li>The particular item is <a href="http://hdl.handle.net/10568/6"><sup>10568</sup>&frasl;<sub>6</sub></a> and, for what it&rsquo;s worth, the stale metadata only appears in the OAI view:
+
+<ul>
+<li>XMLUI: <a href="https://cgspace.cgiar.org/handle/10568/6?show=full">https://cgspace.cgiar.org/handle/10568/6?show=full</a></li>
+<li>OAI: <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6">https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6</a></li>
+</ul></li>
+<li>I don&rsquo;t see these fields anywhere in our source code or the database&rsquo;s metadata registry, so maybe it&rsquo;s just a cache issue</li>
+<li>I will have to check the OAI cron scripts on DSpace Test, and then run them on CGSpace</li>
+<li>Running <code>dspace oai import</code> and <code>dspace oai clean-cache</code> have zero effect, but this seems to rebuild the cache from scratch:</li>
+</ul>
+
+<pre><code>$ /home/dspacetest.cgiar.org/bin/dspace oai import -c
+...
+63900 items imported so far...
+64000 items imported so far...
+Total: 64056 items
+Purging cached OAI responses.
+OAI 2.0 manager action ended. It took 829 seconds.
+</code></pre>
+
+<ul>
+<li>After reading some threads on the DSpace mailing list, I see that <code>clean-cache</code> is actually only for caching <em>responses</em>, ie to client requests in the OAI web application</li>
+<li>These are stored in <code>[dspace]/var/oai/requests/</code></li>
+<li>The import command should theoretically catch situations like this where an item&rsquo;s metadata was updated, but in this case we changed the metadata schema and it doesn&rsquo;t seem to catch it (could be a bug!)</li>
 </ul>
 
   
