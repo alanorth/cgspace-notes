@@ -79,7 +79,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "1353",
+  "wordCount": "1451",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
   "dateModified": "2017-04-13T16:17:33&#43;03:00",
   "author": {
@@ -379,6 +379,22 @@ sys     1m29.310s
 <li>After re-importing the CIFOR collection it looks <em>very</em> good!</li>
 <li>It seems like they have done a full metadata migration with <code>dc.date.issued</code> and <code>cg.coverage.country</code> etc</li>
 <li>Submit pull request to upstream DSpace for the PDF thumbnail bug (DS-3516): <a href="https://github.com/DSpace/DSpace/pull/1709">https://github.com/DSpace/DSpace/pull/1709</a></li>
+</ul>
+
+<h2 id="2017-04-14">2017-04-14</h2>
+
+<ul>
+<li>DSpace committers reviewed my patch for DS-3516 and proposed a simpler idea involving incorrect use of <code>SelfRegisteredInputFormats</code></li>
+<li>I tested the idea and it works, so I made a new patch: <a href="https://github.com/DSpace/DSpace/pull/1709">https://github.com/DSpace/DSpace/pull/1709</a></li>
+<li>I discovered that we can override metadata formats in OAI by creating a new &ldquo;context&rdquo;: <a href="https://wiki.duraspace.org/display/DSDOC5x/OAI+2.0+Server">https://wiki.duraspace.org/display/DSDOC5x/OAI+2.0+Server</a></li>
+<li>This allows us to have, say a default &ldquo;request&rdquo; context and a &ldquo;cgiar&rdquo; context, both of which implement the DSpace Intermediate Metadata formats, but have the later use a overridden version that exposes CG metadata</li>
+<li>Compare the following results:
+
+<ul>
+<li><a href="https://dspacetest.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:dspacetest.cgiar.org:10568/6">https://dspacetest.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:dspacetest.cgiar.org:10568/6</a></li>
+<li><a href="https://dspacetest.cgiar.org/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:dspacetest.cgiar.org:10568/6">https://dspacetest.cgiar.org/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:dspacetest.cgiar.org:10568/6</a></li>
+</ul></li>
+<li>Reboot DSpace Test server to get new Linode kernel</li>
 </ul>
 
   
