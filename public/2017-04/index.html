@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-17T14:34:59&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-17T15:01:57&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "1555",
+  "wordCount": "1634",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-17T14:34:59&#43;03:00",
+  "dateModified": "2017-04-17T15:01:57&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -409,6 +409,32 @@ sys     1m29.310s
 <pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(435) is still referenced from table &quot;bundle&quot;.
 </code></pre>
+
+<h2 id="2017-04-18">2017-04-18</h2>
+
+<ul>
+<li>Helping Tsega test his new <a href="https://github.com/ilri/ckm-cgspace-rest-api">CGSpace REST API Rails app</a> on DSpace Test</li>
+<li>Setup and run with:</li>
+</ul>
+
+<pre><code>$ git clone https://github.com/ilri/ckm-cgspace-rest-api.git
+$ cd ckm-cgspace-rest-api/app
+$ gem install bundler
+$ bundle
+$ cd ..
+$ rails -s
+</code></pre>
+
+<ul>
+<li>I used Ansible to create a PostgreSQL user that only has <code>SELECT</code> privileges on the tables it needs:</li>
+</ul>
+
+<pre><code>$ ansible linode02 -u aorth -b --become-user=postgres -K -m postgresql_user -a 'db=database name=username password=password priv=CONNECT/item:SELECT/metadatavalue:SELECT/metadatafieldregistry:SELECT/metadataschemaregistry:SELECT/collection:SELECT/handle:SELECT/bundle2bitstream:SELECT/bitstream:SELECT/bundle:SELECT/item2bundle:SELECT state=present
+</code></pre>
+
+<ul>
+<li>Need to look into <a href="https://github.com/puma/puma/blob/master/docs/systemd.md">running this via systemd</a></li>
+</ul>
 
   
 
