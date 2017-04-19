@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-18T16:58:55&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-19T15:39:19&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "1712",
+  "wordCount": "1877",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-18T16:58:55&#43;03:00",
+  "dateModified": "2017-04-19T15:39:19&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -448,6 +448,33 @@ $ rails -s
 <li>So it seems he did it in the crosswalk!</li>
 <li>Keep working on Ansible stuff for deploying the CKM REST API</li>
 <li>We can use systemd&rsquo;s <code>Environment</code> stuff to pass the database parameters to Rails</li>
+<li>Abenet noticed that the &ldquo;Workflow Statistics&rdquo; option is missing now, but we have screenshots from a presentation in 2016 when it was there</li>
+<li>I filed a ticket with Atmire</li>
+<li>Looking at 933 CIAT records from Sisay, he&rsquo;s having problems creating a SAF bundle to import to DSpace Test</li>
+<li>I started by looking at his CSV in OpenRefine, and I see there a <em>bunch</em> of fields with whitespace issues that I cleaned up:</li>
+</ul>
+
+<pre><code>value.replace(&quot; ||&quot;,&quot;||&quot;).replace(&quot;|| &quot;,&quot;||&quot;).replace(&quot; || &quot;,&quot;||&quot;)
+</code></pre>
+
+<ul>
+<li>Also, all the filenames have spaces and URL encoded characters in them, so I decoded them from URL encoding:</li>
+</ul>
+
+<pre><code>unescape(value,&quot;url&quot;)
+</code></pre>
+
+<ul>
+<li>Then create the filename column using the following transform from URL:</li>
+</ul>
+
+<pre><code>value.split('/')[-1].replace(/#.*$/,&quot;&quot;)
+</code></pre>
+
+<ul>
+<li>The <code>replace</code> part is because some URLs have an anchor like <code>#page=14</code> which we obviously don&rsquo;t want on the filename</li>
+<li>Also, we need to only use the PDF on the item corresponding with page 1, so we don&rsquo;t end up with literally hundreds of duplicate PDFs</li>
+<li>Alternatively, I could export each page to a standalone PDF&hellip;</li>
 </ul>
 
   
