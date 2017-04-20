@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-19T15:39:19&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-19T18:37:04&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "1877",
+  "wordCount": "2085",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-19T15:39:19&#43;03:00",
+  "dateModified": "2017-04-19T18:37:04&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -476,6 +476,49 @@ $ rails -s
 <li>Also, we need to only use the PDF on the item corresponding with page 1, so we don&rsquo;t end up with literally hundreds of duplicate PDFs</li>
 <li>Alternatively, I could export each page to a standalone PDF&hellip;</li>
 </ul>
+
+<h2 id="2017-04-20">2017-04-20</h2>
+
+<ul>
+<li>Atmire responded about the Workflow Statistics, saying that it had been disabled because many environments needed customization to be useful</li>
+<li>I re-enabled it with a hidden config key <code>workflow.stats.enabled = true</code> on DSpace Test and will evaluate adding it on CGSpace</li>
+<li>Looking at the CIAT data again, a bunch of items have metadata values ending in <code>||</code>, which might cause blank fields to be added at import time</li>
+<li>Cleaning them up with OpenRefine:</li>
+</ul>
+
+<pre><code>value.replace(/\|\|$/,&quot;&quot;)
+</code></pre>
+
+<ul>
+<li>Working with the CIAT data in OpenRefine to remove the filename column from all but the first item which requires a particular PDF, as there are many items pointing to the same PDF, which would cause hundreds of duplicates to be added if we included them in the SAF bundle</li>
+<li>I did some massaging in OpenRefine, flagging duplicates with stars and flags, then filtering and removing the filenames of those items</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/04/openrefine-flagging-duplicates.png" alt="Flagging and filtering duplicates in OpenRefine" /></p>
+
+<ul>
+<li>Also there are loads of whitespace errors in almost every field, so I trimmed leading/trailing whitespace</li>
+<li>Unbelievable, there are also metadata values like:</li>
+</ul>
+
+<pre><code>COLLETOTRICHUM LINDEMUTHIANUM||                  FUSARIUM||GERMPLASM
+</code></pre>
+
+<ul>
+<li>Add a description to the file names using:</li>
+</ul>
+
+<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+</code></pre>
+
+<ul>
+<li>Test import of 933 records:</li>
+</ul>
+
+<pre><code>$ [dspace]/bin/dspace import -a -e aorth@mjanja.ch -c 10568/87193 -s /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ -m /tmp/ciat
+$ wc -l /tmp/ciat
+933 /tmp/ciat
+</code></pre>
 
   
 
