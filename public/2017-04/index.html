@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-20T18:11:11&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-20T18:40:42&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "2182",
+  "wordCount": "2267",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-20T18:11:11&#43;03:00",
+  "dateModified": "2017-04-20T18:40:42&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -530,6 +530,17 @@ $ wc -l /tmp/ciat
 
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace filter-media -f -v -i 10568/71249 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+</code></pre>
+
+<h2 id="2017-04-22">2017-04-22</h2>
+
+<ul>
+<li>Someone on the dspace-tech mailing list responded with a suggestion about the foreign key violation in the <code>cleanup</code> task</li>
+<li>The solution is to remove the ID (ie set to NULL) from the <code>primary_bitstream_id</code> column in the <code>bundle</code> table</li>
+<li>After doing that and running the <code>cleanup</code> task again I find more bitstreams that are affected and end up with a long list of IDs that need to be fixed:</li>
+</ul>
+
+<pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (435, 1136, 1132, 1220, 1236, 3002, 3255, 5322);
 </code></pre>
 
   
