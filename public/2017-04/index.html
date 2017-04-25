@@ -30,7 +30,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 
 <meta property="article:published_time" content="2017-04-02T17:08:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-04-24T18:44:33&#43;03:00"/>
+<meta property="article:modified_time" content="2017-04-24T22:42:15&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
   "@type": "BlogPosting",
   "headline": "April, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-04/",
-  "wordCount": "2553",
+  "wordCount": "2821",
   "datePublished": "2017-04-02T17:08:52&#43;02:00",
-  "dateModified": "2017-04-24T18:44:33&#43;03:00",
+  "dateModified": "2017-04-24T22:42:15&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -621,6 +621,79 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: this Index
 
 <ul>
 <li>Now running the cleanup script on DSpace Test and already seeing 11GB freed from the assetstore—it&rsquo;s likely we haven&rsquo;t had a cleanup task complete successfully in years&hellip;</li>
+</ul>
+
+<h2 id="2017-04-25">2017-04-25</h2>
+
+<ul>
+<li>Finally finished running the PDF thumbnail re-processing on CGSpace, the final count of CMYK PDFs is about 2751</li>
+<li>Preparing to run the cleanup task on CGSpace, I want to see how many files are in the assetstore:</li>
+</ul>
+
+<pre><code># find [dspace]/assetstore/ -type f | wc -l
+113104
+</code></pre>
+
+<ul>
+<li>Troubleshooting the Atmire Solr update process that runs at 3:00 AM every morning, after finishing at 100% it has this error:</li>
+</ul>
+
+<pre><code>[=================================================&gt; ]99% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:12
+[=================================================&gt; ]99% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:12
+[=================================================&gt; ]99% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:12
+[=================================================&gt; ]99% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:13
+[==================================================&gt;]100% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:13
+java.lang.RuntimeException: java.lang.ClassNotFoundException: org.dspace.statistics.content.SpecifiedDSODatasetGenerator
+	at com.atmire.statistics.display.StatisticsGraph.parseDatasetGenerators(SourceFile:254)
+	at org.dspace.statistics.content.StatisticsDisplay.&lt;init&gt;(SourceFile:203)
+	at com.atmire.statistics.display.StatisticsGraph.&lt;init&gt;(SourceFile:116)
+	at com.atmire.statistics.display.StatisticsGraphFactory.getStatisticsDisplay(SourceFile:25)
+	at com.atmire.statistics.display.StatisticsDisplayFactory.parseStatisticsDisplay(SourceFile:67)
+	at com.atmire.statistics.display.StatisticsDisplayFactory.getStatisticsDisplays(SourceFile:49)
+	at com.atmire.statistics.statlet.XmlParser.getStatisticsDisplays(SourceFile:178)
+	at com.atmire.statistics.statlet.XmlParser.getStatisticsDisplays(SourceFile:111)
+	at com.atmire.utils.ReportSender$ReportRunnable.run(SourceFile:151)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.dspace.statistics.content.SpecifiedDSODatasetGenerator
+	at org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1858)
+	at org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1701)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:264)
+	at com.atmire.statistics.statlet.XmlParser.parsedatasetGenerator(SourceFile:299)
+	at com.atmire.statistics.display.StatisticsGraph.parseDatasetGenerators(SourceFile:250)
+	... 13 more
+java.lang.RuntimeException: java.lang.ClassNotFoundException: org.dspace.statistics.content.DSpaceObjectDatasetGenerator
+	at com.atmire.statistics.display.StatisticsGraph.parseDatasetGenerators(SourceFile:254)
+	at org.dspace.statistics.content.StatisticsDisplay.&lt;init&gt;(SourceFile:203)
+	at com.atmire.statistics.display.StatisticsGraph.&lt;init&gt;(SourceFile:116)
+	at com.atmire.statistics.display.StatisticsGraphFactory.getStatisticsDisplay(SourceFile:25)
+	at com.atmire.statistics.display.StatisticsDisplayFactory.parseStatisticsDisplay(SourceFile:67)
+	at com.atmire.statistics.display.StatisticsDisplayFactory.getStatisticsDisplays(SourceFile:49)
+	at com.atmire.statistics.statlet.XmlParser.getStatisticsDisplays(SourceFile:178)
+	at com.atmire.statistics.statlet.XmlParser.getStatisticsDisplays(SourceFile:111)
+	at com.atmire.utils.ReportSender$ReportRunnable.run(SourceFile:151)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: org.dspace.statistics.content.DSpaceObjectDatasetGenerator
+	at org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1858)
+	at org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1701)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:264)
+	at com.atmire.statistics.statlet.XmlParser.parsedatasetGenerator(SourceFile:299)
+	at com.atmire.statistics.display.StatisticsGraph.parseDatasetGenerators(SourceFile:250)
+</code></pre>
+
+<ul>
+<li>Run system updates on DSpace Test and reboot the server (new Java 8 131)</li>
+<li>Run the SQL cleanups on the bundle table on CGSpace and run the <code>[dspace]/bin/dspace cleanup</code> task</li>
+<li>I will be interested to see the file count in the assetstore as well as the database size after the next backup (last backup size is 111M)</li>
 </ul>
 
   
