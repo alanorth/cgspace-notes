@@ -13,7 +13,7 @@
 
 
 <meta property="article:published_time" content="2017-05-01T16:21:52&#43;02:00"/>
-<meta property="article:modified_time" content="2017-05-10T00:16:49&#43;03:00"/>
+<meta property="article:modified_time" content="2017-05-10T11:20:27&#43;03:00"/>
 
 
 
@@ -45,9 +45,9 @@
   "@type": "BlogPosting",
   "headline": "May, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-05/",
-  "wordCount": "827",
+  "wordCount": "1037",
   "datePublished": "2017-05-01T16:21:52&#43;02:00",
-  "dateModified": "2017-05-10T00:16:49&#43;03:00",
+  "dateModified": "2017-05-10T11:20:27&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -189,8 +189,8 @@
 
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m -XX:-UseGCOverheadLimit&quot;
 $ [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10568/87775 /home/aorth/10947-1/10947-1.zip
-$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e aorth@mjanja.ch -p 10947/1 $collection; done
-$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
 </code></pre>
 
 <ul>
@@ -230,12 +230,38 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
   Detail: Key (handle_id)=(80928) already exists.
 </code></pre>
 
+<ul>
+<li>I think those errors actually come from me running the <code>update-sequences.sql</code> script while Tomcat/DSpace are running</li>
+<li>Apparently you need to stop Tomcat!</li>
+</ul>
+
 <h2 id="2017-05-10">2017-05-10</h2>
 
 <ul>
 <li>Atmire says they are willing to extend the ORCID implementation, and I&rsquo;ve asked them to provide a quote</li>
 <li>I clarified that the scope of the implementation should be that ORCIDs are stored in the database and exposed via REST / API like other fields</li>
+<li>Finally finished importing all the CGIAR Library content, final method was:</li>
 </ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit&quot;
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2517/10947-2517.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2515/10947-2515.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2516/10947-2516.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-1/10947-1.zip
+$ [dspace]/bin/dspace packager -s -t AIP -o ignoreHandle=false -e some@user.com -p 10568/80923 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+</code></pre>
+
+<ul>
+<li>Basically, import the smaller communities using recursive AIP import (with <code>skipIfParentMissing</code>)</li>
+<li>Then, for the larger collection, create the community, collections, and items separately, ingesting the items one by one</li>
+<li>The <code>-XX:-UseGCOverheadLimit</code> JVM option helps with some issues in large imports</li>
+<li>After this I ran the <code>update-sequences.sql</code> script (with Tomcat shut down), and cleaned up the 200+ blank metadata records:</li>
+</ul>
+
+<pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+</code></pre>
 
 
   
