@@ -35,7 +35,7 @@
 <meta name="twitter:title" content="May, 2017"/>
 <meta name="twitter:description" content="2017-05-01  ICARDA apparently started working on CG Core on their MEL repository They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items:  https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full https://cgspace.cgiar.org/handle/10568/73683   2017-05-02  Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request  2017-05-04  Sync DSpace Test with database and assetstore from CGSpace Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server Now I can see the workflow statistics and am able to select users, but everything returns 0 items Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace."/>
 
-<meta name="generator" content="Hugo 0.21-DEV" />
+<meta name="generator" content="Hugo 0.22-DEV" />
 
 
     
@@ -45,7 +45,7 @@
   "@type": "BlogPosting",
   "headline": "May, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-05/",
-  "wordCount": "1479",
+  "wordCount": "1903",
   "datePublished": "2017-05-01T16:21:52&#43;02:00",
   "dateModified": "2017-05-19T20:49:22&#43;03:00",
   "author": {
@@ -348,6 +348,54 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <ul>
 <li>After that I can create collections just fine, though I&rsquo;m not sure if it has other side effects</li>
 </ul>
+
+<h2 id="2017-05-21">2017-05-21</h2>
+
+<ul>
+<li>Start creating a basic theme for the CGIAR System Organization&rsquo;s community on CGSpace</li>
+<li>Using colors from the <a href="http://library.cgiar.org/handle/10947/2699">CGIAR Branding guidelines (2014)</a></li>
+<li>Make a GitHub issue to track this work: <a href="https://github.com/ilri/DSpace/issues/324">#324</a></li>
+</ul>
+
+<h2 id="2017-05-22">2017-05-22</h2>
+
+<ul>
+<li>Do some cleanups of community and collection names in CGIAR System Management Office community on DSpace Test, as well as move some items as Peter requested</li>
+<li>Peter wanted a list of authors in here, so I generated a list of collections using the &ldquo;View Source&rdquo; on each community and this hacky awk:</li>
+</ul>
+
+<pre><code>$ grep 10947/ /tmp/collections | grep -v cocoon | awk -F/ '{print $3&quot;/&quot;$4}' | awk -F\&quot; '{print $1}' | vim -
+</code></pre>
+
+<ul>
+<li>Then I joined them together and ran this old SQL query from the dspace-tech mailing list which gives you authors for items in those collections:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value
+from metadatavalue
+where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author')
+AND resource_type_id = 2
+AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10947/2', '10947/3', '10947/1
+0', '10947/4', '10947/5', '10947/6', '10947/7', '10947/8', '10947/9', '10947/11', '10947/25', '10947/12', '10947/26', '10947/27', '10947/28', '10947/29', '109
+47/30', '10947/13', '10947/14', '10947/15', '10947/16', '10947/31', '10947/32', '10947/33', '10947/34', '10947/35', '10947/36', '10947/37', '10947/17', '10947
+/18', '10947/38', '10947/19', '10947/39', '10947/40', '10947/41', '10947/42', '10947/43', '10947/2512', '10947/44', '10947/20', '10947/21', '10947/45', '10947
+/46', '10947/47', '10947/48', '10947/49', '10947/22', '10947/23', '10947/24', '10947/50', '10947/51', '10947/2518', '10947/2776', '10947/2790', '10947/2521',
+'10947/2522', '10947/2782', '10947/2525', '10947/2836', '10947/2524', '10947/2878', '10947/2520', '10947/2523', '10947/2786', '10947/2631', '10947/2589', '109
+47/2519', '10947/2708', '10947/2526', '10947/2871', '10947/2527', '10947/4467', '10947/3457', '10947/2528', '10947/2529', '10947/2533', '10947/2530', '10947/2
+531', '10947/2532', '10947/2538', '10947/2534', '10947/2540', '10947/2900', '10947/2539', '10947/2784', '10947/2536', '10947/2805', '10947/2541', '10947/2535'
+, '10947/2537', '10568/93761')));
+</code></pre>
+
+<ul>
+<li>To get a CSV (with counts) from that:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*)
+from metadatavalue
+where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author')
+AND resource_type_id = 2
+AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10947/2', '10947/3', '10947/10', '10947/4', '10947/5', '10947/6', '10947/7', '10947/8', '10947/9', '10947/11', '10947/25', '10947/12', '10947/26', '10947/27', '10947/28', '10947/29', '10947/30', '10947/13', '10947/14', '10947/15', '10947/16', '10947/31', '10947/32', '10947/33', '10947/34', '10947/35', '10947/36', '10947/37', '10947/17', '10947/18', '10947/38', '10947/19', '10947/39', '10947/40', '10947/41', '10947/42', '10947/43', '10947/2512', '10947/44', '10947/20', '10947/21', '10947/45', '10947/46', '10947/47', '10947/48', '10947/49', '10947/22', '10947/23', '10947/24', '10947/50', '10947/51', '10947/2518', '10947/2776', '10947/2790', '10947/2521', '10947/2522', '10947/2782', '10947/2525', '10947/2836', '10947/2524', '10947/2878', '10947/2520', '10947/2523', '10947/2786', '10947/2631', '10947/2589', '10947/2519', '10947/2708', '10947/2526', '10947/2871', '10947/2527', '10947/4467', '10947/3457', '10947/2528', '10947/2529', '10947/2533', '10947/2530', '10947/2531', '10947/2532', '10947/2538', '10947/2534', '10947/2540', '10947/2900', '10947/2539', '10947/2784', '10947/2536', '10947/2805', '10947/2541', '10947/2535', '10947/2537', '10568/93761'))) group by text_value order by count desc) to /tmp/cgiar-librar-authors.csv with csv;
+</code></pre>
 
 
   
