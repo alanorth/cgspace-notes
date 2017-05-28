@@ -45,7 +45,7 @@
   "@type": "BlogPosting",
   "headline": "May, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-05/",
-  "wordCount": "2136",
+  "wordCount": "2299",
   "datePublished": "2017-05-01T16:21:52&#43;02:00",
   "dateModified": "2017-05-28T12:32:45&#43;03:00",
   "author": {
@@ -427,6 +427,37 @@ COPY 111
 <li>File an issue on GitHub to explore/track migration to proper country/region codes (ISO <sup>2</sup>&frasl;<sub>3</sub> and UN M.49): <a href="https://github.com/ilri/DSpace/issues/326">#326</a></li>
 <li>Ask Peter how the Landportal.info people should acknowledge us as the source of data on their website</li>
 <li>Communicate with MARLO people about progress on exposing ORCIDs via the REST API, as it is set to be discussed in the <a href="https://wiki.duraspace.org/display/cmtygp/DCAT+Meeting+June+2017">June, 2017 DCAT meeting</a></li>
+<li>Find all of Amos Omore&rsquo;s author name variations so I can link them to his authority entry that has an ORCID:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like 'Omore, A%';
+</code></pre>
+
+<ul>
+<li>Set the authority for all variations to one containing an ORCID:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set authority='4428ee88-90ef-4107-b837-3c0ec988520b', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Omore, A%';
+UPDATE 187
+</code></pre>
+
+<ul>
+<li>Next I need to do Edgar Twine:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like 'Twine, E%';
+</code></pre>
+
+<ul>
+<li>But it doesn&rsquo;t look like any of his existing entries are linked to an authority which has an ORCID, so I edited the metadata via &ldquo;Edit this Item&rdquo; and looked up his ORCID and linked it there</li>
+<li>Now I should be able to set his name variations to the new authority:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set authority='f70d0a01-d562-45b8-bca3-9cf7f249bc8b', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Twine, E%';
+</code></pre>
+
+<ul>
+<li>Run the corrections on CGSpace and then update discovery / authority</li>
 </ul>
 
 
