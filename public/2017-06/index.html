@@ -13,7 +13,7 @@
 
 
 <meta property="article:published_time" content="2017-06-01T10:14:52&#43;03:00"/>
-<meta property="article:modified_time" content="2017-06-07T18:12:09&#43;03:00"/>
+<meta property="article:modified_time" content="2017-06-18T14:53:20&#43;03:00"/>
 
 
 
@@ -45,9 +45,9 @@
   "@type": "BlogPosting",
   "headline": "June, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-06/",
-  "wordCount": "892",
+  "wordCount": "1001",
   "datePublished": "2017-06-01T10:14:52&#43;03:00",
-  "dateModified": "2017-06-07T18:12:09&#43;03:00",
+  "dateModified": "2017-06-18T14:53:20&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -222,6 +222,26 @@
 <li>Redeploy CGSpace with latest changes from <code>5_x-prod</code>, run system updates, and reboot the server</li>
 <li>Continue working on ansible infrastructure changes for CGIAR Library</li>
 </ul>
+
+<h2 id="2017-06-20">2017-06-20</h2>
+
+<ul>
+<li>Import Abenet and Peter&rsquo;s changes to the CGIAR Library CRP community</li>
+<li>Due to them using Windows and renaming some columns there were formatting, encoding, and duplicate metadata value issues</li>
+<li>I had to remove some fields from the CSV and rename some back to, ie, <code>dc.subject[en_US]</code> just so DSpace would detect changes properly</li>
+<li>Now it looks much better: <a href="https://dspacetest.cgiar.org/handle/10947/2517">https://dspacetest.cgiar.org/handle/10947/2517</a></li>
+<li>Removing the HTML tags and HTML/XML entities using the following GREL:
+
+<ul>
+<li><code>replace(value,/&lt;\/?\w+((\s+\w+(\s*=\s*(?:&quot;.*?&quot;|'.*?'|[^'&quot;&gt;\s]+))?)+\s*|\s*)\/?&gt;/,'')</code></li>
+<li><code>value.unescape(&quot;html&quot;).unescape(&quot;xml&quot;)</code></li>
+</ul></li>
+<li>Finally import 914 CIAT Book Chapters to CGSpace in two batches:</li>
+</ul>
+
+<pre><code>$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
+$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books2.map &amp;&gt; /tmp/ciat-books2.log
+</code></pre>
 
 
   
