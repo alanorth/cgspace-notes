@@ -13,7 +13,7 @@
 
 
 <meta property="article:published_time" content="2017-06-01T10:14:52&#43;03:00"/>
-<meta property="article:modified_time" content="2017-06-20T12:00:40&#43;03:00"/>
+<meta property="article:modified_time" content="2017-06-25T08:47:28&#43;02:00"/>
 
 
 
@@ -45,9 +45,9 @@
   "@type": "BlogPosting",
   "headline": "June, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-06/",
-  "wordCount": "1107",
+  "wordCount": "1234",
   "datePublished": "2017-06-01T10:14:52&#43;03:00",
-  "dateModified": "2017-06-20T12:00:40&#43;03:00",
+  "dateModified": "2017-06-25T08:47:28&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -260,6 +260,28 @@ $ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; [dspace]/bin/dspace impo
 <ul>
 <li>Marianne from WLE asked if they can have both Phase I and II research themes together in the item submission form</li>
 <li>Perhaps we can add them together in the same question for <code>cg.identifier.wletheme</code></li>
+</ul>
+
+<h2 id="2017-06-30">2017-06-30</h2>
+
+<ul>
+<li>CGSpace went down briefly, I see lots of these errors in the dspace logs:</li>
+</ul>
+
+<pre><code>Java stacktrace: java.util.NoSuchElementException: Timeout waiting for idle object
+</code></pre>
+
+<ul>
+<li>After looking at the Tomcat logs, Munin graphs, and PostgreSQL connection stats, it seems there is just a high load</li>
+<li>Might be a good time to adjust DSpace&rsquo;s database connection settings, like I first mentioned in April, 2017 after reading the <a href="https://wiki.duraspace.org/display/cmtygp/DCAT+Meeting+April+2017">2017-04 DCAT comments</a></li>
+<li>I&rsquo;ve adjusted the following in CGSpace&rsquo;s config:
+
+<ul>
+<li><code>db.maxconnections</code> 30→70 (the default PostgreSQL config allows 100 connections, so DSpace&rsquo;s default of 30 is quite low)</li>
+<li><code>db.maxwait</code> 5000→10000</li>
+<li><code>db.maxidle</code> 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier)</li>
+</ul></li>
+<li>We will need to adjust this again (as well as the <code>pg_hba.conf</code> settings) when we deploy tsega&rsquo;s REST API</li>
 </ul>
 
 
