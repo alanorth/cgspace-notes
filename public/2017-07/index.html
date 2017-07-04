@@ -12,6 +12,14 @@
 Run system updates and reboot DSpace Test
 
 
+2017-07-04
+
+
+Merge changes for WLE Phase II theme rename (#329)
+Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace
+We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the output into quasi XML:
+
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-07/" />
@@ -19,7 +27,7 @@ Run system updates and reboot DSpace Test
 
 
 <meta property="article:published_time" content="2017-07-01T18:03:52&#43;03:00"/>
-<meta property="article:modified_time" content="2017-07-04T08:04:46&#43;03:00"/>
+<meta property="article:modified_time" content="2017-07-04T10:53:39&#43;03:00"/>
 
 
 
@@ -45,6 +53,14 @@ Run system updates and reboot DSpace Test
 Run system updates and reboot DSpace Test
 
 
+2017-07-04
+
+
+Merge changes for WLE Phase II theme rename (#329)
+Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace
+We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the output into quasi XML:
+
+
 "/>
 
 <meta name="generator" content="Hugo 0.24.1" />
@@ -57,9 +73,9 @@ Run system updates and reboot DSpace Test
   "@type": "BlogPosting",
   "headline": "July, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-07/",
-  "wordCount": "93",
+  "wordCount": "232",
   "datePublished": "2017-07-01T18:03:52&#43;03:00",
-  "dateModified": "2017-07-04T08:04:46&#43;03:00",
+  "dateModified": "2017-07-04T10:53:39&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -128,8 +144,6 @@ Run system updates and reboot DSpace Test
 <li>Run system updates and reboot DSpace Test</li>
 </ul>
 
-<p></p>
-
 <h2 id="2017-07-04">2017-07-04</h2>
 
 <ul>
@@ -138,11 +152,24 @@ Run system updates and reboot DSpace Test
 <li>We can use PostgreSQL&rsquo;s extended output format (<code>-x</code>) plus <code>sed</code> to format the output into quasi XML:</li>
 </ul>
 
+<p></p>
+
 <pre><code>$ psql dspacenew -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=5 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::'
 </code></pre>
 
 <ul>
 <li>The <code>sed</code> script is from a post on the <a href="https://www.postgresql.org/message-id/437E44A5.508%40ultimeth.com">PostgreSQL mailing list</a></li>
+<li>Abenet says the ILRI board wants to be able to have &ldquo;lead author&rdquo; for every item, so I&rsquo;ve whipped up a WIP test in the <code>5_x-lead-author</code> branch</li>
+<li>It works but is still very rough and we haven&rsquo;t thought out the whole lifecycle yet</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/07/lead-author-test.png" alt="Testing lead author in submission form" /></p>
+
+<ul>
+<li>I assume that &ldquo;lead author&rdquo; would actually be the first question on the item submission form</li>
+<li>We also need to check to see which ORCID authority core this uses, because it seems to be using an entirely new one rather than the one for <code>dc.contributor.author</code> (which makes sense of course, but fuck, all the author problems aren&rsquo;t bad enough?!)</li>
+<li>Also would need to edit XMLUI item displays to incorporate this into authors list</li>
+<li>And fuck, then anyone consuming our data via REST / OAI will not notice that we have an author outside of <code>dc.contributor.authors</code>&hellip; ugh</li>
 </ul>
 
   
