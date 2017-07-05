@@ -27,7 +27,7 @@ We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the
 
 
 <meta property="article:published_time" content="2017-07-01T18:03:52&#43;03:00"/>
-<meta property="article:modified_time" content="2017-07-04T13:49:16&#43;03:00"/>
+<meta property="article:modified_time" content="2017-07-04T23:39:47&#43;03:00"/>
 
 
 
@@ -73,9 +73,9 @@ We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the
   "@type": "BlogPosting",
   "headline": "July, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-07/",
-  "wordCount": "252",
+  "wordCount": "323",
   "datePublished": "2017-07-01T18:03:52&#43;03:00",
-  "dateModified": "2017-07-04T13:49:16&#43;03:00",
+  "dateModified": "2017-07-04T23:39:47&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -154,7 +154,7 @@ We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the
 
 <p></p>
 
-<pre><code>$ psql dspacenew -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=5 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::'
+<pre><code>$ psql dspacenew -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=5 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::'
 </code></pre>
 
 <ul>
@@ -172,6 +172,16 @@ We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the
 <li>And fuck, then anyone consuming our data via REST / OAI will not notice that we have an author outside of <code>dc.contributor.authors</code>&hellip; ugh</li>
 <li>What if we modify the item submission form to use <a href="https://wiki.duraspace.org/display/DSDOC5x/Submission+User+Interface#SubmissionUserInterface-ItemtypeBasedMetadataCollection"><code>type-bind</code> fields to show/hide certain fields depending on the type</a>?</li>
 </ul>
+
+<h2 id="2017-07-05">2017-07-05</h2>
+
+<ul>
+<li>Adjust WLE Research Theme to include both Phase I and II on the submission form according to editor feedback (<a href="https://github.com/ilri/DSpace/pull/330">#330</a>)</li>
+<li>Generate list of fields in the current CGSpace <code>cg</code> scheme so we can record them properly in the metadata registry:</li>
+</ul>
+
+<pre><code>$ psql dspace -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=2 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::' &gt; cg-types.xml
+</code></pre>
 
   
 
