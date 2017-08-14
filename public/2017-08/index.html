@@ -85,7 +85,7 @@ Then I cleaned up the author authorities and HTML characters in OpenRefine and s
   "@type": "BlogPosting",
   "headline": "August, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-08/",
-  "wordCount": "1435",
+  "wordCount": "1842",
   "datePublished": "2017-08-01T11:51:52&#43;03:00",
   "dateModified": "2017-08-14T12:40:13&#43;03:00",
   "author": {
@@ -318,6 +318,41 @@ dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_i
 
 <ul>
 <li>Generate a new list of authors from the CGIAR Library community for Peter to look through now that the initial corrections have been done</li>
+<li>Thinking about resource limits for PostgreSQL again after last week&rsquo;s CGSpace crash and related to a recently discussion I had in the comments of the <a href="https://wiki.duraspace.org/display/cmtygp/DCAT+Meeting+April+2017">April, 2017 DCAT meeting notes</a></li>
+<li>In that thread Chris Wilper suggests a new default of 35 max connections for <code>db.maxconnections</code> (from the current default of 30), knowing that <em>each DSpace web application</em> gets to use up to this many on its own</li>
+<li>It would be good to approximate what the theoretical maximum number of connections on a busy server would be, perhaps by looking to see which apps use SQL:</li>
+</ul>
+
+<pre><code>$ grep -rsI SQLException dspace-jspui | wc -l          
+473
+$ grep -rsI SQLException dspace-oai | wc -l  
+63
+$ grep -rsI SQLException dspace-rest | wc -l
+139
+$ grep -rsI SQLException dspace-solr | wc -l                                                                               
+0
+$ grep -rsI SQLException dspace-xmlui | wc -l
+866
+</code></pre>
+
+<ul>
+<li>Of those five applications we&rsquo;re running, only <code>solr</code> appears not to use the database directly</li>
+<li>And JSPUI is only used internally (so it doesn&rsquo;t really count), leaving us with OAI, REST, and XMLUI</li>
+<li>Assuming each takes a theoretical maximum of 35 connections during a heavy load (35 * 3 = 105), that would put the connections well above PostgreSQL&rsquo;s default max of 100 connections (remember a handful of connections are reserved for the PostgreSQL super user, see <code>superuser_reserved_connections</code>)</li>
+<li>So we should adjust PostgreSQL&rsquo;s max connections to be DSpace&rsquo;s <code>db.maxconnections</code> * 3 + 3</li>
+<li>This would allow each application to use up to <code>db.maxconnections</code> and not to go over the system&rsquo;s PostgreSQL limit</li>
+<li>Perhaps since CGSpace is a busy site with lots of resources we could actually use something like 40 for <code>db.maxconnections</code></li>
+<li>Also worth looking into is to set up a database pool using JNDI, as apparently DSpace&rsquo;s <code>db.poolname</code> hasn&rsquo;t been used since around DSpace 1.7 (according to Chris Wilper&rsquo;s comments in the thread)</li>
+<li>Need to go check the PostgreSQL connection stats in Munin on CGSpace from the past week to get an idea if 40 is appropriate</li>
+<li>Looks like connections hover around 50:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/08/postgresql-connections-cgspace.png" alt="PostgreSQL connections 2017-08" /></p>
+
+<ul>
+<li>Unfortunately I don&rsquo;t have the breakdown of which DSpace apps are making those connections (I&rsquo;ll assume XMLUI)</li>
+<li>So I guess a limit of 30 (DSpace default) is too low, but 70 causes problems when the load increases and the system&rsquo;s PostgreSQL <code>max_connections</code> is too low</li>
+<li>For now I think maybe setting DSpace&rsquo;s <code>db.maxconnections</code> to 40 and adjusting the system&rsquo;s <code>max_connections</code> might be a good starting point: 40 * 3 + 4 = 123</li>
 </ul>
 
   
