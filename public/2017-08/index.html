@@ -37,7 +37,7 @@ Then I cleaned up the author authorities and HTML characters in OpenRefine and s
 
 
 <meta property="article:published_time" content="2017-08-01T11:51:52&#43;03:00"/>
-<meta property="article:modified_time" content="2017-08-17T11:43:00&#43;03:00"/>
+<meta property="article:modified_time" content="2017-08-18T18:21:00&#43;03:00"/>
 
 
 
@@ -85,9 +85,9 @@ Then I cleaned up the author authorities and HTML characters in OpenRefine and s
   "@type": "BlogPosting",
   "headline": "August, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-08/",
-  "wordCount": "2943",
+  "wordCount": "3039",
   "datePublished": "2017-08-01T11:51:52&#43;03:00",
-  "dateModified": "2017-08-17T11:43:00&#43;03:00",
+  "dateModified": "2017-08-18T18:21:00&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -493,6 +493,36 @@ dspace.log.2017-08-17:584
 <li>I wired it up to the <code>dc.subject</code> field of the submission interface using the &ldquo;lookup&rdquo; type and it works!</li>
 <li>I think we can use this example to get a working AGROVOC query</li>
 <li>More information about authority framework: <a href="https://wiki.duraspace.org/display/DSPACE/Authority+Control+of+Metadata+Values">https://wiki.duraspace.org/display/DSPACE/Authority+Control+of+Metadata+Values</a></li>
+<li>Wow, I&rsquo;m playing with the AGROVOC SPARQL endpoint using the <a href="https://github.com/tialaramex/sparql-query">sparql-query tool</a>:</li>
+</ul>
+
+<pre><code>$ ./sparql-query http://202.45.139.84:10035/catalogs/fao/repositories/agrovoc
+sparql$ PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT 
+    ?label 
+WHERE {  
+   {  ?concept  skos:altLabel ?label . } UNION {  ?concept  skos:prefLabel ?label . }
+   FILTER regex(str(?label), &quot;^fish&quot;, &quot;i&quot;) .
+} LIMIT 10
+
+┌───────────────────────┐                                                      
+│ ?label                │                                                      
+├───────────────────────┤                                                      
+│ fisheries legislation │                                                      
+│ fishery legislation   │                                                      
+│ fishery law           │                                                      
+│ fish production       │                                                      
+│ fish farming          │                                                      
+│ fishing industry      │                                                      
+│ fisheries data        │                                                      
+│ fishing power         │                                                      
+│ fishing times         │                                                      
+│ fish passes           │                                                      
+└───────────────────────┘
+</code></pre>
+
+<ul>
+<li>More examples about SPARQL syntax: <a href="https://github.com/rsinger/openlcsh/wiki/Sparql-Examples">https://github.com/rsinger/openlcsh/wiki/Sparql-Examples</a></li>
 <li>I found this blog post about speeding up the Tomcat startup time: <a href="http://skybert.net/java/improve-tomcat-startup-time/">http://skybert.net/java/improve-tomcat-startup-time/</a></li>
 <li>The startup time went from ~80s to 40s!</li>
 </ul>
