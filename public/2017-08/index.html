@@ -37,7 +37,7 @@ Then I cleaned up the author authorities and HTML characters in OpenRefine and s
 
 
 <meta property="article:published_time" content="2017-08-01T11:51:52&#43;03:00"/>
-<meta property="article:modified_time" content="2017-08-29T00:24:05&#43;07:00"/>
+<meta property="article:modified_time" content="2017-08-31T10:35:17&#43;07:00"/>
 
 
 
@@ -85,9 +85,9 @@ Then I cleaned up the author authorities and HTML characters in OpenRefine and s
   "@type": "BlogPosting",
   "headline": "August, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-08/",
-  "wordCount": "3428",
+  "wordCount": "3542",
   "datePublished": "2017-08-01T11:51:52&#43;03:00",
-  "dateModified": "2017-08-29T00:24:05&#43;07:00",
+  "dateModified": "2017-08-31T10:35:17&#43;07:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -589,6 +589,17 @@ WHERE {
 <li>I notice that in many WLE collections Marianne Gadeberg is in the edit or approval steps, but she is also in the groups for those steps.</li>
 <li>I think we need to have a process to go back and check / fix some of these scenarios—to remove her user from the step and instead add her to the group—because we have way too many authorizations and in late 2016 we had <a href="https://github.com/ilri/rmg-ansible-public/commit/358b5ea43f9e5820986f897c9d560937c702ac6e">performance issues with Solr</a> because of this</li>
 <li>I asked Sisay about this and hinted that he should go back and fix these things, but let&rsquo;s see what he says</li>
+<li>Saw CGSpace go down briefly today and noticed SQL connection pool errors in the dspace log file:</li>
+</ul>
+
+<pre><code>ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error
+org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+</code></pre>
+
+<ul>
+<li>Looking at the logs I see we have been having hundreds or thousands of these errors a few times per week in 2017-07 and almost every day in 2017-08</li>
+<li>It seems that I changed the <code>db.maxconnections</code> setting from 70 to 40 around 2017-08-14, but Macaroni Bros also reduced their hourly hammering of the REST API then</li>
+<li>Nevertheless, it seems like a connection limit is not enough and that I should increase it (as well as the system&rsquo;s PostgreSQL <code>max_connections</code></li>
 </ul>
 
   
