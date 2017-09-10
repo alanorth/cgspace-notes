@@ -19,7 +19,7 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
 
 
 <meta property="article:published_time" content="2017-09-07T16:54:52&#43;07:00"/>
-<meta property="article:modified_time" content="2017-09-10T13:35:51&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-10T17:46:54&#43;03:00"/>
 
 
 
@@ -49,9 +49,9 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "258",
+  "wordCount": "443",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
-  "dateModified": "2017-09-10T13:35:51&#43;03:00",
+  "dateModified": "2017-09-10T17:46:54&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -149,6 +149,27 @@ DELETE 58
 <li>Create pull request for Phase I and II changes to CCAFS Project Tags: <a href="https://github.com/ilri/DSpace/pull/336">#336</a></li>
 <li>We&rsquo;ve been discussing with Macaroni Bros and CCAFS for the past month or so and the list of tags was recently finalized</li>
 <li>There will need to be some metadata updates — though if I recall correctly it is only about seven records — for that as well, I had made some notes about it in <a href="/cgspace-notes/2017-07">2017-07</a>, but I&rsquo;ve asked for more clarification from Lili just in case</li>
+<li>Looking at the DSpace logs to see if we&rsquo;ve had a change in the &ldquo;Cannot get a connection&rdquo; errors since last month when we adjusted the <code>db.maxconnections</code> parameter on CGSpace:</li>
+</ul>
+
+<pre><code># grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-09-*
+dspace.log.2017-09-01:0
+dspace.log.2017-09-02:0
+dspace.log.2017-09-03:9
+dspace.log.2017-09-04:17
+dspace.log.2017-09-05:752
+dspace.log.2017-09-06:0
+dspace.log.2017-09-07:0
+dspace.log.2017-09-08:10
+dspace.log.2017-09-09:0
+dspace.log.2017-09-10:0
+</code></pre>
+
+<ul>
+<li>Also, since last month (2017-08) Macaroni Bros no longer runs their REST API scraper every hour, so I&rsquo;m sure that helped</li>
+<li>There are still some errors, though, so maybe I should bump the connection limit up a bit</li>
+<li>I remember seeing that Munin shows that the average number of connections is 50 (which is probably mostly from the XMLUI) and we&rsquo;re currently allowing 40 connections per app, so maybe it would be good to bump that value up to 50 or 60 along with the system&rsquo;s PostgreSQL <code>max_connections</code> (formula should be: webapps * 60 + 3, or 3 * 60 + 3 = 183 in our case)</li>
+<li>I updated both CGSpace and DSpace Test to use these new settings (60 connections per web app and 183 for system PostgreSQL limit)</li>
 </ul>
 
   
