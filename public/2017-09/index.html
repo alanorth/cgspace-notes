@@ -12,6 +12,12 @@
 Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two hours
 
 
+2017-09-07
+
+
+Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account is both in the approvers step as well as the group
+
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-09/" />
@@ -19,7 +25,7 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
 
 
 <meta property="article:published_time" content="2017-09-07T16:54:52&#43;07:00"/>
-<meta property="article:modified_time" content="2017-09-10T18:21:38&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-12T16:57:19&#43;03:00"/>
 
 
 
@@ -38,6 +44,12 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
 Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two hours
 
 
+2017-09-07
+
+
+Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account is both in the approvers step as well as the group
+
+
 "/>
 <meta name="generator" content="Hugo 0.27" />
 
@@ -49,9 +61,9 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "903",
+  "wordCount": "1241",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
-  "dateModified": "2017-09-10T18:21:38&#43;03:00",
+  "dateModified": "2017-09-12T16:57:19&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -120,13 +132,13 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
 <li>Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two hours</li>
 </ul>
 
-<p></p>
-
 <h2 id="2017-09-07">2017-09-07</h2>
 
 <ul>
 <li>Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account is both in the approvers step as well as the group</li>
 </ul>
+
+<p></p>
 
 <h2 id="2017-09-10">2017-09-10</h2>
 
@@ -217,6 +229,101 @@ dspace.log.2017-09-10:0
 <li>As far as exposing ORCIDs as flat metadata along side all other metadata, he says this should be possible and will work on a quote for us</li>
 </ul></li>
 </ul>
+
+<h2 id="2017-09-13">2017-09-13</h2>
+
+<ul>
+<li>Last night Linode sent an alert about CGSpace (linode18) that it has exceeded the outbound traffic rate threshold of 10Mb/s for the last two hours</li>
+<li>I wonder what was going on, and looking into the nginx logs I think maybe it&rsquo;s OAI&hellip;</li>
+<li>Here is yesterday&rsquo;s top ten IP addresses making requests to <code>/oai</code>:</li>
+</ul>
+
+<pre><code># awk '{print $1}' /var/log/nginx/oai.log | sort -n | uniq -c | sort -h | tail -n 10
+      1 213.136.89.78
+      1 66.249.66.90
+      1 66.249.66.92
+      3 68.180.229.31
+      4 35.187.22.255
+  13745 54.70.175.86
+  15814 34.211.17.113
+  15825 35.161.215.53
+  16704 54.70.51.7
+</code></pre>
+
+<ul>
+<li>Compared to the previous day&rsquo;s logs it looks VERY high:</li>
+</ul>
+
+<pre><code># awk '{print $1}' /var/log/nginx/oai.log.1 | sort -n | uniq -c | sort -h | tail -n 10
+      1 207.46.13.39
+      1 66.249.66.93
+      2 66.249.66.91
+      4 216.244.66.194
+     14 66.249.66.90
+</code></pre>
+
+<ul>
+<li>The user agents for those top IPs are:
+
+<ul>
+<li>54.70.175.86: API scraper</li>
+<li>34.211.17.113: API scraper</li>
+<li>35.161.215.53: API scraper</li>
+<li>54.70.51.7: API scraper</li>
+</ul></li>
+<li>And this user agent has never been seen before today (or at least recently!):</li>
+</ul>
+
+<pre><code># grep -c &quot;API scraper&quot; /var/log/nginx/oai.log
+62088
+# zgrep -c &quot;API scraper&quot; /var/log/nginx/oai.log.*.gz
+/var/log/nginx/oai.log.10.gz:0
+/var/log/nginx/oai.log.11.gz:0
+/var/log/nginx/oai.log.12.gz:0
+/var/log/nginx/oai.log.13.gz:0
+/var/log/nginx/oai.log.14.gz:0
+/var/log/nginx/oai.log.15.gz:0
+/var/log/nginx/oai.log.16.gz:0
+/var/log/nginx/oai.log.17.gz:0
+/var/log/nginx/oai.log.18.gz:0
+/var/log/nginx/oai.log.19.gz:0
+/var/log/nginx/oai.log.20.gz:0
+/var/log/nginx/oai.log.21.gz:0
+/var/log/nginx/oai.log.22.gz:0
+/var/log/nginx/oai.log.23.gz:0
+/var/log/nginx/oai.log.24.gz:0
+/var/log/nginx/oai.log.25.gz:0
+/var/log/nginx/oai.log.26.gz:0
+/var/log/nginx/oai.log.27.gz:0
+/var/log/nginx/oai.log.28.gz:0
+/var/log/nginx/oai.log.29.gz:0
+/var/log/nginx/oai.log.2.gz:0
+/var/log/nginx/oai.log.30.gz:0
+/var/log/nginx/oai.log.3.gz:0
+/var/log/nginx/oai.log.4.gz:0
+/var/log/nginx/oai.log.5.gz:0
+/var/log/nginx/oai.log.6.gz:0
+/var/log/nginx/oai.log.7.gz:0
+/var/log/nginx/oai.log.8.gz:0
+/var/log/nginx/oai.log.9.gz:0
+</code></pre>
+
+<ul>
+<li>Some of these heavy users are also using XMLUI, and their user agent isn&rsquo;t matched by the <a href="https://github.com/ilri/rmg-ansible-public/blob/master/roles/dspace/templates/tomcat/server-tomcat7.xml.j2#L158">Tomcat Session Crawler valve</a>, so each request uses a different session</li>
+<li>Yesterday alone the IP addresses using the <code>API scraper</code> user agent were responsible for 16,000 sessions in XMLUI:</li>
+</ul>
+
+<pre><code># grep -a -E &quot;(54.70.51.7|35.161.215.53|34.211.17.113|54.70.175.86)&quot; /home/cgspace.cgiar.org/log/dspace.log.2017-09-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+15924
+</code></pre>
+
+<ul>
+<li>If this continues I will definitely need to figure out who is responsible for this scraper and add their user agent to the session crawler valve regex</li>
+<li>Also, in looking at the DSpace logs I noticed a warning from OAI that I should look into:</li>
+</ul>
+
+<pre><code>WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
+</code></pre>
 
   
 
