@@ -25,7 +25,7 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
 
 
 <meta property="article:published_time" content="2017-09-07T16:54:52&#43;07:00"/>
-<meta property="article:modified_time" content="2017-09-12T16:57:19&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-13T09:53:54&#43;03:00"/>
 
 
 
@@ -61,9 +61,9 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "1241",
+  "wordCount": "1566",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
-  "dateModified": "2017-09-12T16:57:19&#43;03:00",
+  "dateModified": "2017-09-13T09:53:54&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -319,11 +319,61 @@ dspace.log.2017-09-10:0
 
 <ul>
 <li>If this continues I will definitely need to figure out who is responsible for this scraper and add their user agent to the session crawler valve regex</li>
+<li>A search for &ldquo;API scraper&rdquo; user agent on Google returns a <code>robots.txt</code> with a comment that this is the Yewno bot: <a href="http://www.escholarship.org/robots.txt">http://www.escholarship.org/robots.txt</a></li>
 <li>Also, in looking at the DSpace logs I noticed a warning from OAI that I should look into:</li>
 </ul>
 
 <pre><code>WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
 </code></pre>
+
+<ul>
+<li>Looking at the spreadsheet with deletions and corrections that CCAFS sent last week</li>
+<li>It appears they want to delete a lot of metadata, which I&rsquo;m not sure they realize the implications of:</li>
+</ul>
+
+<pre><code>dspace=# select text_value, count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange') group by text_value;                                                                                                                                                                                                                  
+        text_value        | count                              
+--------------------------+-------                             
+ FP4_ClimateModels        |     6                              
+ FP1_CSAEvidence          |     7                              
+ SEA_UpscalingInnovation  |     7                              
+ FP4_Baseline             |    69                              
+ WA_Partnership           |     1                              
+ WA_SciencePolicyExchange |     6                              
+ SA_GHGMeasurement        |     2                              
+ SA_CSV                   |     7                              
+ EA_PAR                   |    18                              
+ FP4_Livestock            |     7                              
+ FP4_GenderPolicy         |     4                              
+ FP2_CRMWestAfrica        |    12                              
+ FP4_ClimateData          |    24                              
+ FP4_CCPAG                |     2                              
+ SEA_mitigationSAMPLES    |     2                              
+ SA_Biodiversity          |     1                              
+ FP4_PolicyEngagement     |    20                              
+ FP3_Gender               |     9                              
+ FP4_GenderToolbox        |     3                              
+(19 rows)
+</code></pre>
+
+<ul>
+<li>I sent CCAFS people an email to ask if they really want to remove these 200+ tags</li>
+<li>She responded yes, so I&rsquo;ll at least need to do these deletes in PostgreSQL:</li>
+</ul>
+
+<pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange','FP_GII');
+DELETE 207
+</code></pre>
+
+<ul>
+<li>When we discussed this in late July there were some other renames they had requested, but I don&rsquo;t see them in the current spreadsheet so I will have to follow that up</li>
+<li>Create and merge pull request to shut up the Ehcache update check (<a href="https://github.com/ilri/DSpace/pull/337">#337</a>)</li>
+<li>Although it looks like there was a previous attempt to disable these update checks that was merged in DSpace 4.0 (although it only affects XMLUI): <a href="https://jira.duraspace.org/browse/DS-1492">https://jira.duraspace.org/browse/DS-1492</a></li>
+<li>I commented there suggesting that we disable it globally</li>
+<li>I merged the changes to the CCAFS project tags (<a href="https://github.com/ilri/DSpace/pull/336">#336</a>) but still need to finalize the metadata deletions/renames</li>
+<li>I merged the CGIAR Library theme changes (<a href="https://github.com/ilri/DSpace/pull/338">#338</a>) to the <code>5_x-prod</code> branch in preparation for next week&rsquo;s migration</li>
+<li>I emailed the Handle administrators (hdladmin@cnri.reston.va.us) to ask them what the process for changing their prefix to be resolved by our resolver</li>
+</ul>
 
   
 
