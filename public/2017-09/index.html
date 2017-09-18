@@ -25,7 +25,7 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
 
 
 <meta property="article:published_time" content="2017-09-07T16:54:52&#43;07:00"/>
-<meta property="article:modified_time" content="2017-09-14T18:01:50&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-15T19:20:37&#43;03:00"/>
 
 
 
@@ -61,9 +61,9 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "2420",
+  "wordCount": "2686",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
-  "dateModified": "2017-09-14T18:01:50&#43;03:00",
+  "dateModified": "2017-09-15T19:20:37&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -511,6 +511,45 @@ UPDATE 1
 DELETE 1
 DELETE 207
 </code></pre>
+
+<h2 id="2017-09-17">2017-09-17</h2>
+
+<ul>
+<li>Create pull request for CGSpace to be able to resolve multiple handles (<a href="https://github.com/ilri/DSpace/pull/339">#339</a>)</li>
+<li>We still need to do the changes to <code>config.dct</code> and regenerate the <code>sitebndl.zip</code> to send to the Handle.net admins</li>
+<li>According to this <a href="http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html">dspace-tech mailing list entry from 2011</a>, we need to add the extra handle prefixes to <code>config.dct</code> like this:</li>
+</ul>
+
+<pre><code>&quot;server_admins&quot; = (
+&quot;300:0.NA/10568&quot;
+&quot;300:0.NA/10947&quot;
+)
+
+&quot;replication_admins&quot; = (
+&quot;300:0.NA/10568&quot;
+&quot;300:0.NA/10947&quot;
+)
+
+&quot;backup_admins&quot; = (
+&quot;300:0.NA/10568&quot;
+&quot;300:0.NA/10947&quot;
+)
+</code></pre>
+
+<ul>
+<li>More work on the CGIAR Library migration test run locally, as I was having problem with importing the last fourteen items from the CGIAR System Management Office community</li>
+<li>The problem was that we remapped the items to new collections after the initial import, so the items were using the 10947 prefix but the community and collection was using 10568</li>
+<li>I ended up having to read the <a href="https://wiki.duraspace.org/display/DSDOC5x/AIP+Backup+and+Restore#AIPBackupandRestore-ForceReplaceMode">AIP Backup and Restore</a> closely a few times and then explicitly preserve handles and ignore parents:</li>
+</ul>
+
+<pre><code>$ for item in 10568-93759/ITEM@10947-46*; do ~/dspace/bin/dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/87738 $item; done
+</code></pre>
+
+<ul>
+<li>Also, this was in replace mode (-r) rather than submit mode (-s), because submit mode always generated a new handle even if I told it not to!</li>
+<li>I decided to start the import process in the evening rather than waiting for the morning, and right as the first community was finished importing I started seeing <code>Timeout waiting for idle object</code> errors</li>
+<li>I had to cancel the import, clean up a bunch of database entries, increase the PostgreSQL <code>max_connections</code> as a precaution, restart PostgreSQL and Tomcat, and then finally completed the import</li>
+</ul>
 
   
 
