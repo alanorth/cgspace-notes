@@ -28,7 +28,8 @@ Things that need to happen before the migration:
 Process for the actual migration:
 
 - Export all top-level communities and collections from DSpace Test:
-```console
+
+```
 $ export PATH=$PATH:/home/dspacetest.cgiar.org/bin
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2515 10947-2515/10947-2515.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2516 10947-2516/10947-2516.zip
@@ -43,15 +44,19 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10568/93759 10568-93759/105
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10568/93760 10568-93760/10568-93760.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
 ```
+
 - Import to CGSpace (also see [notes from 2017-05-10](http://alanorth.github.io/cgspace-notes/2017-05/#2017-05-10))
   - [x] Copy all exports from DSpace Test
   - [x] Add ingestion overrides to `dspace.cfg` before import:
+
   ```
   mets.dspaceAIP.ingest.crosswalk.METSRIGHTS = NIL
   mets.dspaceAIP.ingest.crosswalk.DSPACE-ROLES = NIL
   ```
+
   - [x] Import communities and collections, paying attention to options to skip missing parents and ignore handles:
-  ```console
+
+  ```
   $ export JAVA_OPTS="-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
   $ export PATH=$PATH:/home/cgspace.cgiar.org/bin
   $ dspace packager -r -u -a -t AIP -o skipIfParentMissing=true -e aorth@mjanja.ch -p 10568/83389 10947-2515/10947-2515.zip
@@ -69,34 +74,45 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
   $ for collection in 10947-1/COLLECTION@10947-*; do dspace packager -s -o ignoreHandle=false -t AIP -e aorth@mjanja.ch -p 10947/1 $collection; done
   $ for item in 10947-1/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
   ```
+
   - This submits AIP hierarchies recursively (-r) and suppresses errors when an item's parent collection hasn't been created yet—for example, if the item is mapped
   - The large historic archive (10947/1) is created in several steps because it requires a lot of memory and often crashes
 - Create new subcommunities and collections for content we reorganized into new hierarchies from the original:
   - [x] Create _CGIAR System Management Board_ sub-community: 10568/83536
     - [x] Content from _CGIAR System Management Board documents_ collection (10947/4561) goes here
     - Import collection hierarchy first and then the items:
+
     ```
     $ dspace packager -r -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83536 10568-93760/COLLECTION@10947-4651.zip
     $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
     ```
+
   - [x] Create _CGIAR System Management Office_ sub-community: 10568/83537
     - [x] Create _CGIAR System Management Office documents_ collection: 10568/83538
     - Import items to collection individually in replace mode (-r) while explicitly preserving handles and ignoring parents:
+
     ```
     $ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
     ```
+
   - Get the handles for the last few items from CGIAR Library that were created since we did the migration to DSpace Test in May:
+
   ```
   dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) > '2017-05-01T00:00:00Z');
   ```
+
   - Export them from the CGIAR Library:
+
   ```
   # for handle in 10947/4658 10947/4659 10947/4660 10947/4661 10947/4665 10947/4664 10947/4666 10947/4669; do /usr/local/dspace/bin/dspace packager -d -a -t AIP -e m.marus@cgiar.org -i $handle ${handle}.zip; done
   ```
+
   - Import on CGSpace:
+
   ```
   $ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
   ```
+
   - [ ] Shut down Tomcat and run `update-sequences.sql` as the system's `postgres` user
 
 ## Post Migration
@@ -106,7 +122,8 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
 - [x] Enable nightly `index-discovery` cron job
 - HTTPS certificates:
   - [x] Install current certificates from their Tomcat keystore
-  ```console
+
+  ```
   $ keytool -list -keystore tomcat.keystore
   $ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
   $ openssl pkcs12 -in library.cgiar.org.p12 -nokeys -out library.cgiar.org.crt.pem
@@ -114,15 +131,18 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
   $ wget https://certs.godaddy.com/repository/gdroot-g2.crt https://certs.godaddy.com/repository/gdig2.crt.pem
   $ cat library.cgiar.org.crt.pem gdig2.crt.pem > library.cgiar.org-chained.pem
   ```
+
 - [ ] Update DNS records:
   - CNAME: cgspace.cgiar.org
 - [ ] Re-deploy DSpace from freshly built `5_x-prod` branch
 - [ ] Run system updates and reboot server
 - [ ] Switch to Let's Encrypt HTTPS certificates (after DNS is updated and server isn't busy)
-```console
+
+```
 $ sudo systemctl stop tomcat7
 $ ./letsencrypt-auto certonly --standalone -d library.cgiar.org
 ```
+
 - [ ] Merge `cgiar-library` branch to `master` and re-run ansible nginx templates
 
 ## Troubleshooting
