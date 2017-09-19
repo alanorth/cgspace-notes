@@ -13,7 +13,7 @@ Rough notes for importing the CGIAR Library content. It was decided that this co
 ## Pre-migration Technical TODOs
 Things that need to happen before the migration:
 
-- [x] Create top-level community on CGSpace to hold the CGIAR Library content: 10568/83389
+- [x] Create top-level community on CGSpace to hold the CGIAR Library content: `10568/83389`
   - [x] Update nginx redirects in ansible templates
   - [x] Update handle in DSpace XMLUI config
 - Set up nginx redirects for URLs like:
@@ -23,6 +23,16 @@ Things that need to happen before the migration:
 - [x] Increase `max_connections` in `/etc/postgresql/9.5/main/postgresql.conf` by ~10
   - `SELECT * FROM pg_stat_activity;` seems to show ~6 extra connections used by the command line tools during import
 - [x] Temporarily disable nightly `index-discovery` cron job because the import process will be taking place during some of this time and I don't want them to be competing to update the Solr index
+- [x] Copy HTTPS certificate key pair from CGIAR Library server's Tomcat keystore:
+
+```
+$ keytool -list -keystore tomcat.keystore
+$ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
+$ openssl pkcs12 -in library.cgiar.org.p12 -nokeys -out library.cgiar.org.crt.pem
+$ openssl pkcs12 -in library.cgiar.org.p12 -nodes -nocerts -out library.cgiar.org.key.pem
+$ wget https://certs.godaddy.com/repository/gdroot-g2.crt https://certs.godaddy.com/repository/gdig2.crt.pem
+$ cat library.cgiar.org.crt.pem gdig2.crt.pem > library.cgiar.org-chained.pem
+```
 
 ## Migration Process
 
@@ -79,8 +89,8 @@ This submits AIP hierarchies recursively (-r) and suppresses errors when an item
 
 **Create new subcommunities and collections for content we reorganized into new hierarchies from the original:**
 
-- [x] Create _CGIAR System Management Board_ sub-community: 10568/83536
-  - [x] Content from _CGIAR System Management Board documents_ collection (10947/4561) goes here
+- [x] Create _CGIAR System Management Board_ sub-community: `10568/83536`
+  - [x] Content from _CGIAR System Management Board documents_ collection (`10947/4561`) goes here
   - Import collection hierarchy first and then the items:
 
 ```
@@ -88,8 +98,8 @@ $ dspace packager -r -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83
 $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
 ```
 
-- [x] Create _CGIAR System Management Office_ sub-community: 10568/83537
-  - [x] Create _CGIAR System Management Office documents_ collection: 10568/83538
+- [x] Create _CGIAR System Management Office_ sub-community: `10568/83537`
+  - [x] Create _CGIAR System Management Office documents_ collection: `10568/83538`
   - Import items to collection individually in replace mode (-r) while explicitly preserving handles and ignoring parents:
 
 ```
@@ -116,7 +126,7 @@ $ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanj
 
 ## Post Migration
 
-- [ ] Shut down Tomcat and run `update-sequences.sql` as the system's `postgres` user
+- [x] Shut down Tomcat and run `update-sequences.sql` as the system's `postgres` user
 - [x] Remove ingestion overrides from `dspace.cfg`
 - [x] Reset PostgreSQL `max_connections` to 183
 - [x] Enable nightly `index-discovery` cron job
@@ -153,24 +163,11 @@ $ sudo su -
 - Now I'm wondering how we'll do this when we move servers in the future, because the `make-handle-config` basically assumes you only have one handle
 - Also, there is `dspace make-handle-config` and `bin/make-handle-config` and both behave differently (the first is interactive, the second reads your `dspace.cfg` and generates your handle config and `sitebndl.zip` accordingly)
 - I'm really not sure on the proper order of events actually
-
-- HTTPS certificates:
-  - [x] Install current certificates from their Tomcat keystore
-
-```
-$ keytool -list -keystore tomcat.keystore
-$ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
-$ openssl pkcs12 -in library.cgiar.org.p12 -nokeys -out library.cgiar.org.crt.pem
-$ openssl pkcs12 -in library.cgiar.org.p12 -nodes -nocerts -out library.cgiar.org.key.pem
-$ wget https://certs.godaddy.com/repository/gdroot-g2.crt https://certs.godaddy.com/repository/gdig2.crt.pem
-$ cat library.cgiar.org.crt.pem gdig2.crt.pem > library.cgiar.org-chained.pem
-```
-
 - [ ] Update DNS records:
   - CNAME: cgspace.cgiar.org
-- [ ] Re-deploy DSpace from freshly built `5_x-prod` branch
-- [ ] Merge `cgiar-library` branch to `master` and re-run ansible nginx templates
-- [ ] Run system updates and reboot server
+- [x] Re-deploy DSpace from freshly built `5_x-prod` branch
+- [x] Merge `cgiar-library` branch to `master` and re-run ansible nginx templates
+- [x] Run system updates and reboot server
 - [ ] Switch to Let's Encrypt HTTPS certificates (after DNS is updated and server isn't busy):
 
 ```
