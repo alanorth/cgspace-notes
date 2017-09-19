@@ -13,7 +13,7 @@
 
 
 <meta property="article:published_time" content="2017-09-18T16:38:35&#43;03:00"/>
-<meta property="article:modified_time" content="2017-09-19T16:07:20&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-19T21:57:38&#43;03:00"/>
 
 
 
@@ -37,9 +37,9 @@
   "@type": "BlogPosting",
   "headline": "CGIAR Library Migration",
   "url": "https://alanorth.github.io/cgspace-notes/cgiar-library-migration/",
-  "wordCount": "1321",
+  "wordCount": "1302",
   "datePublished": "2017-09-18T16:38:35&#43;03:00",
-  "dateModified": "2017-09-19T16:07:20&#43;03:00",
+  "dateModified": "2017-09-19T21:57:38&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -273,22 +273,9 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 )
 </code></pre>
 
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Regenerate Handle server&rsquo;s <code>sitebndl.zip</code> on CGIAR Library server:</label></li>
-</ul>
-
-<pre><code>$ sudo su -
-# cp -a /usr/local/dspace/handle-server /usr/local/dspace/handle-server-2017-09-19.bak
-# /usr/local/dspace/bin/dspace make-handle-config /usr/local/dspace/handle-server
-</code></pre>
+<p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don&rsquo;t need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
 
 <ul class="task-list">
-<li>The handle setup script will ask for IP address, contact person, etc</li>
-<li>Use CGSpace&rsquo;s IP address, but give some contact person from the system organization</li>
-<li>Copy the resulting <code>sitebndl.zip</code> somewhere so we can send it to Handle.net</li>
-<li>Now I&rsquo;m wondering how we&rsquo;ll do this when we move servers in the future, because the <code>make-handle-config</code> basically assumes you only have one handle</li>
-<li>Also, there is <code>dspace make-handle-config</code> and <code>bin/make-handle-config</code> and both behave differently (the first is interactive, the second reads your <code>dspace.cfg</code> and generates your handle config and <code>sitebndl.zip</code> accordingly)</li>
-<li>I&rsquo;m really not sure on the proper order of events actually</li>
 <li><label><input type="checkbox" disabled class="task-list-item"> Update DNS records:
 
 <ul>

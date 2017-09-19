@@ -149,20 +149,8 @@ $ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanj
 )
 ```
 
-- [x] Regenerate Handle server's `sitebndl.zip` on CGIAR Library server:
+I had been regenerated the `sitebndl.zip` file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to `make-handle-config` not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don't need to send an updated `sitebndl.zip` for this type of change, and the above `config.dct` edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours...
 
-```
-$ sudo su -
-# cp -a /usr/local/dspace/handle-server /usr/local/dspace/handle-server-2017-09-19.bak
-# /usr/local/dspace/bin/dspace make-handle-config /usr/local/dspace/handle-server
-```
-
-- The handle setup script will ask for IP address, contact person, etc
-- Use CGSpace's IP address, but give some contact person from the system organization
-- Copy the resulting `sitebndl.zip` somewhere so we can send it to Handle.net
-- Now I'm wondering how we'll do this when we move servers in the future, because the `make-handle-config` basically assumes you only have one handle
-- Also, there is `dspace make-handle-config` and `bin/make-handle-config` and both behave differently (the first is interactive, the second reads your `dspace.cfg` and generates your handle config and `sitebndl.zip` accordingly)
-- I'm really not sure on the proper order of events actually
 - [ ] Update DNS records:
   - CNAME: cgspace.cgiar.org
 - [x] Re-deploy DSpace from freshly built `5_x-prod` branch
