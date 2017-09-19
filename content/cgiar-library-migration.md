@@ -120,6 +120,40 @@ $ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanj
 - [x] Remove ingestion overrides from `dspace.cfg`
 - [x] Reset PostgreSQL `max_connections` to 183
 - [x] Enable nightly `index-discovery` cron job
+- [x] Adjust CGSpace's `handle-server/config.dct` to add the new prefix alongside our existing 10568, ie:
+
+```
+"server_admins" = (
+"300:0.NA/10568"
+"300:0.NA/10947"
+)
+
+"replication_admins" = (
+"300:0.NA/10568"
+"300:0.NA/10947"
+)
+
+"backup_admins" = (
+"300:0.NA/10568"
+"300:0.NA/10947"
+)
+```
+
+- [x] Regenerate Handle server's `sitebndl.zip` on CGIAR Library server:
+
+```
+$ sudo su -
+# cp -a /usr/local/dspace/handle-server /usr/local/dspace/handle-server-2017-09-19.bak
+# /usr/local/dspace/bin/dspace make-handle-config /usr/local/dspace/handle-server
+```
+
+- The handle setup script will ask for IP address, contact person, etc
+- Use CGSpace's IP address, but give some contact person from the system organization
+- Copy the resulting `sitebndl.zip` somewhere so we can send it to Handle.net
+- Now I'm wondering how we'll do this when we move servers in the future, because the `make-handle-config` basically assumes you only have one handle
+- Also, there is `dspace make-handle-config` and `bin/make-handle-config` and both behave differently (the first is interactive, the second reads your `dspace.cfg` and generates your handle config and `sitebndl.zip` accordingly)
+- I'm really not sure on the proper order of events actually
+
 - HTTPS certificates:
   - [x] Install current certificates from their Tomcat keystore
 

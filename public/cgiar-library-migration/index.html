@@ -13,7 +13,7 @@
 
 
 <meta property="article:published_time" content="2017-09-18T16:38:35&#43;03:00"/>
-<meta property="article:modified_time" content="2017-09-18T21:24:27&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-19T12:53:00&#43;03:00"/>
 
 
 
@@ -37,9 +37,9 @@
   "@type": "BlogPosting",
   "headline": "CGIAR Library Migration",
   "url": "https://alanorth.github.io/cgspace-notes/cgiar-library-migration/",
-  "wordCount": "1167",
+  "wordCount": "1319",
   "datePublished": "2017-09-18T16:38:35&#43;03:00",
-  "dateModified": "2017-09-18T21:24:27&#43;03:00",
+  "dateModified": "2017-09-19T12:53:00&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -245,7 +245,44 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Remove ingestion overrides from <code>dspace.cfg</code></label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Reset PostgreSQL <code>max_connections</code> to 183</label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Enable nightly <code>index-discovery</code> cron job</label></li>
-<li>HTTPS certificates:
+<li><label><input type="checkbox" checked disabled class="task-list-item"> Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</label></li>
+</ul>
+
+<pre><code>&quot;server_admins&quot; = (
+&quot;300:0.NA/10568&quot;
+&quot;300:0.NA/10947&quot;
+)
+
+&quot;replication_admins&quot; = (
+&quot;300:0.NA/10568&quot;
+&quot;300:0.NA/10947&quot;
+)
+
+&quot;backup_admins&quot; = (
+&quot;300:0.NA/10568&quot;
+&quot;300:0.NA/10947&quot;
+)
+</code></pre>
+
+<ul class="task-list">
+<li><label><input type="checkbox" checked disabled class="task-list-item"> Regenerate Handle server&rsquo;s <code>sitebndl.zip</code> on CGIAR Library server:</label></li>
+</ul>
+
+<pre><code>$ sudo su -
+# cp -a /usr/local/dspace/handle-server /usr/local/dspace/handle-server-2017-09-19.bak
+# /usr/local/dspace/bin/dspace make-handle-config /usr/local/dspace/handle-server
+</code></pre>
+
+<ul class="task-list">
+<li>The handle setup script will ask for IP address, contact person, etc</li>
+<li>Use CGSpace&rsquo;s IP address, but give some contact person from the system organization</li>
+<li>Copy the resulting <code>sitebndl.zip</code> somewhere so we can send it to Handle.net</li>
+<li>Now I&rsquo;m wondering how we&rsquo;ll do this when we move servers in the future, because the <code>make-handle-config</code> basically assumes you only have one handle</li>
+<li>Also, there is <code>dspace make-handle-config</code> and <code>bin/make-handle-config</code> and both behave differently (the first is interactive, the second reads your <code>dspace.cfg</code> and generates your handle config and <code>sitebndl.zip</code> accordingly)</li>
+
+<li><p>I&rsquo;m really not sure on the proper order of events actually</p></li>
+
+<li><p>HTTPS certificates:</p>
 
 <ul class="task-list">
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Install current certificates from their Tomcat keystore</label></li>
