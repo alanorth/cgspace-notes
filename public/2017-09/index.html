@@ -25,7 +25,7 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
 
 
 <meta property="article:published_time" content="2017-09-07T16:54:52&#43;07:00"/>
-<meta property="article:modified_time" content="2017-09-21T21:53:05&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-22T17:59:45&#43;03:00"/>
 
 
 
@@ -61,9 +61,9 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "3093",
+  "wordCount": "3333",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
-  "dateModified": "2017-09-21T21:53:05&#43;03:00",
+  "dateModified": "2017-09-22T17:59:45&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -617,6 +617,32 @@ DELETE 207
 <li>Experimenting with setting up a global JNDI database resource that can be pooled among all the DSpace webapps (reference the <a href="https://wiki.duraspace.org/display/cmtygp/DCAT+Meeting+April+2017">April, 2017 DCAT meeting</a> comments)</li>
 <li>See: <a href="https://www.journaldev.com/2513/tomcat-datasource-jndi-example-java">https://www.journaldev.com/2513/tomcat-datasource-jndi-example-java</a></li>
 <li>See: <a href="http://memorynotfound.com/configure-jndi-datasource-tomcat/">http://memorynotfound.com/configure-jndi-datasource-tomcat/</a></li>
+</ul>
+
+<h2 id="2017-09-24">2017-09-24</h2>
+
+<ul>
+<li>Start investigating other platforms for CGSpace due to linear instance pricing on Linode</li>
+<li>We need to figure out how much memory is used by applications, caches, etc, and how much disk space the asset store needs</li>
+<li>First, here&rsquo;s the last week of memory usage on CGSpace and DSpace Test:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/09/cgspace-memory-week.png" alt="CGSpace memory week" />
+<img src="/cgspace-notes/2017/09/dspace-test-memory-week.png" alt="DSpace Test memory week" /></p>
+
+<ul>
+<li>8GB of RAM seems to be good for DSpace Test for now, with Tomcat&rsquo;s JVM heap taking 3GB, caches and buffers taking 3–4GB, and then ~1GB unused</li>
+<li>24GB of RAM is <em>way</em> too much for CGSpace, with Tomcat&rsquo;s JVM heap taking 5.5GB and caches and buffers happily using 14GB or so</li>
+<li>As far as disk space, the CGSpace assetstore currently uses 51GB and Solr cores use 86GB (mostly in the statistics core)</li>
+<li>DSpace Test currently doesn&rsquo;t even have enough space to store a full copy of CGSpace, as its Linode instance only has 96GB of disk space</li>
+<li>I&rsquo;ve heard Google Cloud is nice (cheap and performant) but it&rsquo;s definitely more complicated than Linode and instances aren&rsquo;t <em>that</em> much cheaper to make it worth it</li>
+<li>Here are some theoretical instances on Google Cloud:
+
+<ul>
+<li>DSpace Test, <code>n1-standard-2</code> with 2 vCPUs, 7.5GB RAM, 300GB persistent SSD: $99/month</li>
+<li>CGSpace, <code>n1-standard-4</code> with 4 vCPUs, 15GB RAM, 300GB persistent SSD: $148/month</li>
+</ul></li>
+<li>Looking at <a href="https://www.linode.com/pricing#all">Linode&rsquo;s instance pricing</a> it seems we could use the same 8GB instance for $40/month, and then add <a href="https://www.linode.com/docs/platform/how-to-use-block-storage-with-your-linode">block storage</a> of ~300GB for $30 (block storage is currently in beta and priced at $0.10/GiB)</li>
 </ul>
 
   
