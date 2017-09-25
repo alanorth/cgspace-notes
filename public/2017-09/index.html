@@ -25,7 +25,7 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
 
 
 <meta property="article:published_time" content="2017-09-07T16:54:52&#43;07:00"/>
-<meta property="article:modified_time" content="2017-09-24T17:10:15&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-25T00:38:30&#43;03:00"/>
 
 
 
@@ -61,9 +61,9 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "3580",
+  "wordCount": "3886",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
-  "dateModified": "2017-09-24T17:10:15&#43;03:00",
+  "dateModified": "2017-09-25T00:38:30&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -660,6 +660,59 @@ DELETE 207
 <li>Peter also made a lot of changes to the data in the Archives collections while I was attempting to import the changes, so we were essentially competing for PostgreSQL and Solr connections</li>
 <li>I ended up having to kill the import and wait until he was done</li>
 <li>I exported a clean CSV and applied the changes from that one, which was a hundred or two less than I thought there should be (at least compared to the current state of DSpace Test, which is a few months old)</li>
+</ul>
+
+<h2 id="2017-09-25">2017-09-25</h2>
+
+<ul>
+<li>Email Rosemary Kande from ICT to ask about the administrative / finance procedure for moving DSpace Test from EU to US region on Linode</li>
+<li>Communicate (finally) with Tania and Tunji from the CGIAR System Organization office to tell them to request CGNET make the DNS updates for library.cgiar.org</li>
+<li>Peter wants me to clean up the text values for Delia Grace&rsquo;s metadata, as the authorities are all messed up again since we cleaned them up in <a href="/cgspace-notes/2016-12">2016-12</a>:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';                                  
+  text_value  |              authority               | confidence              
+--------------+--------------------------------------+------------             
+ Grace, Delia |                                      |        600              
+ Grace, Delia | bfa61d7c-7583-4175-991c-2e7315000f0c |        600              
+ Grace, Delia | bfa61d7c-7583-4175-991c-2e7315000f0c |         -1              
+ Grace, D.    | 6a8ddca3-33c1-45f9-aa00-6fa9fc91e3fc |         -1
+</code></pre>
+
+<ul>
+<li>Strangely, none of her authority entries have ORCIDs anymore&hellip;</li>
+<li>I&rsquo;ll just fix the text values and forget about it for now:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_value='Grace, Delia', authority='bfa61d7c-7583-4175-991c-2e7315000f0c', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';
+UPDATE 610
+</code></pre>
+
+<ul>
+<li>After this we have to reindex the Discovery and Authority cores (as <code>tomcat7</code> user):</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b
+
+real    83m56.895s
+user    13m16.320s
+sys     2m17.917s
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-authority -b
+</code></pre>
+
+<ul>
+<li>Something interesting for my notes about JNDI database pool—since I couldn&rsquo;t determine if it was working or not when I tried it locally the other day—is this error message that I just saw in the DSpace logs today:</li>
+</ul>
+
+<pre><code>ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspaceLocal
+...
+INFO  org.dspace.storage.rdbms.DatabaseManager @ Unable to locate JNDI dataSource: jdbc/dspaceLocal
+INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Database pool
+</code></pre>
+
+<ul>
+<li>So it&rsquo;s good to know that <em>something</em> gets printed when it fails because I didn&rsquo;t see <em>any</em> mention of JNDI before when I was testing!</li>
 </ul>
 
   
