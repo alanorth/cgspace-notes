@@ -61,7 +61,7 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
   "@type": "BlogPosting",
   "headline": "September, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-09/",
-  "wordCount": "4112",
+  "wordCount": "4199",
   "datePublished": "2017-09-07T16:54:52&#43;07:00",
   "dateModified": "2017-09-27T12:22:52&#43;03:00",
   "author": {
@@ -753,11 +753,29 @@ INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Da
 <li>Rosemary said I need to work with Robert Okal to destroy/create the server, and then let her and Lilian Masigah from finance know the updated Linode asset names for their records</li>
 </ul>
 
-<h2 id="2017-09-27">2017-09-27</h2>
+<h2 id="2017-09-28">2017-09-28</h2>
 
 <ul>
-<li></li>
+<li>Tunji from the System Organization finally sent the DNS request for library.cgiar.org to CGNET</li>
+<li>Now the redirects work</li>
+<li>I quickly registered a Let&rsquo;s Encrypt certificate for the domain:</li>
 </ul>
+
+<pre><code># systemctl stop nginx
+# /opt/certbot-auto certonly --standalone --email aorth@mjanja.ch -d library.cgiar.org
+# systemctl start nginx
+</code></pre>
+
+<ul>
+<li>I modified the nginx configuration of the ansible playbooks to use this new certificate and now the certificate is enabled and OCSP stapling is working:</li>
+</ul>
+
+<pre><code>$ openssl s_client -connect cgspace.cgiar.org:443 -servername library.cgiar.org  -tls1_2 -tlsextdebug -status
+...
+OCSP Response Data:
+...
+Cert Status: good
+</code></pre>
 
   
 
