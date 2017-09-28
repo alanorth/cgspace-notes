@@ -13,7 +13,7 @@
 
 
 <meta property="article:published_time" content="2017-09-18T16:38:35&#43;03:00"/>
-<meta property="article:modified_time" content="2017-09-28T10:23:37&#43;03:00"/>
+<meta property="article:modified_time" content="2017-09-28T11:54:26&#43;03:00"/>
 
 
 
@@ -37,9 +37,9 @@
   "@type": "BlogPosting",
   "headline": "CGIAR Library Migration",
   "url": "https://alanorth.github.io/cgspace-notes/cgiar-library-migration/",
-  "wordCount": "1273",
+  "wordCount": "1278",
   "datePublished": "2017-09-18T16:38:35&#43;03:00",
-  "dateModified": "2017-09-28T10:23:37&#43;03:00",
+  "dateModified": "2017-09-28T11:54:26&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -271,7 +271,7 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don&rsquo;t need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
 
 <ul class="task-list">
-<li><label><input type="checkbox" disabled class="task-list-item"> Update DNS records:
+<li><label><input type="checkbox" checked disabled class="task-list-item"> Update DNS records:
 
 <ul>
 <li>CNAME: cgspace.cgiar.org</li>
@@ -279,11 +279,12 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Re-deploy DSpace from freshly built <code>5_x-prod</code> branch</label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Merge <code>cgiar-library</code> branch to <code>master</code> and re-run ansible nginx templates</label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Run system updates and reboot server</label></li>
-<li><label><input type="checkbox" disabled class="task-list-item"> Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</label></li>
+<li><label><input type="checkbox" checked disabled class="task-list-item"> Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</label></li>
 </ul>
 
-<pre><code>$ sudo systemctl stop tomcat7
-$ ./letsencrypt-auto certonly --standalone -d library.cgiar.org
+<pre><code>$ sudo systemctl stop nginx
+$ /opt/certbot-auto certonly --standalone -d library.cgiar.org
+$ sudo systemctl start nginx
 </code></pre>
 
 <h2 id="troubleshooting">Troubleshooting</h2>

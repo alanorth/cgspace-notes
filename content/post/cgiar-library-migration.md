@@ -152,16 +152,17 @@ $ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanj
 
 I had been regenerated the `sitebndl.zip` file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to `make-handle-config` not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don't need to send an updated `sitebndl.zip` for this type of change, and the above `config.dct` edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours...
 
-- [ ] Update DNS records:
+- [x] Update DNS records:
   - CNAME: cgspace.cgiar.org
 - [x] Re-deploy DSpace from freshly built `5_x-prod` branch
 - [x] Merge `cgiar-library` branch to `master` and re-run ansible nginx templates
 - [x] Run system updates and reboot server
-- [ ] Switch to Let's Encrypt HTTPS certificates (after DNS is updated and server isn't busy):
+- [x] Switch to Let's Encrypt HTTPS certificates (after DNS is updated and server isn't busy):
 
 ```
-$ sudo systemctl stop tomcat7
-$ ./letsencrypt-auto certonly --standalone -d library.cgiar.org
+$ sudo systemctl stop nginx
+$ /opt/certbot-auto certonly --standalone -d library.cgiar.org
+$ sudo systemctl start nginx
 ```
 
 ## Troubleshooting
