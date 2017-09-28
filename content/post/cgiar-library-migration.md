@@ -3,10 +3,9 @@ title = "CGIAR Library Migration"
 date = 2017-09-18T16:38:35+03:00
 description = "Notes on the migration of the CGIAR Library to CGSpace"
 categories = ["Notes"]
-slug = "cgiar-library-migration"
-+++
+url = "cgiar-library-migration"
 
-_Note: I'm temporarily making this a page because it seems Hugo (0.27.1–0.29) cannot use a custom slug for a post when there is a permalink defined in `config.toml`_
++++
 
 Rough notes for importing the CGIAR Library content. It was decided that this content would go to a new top-level community called _CGIAR System Organization_.
 
