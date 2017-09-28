@@ -9,6 +9,8 @@ url = "cgiar-library-migration"
 
 Rough notes for importing the CGIAR Library content. It was decided that this content would go to a new top-level community called _CGIAR System Organization_.
 
+<!--more-->
+
 ## Pre-migration Technical TODOs
 Things that need to happen before the migration:
 
