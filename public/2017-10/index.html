@@ -28,7 +28,7 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
 
 <meta property="article:published_time" content="2017-10-01T08:07:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-10-22T23:51:48&#43;03:00"/>
+<meta property="article:modified_time" content="2017-10-23T09:58:33&#43;03:00"/>
 
 
 
@@ -66,9 +66,9 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
   "@type": "BlogPosting",
   "headline": "October, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-10/",
-  "wordCount": "1194",
+  "wordCount": "1451",
   "datePublished": "2017-10-01T08:07:54&#43;03:00",
-  "dateModified": "2017-10-22T23:51:48&#43;03:00",
+  "dateModified": "2017-10-23T09:58:33&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -316,6 +316,37 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
 <li>Re-deploy CGSpace from latest <code>5_x-prod</code> (adds ISI Journal to search filters and adds Discovery index for CGIAR Library <code>systemsubject</code>)</li>
 <li>Deploy nginx redirect fixes to catch CGIAR Library browse links (redirect to their community and translate subject→systemsubject)</li>
 <li>Run migration of CGSpace server (linode18) for Linode security alert, which took 42 minutes of downtime</li>
+</ul>
+
+<h2 id="2017-10-26">2017-10-26</h2>
+
+<ul>
+<li>In the last 24 hours we&rsquo;ve gotten a few alerts from Linode that there was high CPU and outgoing traffic on CGSpace</li>
+<li>Uptime Robot even noticed CGSpace go &ldquo;down&rdquo; for a few minutes</li>
+<li>In other news, I was trying to look at a question about stats raised by Magdalena and then CGSpace went down due to SQL connection pool</li>
+<li>Looking at the PostgreSQL activity I see there are 93 connections, but after a minute or two they went down and CGSpace came back up</li>
+<li>Annnd I reloaded the Atmire Usage Stats module and the connections shot back up and CGSpace went down again</li>
+<li>Still not sure where the load is coming from right now, but it&rsquo;s clear why there were so many alerts yesterday on the 25th!</li>
+</ul>
+
+<pre><code># grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2017-10-25 | sort -n | uniq | wc -l
+18022
+</code></pre>
+
+<ul>
+<li>Compared to other days there were two or three times the number of requests yesterday!</li>
+</ul>
+
+<pre><code># grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2017-10-23 | sort -n | uniq | wc -l
+3141
+# grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2017-10-26 | sort -n | uniq | wc -l
+7851
+</code></pre>
+
+<ul>
+<li>I still have no idea what was causing the load to go up today</li>
+<li>I finally investigated Magdalena&rsquo;s issue with the item download stats and now I can&rsquo;t reproduce it: I get the same number of downloads reported in the stats widget on the item page, the &ldquo;Most Popular Items&rdquo; page, and in Usage Stats</li>
+<li>I think it might have been an issue with the statistics not being fresh</li>
 </ul>
 
   
