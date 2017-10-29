@@ -28,7 +28,7 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
 
 <meta property="article:published_time" content="2017-10-01T08:07:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-10-26T17:50:10&#43;03:00"/>
+<meta property="article:modified_time" content="2017-10-28T11:31:47&#43;02:00"/>
 
 
 
@@ -66,9 +66,9 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
   "@type": "BlogPosting",
   "headline": "October, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-10/",
-  "wordCount": "1566",
+  "wordCount": "1851",
   "datePublished": "2017-10-01T08:07:54&#43;03:00",
-  "dateModified": "2017-10-26T17:50:10&#43;03:00",
+  "dateModified": "2017-10-28T11:31:47&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -363,6 +363,36 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
 
 <ul>
 <li>Linode alerted about high CPU usage again on CGSpace around 2AM this morning</li>
+</ul>
+
+<h2 id="2017-10-29">2017-10-29</h2>
+
+<ul>
+<li>Linode alerted about high CPU usage again on CGSpace around 2AM and 4AM</li>
+<li>I&rsquo;m still not sure why this started causing alerts so repeatadely the past week</li>
+<li>I don&rsquo;t see any tell tale signs in the REST or OAI logs, so trying to do rudimentary analysis in DSpace logs:</li>
+</ul>
+
+<pre><code># grep '2017-10-29 02:' dspace.log.2017-10-29 | grep -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+2049
+</code></pre>
+
+<ul>
+<li>So there were 2049 unique sessions during the hour of 2AM</li>
+<li>Looking at my notes, the number of unique sessions was about the same during the same hour on other days when there were no alerts</li>
+<li>I think I&rsquo;ll need to enable access logging in nginx to figure out what&rsquo;s going on</li>
+<li>After enabling logging on requests to XMLUI on <code>/</code> I see some new bot I&rsquo;ve never seen before:</li>
+</ul>
+
+<pre><code>137.108.70.6 - - [29/Oct/2017:07:39:49 +0000] &quot;GET /discover?filtertype_0=type&amp;filter_relational_operator_0=equals&amp;filter_0=Internal+Document&amp;filtertype=author&amp;filter_relational_operator=equals&amp;filter=CGIAR+Secretariat HTTP/1.1&quot; 200 7776 &quot;-&quot; &quot;Mozilla/5.0 (compatible; CORE/0.6; +http://core.ac.uk; http://core.ac.uk/intro/contact)&quot;
+</code></pre>
+
+<ul>
+<li>CORE seems to be some bot that is &ldquo;Aggregating the world’s open access research papers&rdquo;</li>
+<li>The contact address listed in their bot&rsquo;s user agent is incorrect, correct page is simply: <a href="https://core.ac.uk/contact">https://core.ac.uk/contact</a></li>
+<li>I will check the logs in a few days to see if they are harvesting us regularly, then add their bot&rsquo;s user agent to the Tomcat Crawler Session Valve</li>
+<li>After browsing the CORE site it seems that the CGIAR Library is somehow a member of CORE, so they have probably only been harvesting CGSpace since we did the migration, as library.cgiar.org directs to us now</li>
+<li>For now I will just contact them to have them update their contact info in the bot&rsquo;s user agent, but eventually I think I&rsquo;ll tell them to swap out the CGIAR Library entry for CGSpace</li>
 </ul>
 
   
