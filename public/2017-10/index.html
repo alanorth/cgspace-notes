@@ -28,7 +28,7 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
 
 <meta property="article:published_time" content="2017-10-01T08:07:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-10-31T13:35:56&#43;02:00"/>
+<meta property="article:modified_time" content="2017-10-31T15:38:27&#43;02:00"/>
 
 
 
@@ -66,9 +66,9 @@ Add Katherine Lutz to the groups for content sumission and edit steps of the CGI
   "@type": "BlogPosting",
   "headline": "October, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-10/",
-  "wordCount": "2468",
+  "wordCount": "2613",
   "datePublished": "2017-10-01T08:07:54&#43;03:00",
-  "dateModified": "2017-10-31T13:35:56&#43;02:00",
+  "dateModified": "2017-10-31T15:38:27&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -521,6 +521,24 @@ session_id=6C30F10B4351A4ED83EC6ED50AFD6B6A
 
 <pre><code># goaccess /var/log/nginx/access.log --log-format=COMBINED
 </code></pre>
+
+<ul>
+<li>According to Uptime Robot CGSpace went down and up a few times</li>
+<li>I had a look at goaccess and I saw that CORE was actively indexing</li>
+<li>Also, PostgreSQL connections were at 91 (with the max being 60 per web app, hmmm)</li>
+<li>I&rsquo;m really starting to get annoyed with these guys, and thinking about blocking their IP address for a few days to see if CGSpace becomes more stable</li>
+<li>Actually, come to think of it, they aren&rsquo;t even obeying <code>robots.txt</code>, because we actually disallow <code>/discover</code> and <code>/search-filter</code> URLs but they are hitting those massively:</li>
+</ul>
+
+<pre><code># grep &quot;CORE/0.6&quot; /var/log/nginx/access.log | grep -o -E &quot;GET /(discover|search-filter)&quot; | sort -n | uniq -c | sort -rn 
+ 158058 GET /discover
+  14260 GET /search-filter
+</code></pre>
+
+<ul>
+<li>I tested a URL of pattern <code>/discover</code> in Google&rsquo;s webmaster tools and it was indeed identified as blocked</li>
+<li>I will send feedback to the CORE bot team</li>
+</ul>
 
   
 
