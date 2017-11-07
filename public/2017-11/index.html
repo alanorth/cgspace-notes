@@ -38,7 +38,7 @@ COPY 54701
 
 <meta property="article:published_time" content="2017-11-02T09:37:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2017-11-07T17:03:49&#43;02:00"/>
+<meta property="article:modified_time" content="2017-11-07T17:26:16&#43;02:00"/>
 
 
 
@@ -86,9 +86,9 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "1997",
+  "wordCount": "2084",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
-  "dateModified": "2017-11-07T17:03:49&#43;02:00",
+  "dateModified": "2017-11-07T17:26:16&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -565,7 +565,28 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
 
 <ul>
 <li>I emailed CIAT about the session issue, user agent issue, and told them they should not scrape the HTML contents of communities, instead using the REST API</li>
+<li>About Baidu, I found a link to their <a href="http://ziyuan.baidu.com/robots/">robots.txt tester tool</a></li>
+<li>It seems like our robots.txt file is valid, and they claim to recognize that URLs like <code>/discover</code> should be forbidden:</li>
 </ul>
+
+<p><img src="/cgspace-notes/2017/11/baidu-robotstxt.png" alt="Baidu robots.txt tester" /></p>
+
+<ul>
+<li>But they literally just made this request today:</li>
+</ul>
+
+<pre><code>180.76.15.136 - - [07/Nov/2017:06:25:11 +0000] &quot;GET /discover?filtertype_0=crpsubject&amp;filter_relational_operator_0=equals&amp;filter_0=WATER%2C+LAND+AND+ECOSYSTEMS&amp;filtertype=subject&amp;filter_relational_operator=equals&amp;filter=WATER+RESOURCES HTTP/1.1&quot; 200 82265 &quot;-&quot; &quot;Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&quot;
+</code></pre>
+
+<ul>
+<li>Along with another thousand or so requests to URLs that are forbidden in robots.txt today alone:</li>
+</ul>
+
+<pre><code># grep -c Baiduspider /var/log/nginx/access.log
+3806
+# grep Baiduspider /var/log/nginx/access.log | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
+1085
+</code></pre>
 
   
 
