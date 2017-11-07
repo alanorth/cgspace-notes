@@ -38,7 +38,7 @@ COPY 54701
 
 <meta property="article:published_time" content="2017-11-02T09:37:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2017-11-05T15:06:22&#43;02:00"/>
+<meta property="article:modified_time" content="2017-11-05T15:53:35&#43;02:00"/>
 
 
 
@@ -86,9 +86,9 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "683",
+  "wordCount": "1445",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
-  "dateModified": "2017-11-05T15:06:22&#43;02:00",
+  "dateModified": "2017-11-05T15:53:35&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -284,6 +284,173 @@ COPY 54701
 <li>Looking at monitoring Tomcat&rsquo;s JVM heap with Prometheus, it looks like we need to use JMX + <a href="https://github.com/prometheus/jmx_exporter">jmx_exporter</a></li>
 <li>This guide shows how to <a href="https://geekflare.com/enable-jmx-tomcat-to-monitor-administer/">enable JMX in Tomcat</a> by modifying <code>CATALINA_OPTS</code></li>
 <li>I was able to successfully connect to my local Tomcat with jconsole!</li>
+</ul>
+
+<h2 id="2017-11-07">2017-11-07</h2>
+
+<ul>
+<li>CGSpace when down and up a few times this morning, first around 3AM, then around 7</li>
+<li>Tsega had to restart Tomcat 7 to fix it temporarily</li>
+<li>I will start by looking at bot usage (access.log.1 includes usage until 6AM today):</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log.1 | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    619 65.49.68.184
+    840 65.49.68.199
+    924 66.249.66.91
+   1131 68.180.229.254
+   1583 66.249.66.90
+   1953 207.46.13.103
+   1999 207.46.13.80
+   2021 157.55.39.161
+   2034 207.46.13.36
+   4681 104.196.152.243
+</code></pre>
+
+<ul>
+<li>104.196.152.243 seems to be a top scraper for a few weeks now:</li>
+</ul>
+
+<pre><code># zgrep -c 104.196.152.243 /var/log/nginx/access.log*
+/var/log/nginx/access.log:336
+/var/log/nginx/access.log.1:4681
+/var/log/nginx/access.log.2.gz:3531
+/var/log/nginx/access.log.3.gz:3532
+/var/log/nginx/access.log.4.gz:5786
+/var/log/nginx/access.log.5.gz:8542
+/var/log/nginx/access.log.6.gz:6988
+/var/log/nginx/access.log.7.gz:7517
+/var/log/nginx/access.log.8.gz:7211
+/var/log/nginx/access.log.9.gz:2763
+</code></pre>
+
+<ul>
+<li>This user is responsible for hundreds and sometimes thousands of Tomcat sessions:</li>
+</ul>
+
+<pre><code>$ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+954
+$ grep 104.196.152.243 dspace.log.2017-11-03 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+6199
+$ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+7051
+</code></pre>
+
+<ul>
+<li>The worst thing is that this user never specifies a user agent string so we can&rsquo;t lump it in with the other bots using the Tomcat Session Crawler Manager Valve</li>
+<li>They don&rsquo;t request dynamic URLs like &ldquo;/discover&rdquo; but they seem to be fetching handles from XMLUI instead of REST (and some with <code>//handle</code>, note the regex below):</li>
+</ul>
+
+<pre><code># grep -c 104.196.152.243 /var/log/nginx/access.log.1
+4681
+# grep 104.196.152.243 /var/log/nginx/access.log.1 | grep -c -P 'GET //?handle'
+4618
+</code></pre>
+
+<ul>
+<li>I just realized that <code>ciat.cgiar.org</code> points to 104.196.152.243, so I should contact Leroy from CIAT to see if we can change their scraping behavior</li>
+<li>The next IP (207.46.13.36) seem to be Microsoft&rsquo;s bingbot, but all its requests specify the &ldquo;bingbot&rdquo; user agent and there are no requests for dynamic URLs that are forbidden, like &ldquo;/discover&rdquo;:</li>
+</ul>
+
+<pre><code>$ grep -c 207.46.13.36 /var/log/nginx/access.log.1 
+2034
+# grep 207.46.13.36 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+0
+</code></pre>
+
+<ul>
+<li>The next IP (157.55.39.161) also seems to be bingbot, and none of its requests are for URLs forbidden by robots.txt either:</li>
+</ul>
+
+<pre><code># grep 157.55.39.161 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+0
+</code></pre>
+
+<ul>
+<li>The next few seem to be bingbot as well, and they declare a proper user agent and do not request dynamic URLs like &ldquo;/discover&rdquo;:</li>
+</ul>
+
+<pre><code># grep -c -E '207.46.13.[0-9]{2,3}' /var/log/nginx/access.log.1 
+5997
+# grep -E '207.46.13.[0-9]{2,3}' /var/log/nginx/access.log.1 | grep -c &quot;bingbot&quot;
+5988
+# grep -E '207.46.13.[0-9]{2,3}' /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+0
+</code></pre>
+
+<ul>
+<li>The next few seem to be Googlebot, and they declare a proper user agent and do not request dynamic URLs like &ldquo;/discover&rdquo;:</li>
+</ul>
+
+<pre><code># grep -c -E '66.249.66.[0-9]{2,3}' /var/log/nginx/access.log.1 
+3048
+# grep -E '66.249.66.[0-9]{2,3}' /var/log/nginx/access.log.1 | grep -c Google
+3048
+# grep -E '66.249.66.[0-9]{2,3}' /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+0
+</code></pre>
+
+<ul>
+<li>The next seems to be Yahoo, which declares a proper user agent and does not request dynamic URLs like &ldquo;/discover&rdquo;:</li>
+</ul>
+
+<pre><code># grep -c 68.180.229.254 /var/log/nginx/access.log.1 
+1131
+# grep  68.180.229.254 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+0
+</code></pre>
+
+<ul>
+<li>The last of the top ten IPs seems to be some bot with a weird user agent, but they are not behaving too well:</li>
+</ul>
+
+<pre><code># grep -c -E '65.49.68.[0-9]{3}' /var/log/nginx/access.log.1 
+2950
+# grep -E '65.49.68.[0-9]{3}' /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+330
+</code></pre>
+
+<ul>
+<li>Their user agents vary, ie:
+
+<ul>
+<li><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36</code></li>
+<li><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11</code></li>
+<li><code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)</code></li>
+</ul></li>
+<li>I&rsquo;ll just keep an eye on that one for now, as it only made a few hundred requests to dynamic discovery URLs</li>
+<li>While it&rsquo;s not in the top ten, Baidu is one bot that seems to not give a fuck:</li>
+</ul>
+
+<pre><code># grep -c Baiduspider /var/log/nginx/access.log.1
+8068
+# grep Baiduspider /var/log/nginx/access.log.1 | grep -c -E &quot;GET /(browse|discover)&quot;
+1431
+</code></pre>
+
+<ul>
+<li>According to their documentation their bot <a href="http://www.baidu.com/search/robots_english.html">respects <code>robots.txt</code></a>, but I don&rsquo;t see this being the case</li>
+<li>I think I will end up blocking Baidu as well&hellip;</li>
+<li>Next is for me to look and see what was happening specifically at 3AM and 7AM when the server crashed</li>
+<li>I should look in nginx access.log, rest.log, oai.log, and DSpace&rsquo;s dspace.log.2017-11-07</li>
+<li>Here are the top IPs during 2–10 AM:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    279 66.249.66.91
+    373 65.49.68.199
+    446 68.180.229.254
+    470 104.196.152.243
+    470 197.210.168.174
+    598 207.46.13.103
+    603 157.55.39.161
+    637 207.46.13.80
+    703 207.46.13.36
+    724 66.249.66.90
+</code></pre>
+
+<ul>
+<li>Of those, most are Google, Bing, Yahoo, etc, except 63.143.42.244 and 63.143.42.242 which are Uptime Robot</li>
 </ul>
 
   
