@@ -38,7 +38,7 @@ COPY 54701
 
 <meta property="article:published_time" content="2017-11-02T09:37:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2017-11-05T15:53:35&#43;02:00"/>
+<meta property="article:modified_time" content="2017-11-07T14:50:01&#43;02:00"/>
 
 
 
@@ -86,9 +86,9 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "1445",
+  "wordCount": "1905",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
-  "dateModified": "2017-11-05T15:53:35&#43;02:00",
+  "dateModified": "2017-11-07T14:50:01&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -433,7 +433,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>I think I will end up blocking Baidu as well&hellip;</li>
 <li>Next is for me to look and see what was happening specifically at 3AM and 7AM when the server crashed</li>
 <li>I should look in nginx access.log, rest.log, oai.log, and DSpace&rsquo;s dspace.log.2017-11-07</li>
-<li>Here are the top IPs during 2–10 AM:</li>
+<li>Here are the top IPs making requests to XMLUI from 2–8 AM:</li>
 </ul>
 
 <pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
@@ -451,7 +451,106 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 
 <ul>
 <li>Of those, most are Google, Bing, Yahoo, etc, except 63.143.42.244 and 63.143.42.242 which are Uptime Robot</li>
+<li>Here are the top IPs making requests to REST from 2–8 AM:</li>
 </ul>
+
+<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail                                                                        
+      8 207.241.229.237
+     10 66.249.66.90
+     16 104.196.152.243
+     25 41.60.238.61
+     26 157.55.39.161
+     27 207.46.13.103
+     27 207.46.13.80
+     31 207.46.13.36
+   1498 50.116.102.77
+</code></pre>
+
+<ul>
+<li>The OAI requests during that same time period are nothing to worry about:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+      1 66.249.66.92
+      4 66.249.66.90
+      6 68.180.229.254
+</code></pre>
+
+<ul>
+<li>The top IPs from dspace.log during the 2–8 AM period:</li>
+</ul>
+
+<pre><code>$ grep -E '2017-11-07 0[2-8]' dspace.log.2017-11-07 | grep -o -E 'ip_addr=[0-9.]+' | sort -n | uniq -c | sort -h | tail
+    143 ip_addr=213.55.99.121
+    181 ip_addr=66.249.66.91
+    223 ip_addr=157.55.39.161
+    248 ip_addr=207.46.13.80
+    251 ip_addr=207.46.13.103
+    291 ip_addr=207.46.13.36
+    297 ip_addr=197.210.168.174
+    312 ip_addr=65.49.68.199
+    462 ip_addr=104.196.152.243
+    488 ip_addr=66.249.66.90
+</code></pre>
+
+<ul>
+<li>These aren&rsquo;t actually very interesting, as the top few are Google, CIAT, Bingbot, and a few other unknown scrapers</li>
+<li>The number of requests isn&rsquo;t even that high to be honest</li>
+<li>As I was looking at these logs I noticed another heavy user (124.17.34.59) that was not active during this time period, but made many requests today alone:</li>
+</ul>
+
+<pre><code># zgrep -c 124.17.34.59 /var/log/nginx/access.log*
+/var/log/nginx/access.log:22581
+/var/log/nginx/access.log.1:0
+/var/log/nginx/access.log.2.gz:14
+/var/log/nginx/access.log.3.gz:0
+/var/log/nginx/access.log.4.gz:0
+/var/log/nginx/access.log.5.gz:3
+/var/log/nginx/access.log.6.gz:0
+/var/log/nginx/access.log.7.gz:0
+/var/log/nginx/access.log.8.gz:0
+/var/log/nginx/access.log.9.gz:1
+</code></pre>
+
+<ul>
+<li>The whois data shows the IP is from China, but the user agent doesn&rsquo;t really give any clues:</li>
+</ul>
+
+<pre><code># grep 124.17.34.59 /var/log/nginx/access.log | awk -F'&quot; ' '{print $3}' | sort | uniq -c | sort -h
+    210 &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36&quot;
+  22610 &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/7.0; LCTE)&quot;
+</code></pre>
+
+<ul>
+<li>A Google search for &ldquo;LCTE bot&rdquo; doesn&rsquo;t return anything interesting, but this <a href="https://stackoverflow.com/questions/42500881/what-is-lcte-in-user-agent">Stack Overflow discussion</a> references the lack of information</li>
+<li>So basically after a few hours of looking at the log files I am not closer to understanding what is going on!</li>
+<li>I do know that we want to block Baidu, though, as it does not respect <code>robots.txt</code></li>
+<li>And as we speak Linode alerted that the outbound traffic rate is very high for the past two hours (about 12–14 hours)</li>
+<li>At least for now it seems to be that new Chinese IP (124.17.34.59):</li>
+</ul>
+
+<pre><code># grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    198 207.46.13.103
+    203 207.46.13.80
+    205 207.46.13.36
+    218 157.55.39.161
+    249 45.5.184.221
+    258 45.5.187.130
+    386 66.249.66.90
+    410 197.210.168.174
+   1896 104.196.152.243
+  11005 124.17.34.59
+</code></pre>
+
+<ul>
+<li>Seems 124.17.34.59 are really downloading all our PDFs, compared to the next top active IPs during this time!</li>
+</ul>
+
+<pre><code># grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | grep 124.17.34.59 | grep -c pdf
+5948
+# grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | grep 104.196.152.243 | grep -c pdf
+0
+</code></pre>
 
   
 
