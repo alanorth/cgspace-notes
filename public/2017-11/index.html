@@ -38,7 +38,7 @@ COPY 54701
 
 <meta property="article:published_time" content="2017-11-02T09:37:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2017-11-12T10:19:47&#43;02:00"/>
+<meta property="article:modified_time" content="2017-11-12T10:41:44&#43;02:00"/>
 
 
 
@@ -86,9 +86,9 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "3150",
+  "wordCount": "3351",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
-  "dateModified": "2017-11-12T10:19:47&#43;02:00",
+  "dateModified": "2017-11-12T10:41:44&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -766,6 +766,51 @@ $ grep 5.9.6.51 /home/cgspace.cgiar.org/log/dspace.log.2017-11-12 | grep -o -E '
 $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' /home/cgspace.cgiar.org/log/dspace.log.2017-11-12
 991
 </code></pre>
+
+<ul>
+<li>Move some items and collections on CGSpace for Peter Ballantyne, running <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515"><code>move_collections.sh</code></a> with the following configuration:</li>
+</ul>
+
+<pre><code>10947/6    10947/1 10568/83389
+10947/34   10947/1 10568/83389
+10947/2512 10947/1 10568/83389
+</code></pre>
+
+<ul>
+<li>I explored nginx rate limits as a way to aggressively throttle Baidu bot which doesn&rsquo;t seem to respect disallowed URLs in robots.txt</li>
+<li>There&rsquo;s an interesting <a href="https://www.nginx.com/blog/rate-limiting-nginx/">blog post from Nginx&rsquo;s team about rate limiting</a> as well as a <a href="https://gist.github.com/arosenhagen/8aaf5d7f94171778c0e9">clever use of mapping with rate limits</a></li>
+<li>The solution <a href="https://github.com/ilri/rmg-ansible-public/commit/f0646991772660c505bea9c5ac586490e7c86156">I came up with</a> uses tricks from both of those</li>
+<li>I deployed the limit on CGSpace and DSpace Test and it seems to work well:</li>
+</ul>
+
+<pre><code>$ http --print h https://cgspace.cgiar.org/handle/10568/1 User-Agent:'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Language: en-US
+Content-Type: text/html;charset=utf-8
+Date: Sun, 12 Nov 2017 16:30:19 GMT
+Server: nginx
+Strict-Transport-Security: max-age=15768000
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-Cocoon-Version: 2.2.0
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+$ http --print h https://cgspace.cgiar.org/handle/10568/1 User-Agent:'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
+HTTP/1.1 503 Service Temporarily Unavailable
+Connection: keep-alive
+Content-Length: 206
+Content-Type: text/html
+Date: Sun, 12 Nov 2017 16:30:21 GMT
+Server: nginx
+</code></pre>
+
+<ul>
+<li>The first request works, second is denied with an HTTP 503!</li>
+<li>I need to remember to check the Munin graphs for PostgreSQL and JVM next week to see how this affects them</li>
+</ul>
 
   
 
