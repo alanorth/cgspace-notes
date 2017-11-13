@@ -38,7 +38,7 @@ COPY 54701
 
 <meta property="article:published_time" content="2017-11-02T09:37:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2017-11-12T10:41:44&#43;02:00"/>
+<meta property="article:modified_time" content="2017-11-12T18:48:52&#43;02:00"/>
 
 
 
@@ -86,9 +86,9 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "3351",
+  "wordCount": "3544",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
-  "dateModified": "2017-11-12T10:41:44&#43;02:00",
+  "dateModified": "2017-11-12T18:48:52&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -810,6 +810,39 @@ Server: nginx
 <ul>
 <li>The first request works, second is denied with an HTTP 503!</li>
 <li>I need to remember to check the Munin graphs for PostgreSQL and JVM next week to see how this affects them</li>
+</ul>
+
+<h2 id="2017-11-13">2017-11-13</h2>
+
+<ul>
+<li>Just a few hours into the day and it really looks like the Baidu rate limiting is working, HTTP 200 vs 503:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;13/Nov/2017&quot; | grep &quot;Baiduspider&quot; | grep -c &quot; 200 &quot;
+508
+# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;13/Nov/2017&quot; | grep &quot;Baiduspider&quot; | grep -c &quot; 503 &quot;
+5462
+</code></pre>
+
+<ul>
+<li>Helping Sisay proof 47 records for IITA: <a href="https://dspacetest.cgiar.org/handle/10568/97029">https://dspacetest.cgiar.org/handle/10568/97029</a></li>
+<li>From looking at the data in OpenRefine I found:
+
+<ul>
+<li>Errors in <code>cg.authorship.types</code></li>
+<li>Errors in <code>cg.coverage.country</code> (smart quote in &ldquo;COTE D’IVOIRE&rdquo;, &ldquo;HAWAII&rdquo; is not a country)</li>
+<li>Whitespace issues in some `cg.contributor.affiliatio</li>
+<li>Whitespace issues in some <code>cg.identifier.doi</code> fields and most values are using HTTP instead of HTTPS</li>
+<li>Whitespace issues in some <code>dc.contributor.author</code> fields</li>
+<li>Issue with invalid <code>dc.date.issued</code> value &ldquo;2011-3&rdquo;</li>
+<li>Description fields are poorly copy–pasted</li>
+<li>Whitespace issues in <code>dc.description.sponsorship</code></li>
+<li>Lots of inconsistency in <code>dc.format.extent</code> (mixed dash style, periods at the end of values)</li>
+<li>Whitespace errors in <code>dc.identifier.citation</code></li>
+<li>Whitespace errors in <code>dc.subject</code></li>
+<li>Whitespace errors in <code>dc.title</code></li>
+</ul></li>
+<li>After uploading and looking at the data in DSpace Test I saw more errors with CRPs, subjects (one item had four copies of all of its subjects, another had a &ldquo;.&rdquo; in it), affiliations, sponsors, etc.</li>
 </ul>
 
   
