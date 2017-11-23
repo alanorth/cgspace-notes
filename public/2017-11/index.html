@@ -86,7 +86,7 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "4549",
+  "wordCount": "4773",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
   "dateModified": "2017-11-22T10:20:44&#43;02:00",
   "author": {
@@ -1024,6 +1024,57 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 </ul>
 
 <p><img src="/cgspace-notes/2017/11/tomcat-jvm-cms.png" alt="Tomcat JVM with CMS GC" /></p>
+
+<h2 id="2017-11-23">2017-11-23</h2>
+
+<ul>
+<li>Linode alerted again that CPU usage was high on CGSpace from 4:13 to 6:13 AM</li>
+<li>I see a lot of Googlebot (66.249.66.90) in the XMLUI access logs</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;23/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+     88 66.249.66.91
+    140 68.180.229.254
+    155 54.196.2.131
+    182 54.224.164.166
+    301 157.55.39.79
+    315 207.46.13.36
+    331 207.46.13.23
+    358 207.46.13.137
+    565 104.196.152.243
+   1570 66.249.66.90
+</code></pre>
+
+<ul>
+<li>&hellip; and the usual REST scrapers from CIAT (45.5.184.196) and CCAFS (70.32.83.92):</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;23/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+      5 190.120.6.219
+      6 104.198.9.108
+     14 104.196.152.243
+     21 112.134.150.6
+     22 157.55.39.79
+     22 207.46.13.137
+     23 207.46.13.36
+     26 207.46.13.23
+    942 45.5.184.196
+   3995 70.32.83.92
+</code></pre>
+
+<ul>
+<li>These IPs crawling the REST API don&rsquo;t specify user agents and I&rsquo;d assume they are creating many Tomcat sessions</li>
+<li>I would catch them in nginx to assign a &ldquo;bot&rdquo; user agent to them so that the Tomcat Crawler Session Manager valve could deal with them, but they seem to create any really — at least not in the dspace.log:</li>
+</ul>
+
+<pre><code>$ grep 70.32.83.92 dspace.log.2017-11-23 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+2
+</code></pre>
+
+<ul>
+<li>I&rsquo;m wondering if REST works differently, or just doesn&rsquo;t log these sessions?</li>
+<li>I wonder if they are measurable via JMX MBeans?</li>
+</ul>
 
   
 
