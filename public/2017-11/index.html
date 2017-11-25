@@ -38,7 +38,7 @@ COPY 54701
 
 <meta property="article:published_time" content="2017-11-02T09:37:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2017-11-23T17:18:45&#43;02:00"/>
+<meta property="article:modified_time" content="2017-11-24T00:59:11&#43;02:00"/>
 
 
 
@@ -86,9 +86,9 @@ COPY 54701
   "@type": "BlogPosting",
   "headline": "November, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-11/",
-  "wordCount": "4849",
+  "wordCount": "5032",
   "datePublished": "2017-11-02T09:37:54&#43;02:00",
-  "dateModified": "2017-11-23T17:18:45&#43;02:00",
+  "dateModified": "2017-11-24T00:59:11&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1078,6 +1078,34 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>I came across some interesting PostgreSQL tuning advice for SSDs: <a href="https://amplitude.engineering/how-a-single-postgresql-config-change-improved-slow-query-performance-by-50x-85593b8991b0">https://amplitude.engineering/how-a-single-postgresql-config-change-improved-slow-query-performance-by-50x-85593b8991b0</a></li>
 <li>Apparently setting <code>random_page_cost</code> to 1 is &ldquo;common&rdquo; advice for systems running PostgreSQL on SSD (the default is 4)</li>
 <li>So I deployed this on DSpace Test and will check the Munin PostgreSQL graphs in a few days to see if anything changes</li>
+</ul>
+
+<h2 id="2017-11-24">2017-11-24</h2>
+
+<ul>
+<li>It&rsquo;s too early to tell for sure, but after I made the <code>random_page_cost</code> change on DSpace Test&rsquo;s PostgreSQL yesterday the number of connections dropped drastically:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/11/postgres-connections-week.png" alt="PostgreSQL connections after tweak (week)" /></p>
+
+<ul>
+<li>There have been other temporary drops before, but if I look at the past month and actually the whole year, the trend is that connections are four or five times higher on average:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/11/postgres-connections-month.png" alt="PostgreSQL connections after tweak (month)" /></p>
+
+<ul>
+<li>I just realized that we&rsquo;re not logging access requests to other vhosts on CGSpace, so it&rsquo;s possible I have no idea that we&rsquo;re getting slammed at 4AM on another domain that we&rsquo;re just silently redirecting to cgspace.cgiar.org</li>
+<li>I&rsquo;ve enabled logging on the CGIAR Library on CGSpace so I can check to see if there are many requests there</li>
+<li>In just a few seconds I already see a dozen requests from Googlebot (of course they get HTTP 301 redirects to cgspace.cgiar.org)</li>
+<li>I also noticed that CGNET appears to be monitoring the old domain every few minutes:</li>
+</ul>
+
+<pre><code>192.156.137.184 - - [24/Nov/2017:20:33:58 +0000] &quot;HEAD / HTTP/1.1&quot; 301 0 &quot;-&quot; &quot;curl/7.19.7 (x86_64-redhat-linux-gnu) libcurl/7.19.7 NSS/3.27.1 zlib/1.2.3 libidn/1.18 libssh2/1.4.2&quot;
+</code></pre>
+
+<ul>
+<li>I should probably tell CGIAR people to have CGNET stop that</li>
 </ul>
 
   
