@@ -23,7 +23,7 @@ The list of connections to XMLUI and REST API for today:
 
 <meta property="article:published_time" content="2017-12-01T13:53:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-12-05T17:57:02&#43;03:00"/>
+<meta property="article:modified_time" content="2017-12-06T09:51:05&#43;03:00"/>
 
 
 
@@ -56,9 +56,9 @@ The list of connections to XMLUI and REST API for today:
   "@type": "BlogPosting",
   "headline": "December, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-12/",
-  "wordCount": "516",
+  "wordCount": "823",
   "datePublished": "2017-12-01T13:53:54&#43;03:00",
-  "dateModified": "2017-12-05T17:57:02&#43;03:00",
+  "dateModified": "2017-12-06T09:51:05&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -237,6 +237,70 @@ The list of connections to XMLUI and REST API for today:
 
 <ul>
 <li>Linode alerted again that the CPU usage on CGSpace was high this morning from 6 to 8 AM</li>
+<li>Uptime Robot alerted that the server went down and up around 8:53 this morning</li>
+<li>Uptime Robot alerted that CGSpace was down and up again a few minutes later</li>
+<li>I don&rsquo;t see any errors in the DSpace logs but I see in nginx&rsquo;s access.log that UptimeRobot was returned with HTTP 499 status (Client Closed Request)</li>
+<li>Looking at the REST API logs I see some new client IP I haven&rsquo;t noticed before:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;6/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+     18 95.108.181.88
+     19 68.180.229.254
+     30 207.46.13.151
+     33 207.46.13.110
+     38 40.77.167.20
+     41 157.55.39.223
+     82 104.196.152.243
+   1529 50.116.102.77
+   4005 70.32.83.92
+   6045 45.5.184.196
+</code></pre>
+
+<ul>
+<li>50.116.102.77 is apparently in the US on websitewelcome.com</li>
+</ul>
+
+<h2 id="2017-12-07">2017-12-07</h2>
+
+<ul>
+<li>Uptime Robot reported a few times today that CGSpace was down and then up</li>
+<li>At one point Tsega restarted Tomcat</li>
+<li>I never got any alerts about high load from Linode though&hellip;</li>
+<li>I looked just now and see that there are 121 PostgreSQL connections!</li>
+<li>The top users right now are:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;7/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail 
+    838 40.77.167.11
+    939 66.249.66.223
+   1149 66.249.66.206
+   1316 207.46.13.110
+   1322 207.46.13.151
+   1323 2001:da8:203:2224:c912:1106:d94f:9189
+   1414 157.55.39.223
+   2378 104.196.152.243
+   2662 66.249.66.219
+   5110 124.17.34.60
+</code></pre>
+
+<ul>
+<li>We&rsquo;ve never seen 124.17.34.60 yet, but it&rsquo;s really hammering us!</li>
+<li>Apparently it is from China, and here is one of its user agents:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/7.0; LCTE)
+</code></pre>
+
+<ul>
+<li>It is responsible for 4,500 Tomcat sessions today alone:</li>
+</ul>
+
+<pre><code>$ grep 124.17.34.60 /home/cgspace.cgiar.org/log/dspace.log.2017-12-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+4574
+</code></pre>
+
+<ul>
+<li>I&rsquo;ve adjusted the nginx IP mapping that I set up last month to account for 124.17.34.60 and 124.17.34.59 using a regex, as it&rsquo;s the same bot on the same subnet</li>
 </ul>
 
   
