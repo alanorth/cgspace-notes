@@ -23,7 +23,7 @@ The list of connections to XMLUI and REST API for today:
 
 <meta property="article:published_time" content="2017-12-01T13:53:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-12-18T15:20:37&#43;02:00"/>
+<meta property="article:modified_time" content="2017-12-18T17:03:58&#43;02:00"/>
 
 
 
@@ -56,9 +56,9 @@ The list of connections to XMLUI and REST API for today:
   "@type": "BlogPosting",
   "headline": "December, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-12/",
-  "wordCount": "1972",
+  "wordCount": "2244",
   "datePublished": "2017-12-01T13:53:54&#43;03:00",
-  "dateModified": "2017-12-18T15:20:37&#43;02:00",
+  "dateModified": "2017-12-18T17:03:58&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -531,6 +531,35 @@ dspace.log.2017-12-01:1601
 dspace.log.2017-12-02:1274
 dspace.log.2017-12-07:2769
 </code></pre>
+
+<ul>
+<li>I made a small fix to my <code>move-collections.sh</code> script so that it handles the case when a &ldquo;to&rdquo; or &ldquo;from&rdquo; community doesn&rsquo;t exist</li>
+<li>The script lives here: <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515">https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515</a></li>
+<li>Major reorganization of four of CTA&rsquo;s French collections</li>
+<li>Basically moving their items into the English ones, then moving the English ones to the top-level of the CTA community, and deleting the old sub-communities</li>
+<li>Move collection <sup>10568</sup>&frasl;<sub>51821</sub> from <sup>10568</sup>&frasl;<sub>42212</sub> to <sup>10568</sup>&frasl;<sub>42211</sub></li>
+<li>Move collection <sup>10568</sup>&frasl;<sub>51400</sub> from <sup>10568</sup>&frasl;<sub>42214</sub> to <sup>10568</sup>&frasl;<sub>42211</sub></li>
+<li>Move collection <sup>10568</sup>&frasl;<sub>56992</sub> from <sup>10568</sup>&frasl;<sub>42216</sub> to <sup>10568</sup>&frasl;<sub>42211</sub></li>
+<li>Move collection <sup>10568</sup>&frasl;<sub>42218</sub> from <sup>10568</sup>&frasl;<sub>42217</sub> to <sup>10568</sup>&frasl;<sub>42211</sub></li>
+<li>Export CSV of collection <sup>10568</sup>&frasl;<sub>63484</sub> and move items to collection <sup>10568</sup>&frasl;<sub>51400</sub></li>
+<li>Export CSV of collection <sup>10568</sup>&frasl;<sub>64403</sub> and move items to collection <sup>10568</sup>&frasl;<sub>56992</sub></li>
+<li>Export CSV of collection <sup>10568</sup>&frasl;<sub>56994</sub> and move items to collection <sup>10568</sup>&frasl;<sub>42218</sub></li>
+<li>There are blank lines in this metadata, which causes DSpace to not detect changes in the CSVs</li>
+<li>I had to use OpenRefine to remove all columns from the CSV except <code>id</code> and <code>collection</code>, and then update the <code>collection</code> field for the new mappings</li>
+<li>Remove empty sub-communities: <sup>10568</sup>&frasl;<sub>42212</sub>, <sup>10568</sup>&frasl;<sub>42214</sub>, <sup>10568</sup>&frasl;<sub>42216</sub>, <sup>10568</sup>&frasl;<sub>42217</sub></li>
+<li>I was in the middle of applying the metadata imports on CGSpace and the system ran out of PostgreSQL connections&hellip;</li>
+<li>There were 128 PostgreSQL connections at the time&hellip; grrrr.</li>
+<li>So I restarted Tomcat 7 and restarted the imports</li>
+<li>I assume the PostgreSQL transactions were fine but I will remove the Discovery index for their community and re-run the light-weight indexing to hopefully re-construct everything:</li>
+</ul>
+
+<pre><code>$ dspace index-discovery -r 10568/42211
+$ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
+</code></pre>
+
+<ul>
+<li>The PostgreSQL issues are getting out of control, I need to figure out how to enable connection pools in Tomcat!</li>
+</ul>
 
   
 
