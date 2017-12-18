@@ -23,7 +23,7 @@ The list of connections to XMLUI and REST API for today:
 
 <meta property="article:published_time" content="2017-12-01T13:53:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-12-18T14:02:24&#43;02:00"/>
+<meta property="article:modified_time" content="2017-12-18T15:20:37&#43;02:00"/>
 
 
 
@@ -56,9 +56,9 @@ The list of connections to XMLUI and REST API for today:
   "@type": "BlogPosting",
   "headline": "December, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-12/",
-  "wordCount": "1787",
+  "wordCount": "1972",
   "datePublished": "2017-12-01T13:53:54&#43;03:00",
-  "dateModified": "2017-12-18T14:02:24&#43;02:00",
+  "dateModified": "2017-12-18T15:20:37&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -483,7 +483,54 @@ Elapsed time: 2 secs (2559 msecs)
 <ul>
 <li>I need to keep an eye on this issue because it has nice fixes for reducing the number of database connections in DSpace 5.7: <a href="https://jira.duraspace.org/browse/DS-3551">https://jira.duraspace.org/browse/DS-3551</a></li>
 <li>Update text on CGSpace about page to give some tips to developers about using the resources more wisely (<a href="https://github.com/ilri/DSpace/pull/352">#352</a>)</li>
+<li>Linode alerted that CGSpace was using 396.3% CPU from 12 to 2 PM</li>
+<li>The REST and OAI API logs look pretty much the same as earlier this morning, but there&rsquo;s a new IP harvesting XMLUI:</li>
 </ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail            
+    360 95.108.181.88
+    477 66.249.66.90
+    526 86.101.203.216
+    691 207.46.13.13
+    698 197.210.168.174
+    819 207.46.13.146
+    878 68.180.229.254
+   1965 104.196.152.243
+  17701 2.86.72.181
+  52532 137.108.70.7
+</code></pre>
+
+<ul>
+<li>2.86.72.181 appears to be from Greece, and has the following user agent:</li>
+</ul>
+
+<pre><code>Mozilla/3.0 (compatible; Indy Library)
+</code></pre>
+
+<ul>
+<li>Surprisingly it seems they are re-using their Tomcat session for all those 17,000 requests:</li>
+</ul>
+
+<pre><code>$ grep 2.86.72.181 dspace.log.2017-12-18 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l                                                                                          
+1
+</code></pre>
+
+<ul>
+<li>I guess there&rsquo;s nothing I can do to them for now</li>
+<li>In other news, I am curious how many PostgreSQL connection pool errors we&rsquo;ve had in the last month:</li>
+</ul>
+
+<pre><code>$ grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-1* | grep -v :0
+dspace.log.2017-11-07:15695
+dspace.log.2017-11-08:135
+dspace.log.2017-11-17:1298
+dspace.log.2017-11-26:4160
+dspace.log.2017-11-28:107
+dspace.log.2017-11-29:3972
+dspace.log.2017-12-01:1601
+dspace.log.2017-12-02:1274
+dspace.log.2017-12-07:2769
+</code></pre>
 
   
 
