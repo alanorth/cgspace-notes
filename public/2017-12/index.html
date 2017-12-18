@@ -23,7 +23,7 @@ The list of connections to XMLUI and REST API for today:
 
 <meta property="article:published_time" content="2017-12-01T13:53:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-12-17T11:22:21&#43;02:00"/>
+<meta property="article:modified_time" content="2017-12-17T17:18:06&#43;02:00"/>
 
 
 
@@ -56,9 +56,9 @@ The list of connections to XMLUI and REST API for today:
   "@type": "BlogPosting",
   "headline": "December, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-12/",
-  "wordCount": "1330",
+  "wordCount": "1743",
   "datePublished": "2017-12-01T13:53:54&#43;03:00",
-  "dateModified": "2017-12-17T11:22:21&#43;02:00",
+  "dateModified": "2017-12-17T17:18:06&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -386,8 +386,99 @@ Elapsed time: 2 secs (2559 msecs)
 </code></pre>
 
 <ul>
-<li>For now I&rsquo;ll import into a collection in DSpace Test but I&rsquo;m really not sure what&rsquo;s up with this!</li>
+<li>I even tried to debug it by adding verbose logging to the <code>JAVA_OPTS</code>:</li>
 </ul>
+
+<pre><code>-Dlog4j.configuration=file:/Users/aorth/dspace/config/log4j-console.properties -Ddspace.log.init.disable=true
+</code></pre>
+
+<ul>
+<li>&hellip; but the error message was the same, just with more INFO noise around it</li>
+<li>For now I&rsquo;ll import into a collection in DSpace Test but I&rsquo;m really not sure what&rsquo;s up with this!</li>
+<li>Linode alerted that CGSpace was using high CPU from 4 to 6 PM</li>
+<li>The logs for today show the CORE bot (137.108.70.7) being active in XMLUI:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;17/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    671 66.249.66.70
+    885 95.108.181.88
+    904 157.55.39.96
+    923 157.55.39.179
+   1159 207.46.13.107
+   1184 104.196.152.243
+   1230 66.249.66.91
+   1414 68.180.229.254
+   4137 66.249.66.90
+  46401 137.108.70.7
+</code></pre>
+
+<ul>
+<li>And then some CIAT bot (45.5.184.196) is actively hitting API endpoints:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;17/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+     33 68.180.229.254
+     48 157.55.39.96
+     51 157.55.39.179
+     56 207.46.13.107
+    102 104.196.152.243
+    102 66.249.66.90
+    691 137.108.70.7
+   1531 50.116.102.77
+   4014 70.32.83.92
+  11030 45.5.184.196
+</code></pre>
+
+<ul>
+<li>That&rsquo;s probably ok, as I don&rsquo;t think the REST API connections use up a Tomcat session&hellip;</li>
+<li>CIP emailed a few days ago to ask about unique IDs for authors and organizations, and if we can provide them via an API</li>
+<li>Regarding the import issue above it seems to be a known issue that has a patch in DSpace 5.7:
+
+<ul>
+<li><a href="https://jira.duraspace.org/browse/DS-2633">https://jira.duraspace.org/browse/DS-2633</a></li>
+<li><a href="https://jira.duraspace.org/browse/DS-3583">https://jira.duraspace.org/browse/DS-3583</a></li>
+</ul></li>
+<li>We&rsquo;re on DSpace 5.5 but there is a one-word fix to the addItem() function here: <a href="https://github.com/DSpace/DSpace/pull/1731">https://github.com/DSpace/DSpace/pull/1731</a></li>
+<li>I will apply it on our branch but I need to make a note to NOT cherry-pick it when I rebase on to the latest 5.x upstream later</li>
+<li>Pull request: <a href="https://github.com/ilri/DSpace/pull/351">#351</a></li>
+</ul>
+
+<h2 id="2017-12-18">2017-12-18</h2>
+
+<ul>
+<li>Linode alerted this morning that there was high outbound traffic from 6 to 8 AM</li>
+<li>The XMLUI logs show that the CORE bot from last night (137.108.70.7) is very active still:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    190 207.46.13.146
+    191 197.210.168.174
+    202 86.101.203.216
+    268 157.55.39.134
+    297 66.249.66.91
+    314 213.55.99.121
+    402 66.249.66.90
+    532 68.180.229.254
+    644 104.196.152.243
+  32220 137.108.70.7
+</code></pre>
+
+<ul>
+<li>On the API side (REST and OAI) there is still the same CIAT bot (45.5.184.196) from last night making quite a number of requests this morning:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+      7 104.198.9.108
+      8 185.29.8.111
+      8 40.77.167.176
+      9 66.249.66.91
+      9 68.180.229.254
+     10 157.55.39.134
+     15 66.249.66.90
+     59 104.196.152.243
+   4014 70.32.83.92
+   8619 45.5.184.196
+</code></pre>
 
   
 
