@@ -23,7 +23,7 @@ The list of connections to XMLUI and REST API for today:
 
 <meta property="article:published_time" content="2017-12-01T13:53:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-12-19T10:14:51&#43;02:00"/>
+<meta property="article:modified_time" content="2017-12-19T10:38:57&#43;02:00"/>
 
 
 
@@ -56,9 +56,9 @@ The list of connections to XMLUI and REST API for today:
   "@type": "BlogPosting",
   "headline": "December, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-12/",
-  "wordCount": "2421",
+  "wordCount": "2915",
   "datePublished": "2017-12-01T13:53:54&#43;03:00",
-  "dateModified": "2017-12-19T10:14:51&#43;02:00",
+  "dateModified": "2017-12-19T10:38:57&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -585,6 +585,129 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 
 <ul>
 <li>I don&rsquo;t have time now to look into this but the Solr sharding has long been an issue!</li>
+<li>Looking into using JDBC / JNDI to provide a database pool to DSpace</li>
+<li>The <a href="https://wiki.duraspace.org/display/DSDOC6x/Configuration+Reference">DSpace 6.x configuration docs</a> have more notes about setting up the database pool than the 5.x ones (which actually have none!)</li>
+<li>First, I uncomment <code>db.jndi</code> in <em>dspace/config/dspace.cfg</em></li>
+<li>Then I create a global <code>Resource</code> in the main Tomcat <em>server.xml</em> (inside <code>GlobalNamingResources</code>):</li>
+</ul>
+
+<pre><code>	&lt;Resource name=&quot;jdbc/dspace&quot; auth=&quot;Container&quot; type=&quot;javax.sql.DataSource&quot;
+		  driverClassName=&quot;org.postgresql.Driver&quot;
+		  url=&quot;jdbc:postgresql://localhost:5432/dspace&quot;
+		  username=&quot;dspace&quot;
+		  password=&quot;dspace&quot;
+          initialSize='5'
+          maxActive='50'
+          maxIdle='15'
+          minIdle='5'
+          maxWait='5000'
+          validationQuery='SELECT 1'
+          testOnBorrow='true' /&gt;
+</code></pre>
+
+<ul>
+<li>Most of the parameters are from comments by Mark Wood about his JNDI setup: <a href="https://jira.duraspace.org/browse/DS-3564">https://jira.duraspace.org/browse/DS-3564</a></li>
+<li>Then I add a <code>ResourceLink</code> to each web application context:</li>
+</ul>
+
+<pre><code>&lt;ResourceLink global=&quot;jdbc/dspace&quot; name=&quot;jdbc/dspace&quot; type=&quot;javax.sql.DataSource&quot;/&gt;
+</code></pre>
+
+<ul>
+<li>I am not sure why several guides show configuration snippets for <em>server.xml</em> and web application contexts that use a Local and Global jdbc&hellip;</li>
+<li>When DSpace can&rsquo;t find the JNDI context (for whatever reason) you will see this in the dspace logs:</li>
+</ul>
+
+<pre><code>2017-12-19 13:12:08,796 ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspace
+javax.naming.NameNotFoundException: Name [jdbc/dspace] is not bound in this Context. Unable to find [jdbc].
+        at org.apache.naming.NamingContext.lookup(NamingContext.java:825)
+        at org.apache.naming.NamingContext.lookup(NamingContext.java:173)
+        at org.dspace.storage.rdbms.DatabaseManager.initDataSource(DatabaseManager.java:1414)
+        at org.dspace.storage.rdbms.DatabaseManager.initialize(DatabaseManager.java:1331)
+        at org.dspace.storage.rdbms.DatabaseManager.getDataSource(DatabaseManager.java:648)
+        at org.dspace.storage.rdbms.DatabaseManager.getConnection(DatabaseManager.java:627)
+        at org.dspace.core.Context.init(Context.java:121)
+        at org.dspace.core.Context.&lt;init&gt;(Context.java:95)
+        at org.dspace.app.util.AbstractDSpaceWebapp.register(AbstractDSpaceWebapp.java:79)
+        at org.dspace.app.util.DSpaceContextListener.contextInitialized(DSpaceContextListener.java:128)
+        at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:5110)
+        at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5633)
+        at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:145)
+        at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:1015)
+        at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:991)
+        at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:652)
+        at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:712)
+        at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:2002)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+2017-12-19 13:12:08,798 INFO  org.dspace.storage.rdbms.DatabaseManager @ Unable to locate JNDI dataSource: jdbc/dspace
+2017-12-19 13:12:08,798 INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Database pool
+</code></pre>
+
+<ul>
+<li>And indeed the Catalina logs show that it failed to set up the JDBC driver:</li>
+</ul>
+
+<pre><code>org.apache.tomcat.dbcp.dbcp.SQLNestedException: Cannot load JDBC driver class 'org.postgresql.Driver'
+</code></pre>
+
+<ul>
+<li>There are several copies of the PostgreSQL driver installed by DSpace:</li>
+</ul>
+
+<pre><code>$ find ~/dspace/ -iname &quot;postgresql*jdbc*.jar&quot;
+/Users/aorth/dspace/webapps/jspui/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
+/Users/aorth/dspace/webapps/oai/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
+/Users/aorth/dspace/webapps/xmlui/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
+/Users/aorth/dspace/webapps/rest/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
+/Users/aorth/dspace/lib/postgresql-9.1-901-1.jdbc4.jar
+</code></pre>
+
+<ul>
+<li>These apparently come from the main DSpace <code>pom.xml</code>:</li>
+</ul>
+
+<pre><code>&lt;dependency&gt;
+   &lt;groupId&gt;postgresql&lt;/groupId&gt;
+   &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+   &lt;version&gt;9.1-901-1.jdbc4&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<ul>
+<li>So WTF? Let&rsquo;s try copying one to Tomcat&rsquo;s lib folder and restarting Tomcat:</li>
+</ul>
+
+<pre><code>$ cp ~/dspace/lib/postgresql-9.1-901-1.jdbc4.jar /usr/local/opt/tomcat@7/libexec/lib
+</code></pre>
+
+<ul>
+<li>Oh that&rsquo;s fantastic, now at least Tomcat doesn&rsquo;t print an error during startup so I guess it succeeds to create the JNDI pool</li>
+<li>DSpace starts up but I have no idea if it&rsquo;s using the JNDI configuration because I see this in the logs:</li>
+</ul>
+
+<pre><code>2017-12-19 13:26:54,271 INFO  org.dspace.storage.rdbms.DatabaseManager @ DBMS is '{}'PostgreSQL
+2017-12-19 13:26:54,277 INFO  org.dspace.storage.rdbms.DatabaseManager @ DBMS driver version is '{}'9.5.10
+2017-12-19 13:26:54,293 INFO  org.dspace.storage.rdbms.DatabaseUtils @ Loading Flyway DB migrations from: filesystem:/Users/aorth/dspace/etc/postgres, classpath:org.dspace.storage.rdbms.sqlmigration.postgres, classpath:org.dspace.storage.rdbms.migration
+2017-12-19 13:26:54,306 INFO  org.flywaydb.core.internal.dbsupport.DbSupportFactory @ Database: jdbc:postgresql://localhost:5432/dspacetest (PostgreSQL 9.5)
+</code></pre>
+
+<ul>
+<li>Let&rsquo;s try again, but this  time explicitly blank the PostgreSQL connection parameters in dspace.cfg and see if DSpace starts&hellip;</li>
+<li>Wow, ok, that works, but having to copy the PostgreSQL JDBC JAR to Tomcat&rsquo;s lib folder totally blows</li>
+<li>Also, it&rsquo;s likely this is only a problem on my local macOS + Tomcat test environment</li>
+<li>Ubuntu&rsquo;s Tomcat distribution will probably handle this differently</li>
+<li>So for reference I have:
+
+<ul>
+<li>a <code>&lt;Resource&gt;</code> defined globally in server.xml</li>
+<li>a <code>&lt;ResourceLink&gt;</code> defined in each web application&rsquo;s context XML</li>
+<li>unset the <code>db.url</code>, <code>db.username</code>, and <code>db.password</code> parameters in dspace.cfg</li>
+<li>set the <code>db.jndi</code> in dspace.cfg to the name specified in the web application context</li>
+</ul></li>
 </ul>
 
   
