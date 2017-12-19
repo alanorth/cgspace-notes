@@ -23,7 +23,7 @@ The list of connections to XMLUI and REST API for today:
 
 <meta property="article:published_time" content="2017-12-01T13:53:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2017-12-18T17:03:58&#43;02:00"/>
+<meta property="article:modified_time" content="2017-12-18T22:07:13&#43;02:00"/>
 
 
 
@@ -56,9 +56,9 @@ The list of connections to XMLUI and REST API for today:
   "@type": "BlogPosting",
   "headline": "December, 2017",
   "url": "https://alanorth.github.io/cgspace-notes/2017-12/",
-  "wordCount": "2244",
+  "wordCount": "2374",
   "datePublished": "2017-12-01T13:53:54&#43;03:00",
-  "dateModified": "2017-12-18T17:03:58&#43;02:00",
+  "dateModified": "2017-12-18T22:07:13&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -559,6 +559,24 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 
 <ul>
 <li>The PostgreSQL issues are getting out of control, I need to figure out how to enable connection pools in Tomcat!</li>
+</ul>
+
+<h2 id="2017-12-19">2017-12-19</h2>
+
+<ul>
+<li>Briefly had PostgreSQL connection issues on CGSpace for the millionth time</li>
+<li>I&rsquo;m fucking sick of this!</li>
+<li>The connection graph on CGSpace shows shit tons of connections idle</li>
+</ul>
+
+<p><img src="/cgspace-notes/2017/12/postgres-connections-month-cgspace-2.png" alt="Idle PostgreSQL connections on CGSpace" /></p>
+
+<ul>
+<li>And I only now just realized that DSpace&rsquo;s <code>db.maxidle</code> parameter is not seconds, but number of idle connections to allow.</li>
+<li>So theoretically, because each webapp has its own pool, this could be 20 per app—so no wonder we have 50 idle connections!</li>
+<li>I notice that this number will be set to 10 by default in DSpace 6.1 and 7.0: <a href="https://jira.duraspace.org/browse/DS-3564">https://jira.duraspace.org/browse/DS-3564</a></li>
+<li>So I&rsquo;m going to reduce ours from 20 to 10 and start trying to figure out how the hell to supply a database pool using Tomcat JNDI</li>
+<li>I re-deployed the <code>5_x-prod</code> branch on CGSpace, applied all system updates, and restarted the server</li>
 </ul>
 
   
