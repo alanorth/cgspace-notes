@@ -22,7 +22,18 @@
 &lt;ul&gt;
 &lt;li&gt;Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time&lt;/li&gt;
 &lt;li&gt;I didn&amp;rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&amp;rsquo;t show anything out of the ordinary&lt;/li&gt;
-&lt;li&gt;So I don&amp;rsquo;t know WHY Uptime Robot thought it was down so many times&lt;/li&gt;
+&lt;li&gt;The nginx logs show HTTP 200s until &lt;code&gt;02/Jan/2018:11:27:17 +0000&lt;/code&gt; when Uptime Robot got an HTTP 500&lt;/li&gt;
+&lt;li&gt;In dspace.log around that time I see many errors like &amp;ldquo;Client closed the connection before file download was complete&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;And just before that I see this:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Ah hah! So the pool was actually empty!&lt;/li&gt;
+&lt;li&gt;I need to increase that, let&amp;rsquo;s try to bump it up from 50 to 75&lt;/li&gt;
+&lt;li&gt;After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&amp;rsquo;t know what the hell Uptime Robot saw&lt;/li&gt;
 &lt;li&gt;I notice this error quite a few times in dspace.log:&lt;/li&gt;
 &lt;/ul&gt;
 

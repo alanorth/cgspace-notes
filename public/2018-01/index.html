@@ -11,7 +11,18 @@
 
 Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time
 I didn&rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&rsquo;t show anything out of the ordinary
-So I don&rsquo;t know WHY Uptime Robot thought it was down so many times
+The nginx logs show HTTP 200s until 02/Jan/2018:11:27:17 &#43;0000 when Uptime Robot got an HTTP 500
+In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;
+And just before that I see this:
+
+
+Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+
+
+
+Ah hah! So the pool was actually empty!
+I need to increase that, let&rsquo;s try to bump it up from 50 to 75
+After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw
 I notice this error quite a few times in dspace.log:
 
 
@@ -81,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-02T08:35:54-08:00"/>
+<meta property="article:modified_time" content="2018-01-02T08:52:14-08:00"/>
 
 
 
@@ -99,7 +110,18 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time
 I didn&rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&rsquo;t show anything out of the ordinary
-So I don&rsquo;t know WHY Uptime Robot thought it was down so many times
+The nginx logs show HTTP 200s until 02/Jan/2018:11:27:17 &#43;0000 when Uptime Robot got an HTTP 500
+In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;
+And just before that I see this:
+
+
+Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+
+
+
+Ah hah! So the pool was actually empty!
+I need to increase that, let&rsquo;s try to bump it up from 50 to 75
+After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw
 I notice this error quite a few times in dspace.log:
 
 
@@ -172,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "186",
+  "wordCount": "282",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-02T08:35:54-08:00",
+  "dateModified": "2018-01-02T08:52:14-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -242,7 +264,18 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 <ul>
 <li>Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time</li>
 <li>I didn&rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&rsquo;t show anything out of the ordinary</li>
-<li>So I don&rsquo;t know WHY Uptime Robot thought it was down so many times</li>
+<li>The nginx logs show HTTP 200s until <code>02/Jan/2018:11:27:17 +0000</code> when Uptime Robot got an HTTP 500</li>
+<li>In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;</li>
+<li>And just before that I see this:</li>
+</ul>
+
+<pre><code>Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+</code></pre>
+
+<ul>
+<li>Ah hah! So the pool was actually empty!</li>
+<li>I need to increase that, let&rsquo;s try to bump it up from 50 to 75</li>
+<li>After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw</li>
 <li>I notice this error quite a few times in dspace.log:</li>
 </ul>
 
