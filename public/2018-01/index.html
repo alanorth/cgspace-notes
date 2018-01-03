@@ -184,7 +184,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 
 "/>
-<meta name="generator" content="Hugo 0.32.1" />
+<meta name="generator" content="Hugo 0.32.2" />
 
 
     
@@ -194,7 +194,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "282",
+  "wordCount": "731",
   "datePublished": "2018-01-02T08:35:54-08:00",
   "dateModified": "2018-01-02T09:30:34-08:00",
   "author": {
@@ -338,6 +338,122 @@ dspace.log.2018-01-02:34
 </ul>
 
 <p></p>
+
+<h2 id="2018-01-03">2018-01-03</h2>
+
+<ul>
+<li>I woke up to more up and down of CGSpace, this time UptimeRobot noticed a few rounds of up and down of a few minutes each and Linode also notified of high CPU load from 12 to 2 PM</li>
+<li>Looks like I need to increase the database pool size again:</li>
+</ul>
+
+<pre><code>$ grep -c &quot;Timeout: Pool empty.&quot; dspace.log.2018-01-*
+dspace.log.2018-01-01:0
+dspace.log.2018-01-02:1972
+dspace.log.2018-01-03:1909
+</code></pre>
+
+<ul>
+<li>For some reason there were a lot of &ldquo;active&rdquo; connections last night:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/01/postgres_connections-day.png" alt="CGSpace PostgreSQL connections" /></p>
+
+<ul>
+<li>The active IPs in XMLUI are:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;3/Jan/2018&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    607 40.77.167.141
+    611 2a00:23c3:8c94:7800:392c:a491:e796:9c50
+    663 188.226.169.37
+    759 157.55.39.245
+    887 68.180.229.254
+   1037 157.55.39.175
+   1068 216.244.66.245
+   1495 66.249.64.91
+   1934 104.196.152.243
+   2219 134.155.96.78
+</code></pre>
+
+<ul>
+<li>134.155.96.78 appears to be at the University of Mannheim in Germany</li>
+<li>They identify as: Mozilla/5.0 (compatible; heritrix/3.2.0 +<a href="http://ifm.uni-mannheim.de">http://ifm.uni-mannheim.de</a>)</li>
+<li>This appears to be the <a href="https://github.com/internetarchive/heritrix3">Internet Archive&rsquo;s open source bot</a></li>
+<li>They seem to be re-using their Tomcat session so I don&rsquo;t need to do anything to them just yet:</li>
+</ul>
+
+<pre><code>$ grep 134.155.96.78 dspace.log.2018-01-03 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+2
+</code></pre>
+
+<ul>
+<li>The API logs show the normal users:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;3/Jan/2018&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+     32 207.46.13.182
+     38 40.77.167.132
+     38 68.180.229.254
+     43 66.249.64.91
+     46 40.77.167.141
+     49 157.55.39.245
+     79 157.55.39.175
+   1533 50.116.102.77
+   4069 70.32.83.92
+   9355 45.5.184.196
+</code></pre>
+
+<ul>
+<li>In other related news I see a sizeable amount of requests coming from python-requests</li>
+<li>For example, just in the last day there were 1700!</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -c python-requests
+1773
+</code></pre>
+
+<ul>
+<li>But they come from hundreds of IPs, many of which are 54.x.x.x:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep python-requests | awk '{print $1}' | sort -n | uniq -c | sort -h | tail -n 30
+      9 54.144.87.92
+      9 54.146.222.143
+      9 54.146.249.249
+      9 54.158.139.206
+      9 54.161.235.224
+      9 54.163.41.19
+      9 54.163.4.51
+      9 54.196.195.107
+      9 54.198.89.134
+      9 54.80.158.113
+     10 54.198.171.98
+     10 54.224.53.185
+     10 54.226.55.207
+     10 54.227.8.195
+     10 54.242.234.189
+     10 54.242.238.209
+     10 54.80.100.66
+     11 54.161.243.121
+     11 54.205.154.178
+     11 54.234.225.84
+     11 54.87.23.173
+     11 54.90.206.30
+     12 54.196.127.62
+     12 54.224.242.208
+     12 54.226.199.163
+     13 54.162.149.249
+     13 54.211.182.255
+     19 50.17.61.150
+     21 54.211.119.107
+    139 164.39.7.62
+</code></pre>
+
+<ul>
+<li>I have no idea what these are but they seem to be coming from Amazon&hellip;</li>
+<li>I guess for now I just have to increase the database connection pool&rsquo;s max active</li>
+<li>It&rsquo;s currently 75 and normally I&rsquo;d just bump it by 25 but let me be a bit daring and push it by 50 to 125, because I used to see at least 121 connections in pg_stat_activity before when we were using the shitty default pooling</li>
+</ul>
 
   
 
