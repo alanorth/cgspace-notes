@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-02T09:30:34-08:00"/>
+<meta property="article:modified_time" content="2018-01-03T07:49:38-08:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "731",
+  "wordCount": "919",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-02T09:30:34-08:00",
+  "dateModified": "2018-01-03T07:49:38-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -453,6 +453,50 @@ dspace.log.2018-01-03:1909
 <li>I have no idea what these are but they seem to be coming from Amazon&hellip;</li>
 <li>I guess for now I just have to increase the database connection pool&rsquo;s max active</li>
 <li>It&rsquo;s currently 75 and normally I&rsquo;d just bump it by 25 but let me be a bit daring and push it by 50 to 125, because I used to see at least 121 connections in pg_stat_activity before when we were using the shitty default pooling</li>
+</ul>
+
+<h2 id="2018-01-04">2018-01-04</h2>
+
+<ul>
+<li>CGSpace went down and up a bunch of times last night and ILRI staff were complaining a lot last night</li>
+<li>The XMLUI logs show this activity:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;4/Jan/2018&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    968 197.211.63.81
+    981 213.55.99.121
+   1039 66.249.64.93
+   1258 157.55.39.175
+   1273 207.46.13.182
+   1311 157.55.39.191
+   1319 157.55.39.197
+   1775 66.249.64.78
+   2216 104.196.152.243
+   3366 66.249.64.91
+</code></pre>
+
+<ul>
+<li>Again we ran out of PostgreSQL database connections, even after bumping the pool max active limit from 50 to 75 to 125 yesterday!</li>
+</ul>
+
+<pre><code>2018-01-04 07:36:08,089 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-256] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:125; busy:125; idle:0; lastwait:5000].
+</code></pre>
+
+<ul>
+<li>So for this week that is the number one problem!</li>
+</ul>
+
+<pre><code>$ grep -c &quot;Timeout: Pool empty.&quot; dspace.log.2018-01-*
+dspace.log.2018-01-01:0
+dspace.log.2018-01-02:1972
+dspace.log.2018-01-03:1909
+dspace.log.2018-01-04:1559
+</code></pre>
+
+<ul>
+<li>I will just bump the connection limit to 300 because I&rsquo;m fucking fed up with this shit</li>
+<li>Once I get back to Amman I will have to try to create different database pools for different web applications, like recently discussed on the dspace-tech mailing list</li>
 </ul>
 
   
