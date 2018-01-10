@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-09T10:02:52&#43;01:00"/>
+<meta property="article:modified_time" content="2018-01-10T09:39:16&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "1602",
+  "wordCount": "2043",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-09T10:02:52&#43;01:00",
+  "dateModified": "2018-01-10T09:39:16&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -657,6 +657,92 @@ $ http 'http://localhost:3000/solr/statistics/select?q=-owningColl%3A*&amp;wt=js
 </code></pre>
 
 <ul>
+<li>I tested the <code>dspace stats-util -s</code> process on my local machine and it failed the same way</li>
+<li>It doesn&rsquo;t seem to be helpful, but the dspace log shows this:</li>
+</ul>
+
+<pre><code>2018-01-10 10:51:19,301 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2016
+2018-01-10 10:51:19,301 INFO  org.dspace.statistics.SolrLogger @ Moving: 3821 records into core statistics-2016
+</code></pre>
+
+<ul>
+<li>Terry Brady has written some notes on the DSpace Wiki about Solr sharing issues: <a href="https://wiki.duraspace.org/display/%7Eterrywbrady/Statistics+Import+Export+Issues">https://wiki.duraspace.org/display/%7Eterrywbrady/Statistics+Import+Export+Issues</a></li>
+<li>Uptime Robot said that CGSpace went down at around 9:43 AM</li>
+<li>I looked at PostgreSQL&rsquo;s <code>pg_stat_activity</code> table and saw 161 active connections, but no pool errors in the DSpace logs:</li>
+</ul>
+
+<pre><code>$ grep -c &quot;Timeout: Pool empty.&quot; dspace.log.2018-01-10 
+0
+</code></pre>
+
+<ul>
+<li>The XMLUI logs show quite a bit of activity today:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep &quot;10/Jan/2018&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+    951 207.46.13.159
+    954 157.55.39.123
+   1217 95.108.181.88
+   1503 104.196.152.243
+   6455 70.36.107.50
+  11412 70.36.107.190
+  16730 70.36.107.49
+  17386 2607:fa98:40:9:26b6:fdff:feff:1c96
+  21566 2607:fa98:40:9:26b6:fdff:feff:195d
+  45384 2607:fa98:40:9:26b6:fdff:feff:1888
+</code></pre>
+
+<ul>
+<li>The user agent for the top six or so IPs are all the same:</li>
+</ul>
+
+<pre><code>&quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36&quot;
+</code></pre>
+
+<ul>
+<li><code>whois</code> says they come from <a href="http://www.perfectip.net/">Perfect IP</a></li>
+<li>I&rsquo;ve never seen those top IPs before, but they have created 50,000 Tomcat sessions today:</li>
+</ul>
+
+<pre><code>$ grep -E '(2607:fa98:40:9:26b6:fdff:feff:1888|2607:fa98:40:9:26b6:fdff:feff:195d|2607:fa98:40:9:26b6:fdff:feff:1c96|70.36.107.49|70.36.107.190|70.36.107.50)' /home/cgspace.cgiar.org/log/dspace.log.2018-01-10 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l                                                                                                                                                                                                  
+49096
+</code></pre>
+
+<ul>
+<li>Rather than blocking their IPs, I think I might just add their user agent to the &ldquo;badbots&rdquo; zone with Baidu, because they seem to be the only ones using that user agent:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari
+/537.36&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+   6796 70.36.107.50
+  11870 70.36.107.190
+  17323 70.36.107.49
+  19204 2607:fa98:40:9:26b6:fdff:feff:1c96
+  23401 2607:fa98:40:9:26b6:fdff:feff:195d 
+  47875 2607:fa98:40:9:26b6:fdff:feff:1888
+</code></pre>
+
+<ul>
+<li>I added the user agent to nginx&rsquo;s badbots limit req zone but upon testing the config I got an error:</li>
+</ul>
+
+<pre><code># nginx -t
+nginx: [emerg] could not build map_hash, you should increase map_hash_bucket_size: 64
+nginx: configuration file /etc/nginx/nginx.conf test failed
+</code></pre>
+
+<ul>
+<li>According to nginx docs the <a href="https://nginx.org/en/docs/hash.html">bucket size should be a multiple of the CPU&rsquo;s cache alignment</a>, which is 64 for us:</li>
+</ul>
+
+<pre><code># cat /proc/cpuinfo | grep cache_alignment | head -n1
+cache_alignment : 64
+</code></pre>
+
+<ul>
+<li>On our servers that is 64, so I increased this parameter to 128 and deployed the changes to nginx</li>
+<li>Almost immediately the PostgreSQL connections dropped back down to 40 or so, and UptimeRobot said the site was back up</li>
+<li>So that&rsquo;s interesting that we&rsquo;re not out of PostgreSQL connections (current pool maxActive is 300!) but the system is &ldquo;down&rdquo; to UptimeRobot and very slow to use</li>
 <li>Linode continues to test mitigations for Meltdown and Spectre: <a href="https://blog.linode.com/2018/01/03/cpu-vulnerabilities-meltdown-spectre/">https://blog.linode.com/2018/01/03/cpu-vulnerabilities-meltdown-spectre/</a></li>
 <li>I rebooted DSpace Test to see if the kernel will be updated (currently Linux 4.14.12-x86_64-linode92)&hellip; nope.</li>
 <li>It looks like Linode will reboot the KVM hosts later this week, though</li>
