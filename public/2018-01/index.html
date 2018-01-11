@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-10T13:15:13&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-11T08:36:59&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "2123",
+  "wordCount": "2324",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-10T13:15:13&#43;02:00",
+  "dateModified": "2018-01-11T08:36:59&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -762,7 +762,32 @@ cache_alignment : 64
 
 <ul>
 <li>Linode rebooted DSpace Test and CGSpace for their host hypervisor kernel updates</li>
+<li>Following up with the Solr sharding issue on the dspace-tech mailing list, I noticed this interesting snippet in the Tomcat <code>localhost_access_log</code> at the time of my sharding attempt on my test machine:</li>
 </ul>
+
+<pre><code>127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 107
+127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;GET /solr/statistics/select?q=*%3A*&amp;rows=0&amp;facet=true&amp;facet.range=time&amp;facet.range.start=NOW%2FYEAR-18YEARS&amp;facet.range.end=NOW%2FYEAR%2B0YEARS&amp;facet.range.gap=%2B1YEAR&amp;facet.mincount=1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 447
+127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;GET /solr/admin/cores?action=STATUS&amp;core=statistics-2016&amp;indexInfo=true&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 76
+127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;GET /solr/admin/cores?action=CREATE&amp;name=statistics-2016&amp;instanceDir=statistics&amp;dataDir=%2FUsers%2Faorth%2Fdspace%2Fsolr%2Fstatistics-2016%2Fdata&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 63
+127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;GET /solr/statistics/select?csv.mv.separator=%7C&amp;q=*%3A*&amp;fq=time%3A%28%5B2016%5C-01%5C-01T00%5C%3A00%5C%3A00Z+TO+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%5D+NOT+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%29&amp;rows=10000&amp;wt=csv HTTP/1.1&quot; 200 2137630
+127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;GET /solr/statistics/admin/luke?show=schema&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 16253
+127.0.0.1 - - [10/Jan/2018:10:51:19 +0200] &quot;POST /solr//statistics-2016/update/csv?commit=true&amp;softCommit=false&amp;waitSearcher=true&amp;f.previousWorkflowStep.split=true&amp;f.previousWorkflowStep.separator=%7C&amp;f.previousWorkflowStep.encapsulator=%22&amp;f.actingGroupId.split=true&amp;f.actingGroupId.separator=%7C&amp;f.actingGroupId.encapsulator=%22&amp;f.containerCommunity.split=true&amp;f.containerCommunity.separator=%7C&amp;f.containerCommunity.encapsulator=%22&amp;f.range.split=true&amp;f.range.separator=%7C&amp;f.range.encapsulator=%22&amp;f.containerItem.split=true&amp;f.containerItem.separator=%7C&amp;f.containerItem.encapsulator=%22&amp;f.p_communities_map.split=true&amp;f.p_communities_map.separator=%7C&amp;f.p_communities_map.encapsulator=%22&amp;f.ngram_query_search.split=true&amp;f.ngram_query_search.separator=%7C&amp;f.ngram_query_search.encapsulator=%22&amp;f.containerBitstream.split=true&amp;f.containerBitstream.separator=%7C&amp;f.containerBitstream.encapsulator=%22&amp;f.owningItem.split=true&amp;f.owningItem.separator=%7C&amp;f.owningItem.encapsulator=%22&amp;f.actingGroupParentId.split=true&amp;f.actingGroupParentId.separator=%7C&amp;f.actingGroupParentId.encapsulator=%22&amp;f.text.split=true&amp;f.text.separator=%7C&amp;f.text.encapsulator=%22&amp;f.simple_query_search.split=true&amp;f.simple_query_search.separator=%7C&amp;f.simple_query_search.encapsulator=%22&amp;f.owningComm.split=true&amp;f.owningComm.separator=%7C&amp;f.owningComm.encapsulator=%22&amp;f.owner.split=true&amp;f.owner.separator=%7C&amp;f.owner.encapsulator=%22&amp;f.filterquery.split=true&amp;f.filterquery.separator=%7C&amp;f.filterquery.encapsulator=%22&amp;f.p_group_map.split=true&amp;f.p_group_map.separator=%7C&amp;f.p_group_map.encapsulator=%22&amp;f.actorMemberGroupId.split=true&amp;f.actorMemberGroupId.separator=%7C&amp;f.actorMemberGroupId.encapsulator=%22&amp;f.bitstreamId.split=true&amp;f.bitstreamId.separator=%7C&amp;f.bitstreamId.encapsulator=%22&amp;f.group_name.split=true&amp;f.group_name.separator=%7C&amp;f.group_name.encapsulator=%22&amp;f.p_communities_name.split=true&amp;f.p_communities_name.separator=%7C&amp;f.p_communities_name.encapsulator=%22&amp;f.query.split=true&amp;f.query.separator=%7C&amp;f.query.encapsulator=%22&amp;f.workflowStep.split=true&amp;f.workflowStep.separator=%7C&amp;f.workflowStep.encapsulator=%22&amp;f.containerCollection.split=true&amp;f.containerCollection.separator=%7C&amp;f.containerCollection.encapsulator=%22&amp;f.complete_query_search.split=true&amp;f.complete_query_search.separator=%7C&amp;f.complete_query_search.encapsulator=%22&amp;f.p_communities_id.split=true&amp;f.p_communities_id.separator=%7C&amp;f.p_communities_id.encapsulator=%22&amp;f.rangeDescription.split=true&amp;f.rangeDescription.separator=%7C&amp;f.rangeDescription.encapsulator=%22&amp;f.group_id.split=true&amp;f.group_id.separator=%7C&amp;f.group_id.encapsulator=%22&amp;f.bundleName.split=true&amp;f.bundleName.separator=%7C&amp;f.bundleName.encapsulator=%22&amp;f.ngram_simplequery_search.split=true&amp;f.ngram_simplequery_search.separator=%7C&amp;f.ngram_simplequery_search.encapsulator=%22&amp;f.group_map.split=true&amp;f.group_map.separator=%7C&amp;f.group_map.encapsulator=%22&amp;f.owningColl.split=true&amp;f.owningColl.separator=%7C&amp;f.owningColl.encapsulator=%22&amp;f.p_group_id.split=true&amp;f.p_group_id.separator=%7C&amp;f.p_group_id.encapsulator=%22&amp;f.p_group_name.split=true&amp;f.p_group_name.separator=%7C&amp;f.p_group_name.encapsulator=%22&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 409 156
+</code></pre>
+
+<ul>
+<li>The new core is created but when DSpace attempts to POST to it there is an HTTP 409 error</li>
+<li>This is apparently a common Solr error code that means &ldquo;version conflict&rdquo;: <a href="http://yonik.com/solr/optimistic-concurrency/">http://yonik.com/solr/optimistic-concurrency/</a></li>
+<li>Looks like that bot from the PerfectIP.net host ended up making about 450,000 requests to XMLUI alone yesterday:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36&quot; | grep &quot;10/Jan/2018&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+  21572 70.36.107.50
+  30722 70.36.107.190
+  34566 70.36.107.49
+ 101829 2607:fa98:40:9:26b6:fdff:feff:195d
+ 111535 2607:fa98:40:9:26b6:fdff:feff:1c96
+ 161797 2607:fa98:40:9:26b6:fdff:feff:1888
+</code></pre>
 
   
 
