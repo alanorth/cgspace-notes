@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-11T08:36:59&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-11T10:42:35&#43;02:00"/>
 
 
 
@@ -184,7 +184,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 
 "/>
-<meta name="generator" content="Hugo 0.32.3" />
+<meta name="generator" content="Hugo 0.32.4" />
 
 
     
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "2324",
+  "wordCount": "2467",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-11T08:36:59&#43;02:00",
+  "dateModified": "2018-01-11T10:42:35&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -788,6 +788,38 @@ cache_alignment : 64
  111535 2607:fa98:40:9:26b6:fdff:feff:1c96
  161797 2607:fa98:40:9:26b6:fdff:feff:1888
 </code></pre>
+
+<ul>
+<li>Wow, I just figured out how to set the application name of each database pool in the JNDI config of Tomcat&rsquo;s <code>server.xml</code>:</li>
+</ul>
+
+<pre><code>&lt;Resource name=&quot;jdbc/dspaceWeb&quot; auth=&quot;Container&quot; type=&quot;javax.sql.DataSource&quot;
+          driverClassName=&quot;org.postgresql.Driver&quot;
+          url=&quot;jdbc:postgresql://localhost:5432/dspacetest?ApplicationName=dspaceWeb&quot;
+          username=&quot;dspace&quot;
+          password=&quot;dspace&quot;
+          initialSize='5'
+          maxActive='75'
+          maxIdle='15'
+          minIdle='5'
+          maxWait='5000'
+          validationQuery='SELECT 1'
+          testOnBorrow='true' /&gt;
+</code></pre>
+
+<ul>
+<li>So theoretically I could name each connection &ldquo;xmlui&rdquo; or &ldquo;dspaceWeb&rdquo; or something meaningful and it would show up in PostgreSQL&rsquo;s <code>pg_stat_activity</code> table!</li>
+<li>This would be super helpful for figuring out where load was coming from (now I wonder if I could figure out how to graph this)</li>
+<li>Also, I realized that the <code>db.jndi</code> parameter in dspace.cfg needs to match the <code>name</code> value in your applicaiton&rsquo;s context—not the <code>global</code> one</li>
+<li>Ah hah! Also, I can name the default DSpace connection pool in dspace.cfg as well, like:</li>
+</ul>
+
+<pre><code>db.url = jdbc:postgresql://localhost:5432/dspacetest?ApplicationName=dspaceDefault
+</code></pre>
+
+<ul>
+<li>With that it is super easy to see where PostgreSQL connections are coming from in <code>pg_stat_activity</code></li>
+</ul>
 
   
 
