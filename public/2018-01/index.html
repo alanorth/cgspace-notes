@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-11T10:42:35&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-12T06:07:03&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "2467",
+  "wordCount": "2630",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-11T10:42:35&#43;02:00",
+  "dateModified": "2018-01-12T06:07:03&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -819,6 +819,40 @@ cache_alignment : 64
 
 <ul>
 <li>With that it is super easy to see where PostgreSQL connections are coming from in <code>pg_stat_activity</code></li>
+</ul>
+
+<h2 id="2018-01-12">2018-01-12</h2>
+
+<ul>
+<li>I&rsquo;m looking at the <a href="https://wiki.duraspace.org/display/DSDOC6x/Installing+DSpace#InstallingDSpace-ServletEngine(ApacheTomcat7orlater,Jetty,CauchoResinorequivalent)">DSpace 6.0 Install docs</a> and notice they tweak the number of threads in their Tomcat connector:</li>
+</ul>
+
+<pre><code>&lt;!-- Define a non-SSL HTTP/1.1 Connector on port 8080 --&gt;
+&lt;Connector port=&quot;8080&quot;
+           maxThreads=&quot;150&quot;
+           minSpareThreads=&quot;25&quot;
+           maxSpareThreads=&quot;75&quot;
+           enableLookups=&quot;false&quot;
+           redirectPort=&quot;8443&quot;
+           acceptCount=&quot;100&quot;
+           connectionTimeout=&quot;20000&quot;
+           disableUploadTimeout=&quot;true&quot;
+           URIEncoding=&quot;UTF-8&quot;/&gt;
+</code></pre>
+
+<ul>
+<li>In Tomcat 8.5 the <code>maxThreads</code> defaults to 200 which is probably fine, but tweaking <code>minSpareThreads</code> could be good</li>
+<li>I don&rsquo;t see a setting for <code>maxSpareThreads</code> in the docs so that might be an error</li>
+<li>Looks like in Tomcat 8.5 the default URIEncoding for Connectors is UTF-8, so we don&rsquo;t need to specify that manually anymore: <a href="https://tomcat.apache.org/tomcat-8.5-doc/config/http.html">https://tomcat.apache.org/tomcat-8.5-doc/config/http.html</a></li>
+<li></li>
+<li>Ooh, I just the <code>acceptorThreadCount</code> setting (in Tomcat 7 and 8.5):</li>
+</ul>
+
+<pre><code>The number of threads to be used to accept connections. Increase this value on a multi CPU machine, although you would never really need more than 2. Also, with a lot of non keep alive connections, you might want to increase this value as well. Default value is 1.
+</code></pre>
+
+<ul>
+<li>That could be very interesting</li>
 </ul>
 
   
