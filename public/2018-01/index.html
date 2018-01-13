@@ -194,7 +194,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "2630",
+  "wordCount": "2965",
   "datePublished": "2018-01-02T08:35:54-08:00",
   "dateModified": "2018-01-12T07:55:01&#43;02:00",
   "author": {
@@ -858,6 +858,57 @@ cache_alignment : 64
 
 <ul>
 <li>That could be very interesting</li>
+</ul>
+
+<h2 id="2018-01-13">2018-01-13</h2>
+
+<ul>
+<li>Still testing DSpace 6.2 on Tomcat 8.5.24</li>
+<li>Catalina errors at Tomcat 8.5 startup:</li>
+</ul>
+
+<pre><code>13-Jan-2018 13:59:05.245 WARNING [main] org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory.getObjectInstance Name = dspace6 Property maxActive is not used in DBCP2, use maxTotal instead. maxTotal default value is 8. You have set value of &quot;35&quot; for &quot;maxActive&quot; property, which is being ignored.
+13-Jan-2018 13:59:05.245 WARNING [main] org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory.getObjectInstance Name = dspace6 Property maxWait is not used in DBCP2 , use maxWaitMillis instead. maxWaitMillis default value is -1. You have set value of &quot;5000&quot; for &quot;maxWait&quot; property, which is being ignored.
+</code></pre>
+
+<ul>
+<li>I looked in my Tomcat 7.0.82 logs and I don&rsquo;t see anything about DBCP2 errors, so I guess this a Tomcat 8.0.x or 8.5.x thing</li>
+<li>DBCP2 appears to be Tomcat 8.0.x and up according to the <a href="https://tomcat.apache.org/migration-8.html">Tomcat 8.0 migration guide</a></li>
+<li>I have updated our <a href="https://github.com/ilri/rmg-ansible-public/commit/246f9d7b06d53794f189f0cc57ad5ddd80f0b014">Ansible infrastructure scripts</a> so that it will be ready whenever we switch to Tomcat 8 (probably with Ubuntu 18.04 later this year)</li>
+<li>When I enable the ResourceLink in the ROOT.xml context I get the following error in the Tomcat localhost log:</li>
+</ul>
+
+<pre><code>13-Jan-2018 14:14:36.017 SEVERE [localhost-startStop-1] org.apache.catalina.core.StandardContext.listenerStart Exception sending context initialized event to listener instance of class [org.dspace.app.util.DSpaceWebappListener]
+ java.lang.ExceptionInInitializerError
+        at org.dspace.app.util.AbstractDSpaceWebapp.register(AbstractDSpaceWebapp.java:74)
+        at org.dspace.app.util.DSpaceWebappListener.contextInitialized(DSpaceWebappListener.java:31)
+        at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4745)
+        at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5207)
+        at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+        at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:752)
+        at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:728)
+        at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:734)
+        at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:629)
+        at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1839)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.NullPointerException
+        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:547)
+        at org.dspace.core.Context.&lt;clinit&gt;(Context.java:103)
+        ... 15 more
+</code></pre>
+
+<ul>
+<li>Interesting blog post benchmarking Tomcat JDBC vs Apache Commons DBCP2, with configuration snippets: <a href="http://www.tugay.biz/2016/07/tomcat-connection-pool-vs-apache.html">http://www.tugay.biz/2016/07/tomcat-connection-pool-vs-apache.html</a></li>
+<li>The Tomcat vs Apache pool thing is confusing, but apparently we&rsquo;re using Apache Commons DBCP2 because we don&rsquo;t specify <code>factory=&quot;org.apache.tomcat.jdbc.pool.DataSourceFactory&quot;</code> in our global resource</li>
+<li>So at least I know that I&rsquo;m not looking for documentation or troubleshooting on the Tomcat JDBC pool!</li>
+<li>I looked at <code>pg_stat_activity</code> during Tomcat&rsquo;s startup and I see that the pool created in server.xml is indeed connecting, just that nothing uses it</li>
+<li>Also, the fallback connection parameters specified in local.cfg (not dspace.cfg) are used</li>
+<li>Shit, this might actually be a DSpace error: <a href="https://jira.duraspace.org/browse/DS-3434">https://jira.duraspace.org/browse/DS-3434</a></li>
+<li>I&rsquo;ll comment on that issue</li>
 </ul>
 
   
