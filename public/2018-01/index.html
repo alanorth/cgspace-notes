@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-12T07:55:01&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-13T18:04:45&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "2965",
+  "wordCount": "3592",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-12T07:55:01&#43;02:00",
+  "dateModified": "2018-01-13T18:04:45&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -909,6 +909,110 @@ Caused by: java.lang.NullPointerException
 <li>Also, the fallback connection parameters specified in local.cfg (not dspace.cfg) are used</li>
 <li>Shit, this might actually be a DSpace error: <a href="https://jira.duraspace.org/browse/DS-3434">https://jira.duraspace.org/browse/DS-3434</a></li>
 <li>I&rsquo;ll comment on that issue</li>
+</ul>
+
+<h2 id="2018-01-14">2018-01-14</h2>
+
+<ul>
+<li>Looking at the authors Peter had corrected</li>
+<li>Some had multiple and he&rsquo;s corrected them by adding <code>||</code> in the correction column, but I can&rsquo;t process those this way so I will just have to flag them and do those manually later</li>
+<li>Also, I can flag the values that have &ldquo;DELETE&rdquo;</li>
+<li>Then I need to facet the correction column on isBlank(value) and not flagged</li>
+</ul>
+
+<h2 id="2018-01-15">2018-01-15</h2>
+
+<ul>
+<li>Help Udana from IWMI export a CSV from DSpace Test so he can start trying a batch upload</li>
+<li>I&rsquo;m going to apply these ~130 corrections on CGSpace:</li>
+</ul>
+
+<pre><code>update metadatavalue set text_value='Formally Published' where resource_type_id=2 and metadata_field_id=214 and text_value like 'Formally published';
+delete from metadatavalue where resource_type_id=2 and metadata_field_id=214 and text_value like 'NO';
+update metadatavalue set text_value='en' where resource_type_id=2 and metadata_field_id=38 and text_value ~ '(En|English)';
+update metadatavalue set text_value='fr' where resource_type_id=2 and metadata_field_id=38 and text_value ~ '(fre|frn|French)';
+update metadatavalue set text_value='es' where resource_type_id=2 and metadata_field_id=38 and text_value ~ '(Spanish|spa)';
+update metadatavalue set text_value='vi' where resource_type_id=2 and metadata_field_id=38 and text_value='Vietnamese';
+update metadatavalue set text_value='ru' where resource_type_id=2 and metadata_field_id=38 and text_value='Ru';
+update metadatavalue set text_value='in' where resource_type_id=2 and metadata_field_id=38 and text_value ~ '(IN|In)';
+delete from metadatavalue where resource_type_id=2 and metadata_field_id=38 and text_value ~ '(dc.language.iso|CGIAR Challenge Program on Water and Food)';
+</code></pre>
+
+<ul>
+<li>Continue proofing Peter&rsquo;s author corrections that I started yesterday, faceting on non blank, non flagged, and briefly scrolling through the values of the corrections to find encoding errors for French and Spanish names</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/01/openrefine-authors.png" alt="OpenRefine Authors" /></p>
+
+<ul>
+<li>Apply corrections using <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a>:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-01-14-Authors-1300-Corrections.csv -f dc.contributor.author -t correct -m 3 -d dspace-u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>In looking at some of the values to delete or check I found some metadata values that I could not resolve their handle via SQL:</li>
+</ul>
+
+<pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value='Tarawali';
+ metadata_value_id | resource_id | metadata_field_id | text_value | text_lang | place | authority | confidence | resource_type_id
+-------------------+-------------+-------------------+------------+-----------+-------+-----------+------------+------------------
+           2757936 |        4369 |                 3 | Tarawali   |           |     9 |           |        600 |                2
+(1 row)
+
+dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = '4369';
+ handle
+--------
+(0 rows)
+</code></pre>
+
+<ul>
+<li>Even searching in the DSpace advanced search for author equals &ldquo;Tarawali&rdquo; produces nothing&hellip;</li>
+<li>Otherwise, the <a href="https://wiki.duraspace.org/display/DSPACE/Helper+SQL+functions+for+DSpace+5">DSpace 5 SQL Helper Functions</a> provide <code>ds5_item2itemhandle()</code>, which is much easier than my long query above that I always have to go search for</li>
+<li>For example, to find the Handle for an item that has the author &ldquo;Erni&rdquo;:</li>
+</ul>
+
+<pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value='Erni';
+ metadata_value_id | resource_id | metadata_field_id | text_value | text_lang | place |              authority               | confidence | resource_type_id 
+-------------------+-------------+-------------------+------------+-----------+-------+--------------------------------------+------------+------------------
+           2612150 |       70308 |                 3 | Erni       |           |     9 | 3fe10c68-6773-49a7-89cc-63eb508723f2 |         -1 |                2
+(1 row)
+dspace=# select ds5_item2itemhandle(70308);
+ ds5_item2itemhandle 
+---------------------
+ 10568/68609
+(1 row)
+</code></pre>
+
+<ul>
+<li>Next I apply the author deletions:</li>
+</ul>
+
+<pre><code>$ ./delete-metadata-values.py -i /tmp/2018-01-14-Authors-5-Deletions.csv -f dc.contributor.author -m 3 -d dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Now working on the affiliation corrections from Peter:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-01-15-Affiliations-888-Corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p 'fuuu'
+$ ./delete-metadata-values.py -i /tmp/2018-01-15-Affiliations-11-Deletions.csv -f cg.contributor.affiliation -m 211 -d dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Now I made a new list of affiliations for Peter to look through:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where metadata_schema_id = 2 and element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
+COPY 4552
+</code></pre>
+
+<ul>
+<li>Looking over the affiliations again I see dozens of CIAT ones with their affiliation formatted like: International Center for Tropical Agriculture (CIAT)</li>
+<li>For example, this one is from just last month: <a href="https://cgspace.cgiar.org/handle/10568/89930">https://cgspace.cgiar.org/handle/10568/89930</a></li>
+<li>Our controlled vocabulary has this in the format without the abbreviation: International Center for Tropical Agriculture</li>
+<li>So some submitters don&rsquo;t know to use the controlled vocabulary lookup</li>
 </ul>
 
   
