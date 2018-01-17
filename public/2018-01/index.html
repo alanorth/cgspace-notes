@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-17T14:05:55&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-17T18:25:47&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "4600",
+  "wordCount": "4710",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-17T14:05:55&#43;02:00",
+  "dateModified": "2018-01-17T18:25:47&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1194,6 +1194,35 @@ $ docker run --network dspace-build --name artifactory -d -v artifactory5_data:/
 <li>I didn&rsquo;t do anything but it came back up on its own</li>
 <li>I don&rsquo;t see anything unusual in the XMLUI or REST/OAI logs</li>
 <li>Now Linode alert says the CPU load is high, <em>sigh</em></li>
+<li>Regarding the heap space error earlier today, it looks like it does happen a few times a week or month (I&rsquo;m not sure how far these logs go back, as they are not strictly daily):</li>
+</ul>
+
+<pre><code># zgrep -c java.lang.OutOfMemoryError /var/log/tomcat7/catalina.out* | grep -v :0
+/var/log/tomcat7/catalina.out:2
+/var/log/tomcat7/catalina.out.10.gz:7
+/var/log/tomcat7/catalina.out.11.gz:1
+/var/log/tomcat7/catalina.out.12.gz:2
+/var/log/tomcat7/catalina.out.15.gz:1
+/var/log/tomcat7/catalina.out.17.gz:2
+/var/log/tomcat7/catalina.out.18.gz:3
+/var/log/tomcat7/catalina.out.20.gz:1
+/var/log/tomcat7/catalina.out.21.gz:4
+/var/log/tomcat7/catalina.out.25.gz:1
+/var/log/tomcat7/catalina.out.28.gz:1
+/var/log/tomcat7/catalina.out.2.gz:6
+/var/log/tomcat7/catalina.out.30.gz:2
+/var/log/tomcat7/catalina.out.31.gz:1
+/var/log/tomcat7/catalina.out.34.gz:1
+/var/log/tomcat7/catalina.out.38.gz:1
+/var/log/tomcat7/catalina.out.39.gz:1
+/var/log/tomcat7/catalina.out.4.gz:3
+/var/log/tomcat7/catalina.out.6.gz:2
+/var/log/tomcat7/catalina.out.7.gz:14
+</code></pre>
+
+<ul>
+<li>Overall the heap space usage in the munin graph seems ok, though I usually increase it by 512MB over the average a few times per year as usage grows</li>
+<li>But maybe I should increase it by more, like 1024MB, to give a bit more head room</li>
 </ul>
 
   
