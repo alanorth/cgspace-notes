@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-17T10:56:44&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-17T14:05:55&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "4439",
+  "wordCount": "4600",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-17T10:56:44&#43;02:00",
+  "dateModified": "2018-01-17T14:05:55&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1168,12 +1168,32 @@ Exception in thread &quot;http-bio-127.0.0.1-8081-exec-627&quot; java.lang.OutOf
 
 <pre><code>$ docker pull docker.bintray.io/jfrog/artifactory-oss:latest
 $ docker volume create --name artifactory5_data
-$ docker run --name artifactory -d -v artifactory5_data:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-oss:latest
+$ docker network create dspace-build
+$ docker run --network dspace-build --name artifactory -d -v artifactory5_data:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-oss:latest
 </code></pre>
 
 <ul>
 <li>Then configure the local maven to use it in settings.xml with the settings from &ldquo;Set Me Up&rdquo;: <a href="https://www.jfrog.com/confluence/display/RTF/Using+Artifactory">https://www.jfrog.com/confluence/display/RTF/Using+Artifactory</a></li>
 <li>This could be a game changer for testing and running the Docker DSpace image</li>
+<li>Wow, I even managed to add the Atmire repository as a remote and map it into the <code>libs-release</code> virtual repository, then tell maven to use it for <code>atmire.com-releases</code> in settings.xml!</li>
+<li>Hmm, some maven dependencies for the SWORDv2 web application in DSpace 5.5 are broken:</li>
+</ul>
+
+<pre><code>[ERROR] Failed to execute goal on project dspace-swordv2: Could not resolve dependencies for project org.dspace:dspace-swordv2:war:5.5: Failed to collect dependencies at org.swordapp:sword2-server:jar:classes:1.0 -&gt; org.apache.abdera:abdera-client:jar:1.1.1 -&gt; org.apache.abdera:abdera-core:jar:1.1.1 -&gt; org.apache.abdera:abdera-i18n:jar:1.1.1 -&gt; org.apache.geronimo.specs:geronimo-activation_1.0.2_spec:jar:1.1: Failed to read artifact descriptor for org.apache.geronimo.specs:geronimo-activation_1.0.2_spec:jar:1.1: Could not find artifact org.apache.geronimo.specs:specs:pom:1.1 in central (http://localhost:8081/artifactory/libs-release) -&gt; [Help 1]
+</code></pre>
+
+<ul>
+<li>I never noticed because I build with that web application disabled:</li>
+</ul>
+
+<pre><code>$ mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -Denv=localhost -P \!dspace-sword,\!dspace-swordv2 clean package
+</code></pre>
+
+<ul>
+<li>UptimeRobot said CGSpace went down for a few minutes</li>
+<li>I didn&rsquo;t do anything but it came back up on its own</li>
+<li>I don&rsquo;t see anything unusual in the XMLUI or REST/OAI logs</li>
+<li>Now Linode alert says the CPU load is high, <em>sigh</em></li>
 </ul>
 
   
