@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-17T18:25:47&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-17T18:53:01&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "4710",
+  "wordCount": "4985",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-17T18:25:47&#43;02:00",
+  "dateModified": "2018-01-17T18:53:01&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1223,6 +1223,36 @@ $ docker run --network dspace-build --name artifactory -d -v artifactory5_data:/
 <ul>
 <li>Overall the heap space usage in the munin graph seems ok, though I usually increase it by 512MB over the average a few times per year as usage grows</li>
 <li>But maybe I should increase it by more, like 1024MB, to give a bit more head room</li>
+</ul>
+
+<h2 id="2018-01-18">2018-01-18</h2>
+
+<ul>
+<li>UptimeRobot said CGSpace was down for 1 minute last night</li>
+<li>I don&rsquo;t see any errors in the nginx or catalina logs, so I guess UptimeRobot just got impatient and closed the request, which caused nginx to send an HTTP 499</li>
+<li>I realize I never did a full re-index after the SQL author and affiliation updates last week, so I should force one now:</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace index-discovery -b
+</code></pre>
+
+<ul>
+<li>Maria from Bioversity asked if I could remove the abstracts from all of their Limited Access items in the <a href="https://cgspace.cgiar.org/handle/10568/35501">Bioversity Journal Articles</a> collection</li>
+<li>It&rsquo;s easy enough to do in OpenRefine, but you have to be careful to only get those items that are uploaded into Bioversity&rsquo;s collection, not the ones that are mapped from others!</li>
+<li>Use this GREL in OpenRefine after isolating all the Limited Access items: <code>value.startsWith(&quot;10568/35501&quot;)</code></li>
+<li>UptimeRobot said CGSpace went down AGAIN and both Sisay and Danny immediately logged in and restarted Tomcat without talking to me <em>or</em> each other!</li>
+</ul>
+
+<pre><code>Jan 18 07:01:22 linode18 sudo[10805]: dhmichael : TTY=pts/5 ; PWD=/home/dhmichael ; USER=root ; COMMAND=/bin/systemctl restart tomcat7
+Jan 18 07:01:22 linode18 sudo[10805]: pam_unix(sudo:session): session opened for user root by dhmichael(uid=0)
+Jan 18 07:01:22 linode18 systemd[1]: Stopping LSB: Start Tomcat....
+Jan 18 07:01:22 linode18 sudo[10812]: swebshet : TTY=pts/3 ; PWD=/home/swebshet ; USER=root ; COMMAND=/bin/systemctl restart tomcat7
+Jan 18 07:01:22 linode18 sudo[10812]: pam_unix(sudo:session): session opened for user root by swebshet(uid=0)
+</code></pre>
+
+<ul>
+<li>For now I&rsquo;ve increased the Tomcat JVM heap from 5632 to 6144m, to give ~1GB of free memory over the average usage to hopefully account for spikes caused by load or background jobs</li>
 </ul>
 
   
