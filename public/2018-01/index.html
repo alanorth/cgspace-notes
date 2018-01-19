@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-17T18:53:01&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-18T10:24:57&#43;02:00"/>
 
 
 
@@ -184,7 +184,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 
 "/>
-<meta name="generator" content="Hugo 0.32.4" />
+<meta name="generator" content="Hugo 0.33" />
 
 
     
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "4985",
+  "wordCount": "5056",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-17T18:53:01&#43;02:00",
+  "dateModified": "2018-01-18T10:24:57&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1252,8 +1252,20 @@ Jan 18 07:01:22 linode18 sudo[10812]: pam_unix(sudo:session): session opened for
 </code></pre>
 
 <ul>
+<li>I had to cancel the Discovery indexing and I&rsquo;ll have to re-try it another time when the server isn&rsquo;t so busy (it had already taken two hours and wasn&rsquo;t even close to being done)</li>
 <li>For now I&rsquo;ve increased the Tomcat JVM heap from 5632 to 6144m, to give ~1GB of free memory over the average usage to hopefully account for spikes caused by load or background jobs</li>
 </ul>
+
+<h2 id="2018-01-19">2018-01-19</h2>
+
+<ul>
+<li>Linode alerted and said that the CPU load was 264% on CGSpace</li>
+<li>Start the Discovery indexing again:</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace index-discovery -b
+</code></pre>
 
   
 
