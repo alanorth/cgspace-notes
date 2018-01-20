@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-19T20:21:12&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-20T10:44:30&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "5226",
+  "wordCount": "5329",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-19T20:21:12&#43;02:00",
+  "dateModified": "2018-01-20T10:44:30&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1316,7 +1316,19 @@ sys     0m12.317s
 <ul>
 <li>I tested the abstract cleanups on Bioversity&rsquo;s Journal Articles collection again that I had started a few days ago</li>
 <li>In the end there were 324 items in the collection that were Limited Access, but only 199 had abstracts</li>
+<li>I want to document the workflow of adding a production PostgreSQL database to a development instance of <a href="https://github.com/alanorth/docker-dspace">DSpace in Docker</a>:</li>
 </ul>
+
+<pre><code>$ docker exec dspace_db dropdb -U postgres dspace
+$ docker exec dspace_db createdb -U postgres -O dspace --encoding=UNICODE dspace
+$ docker exec dspace_db psql -U postgres dspace -c 'alter user dspace createuser;'
+$ docker cp test.dump dspace_db:/tmp/test.dump
+$ docker exec dspace_db pg_restore -U postgres -d dspace /tmp/test.dump
+$ docker exec dspace_db psql -U postgres dspace -c 'alter user dspace nocreateuser;'
+$ docker exec dspace_db vacuumdb -U postgres dspace
+$ docker cp ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspace_db:/tmp
+$ docker exec dspace_db psql -U dspace -f /tmp/update-sequences.sql dspace
+</code></pre>
 
   
 
