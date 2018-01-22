@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-20T10:44:30&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-20T11:15:07&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "5329",
+  "wordCount": "5530",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-20T10:44:30&#43;02:00",
+  "dateModified": "2018-01-20T11:15:07&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1328,6 +1328,32 @@ $ docker exec dspace_db psql -U postgres dspace -c 'alter user dspace nocreateus
 $ docker exec dspace_db vacuumdb -U postgres dspace
 $ docker cp ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspace_db:/tmp
 $ docker exec dspace_db psql -U dspace -f /tmp/update-sequences.sql dspace
+</code></pre>
+
+<h2 id="2018-01-22">2018-01-22</h2>
+
+<ul>
+<li>Look over Udana&rsquo;s CSV of 25 WLE records from last week</li>
+<li>I sent him some corrections:
+
+<ul>
+<li>The file encoding is Windows-1252</li>
+<li>There were whitespace issues in the dc.identifier.citation field (spaces at the beginning and end, and multiple spaces in between some words)</li>
+<li>Also, the authors listed in the citation need to be in normal format, separated by commas or colons (however you prefer), not with ||</li>
+<li>There were spaces in the beginning and end of some cg.identifier.doi fields</li>
+<li>Make sure that the cg.coverage.countries field is just countries: ie, no &ldquo;SOUTH ETHIOPIA&rdquo; or &ldquo;EAST AFRICA&rdquo; (the first should just be ETHIOPIA, the second should be in cg.coverage.region instead)</li>
+<li>The current list of regions we use is here: <a href="https://github.com/ilri/DSpace/blob/5_x-prod/dspace/config/input-forms.xml#L5162">https://github.com/ilri/DSpace/blob/5_x-prod/dspace/config/input-forms.xml#L5162</a></li>
+<li>You have a syntax error in your cg.coverage.regions (extra ||)</li>
+<li>The value of dc.identifier.issn should just be the ISSN but you have: eISSN: 1479-487X</li>
+</ul></li>
+<li>I wrote a quick Python script to use the DSpace REST API to find all collections under a given community</li>
+<li>The source code is here: <a href="https://gist.github.com/alanorth/ddd7f555f0e487fe0e9d3eb4ff26ce50">rest-find-collections.py</a></li>
+<li>Peter had said that found a bunch of ILRI collections that were called &ldquo;untitled&rdquo;, but I don&rsquo;t see any:</li>
+</ul>
+
+<pre><code>$ ./rest-find-collections.py 10568/1 | wc -l
+308
+$ ./rest-find-collections.py 10568/1 | grep -i untitled
 </code></pre>
 
   
