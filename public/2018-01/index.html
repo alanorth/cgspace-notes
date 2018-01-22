@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-20T11:15:07&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-22T15:38:33&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "5530",
+  "wordCount": "5612",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-20T11:15:07&#43;02:00",
+  "dateModified": "2018-01-22T15:38:33&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -850,7 +850,7 @@ cache_alignment : 64
 <li>I don&rsquo;t see a setting for <code>maxSpareThreads</code> in the docs so that might be an error</li>
 <li>Looks like in Tomcat 8.5 the default URIEncoding for Connectors is UTF-8, so we don&rsquo;t need to specify that manually anymore: <a href="https://tomcat.apache.org/tomcat-8.5-doc/config/http.html">https://tomcat.apache.org/tomcat-8.5-doc/config/http.html</a></li>
 <li></li>
-<li>Ooh, I just the <code>acceptorThreadCount</code> setting (in Tomcat 7 and 8.5):</li>
+<li>Ooh, I just saw the <code>acceptorThreadCount</code> setting (in Tomcat 7 and 8.5):</li>
 </ul>
 
 <pre><code>The number of threads to be used to accept connections. Increase this value on a multi CPU machine, although you would never really need more than 2. Also, with a lot of non keep alive connections, you might want to increase this value as well. Default value is 1.
@@ -1355,6 +1355,13 @@ $ docker exec dspace_db psql -U dspace -f /tmp/update-sequences.sql dspace
 308
 $ ./rest-find-collections.py 10568/1 | grep -i untitled
 </code></pre>
+
+<ul>
+<li>Looking at the <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/http.html">Tomcat connector docs</a> I think we really need to increase <code>maxThreads</code></li>
+<li>The default is 200, which can easily be taken up by bots considering that Google and Bing each browse with fifty (50) connections each sometimes!</li>
+<li>Before I increase this I want to see if I can measure and graph this, and then benchmark</li>
+<li>I still want to bump up <code>acceptorThreadCount</code> from 1 to 2 as well, as the documentation says this should be increased on multi-core systems</li>
+</ul>
 
   
 
