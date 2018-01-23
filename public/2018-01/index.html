@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-22T23:24:39&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-23T00:08:32&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "5709",
+  "wordCount": "5977",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-22T23:24:39&#43;02:00",
+  "dateModified": "2018-01-23T00:08:32&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1367,6 +1367,55 @@ $ ./rest-find-collections.py 10568/1 | grep -i untitled
 <li>I see I can monitor the number of Tomcat threads and some detailed JVM memory stuff if I install <code>munin-plugins-java</code></li>
 <li>I&rsquo;d still like to get arbitrary mbeans like activeSessions etc, though</li>
 <li>I can&rsquo;t remember if I had to configure the jmx settings in <code>/etc/munin/plugin-conf.d/munin-node</code> or not—I think all I did was re-run the <code>munin-node-configure</code> script and of course enable JMX in Tomcat&rsquo;s JVM options</li>
+</ul>
+
+<h2 id="2018-01-23">2018-01-23</h2>
+
+<ul>
+<li>Thinking about generating a jmeter test plan for DSpace, along the lines of <a href="https://github.com/Georgetown-University-Libraries/dspace-performance-test">Georgetown&rsquo;s dspace-performance-test</a></li>
+<li>I got a list of all the GET requests on CGSpace for January 21st (the last time Linode complained the load was high), excluding admin calls:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz /var/log/nginx/library-access.log.2.gz /var/log/nginx/library-access.log.3.gz /var/log/nginx/rest.log.2.gz /var/log/nginx/rest.log.3.gz /var/log/nginx/oai.log.2.gz /var/log/nginx/oai.log.3.gz /var/log/nginx/error.log.2.gz /var/log/nginx/error.log.3.gz | grep &quot;21/Jan/2018&quot; | grep &quot;GET &quot; | grep -c -v &quot;/admin&quot;
+56405
+</code></pre>
+
+<ul>
+<li>Apparently about 28% of these requests were for bitstreams, 30% for the REST API, and 30% for handles:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz /var/log/nginx/library-access.log.2.gz /var/log/nginx/library-access.log.3.gz /var/log/nginx/rest.log.2.gz /var/log/nginx/rest.log.3.gz /var/log/nginx/oai.log.2.gz /var/log/nginx/oai.log.3.gz /var/log/nginx/error.log.2.gz /var/log/nginx/error.log.3.gz | grep &quot;21/Jan/2018&quot; | grep &quot;GET &quot; | grep -v &quot;/admin&quot; | awk '{print $7}' | grep -Eo &quot;^/(handle|bitstream|rest|oai)/&quot; | sort | uniq -c | sort -n
+     38 /oai/
+  14406 /bitstream/
+  15179 /rest/
+  15191 /handle/
+</code></pre>
+
+<ul>
+<li>And 3% were to the homepage or search:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz /var/log/nginx/library-access.log.2.gz /var/log/nginx/library-access.log.3.gz /var/log/nginx/rest.log.2.gz /var/log/nginx/rest.log.3.gz /var/log/nginx/oai.log.2.gz /var/log/nginx/oai.log.3.gz /var/log/nginx/error.log.2.gz /var/log/nginx/error.log.3.gz | grep &quot;21/Jan/2018&quot; | grep &quot;GET &quot; | grep -v &quot;/admin&quot; | awk '{print $7}' | grep -Eo '^/($|open-search|discover)' | sort | uniq -c
+   1050 /
+    413 /discover
+    170 /open-search
+</code></pre>
+
+<ul>
+<li>The last 10% or so seem to be for static assets that would be served by nginx anyways:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz /var/log/nginx/library-access.log.2.gz /var/log/nginx/library-access.log.3.gz /var/log/nginx/rest.log.2.gz /var/log/nginx/rest.log.3.gz /var/log/nginx/oai.log.2.gz /var/log/nginx/oai.log.3.gz /var/log/nginx/error.log.2.gz /var/log/nginx/error.log.3.gz | grep &quot;21/Jan/2018&quot; | grep &quot;GET &quot; | grep -v &quot;/admin&quot; | awk '{print $7}' | grep -v bitstream | grep -Eo '\.(js|css|png|jpg|jpeg|php|svg|gif|txt|map)$' | sort | uniq -c | sort -n
+      2 .gif
+      7 .css
+     84 .js
+    433 .php
+    882 .txt
+   2551 .png
+</code></pre>
+
+<ul>
+<li>I can definitely design a test plan on this!</li>
 </ul>
 
   
