@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-23T18:08:57&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-24T17:12:47&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "6355",
+  "wordCount": "6497",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-23T18:08:57&#43;02:00",
+  "dateModified": "2018-01-24T17:12:47&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1487,6 +1487,38 @@ $ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.j
 $ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-24-linode5451120-baseline2.jtl -j ~/dspace-performance-test/2018-01-24-linode5451120-baseline2.log
 $ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-24-linode5451120-baseline3.jtl -j ~/dspace-performance-test/2018-01-24-linode5451120-baseline3.log
 </code></pre>
+
+<ul>
+<li>Then I generated reports for these runs like this:</li>
+</ul>
+
+<pre><code>$ jmeter -g 2018-01-24-linode5451120-baseline.jtl -o 2018-01-24-linode5451120-baseline
+</code></pre>
+
+<h2 id="2018-01-25">2018-01-25</h2>
+
+<ul>
+<li>Run another round of tests on DSpace Test with jmeter after changing Tomcat&rsquo;s <code>minSpareThreads</code> to 20 (default is 10) and <code>acceptorThreadCount</code> to 2 (default is 1):</li>
+</ul>
+
+<pre><code>$ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-25-linode5451120-tomcat-threads.jtl -j ~/dspace-performance-test/2018-01-25-linode5451120-tomcat-threads.log
+$ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-25-linode5451120-tomcat-threads2.jtl -j ~/dspace-performance-test/2018-01-25-linode5451120-tomcat-threads2.log
+$ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-25-linode5451120-tomcat-threads3.jtl -j ~/dspace-performance-test/2018-01-25-linode5451120-tomcat-threads3.log
+</code></pre>
+
+<ul>
+<li>I changed the parameters back to the baseline ones and switched the Tomcat JVM garbage collector to G1GC and re-ran the tests</li>
+<li>JVM options for Tomcat changed from <code>-Xms3072m -Xmx3072m -XX:+UseConcMarkSweepGC</code> to <code>-Xms3072m -Xmx3072m -XX:+UseG1GC -XX:+PerfDisableSharedMem</code></li>
+</ul>
+
+<pre><code>$ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-25-linode5451120-g1gc.jtl -j ~/dspace-performance-test/2018-01-25-linode5451120-g1gc.log
+$ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-25-linode5451120-g1gc2.jtl -j ~/dspace-performance-test/2018-01-25-linode5451120-g1gc2.log
+$ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.jmx -l ~/dspace-performance-test/2018-01-25-linode5451120-g1gc3.jtl -j ~/dspace-performance-test/2018-01-25-linode5451120-g1gc3.log
+</code></pre>
+
+<ul>
+<li>I haven&rsquo;t had time to look at the results yet</li>
+</ul>
 
   
 
