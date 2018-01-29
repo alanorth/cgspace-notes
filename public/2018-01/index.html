@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-28T12:49:00&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-28T18:34:24&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "6793",
+  "wordCount": "7218",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-28T12:49:00&#43;02:00",
+  "dateModified": "2018-01-28T18:34:24&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1558,6 +1558,80 @@ $ ./jmeter -n -t ~/dspace-performance-test/DSpacePerfTest-dspacetest.cgiar.org.j
 <li>It reduces the start up time of Catalina by using multiple threads to start web applications in parallel</li>
 <li>On my local test machine the startup time went from 70 to 30 seconds</li>
 <li>See: <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/host.html">https://tomcat.apache.org/tomcat-7.0-doc/config/host.html</a></li>
+</ul>
+
+<h2 id="2018-01-29">2018-01-29</h2>
+
+<ul>
+<li>CGSpace went down this morning for a few minutes, according to UptimeRobot</li>
+<li>Looking at the DSpace logs I see this error happened just before UptimeRobot noticed it going down:</li>
+</ul>
+
+<pre><code>2018-01-29 05:30:22,226 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous:session_id=3775D4125D28EF0C691B08345D905141:ip_addr=68.180.229.254:view_item:handle=10568/71890
+2018-01-29 05:30:22,322 ERROR org.dspace.app.xmlui.aspect.discovery.AbstractSearch @ org.apache.solr.search.SyntaxError: Cannot parse 'dateIssued_keyword:[1994+TO+1999]': Encountered &quot; &quot;]&quot; &quot;] &quot;&quot; at line 1, column 32.
+Was expecting one of:
+    &quot;TO&quot; ...
+    &lt;RANGE_QUOTED&gt; ...
+    &lt;RANGE_GOOP&gt; ...
+    
+org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse 'dateIssued_keyword:[1994+TO+1999]': Encountered &quot; &quot;]&quot; &quot;] &quot;&quot; at line 1, column 32.
+Was expecting one of:
+    &quot;TO&quot; ...
+    &lt;RANGE_QUOTED&gt; ...
+    &lt;RANGE_GOOP&gt; ...
+</code></pre>
+
+<ul>
+<li>So is this an error caused by this particular client (which happens to be <code>Yahoo! Slurp</code>)?</li>
+<li>I see a few dozen HTTP 499 errors in the nginx access log for a few minutes before this happened, but HTTP 499 is just when nginx says that the client closed the request early</li>
+<li>Perhaps this from the nginx error log is relevant?</li>
+</ul>
+
+<pre><code>2018/01/29 05:26:34 [warn] 26895#26895: *944759 an upstream response is buffered to a temporary file /var/cache/nginx/proxy_temp/6/16/0000026166 while reading upstream, client: 180.76.15.34, server: cgspace.cgiar.org, request: &quot;GET /bitstream/handle/10947/4658/FISH%20Leaflet.pdf?sequence=12 HTTP/1.1&quot;, upstream: &quot;http://127.0.0.1:8443/bitstream/handle/10947/4658/FISH%20Leaflet.pdf?sequence=12&quot;, host: &quot;cgspace.cgiar.org&quot;
+</code></pre>
+
+<ul>
+<li>I think that must be unrelated, probably the client closed the request to nginx because DSpace (Tomcat) was taking too long</li>
+<li>An interesting <a href="https://gist.github.com/magnetikonline/11312172">snippet to get the maximum and average nginx responses</a>:</li>
+</ul>
+
+<pre><code># awk '($9 ~ /200/) { i++;sum+=$10;max=$10&gt;max?$10:max; } END { printf(&quot;Maximum: %d\nAverage: %d\n&quot;,max,i?sum/i:0); }' /var/log/nginx/access.log
+Maximum: 2771268
+Average: 210483
+</code></pre>
+
+<ul>
+<li>I guess responses that don&rsquo;t fit in RAM get saved to disk (a default of 1024M), so this is definitely not the issue here, and that warning is totally unrelated</li>
+<li>My best guess is that the Solr search error is related somehow but I can&rsquo;t figure it out</li>
+<li>We definitely have enough database connections, as I haven&rsquo;t seen a pool error in weeks:</li>
+</ul>
+
+<pre><code>$ grep -c &quot;Timeout: Pool empty.&quot; dspace.log.2018-01-2*
+dspace.log.2018-01-20:0
+dspace.log.2018-01-21:0
+dspace.log.2018-01-22:0
+dspace.log.2018-01-23:0
+dspace.log.2018-01-24:0
+dspace.log.2018-01-25:0
+dspace.log.2018-01-26:0
+dspace.log.2018-01-27:0
+dspace.log.2018-01-28:0
+dspace.log.2018-01-29:0
+</code></pre>
+
+<ul>
+<li>Adam Hunt from WLE complained that pages take &ldquo;1-2 minutes&rdquo; to load each, from France and Sri Lanka</li>
+<li>I asked him which particular pages, as right now pages load in 2 or 3 seconds for me</li>
+<li>UptimeRobot said CGSpace went down again, and I looked at PostgreSQL and saw 211 active database connections</li>
+<li>If it&rsquo;s not memory and it&rsquo;s not database, it&rsquo;s gotta be Tomcat threads&hellip;?</li>
+<li>I decided to change the Tomcat thread settings on CGSpace:
+
+<ul>
+<li><code>maxThreads</code> from 200 (default) to 400</li>
+<li><code>processorCache</code> from 200 (default) to 400, <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/http.html">recommended to be the same as <code>maxThreads</code></a></li>
+<li><code>minSpareThreads</code> from 10 (default) to 20</li>
+<li><code>acceptorThreadCount</code> from 1 (default) to 2, <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/http.html">recommended to be 2 on multi-CPU systems</a></li>
+</ul></li>
 </ul>
 
   
