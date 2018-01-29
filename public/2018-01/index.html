@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-29T09:46:48&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-29T09:47:55&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "7230",
+  "wordCount": "7537",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-29T09:46:48&#43;02:00",
+  "dateModified": "2018-01-29T09:47:55&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1632,6 +1632,60 @@ dspace.log.2018-01-29:0
 <li><code>minSpareThreads</code> from 10 (default) to 20</li>
 <li><code>acceptorThreadCount</code> from 1 (default) to 2, <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/http.html">recommended to be 2 on multi-CPU systems</a></li>
 </ul></li>
+<li>Looks like I only enabled the new thread stuff on the connector used internally by Solr, so I probably need to match that by increasing them on the other connector that nginx proxies to</li>
+<li>Jesus Christ I need to fucking fix the Munin monitoring so that I can tell how many fucking threads I have running</li>
+<li>Wow, so apparently you need to specify which connector to check if you want any of the Munin Tomcat plugins besides &ldquo;tomcat_jvm&rdquo; to work (the connector name can be seen in the Catalina logs)</li>
+<li>I modified <em>/etc/munin/plugin-conf.d/tomcat</em> to add the connector (with surrounding quotes!) and now the other plugins work (obviously the credentials are incorrect):</li>
+</ul>
+
+<pre><code>[tomcat_*]
+    env.host 127.0.0.1
+    env.port 8081
+    env.connector &quot;http-bio-127.0.0.1-8443&quot;
+    env.user munin
+    env.password munin
+</code></pre>
+
+<ul>
+<li>For example, I can see the threads:</li>
+</ul>
+
+<pre><code># munin-run tomcat_threads
+busy.value 0
+idle.value 20
+max.value 400
+</code></pre>
+
+<ul>
+<li>Apparently you can&rsquo;t monitor more than one connector, so I guess the most important to monitor would be the one that nginx is sending stuff to</li>
+<li>So for now I think I&rsquo;ll just monitor these and skip trying to configure the jmx plugins</li>
+<li>Although following the logic of _/usr/share/munin/plugins/jmx_tomcat<em>dbpools</em> could be useful for getting the active Tomcat sessions</li>
+<li>From debugging the <code>jmx_tomcat_db_pools</code> script from the <code>munin-plugins-java</code> package, I see that this is how you call arbitrary mbeans:</li>
+</ul>
+
+<pre><code># port=5400 ip=&quot;127.0.0.1&quot; /usr/bin/java -cp /usr/share/munin/munin-jmx-plugins.jar org.munin.plugin.jmx.Beans Catalina:type=DataSource,class=javax.sql.DataSource,name=* maxActive
+Catalina:type=DataSource,class=javax.sql.DataSource,name=&quot;jdbc/dspace&quot;  maxActive       300
+</code></pre>
+
+<ul>
+<li>More notes here: <a href="https://github.com/munin-monitoring/contrib/tree/master/plugins/jmx">https://github.com/munin-monitoring/contrib/tree/master/plugins/jmx</a></li>
+<li>Looking at the Munin graphs, I that the load is 200% every morning from 03:00 to almost 08:00</li>
+<li>Tomcat&rsquo;s catalina.out log file is full of spam from this thing too, with lines like this</li>
+</ul>
+
+<pre><code>[===================&gt;                               ]38% time remaining: 5 hour(s) 21 minute(s) 47 seconds. timestamp: 2018-01-29 06:25:16
+</code></pre>
+
+<ul>
+<li>There are millions of these status lines, for example in just this one log file:</li>
+</ul>
+
+<pre><code># zgrep -c &quot;time remaining&quot; /var/log/tomcat7/catalina.out.1.gz
+1084741
+</code></pre>
+
+<ul>
+<li>I filed a ticket with Atmire: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=566">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=566</a></li>
 </ul>
 
   
