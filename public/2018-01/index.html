@@ -92,7 +92,7 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
 
 <meta property="article:published_time" content="2018-01-02T08:35:54-08:00"/>
 
-<meta property="article:modified_time" content="2018-01-29T12:25:30&#43;02:00"/>
+<meta property="article:modified_time" content="2018-01-31T12:01:34&#43;02:00"/>
 
 
 
@@ -194,9 +194,9 @@ Danny wrote to ask for help renewing the wildcard ilri.org certificate and I adv
   "@type": "BlogPosting",
   "headline": "January, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-01/",
-  "wordCount": "7885",
+  "wordCount": "7940",
   "datePublished": "2018-01-02T08:35:54-08:00",
-  "dateModified": "2018-01-29T12:25:30&#43;02:00",
+  "dateModified": "2018-01-31T12:01:34&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1761,14 +1761,25 @@ javax.ws.rs.WebApplicationException
 <li>We need to start graphing the Tomcat sessions as well, though that requires JMX</li>
 <li>Also, I wonder if I could disable the nightly Atmire thing</li>
 <li>God, I don&rsquo;t know where this load is coming from</li>
-<li>Since I bumped up the Tomcat threads from 200 to 400 the load on the server has been sustained at about 200%:</li>
+<li>Since I bumped up the Tomcat threads from 200 to 400 the load on the server has been sustained at about 200% for almost a whole day:</li>
 </ul>
 
 <p><img src="/cgspace-notes/2018/01/cpu-week.png" alt="CPU usage week" /></p>
 
 <ul>
 <li>I should make separate database pools for the web applications and the API applications like REST and OAI</li>
+<li>Ok, so this is interesting: I figured out how to get the MBean path to query Tomcat&rsquo;s activeSessions from JMX (using <code>munin-plugins-java</code>):</li>
 </ul>
+
+<pre><code># port=5400 ip=&quot;127.0.0.1&quot; /usr/bin/java -cp /usr/share/munin/munin-jmx-plugins.jar org.munin.plugin.jmx.Beans Catalina:type=Manager,context=/,host=localhost activeSessions
+Catalina:type=Manager,context=/,host=localhost  activeSessions  8
+</code></pre>
+
+<ul>
+<li>If you connect to Tomcat in <code>jvisualvm</code> it&rsquo;s pretty obvious when you hover over the elements</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/01/jvisualvm-mbeans-path.png" alt="MBeans in JVisualVM" /></p>
 
   
 
