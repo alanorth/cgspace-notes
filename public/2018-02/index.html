@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-04T00:00:51&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-04T11:26:07&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "328",
+  "wordCount": "459",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-04T00:00:51&#43;02:00",
+  "dateModified": "2018-02-04T11:26:07&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -193,6 +193,26 @@ COPY 3723
 real    0m23.839s
 user    0m27.225s
 sys     0m1.905s
+</code></pre>
+
+<h2 id="2018-02-05">2018-02-05</h2>
+
+<ul>
+<li>Toying with correcting authors with trailing spaces via PostgreSQL:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_value=REGEXP_REPLACE(text_value, '\s+$' , '') where resource_type_id=2 and metadata_field_id=3 and text_value ~ '^.*?\s+$';
+UPDATE 20
+</code></pre>
+
+<ul>
+<li>I tried the <code>TRIM(TRAILING from text_value)</code> function and it said it changed 20 items but the spaces didn&rsquo;t go away</li>
+<li>This is on a fresh import of the CGSpace database, but when I tried to apply it on CGSpace there were no changes detected. Weird.</li>
+<li>Anyways, Peter wants a new list of authors to clean up, so I exported another CSV:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors-2018-02-05.csv with csv;
+COPY 55630
 </code></pre>
 
   
