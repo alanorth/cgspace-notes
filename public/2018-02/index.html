@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-04T11:26:07&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-05T19:08:05&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "459",
+  "wordCount": "856",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-04T11:26:07&#43;02:00",
+  "dateModified": "2018-02-05T19:08:05&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -214,6 +214,55 @@ UPDATE 20
 <pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors-2018-02-05.csv with csv;
 COPY 55630
 </code></pre>
+
+<h2 id="2018-02-06">2018-02-06</h2>
+
+<ul>
+<li>UptimeRobot says CGSpace is down this morning around 9:15</li>
+<li>I see 308 PostgreSQL connections in <code>pg_stat_activity</code></li>
+<li>The usage otherwise seemed low for REST/OAI as well as XMLUI in the last hour:</li>
+</ul>
+
+<pre><code># date
+Tue Feb  6 09:30:32 UTC 2018
+# cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;6/Feb/2018:(08|09)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+      2 223.185.41.40
+      2 66.249.64.14
+      2 77.246.52.40
+      4 157.55.39.82
+      4 193.205.105.8
+      5 207.46.13.63
+      5 207.46.13.64
+      6 154.68.16.34
+      7 207.46.13.66
+   1548 50.116.102.77
+# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &quot;6/Feb/2018:(08|09)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     77 213.55.99.121
+     86 66.249.64.14
+    101 104.196.152.243
+    103 207.46.13.64
+    118 157.55.39.82
+    133 207.46.13.66
+    136 207.46.13.63
+    156 68.180.228.157
+    295 197.210.168.174
+    752 144.76.64.79
+</code></pre>
+
+<ul>
+<li>I did notice in <code>/var/log/tomcat7/catalina.out</code> that Atmire&rsquo;s update thing was running though</li>
+<li>So I restarted Tomcat and now everything is fine</li>
+<li>Next time I see that many database connections I need to save the output so I can analyze it later</li>
+<li>I&rsquo;m going to re-schedule the taskUpdateSolrStatsMetadata task as <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=566">Bram detailed in ticket 566</a> to see if it makes CGSpace stop crashing every morning</li>
+<li>If I move the task from 3AM to 3PM, deally CGSpace will stop crashing in the morning, or start crashing ~12 hours later</li>
+<li>Eventually Atmire has said that there will be a fix for this high load caused by their script, but it will come with the 5.8 compatability they are already working on</li>
+<li>I re-deployed CGSpace with the new task time of 3PM, ran all system updates, and restarted the server</li>
+<li>Also, I changed the name of the DSpace fallback pool on DSpace Test and CGSpace to be called &lsquo;dspaceCli&rsquo; so that I can distinguish it in <code>pg_stat_activity</code></li>
+<li>I implemented some changes to the pooling in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a> so that each DSpace web application can use its own pool (web, api, and solr)</li>
+<li>Each pool uses its own name and hopefully this should help me figure out which one is using too many connections next time CGSpace goes down</li>
+<li>Also, this will mean that when a search bot comes along and hammers the XMLUI, the REST and OAI applications will be fine</li>
+<li>I&rsquo;m not actually sure if the Solr web application uses the database though, so I&rsquo;ll have to check later and remove it if necessary</li>
+</ul>
 
   
 
