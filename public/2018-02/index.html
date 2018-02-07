@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-06T14:03:46&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-07T12:34:36&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "995",
+  "wordCount": "1334",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-06T14:03:46&#43;02:00",
+  "dateModified": "2018-02-07T12:34:36&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -274,6 +274,66 @@ Tue Feb  6 09:30:32 UTC 2018
 <li>According to <a href="https://groups.google.com/forum/#!topic/orcid-api-users/qfg-HwAB1bk">the announcement</a> the v1 API was moved from <code>http://pub.orcid.org/</code> to <code>https://pub.orcid.org/v1.2</code> until March 1st when it will be discontinued for good</li>
 <li>But the old URL is hard coded in DSpace and it doesn&rsquo;t work anyways, because it currently redirects you to <code>https://pub.orcid.org/v2.0/v1.2</code></li>
 <li>So I guess we have to disable that shit once and for all and switch to a controlled vocabulary</li>
+<li>CGSpace crashed again, this time around <code>Wed Feb  7 11:20:28 UTC 2018</code></li>
+<li>I took a few snapshots of the PostgreSQL activity at the time and as the minutes went on and the connections were very high at first but reduced on their own:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' &gt; /tmp/pg_stat_activity.txt
+$ grep -c 'PostgreSQL JDBC' /tmp/pg_stat_activity*
+/tmp/pg_stat_activity1.txt:300
+/tmp/pg_stat_activity2.txt:272
+/tmp/pg_stat_activity3.txt:168
+/tmp/pg_stat_activity4.txt:5
+/tmp/pg_stat_activity5.txt:6
+</code></pre>
+
+<ul>
+<li>Interestingly, all of those 751 connections were idle!</li>
+</ul>
+
+<pre><code>$ grep &quot;PostgreSQL JDBC&quot; /tmp/pg_stat_activity* | grep -c idle
+751
+</code></pre>
+
+<ul>
+<li>Since I was restarting Tomcat anyways, I decided to deploy the changes to create two different pools for web and API apps</li>
+<li>Looking the Munin graphs, I can see that there were almost double the normal number of DSpace sessions at the time of the crash (and also yesterday!):</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/02/jmx_dspace-sessions-day.png" alt="DSpace Sessions" /></p>
+
+<ul>
+<li>Indeed it seems like there were over 1800 sessions today around the hours of 10 and 11 AM:</li>
+</ul>
+
+<pre><code>$ grep -E '^2018-02-07 (10|11)' dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+1828
+</code></pre>
+
+<ul>
+<li>CGSpace went down again a few hours later, and now the connections to the dspaceWeb pool are maxed at 250 (the new limit I imposed with the new separate pool scheme)</li>
+<li>What&rsquo;s interesting is that the DSpace log says the connections are all busy:</li>
+</ul>
+
+<pre><code>org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-328] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:250; busy:250; idle:0; lastwait:5000].
+</code></pre>
+
+<ul>
+<li>&hellip; but in PostgreSQL I see them <code>idle</code> or <code>idle in transaction</code>:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -c dspaceWeb
+250
+$ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c idle
+250
+$ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c &quot;idle in transaction&quot;
+187
+</code></pre>
+
+<ul>
+<li>What the fuck, does DSpace think all connections are busy?</li>
+<li>I suspect these are issues with abandoned connections or maybe a leak, so I&rsquo;m going to try adding the <code>removeAbandoned='true'</code> parameter which is apparently off by default</li>
+<li>I will try <code>testOnReturn='true'</code> too, just to add more validation, because I&rsquo;m fucking grasping at straws</li>
 </ul>
 
   
