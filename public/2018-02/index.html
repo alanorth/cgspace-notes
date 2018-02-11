@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-08T01:08:36&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-11T10:01:13&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "2147",
+  "wordCount": "2666",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-08T01:08:36&#43;02:00",
+  "dateModified": "2018-02-11T10:01:13&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -455,6 +455,30 @@ $ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' |
 <li>I sent a message to the dspace-tech mailing list asking why DSpace thinks these connections are busy when PostgreSQL says they are idle</li>
 </ul>
 
+<h2 id="2018-02-10">2018-02-10</h2>
+
+<ul>
+<li>I tried to disable ORCID lookups but keep the existing authorities</li>
+<li>This item has an ORCID for Ralf Kiese: <a href="http://localhost:8080/handle/10568/89897">http://localhost:8080/handle/10568/89897</a></li>
+<li>Switch authority.controlled off and change authorLookup to lookup, and the ORCID badge doesn&rsquo;t show up on the item</li>
+<li>Leave all settings but change choices.presentation to lookup and ORCID badge is there and item submission uses LC Name Authority and it breaks with this error:
+<br /></li>
+</ul>
+
+<pre><code>Field dc_contributor_author has choice presentation of type &quot;select&quot;, it may NOT be authority-controlled.
+</code></pre>
+
+<ul>
+<li>If I change choices.presentation to suggest it give this error:</li>
+</ul>
+
+<pre><code>xmlui.mirage2.forms.instancedCompositeFields.noSuggestionError
+</code></pre>
+
+<ul>
+<li>So I don&rsquo;t think we can disable the ORCID lookup function and keep the ORCID badges</li>
+</ul>
+
 <h2 id="2018-02-11">2018-02-11</h2>
 
 <ul>
@@ -471,6 +495,73 @@ $ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' |
 </code></pre>
 
 <p><img src="/cgspace-notes/2018/02/CCAFS_WP_223.jpg" alt="Manual thumbnail" /></p>
+
+<ul>
+<li>Peter sent me corrected author names last week but the file encoding is messed up:</li>
+</ul>
+
+<pre><code>$ isutf8 authors-2018-02-05.csv
+authors-2018-02-05.csv: line 100, char 18, byte 4179: After a first byte between E1 and EC, expecting the 2nd byte between 80 and BF.
+</code></pre>
+
+<ul>
+<li>The <code>isutf8</code> program comes from <code>moreutils</code></li>
+<li>Line 100 contains: Galiè, Alessandra</li>
+<li>In other news, psycopg2 is splitting their package in pip, so to install the binary wheel distribution you need to use <code>pip install psycopg2-binary</code></li>
+<li>See: <a href="http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/">http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/</a></li>
+<li>I updated my <code>fix-metadata-values.py</code> and <code>delete-metadata-values.py</code> scripts on the scripts page: <a href="https://github.com/ilri/DSpace/wiki/Scripts">https://github.com/ilri/DSpace/wiki/Scripts</a></li>
+<li>I ran the 342 author corrections (after trimming whitespace and excluding those with <code>||</code> and other syntax errors) on CGSpace:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i Correct-342-Authors-2018-02-11.csv -f dc.contributor.author -t correct -m 3 -d dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Then I ran a full Discovery re-indexing:</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre>
+
+<ul>
+<li>That reminds me that Bizu had asked me to fix some of Alan Duncan&rsquo;s names in December</li>
+<li>I see he actually has some variations with &ldquo;Duncan, Alan J.&rdquo;: <a href="https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=">https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=</a></li>
+<li>I will just update those for her too and then restart the indexing:</li>
+</ul>
+
+<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Duncan, Alan%';
+   text_value    |              authority               | confidence 
+-----------------+--------------------------------------+------------
+ Duncan, Alan J. | 5ff35043-942e-4d0a-b377-4daed6e3c1a3 |        600
+ Duncan, Alan J. | 62298c84-4d9d-4b83-a932-4a9dd4046db7 |         -1
+ Duncan, Alan J. |                                      |         -1
+ Duncan, Alan    | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
+ Duncan, Alan J. | cd0e03bf-92c3-475f-9589-60c5b042ea60 |         -1
+ Duncan, Alan J. | a6486522-b08a-4f7a-84f9-3a73ce56034d |         -1
+ Duncan, Alan J. | 5ff35043-942e-4d0a-b377-4daed6e3c1a3 |         -1
+ Duncan, Alan J. | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
+(8 rows)
+
+dspace=# begin;
+dspace=# update metadatavalue set text_value='Duncan, Alan', authority='a6486522-b08a-4f7a-84f9-3a73ce56034d', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Duncan, Alan%';
+UPDATE 216
+dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Duncan, Alan%';
+  text_value  |              authority               | confidence 
+--------------+--------------------------------------+------------
+ Duncan, Alan | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
+(1 row)
+dspace=# commit;
+</code></pre>
+
+<ul>
+<li>Run all system updates on DSpace Test (linode02) and reboot it</li>
+<li>I wrote a Python script (<a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b"><code>resolve-orcids-from-solr.py</code></a>) using SolrClient to parse the Solr authority cache for ORCID IDs</li>
+<li>We currently have 1562 authority records with ORCID IDs, and 624 unique IDs</li>
+<li>We can use this to build a controlled vocabulary of ORCID IDs for new item submissions</li>
+<li>I don&rsquo;t know how to add ORCID IDs to existing items yet&hellip; some more querying of PostgreSQL for authority values perhaps?</li>
+<li>I added the script to the <a href="https://github.com/ilri/DSpace/wiki/Scripts">ILRI DSpace wiki on GitHub</a></li>
+</ul>
 
   
 
