@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-13T17:50:12&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-14T13:56:18&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "3297",
+  "wordCount": "3527",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-13T17:50:12&#43;02:00",
+  "dateModified": "2018-02-14T13:56:18&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -667,7 +667,47 @@ $ tidy -xml -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 </code></pre>
 
 <ul>
-<li>Then it preserves them and submitting them is fine</li>
+<li>This preserves special accent characters</li>
+<li>I tested the display and store of these in the XMLUI and PostgreSQL and it looks good</li>
+<li>Sisay exported all ILRI, CIAT, etc authors from ORCID and sent a list of 600+</li>
+<li>Peter combined it with mine and we have 1204 unique ORCIDs!</li>
+</ul>
+
+<pre><code>$ grep -coE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' CGcenter_ORCID_ID_combined.csv
+1204
+$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' CGcenter_ORCID_ID_combined.csv | sort | uniq | wc -l
+1204
+</code></pre>
+
+<ul>
+<li>Also, save that regex for the future because it will be very useful!</li>
+<li>CIAT sent a list of their authors&rsquo; ORCIDs and combined with ours there are now 1227:</li>
+</ul>
+
+<pre><code>$ cat CGcenter_ORCID_ID_combined.csv ciat-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
+1227
+</code></pre>
+
+<ul>
+<li>There are some formatting issues with names in Peter&rsquo;s list, so I should remember to re-generate the list of names from ORCID&rsquo;s API once we&rsquo;re done</li>
+<li>The <code>dspace cleanup -v</code> currently fails on CGSpace with the following:</li>
+</ul>
+
+<pre><code> - Deleting bitstream record from database (ID: 149473)
+Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(149473) is still referenced from table &quot;bundle&quot;.
+</code></pre>
+
+<ul>
+<li>The solution is to update the bitstream table, as I&rsquo;ve discovered several other times in 2016 and 2017:</li>
+</ul>
+
+<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (149473);'
+UPDATE 1
+</code></pre>
+
+<ul>
+<li>Then the cleanup process will continue for awhile and hit another foreign key conflict, and eventually it will complete after you manually resolve them all</li>
 </ul>
 
   
