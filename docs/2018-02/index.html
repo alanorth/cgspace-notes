@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-14T16:45:03&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-15T14:00:34&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "3581",
+  "wordCount": "3674",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-14T16:45:03&#43;02:00",
+  "dateModified": "2018-02-15T14:00:34&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -722,6 +722,36 @@ UPDATE 1
 <li>And this item doesn&rsquo;t even exist on CGSpace!</li>
 <li>Start working on XMLUI item display code for ORCIDs</li>
 <li>Send emails to Macaroni Bros and Usman at CIFOR about ORCID metadata</li>
+<li>CGSpace crashed while I was driving to Tel Aviv, and was down for four hours!</li>
+<li>I only looked quickly in the logs but saw a bunch of database errors</li>
+<li>PostgreSQL connections are currently:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | uniq -c
+      2 dspaceApi
+      1 dspaceWeb
+      3 dspaceApi
+</code></pre>
+
+<ul>
+<li>I see shitloads of memory errors in Tomcat&rsquo;s logs:
+<br /></li>
+</ul>
+
+<pre><code># grep -c &quot;Java heap space&quot; /var/log/tomcat7/catalina.out
+56
+</code></pre>
+
+<ul>
+<li>And shit tons of database connections abandoned:</li>
+</ul>
+
+<pre><code># grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' /var/log/tomcat7/catalina.out
+612
+</code></pre>
+
+<ul>
+<li>I have no fucking idea why it crashed</li>
 </ul>
 
   
