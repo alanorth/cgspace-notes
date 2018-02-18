@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-18T11:21:16&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-18T12:02:54&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "3914",
+  "wordCount": "4172",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-18T11:21:16&#43;02:00",
+  "dateModified": "2018-02-18T12:02:54&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -793,6 +793,70 @@ UPDATE 2
 <li>The one on the bottom left uses a similar format to our author display, and the one in the middle uses the format <a href="https://orcid.org/trademark-and-id-display-guidelines">recommended by ORCID&rsquo;s branding guidelines</a></li>
 <li>Also, I realized that the Academicons font icon set we&rsquo;re using includes an ORCID badge so we don&rsquo;t need to use the PNG image anymore</li>
 <li>Run system updates on DSpace Test (linode02) and reboot the server</li>
+<li>Looking back at the system errors on 2018-02-15, I wonder what the fuck caused this:</li>
+</ul>
+
+<pre><code>$ wc -l dspace.log.2018-02-1{0..8}
+   383483 dspace.log.2018-02-10
+   275022 dspace.log.2018-02-11
+   249557 dspace.log.2018-02-12
+   280142 dspace.log.2018-02-13
+   615119 dspace.log.2018-02-14
+  4388259 dspace.log.2018-02-15
+   243496 dspace.log.2018-02-16
+   209186 dspace.log.2018-02-17
+   167432 dspace.log.2018-02-18
+</code></pre>
+
+<ul>
+<li>From an average of a few hundred thousand to over four million lines in DSpace log?</li>
+<li>Using grep&rsquo;s <code>-B1</code> I can see the line before the heap space error, which has the time, ie:</li>
+</ul>
+
+<pre><code>2018-02-15 16:02:12,748 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.OutOfMemoryError: Java heap space
+</code></pre>
+
+<ul>
+<li>So these errors happened at hours 16, 18, 19, and 20</li>
+<li>Let&rsquo;s see what was going on in nginx then:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | wc -l
+168571
+# zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &quot;15/Feb/2018:(16|18|19|20)&quot; | wc -l
+8188
+</code></pre>
+
+<ul>
+<li>Only 8,000 requests during those four hours, out of 170,000 the whole day!</li>
+<li>And the usage of XMLUI, REST, and OAI looks SUPER boring:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &quot;15/Feb/2018:(16|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    111 95.108.181.88
+    158 45.5.184.221
+    201 104.196.152.243
+    205 68.180.228.157
+    236 40.77.167.131 
+    253 207.46.13.159
+    293 207.46.13.59
+    296 63.143.42.242
+    303 207.46.13.157
+    416 63.143.42.244
+</code></pre>
+
+<ul>
+<li>63.143.42.244 is Uptime Robot, and 207.46.x.x is Bing!</li>
+<li>The DSpace sessions, PostgreSQL connections, and JVM memory all look normal</li>
+<li>I see a lot of AccessShareLock on February 15th&hellip;?</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/02/postgresql-locks-week.png" alt="PostgreSQL locks" /></p>
+
+<ul>
+<li>I have no idea what caused this crash</li>
+<li>In other news, I adjusted the ORCID badge size on the XMLUI item display and sent it back to Peter for feedback</li>
 </ul>
 
   
