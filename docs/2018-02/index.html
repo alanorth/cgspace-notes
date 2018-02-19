@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-18T17:41:05&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-19T18:40:43&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "4248",
+  "wordCount": "4384",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-18T17:41:05&#43;02:00",
+  "dateModified": "2018-02-19T18:40:43&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -879,6 +879,42 @@ $ cat output.txt
 Ali Ramadhan: 0000-0001-5019-1368
 Ahmad Maryudi: 0000-0001-5051-7217
 </code></pre>
+
+<ul>
+<li>I was running this on the new list of 1571 and found an error:</li>
+</ul>
+
+<pre><code>Looking up the name associated with ORCID iD: 0000-0001-9634-1958
+Traceback (most recent call last):
+  File &quot;./resolve-orcids.py&quot;, line 111, in &lt;module&gt;
+    read_identifiers_from_file()
+  File &quot;./resolve-orcids.py&quot;, line 37, in read_identifiers_from_file
+    resolve_orcid_identifiers(orcids)
+  File &quot;./resolve-orcids.py&quot;, line 65, in resolve_orcid_identifiers
+    family_name = data['name']['family-name']['value']
+TypeError: 'NoneType' object is not subscriptable
+</code></pre>
+
+<ul>
+<li>According to ORCID that identifier&rsquo;s family-name is null so that sucks</li>
+<li>I fixed the script so that it checks if the family name is null</li>
+<li>Now another:</li>
+</ul>
+
+<pre><code>Looking up the name associated with ORCID iD: 0000-0002-1300-3636
+Traceback (most recent call last):
+  File &quot;./resolve-orcids.py&quot;, line 117, in &lt;module&gt;
+    read_identifiers_from_file()
+  File &quot;./resolve-orcids.py&quot;, line 37, in read_identifiers_from_file
+    resolve_orcid_identifiers(orcids)
+  File &quot;./resolve-orcids.py&quot;, line 65, in resolve_orcid_identifiers
+    if data['name']['given-names']:
+TypeError: 'NoneType' object is not subscriptable
+</code></pre>
+
+<ul>
+<li>According to ORCID that identifier&rsquo;s entire name block is null!</li>
+</ul>
 
   
 
