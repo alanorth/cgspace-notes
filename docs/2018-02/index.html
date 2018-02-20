@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-20T11:17:51&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-20T12:28:01&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "4531",
+  "wordCount": "4688",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-20T11:17:51&#43;02:00",
+  "dateModified": "2018-02-20T12:28:01&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -930,6 +930,44 @@ TypeError: 'NoneType' object is not subscriptable
 <ul>
 <li>I updated the <code>resolve-orcids.py</code> to use the &ldquo;credit-name&rdquo; if it exists in a profile, falling back to &ldquo;given-names&rdquo; + &ldquo;family-name&rdquo;</li>
 <li>Also, I added color coded output to the debug messages and added a &ldquo;quiet&rdquo; mode that supresses the normal behavior of printing results to the screen</li>
+<li>I&rsquo;m using this as the test input for <code>resolve-orcids.py</code>:</li>
+</ul>
+
+<pre><code>$ cat orcid-test-values.txt 
+# valid identifier with 'given-names' and 'family-name'
+0000-0001-5019-1368
+
+# duplicate identifier
+0000-0001-5019-1368 
+
+# invalid identifier
+0000-0001-9634-19580
+
+# has a 'credit-name' value we should prefer
+0000-0002-1735-7458
+
+# has a blank 'credit-name' value
+0000-0001-5199-5528
+
+# has a null 'name' object
+0000-0002-1300-3636
+
+# has a null 'family-name' value
+0000-0001-9634-1958
+
+# missing ORCID identifier
+0000-0003-4221-3214
+</code></pre>
+
+<ul>
+<li>Help debug issues with Altmetric badges again, it looks like Altmetric is all kinds of fucked up</li>
+<li>Last week I pointed out that they were tracking Handles from our test server</li>
+<li>Now, their API is responding with content that is marked as content-type JSON but is not valid JSON</li>
+<li>For example, this item: <a href="https://cgspace.cgiar.org/handle/10568/83320">https://cgspace.cgiar.org/handle/10568/83320</a></li>
+<li>The Altmetric JavaScript builds the following API call: <a href="https://api.altmetric.com/v1/handle/10568/83320?callback=_altmetric.embed_callback&amp;domain=cgspace.cgiar.org&amp;key=3c130976ca2b8f2e88f8377633751ba1&amp;cache_until=13-20">https://api.altmetric.com/v1/handle/10568/83320?callback=_altmetric.embed_callback&amp;domain=cgspace.cgiar.org&amp;key=3c130976ca2b8f2e88f8377633751ba1&amp;cache_until=13-20</a></li>
+<li>The response body is <em>not</em> JSON</li>
+<li>To contrast, the following bare API call without query parameters is valid JSON: <a href="https://api.altmetric.com/v1/handle/10568/83320">https://api.altmetric.com/v1/handle/10568/83320</a></li>
+<li>I told them that it&rsquo;s their JavaScript that is fucked up</li>
 </ul>
 
   
