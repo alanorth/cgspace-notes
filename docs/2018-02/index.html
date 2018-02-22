@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-20T14:47:28&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-20T15:32:50&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "4708",
+  "wordCount": "4946",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-20T14:47:28&#43;02:00",
+  "dateModified": "2018-02-20T15:32:50&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -970,6 +970,65 @@ TypeError: 'NoneType' object is not subscriptable
 <li>I told them that it&rsquo;s their JavaScript that is fucked up</li>
 <li>Remove CPWF project number and Humidtropics subject from submission form (<a href="https://github.com/alanorth/DSpace/pull/3">#3</a>)</li>
 <li>I accidentally merged it into my own repository, oops</li>
+</ul>
+
+<h2 id="2018-02-22">2018-02-22</h2>
+
+<ul>
+<li>CGSpace was apparently down today around 13:00 server time and I didn&rsquo;t get any emails on my phone, but saw them later on the computer</li>
+<li>It looks like Sisay restarted Tomcat because I was offline</li>
+<li>There was absolutely nothing interesting going on at 13:00 on the server, WTF?</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/*.log | grep -E &quot;22/Feb/2018:13&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     55 192.99.39.235
+     60 207.46.13.26
+     62 40.77.167.38
+     65 207.46.13.23
+    103 41.57.108.208
+    120 104.196.152.243
+    133 104.154.216.0
+    145 68.180.228.117
+    159 54.92.197.82
+    231 5.9.6.51
+</code></pre>
+
+<ul>
+<li>Otherwise there was pretty normal traffic the rest of the day:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;22/Feb/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    839 216.244.66.245
+   1074 68.180.228.117
+   1114 157.55.39.100
+   1162 207.46.13.26
+   1178 207.46.13.23
+   2749 104.196.152.243
+   3109 50.116.102.77
+   4199 70.32.83.92
+   5208 5.9.6.51
+   8686 45.5.184.196
+</code></pre>
+
+<ul>
+<li>While looking at the logs I see some new bot:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.4.2661.102 Safari/537.36; 360Spider
+</code></pre>
+
+<ul>
+<li>It seems to re-use its user agent but makes tons of useless requests and I wonder if I should add &ldquo;.<em>spider.</em>&rdquo; to the Tomcat Crawler Session Manager valve?</li>
+<li>This is definitely not good:</li>
+</ul>
+
+<pre><code># grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' /var/log/tomcat7/catalina.out
+729
+</code></pre>
+
+<ul>
+<li>I think the <code>removeAbandonedTimeout</code> might still be too low (I increased it from 60 to 90 seconds last week)</li>
+<li>Perhaps something more like a few minutes is better?</li>
 </ul>
 
   
