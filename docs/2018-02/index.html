@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-26T16:41:28&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-26T18:12:27&#43;02:00"/>
 
 
 
@@ -47,7 +47,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 
 "/>
-<meta name="generator" content="Hugo 0.36.1" />
+<meta name="generator" content="Hugo 0.37" />
 
 
     
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "5609",
+  "wordCount": "5873",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-26T16:41:28&#43;02:00",
+  "dateModified": "2018-02-26T18:12:27&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1134,6 +1134,54 @@ Nor Azwadi: 0000-0001-9634-1958
 <li>I don&rsquo;t know why it would take so long, but this logic kinda makes sense</li>
 <li>I think I should increase the <code>removeAbandonedTimeout</code> from 90 to something like 180 and continue observing</li>
 <li>I also reduced the timeout for the API pool back to 60 because those interfaces are only used by bots</li>
+</ul>
+
+<h2 id="2018-02-27">2018-02-27</h2>
+
+<ul>
+<li>Peter is still having problems with &ldquo;Socket closed&rdquo; on his submissions page</li>
+<li>I have disabled <code>removeAbandoned</code> for now because that&rsquo;s the only thing I changed in the last few weeks since he started having issues</li>
+<li>I think the real line of logic to follow here is why the submissions page is so slow for him (presumably because of loading all his submissions?)</li>
+<li>I need to see which SQL queries are run during that time</li>
+<li>And only a few hours after I disabled the <code>removeAbandoned</code> thing CGSpace went down and lo and behold, there were 264 connections, most of which were idle:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      5 dspaceApi
+    279 dspaceWeb
+$ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c &quot;idle in transaction&quot;
+218
+</code></pre>
+
+<ul>
+<li>So I&rsquo;m re-enabling the <code>removeAbandoned</code> setting</li>
+<li>I grabbed a snapshot of the active connections in <code>pg_stat_activity</code> for all queries running longer than 2 minutes:</li>
+</ul>
+
+<pre><code>dspace=# \copy (SELECT now() - query_start as &quot;runtime&quot;, application_name, usename, datname, waiting, state, query
+  FROM  pg_stat_activity
+  WHERE now() - query_start &gt; '2 minutes'::interval
+ ORDER BY runtime DESC) to /tmp/2018-02-27-postgresql.txt
+COPY 263
+</code></pre>
+
+<ul>
+<li>100 of these idle in transaction connections are the following query:</li>
+</ul>
+
+<pre><code>SELECT * FROM resourcepolicy WHERE resource_type_id= $1 AND resource_id= $2 AND action_id= $3
+</code></pre>
+
+<ul>
+<li>&hellip; but according to the <a href="https://www.postgresql.org/docs/9.5/static/view-pg-locks.html">pg_locks documentation</a> I should have done this to correlate the locks with the activity:</li>
+</ul>
+
+<pre><code>SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;
+</code></pre>
+
+<ul>
+<li>Finally finished the <a href="https://gist.github.com/alanorth/6d7489b50f06a6a1f04ae1c8b899cb6e">orcid-authority-to-item.py</a> script!</li>
+<li>It successfully mapped 2600 ORCID identifiers to items!</li>
 </ul>
 
   
