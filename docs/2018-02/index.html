@@ -23,7 +23,7 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
 
 <meta property="article:published_time" content="2018-02-01T16:28:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-02-27T17:34:48&#43;02:00"/>
+<meta property="article:modified_time" content="2018-02-27T18:50:30&#43;02:00"/>
 
 
 
@@ -57,9 +57,9 @@ I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-pl
   "@type": "BlogPosting",
   "headline": "February, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
-  "wordCount": "5957",
+  "wordCount": "6400",
   "datePublished": "2018-02-01T16:28:54&#43;02:00",
-  "dateModified": "2018-02-27T17:34:48&#43;02:00",
+  "dateModified": "2018-02-27T18:50:30&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1191,6 +1191,113 @@ COPY 263
 <li>Finally finished the <a href="https://gist.github.com/alanorth/6d7489b50f06a6a1f04ae1c8b899cb6e">orcid-authority-to-item.py</a> script!</li>
 <li>It successfully mapped 2600 ORCID identifiers to items in my tests</li>
 <li>I will run it on DSpace Test</li>
+</ul>
+
+<h2 id="2018-02-28">2018-02-28</h2>
+
+<ul>
+<li>CGSpace crashed today, the first HTTP 499 in nginx&rsquo;s access.log was around 09:12</li>
+<li>There&rsquo;s nothing interesting going on in nginx&rsquo;s logs around that time:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Feb/2018:09:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     65 197.210.168.174
+     74 213.55.99.121
+     74 66.249.66.90
+     86 41.204.190.40
+    102 130.225.98.207
+    108 192.0.89.192
+    112 157.55.39.218
+    129 207.46.13.21
+    131 207.46.13.115
+    135 207.46.13.101
+</code></pre>
+
+<ul>
+<li>Looking in dspace.log-2018-02-28 I see this, though:</li>
+</ul>
+
+<pre><code>2018-02-28 09:19:29,692 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.OutOfMemoryError: Java heap space
+</code></pre>
+
+<ul>
+<li>Memory issues seem to be common this month:</li>
+</ul>
+
+<pre><code>$ grep -c 'nested exception is java.lang.OutOfMemoryError: Java heap space' dspace.log.2018-02-* 
+dspace.log.2018-02-01:0
+dspace.log.2018-02-02:0
+dspace.log.2018-02-03:0
+dspace.log.2018-02-04:0
+dspace.log.2018-02-05:0
+dspace.log.2018-02-06:0
+dspace.log.2018-02-07:0
+dspace.log.2018-02-08:0
+dspace.log.2018-02-09:0
+dspace.log.2018-02-10:0
+dspace.log.2018-02-11:0
+dspace.log.2018-02-12:0
+dspace.log.2018-02-13:0
+dspace.log.2018-02-14:0
+dspace.log.2018-02-15:10
+dspace.log.2018-02-16:0
+dspace.log.2018-02-17:0
+dspace.log.2018-02-18:0
+dspace.log.2018-02-19:0
+dspace.log.2018-02-20:0
+dspace.log.2018-02-21:0
+dspace.log.2018-02-22:0
+dspace.log.2018-02-23:0
+dspace.log.2018-02-24:0
+dspace.log.2018-02-25:0
+dspace.log.2018-02-26:0
+dspace.log.2018-02-27:6
+dspace.log.2018-02-28:1
+</code></pre>
+
+<ul>
+<li>Top ten users by session during the first twenty minutes of 9AM:</li>
+</ul>
+
+<pre><code>$ grep -E '2018-02-28 09:(0|1)' dspace.log.2018-02-28 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq -c | sort -n | tail -n 10
+     18 session_id=F2DFF64D3D707CD66AE3A873CEC80C49
+     19 session_id=92E61C64A79F0812BE62A3882DA8F4BA
+     21 session_id=57417F5CB2F9E3871E609CEEBF4E001F
+     25 session_id=C3CD265AB7AA51A49606C57C069A902A
+     26 session_id=E395549F081BA3D7A80F174AE6528750
+     26 session_id=FEE38CF9760E787754E4480069F11CEC
+     33 session_id=C45C2359AE5CD115FABE997179E35257
+     38 session_id=1E9834E918A550C5CD480076BC1B73A4
+     40 session_id=8100883DAD00666A655AE8EC571C95AE
+     66 session_id=01D9932D6E85E90C2BA9FF5563A76D03
+</code></pre>
+
+<ul>
+<li>According to the log 01D9932D6E85E90C2BA9FF5563A76D03 is an ILRI editor, doing lots of updating and editing of items</li>
+<li>8100883DAD00666A655AE8EC571C95AE is some Indian IP address</li>
+<li>1E9834E918A550C5CD480076BC1B73A4 looks to be a session shared by the bots</li>
+<li>So maybe it was due to the editor&rsquo;s uploading of files, perhaps something that was too big or?</li>
+<li>I think I&rsquo;ll increase the JVM heap size on CGSpace from 6144m to 8192m because I&rsquo;m sick of this random crashing shit and the server has memory and I&rsquo;d rather eliminate this so I can get back to solving PostgreSQL issues and doing other real work</li>
+<li>Run the few corrections from earlier this month for sponsor on CGSpace:</li>
+</ul>
+
+<pre><code>cgspace=# update metadatavalue set text_value='United States Agency for International Development' where resource_type_id=2 and metadata_field_id=29 and text_value like '%U.S. Agency for International Development%';
+UPDATE 3
+</code></pre>
+
+<ul>
+<li>I finally got a CGIAR account so I logged into CGSpace with it and tried to delete my old unfinished submissions (22 of them)</li>
+<li>Eventually it succeeded, but it took about five minutes and I noticed LOTS of locks happening with this query:</li>
+</ul>
+
+<pre><code>dspace=# \copy (SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid) to /tmp/locks-aorth.txt;
+</code></pre>
+
+<ul>
+<li>I took a few snapshots during the process and noticed 500, 800, and even 2000 locks at certain times during the process</li>
+<li>Afterwards I looked a few times and saw only 150 or 200 locks</li>
+<li>On the test server, with the <a href="https://jira.duraspace.org/browse/DS-3636">PostgreSQL indexes from DS-3636</a> applied, it finished instantly</li>
 </ul>
 
   
