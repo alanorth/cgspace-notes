@@ -20,7 +20,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 <meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-03-08T21:20:39&#43;02:00"/>
+<meta property="article:modified_time" content="2018-03-08T21:29:37&#43;02:00"/>
 
 
 
@@ -51,9 +51,9 @@ Export a CSV of the IITA community metadata for Martin Mueller
   "@type": "BlogPosting",
   "headline": "March, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-03/",
-  "wordCount": "709",
+  "wordCount": "780",
   "datePublished": "2018-03-02T16:07:54&#43;02:00",
-  "dateModified": "2018-03-08T21:20:39&#43;02:00",
+  "dateModified": "2018-03-08T21:29:37&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -229,6 +229,16 @@ dspacetest=# select distinct text_lang from metadatavalue where resource_type_id
 </code></pre>
 
 <ul>
+<li>On second inspection it looks like <code>dc.description.provenance</code> fields use the text_lang &ldquo;en&rdquo; so that&rsquo;s probably why there are over 100,000 fields changed&hellip;</li>
+<li>If I skip that, there are about 2,000, which seems more reasonably like the amount of fields users have edited manually, or fucked up during CSV import, etc:</li>
+</ul>
+
+<pre><code>dspace=# update metadatavalue set text_lang='en_US' where resource_type_id=2 and text_lang in ('EN','En','en_','EN_US','en_U','eng');
+UPDATE 2309
+</code></pre>
+
+<ul>
+<li>I will apply this on CGSpace right now</li>
 <li>In other news, I was playing with adding ORCID identifiers to a dump of CIAT&rsquo;s community via CSV in OpenRefine</li>
 <li>Using a series of filters, flags, and GREL expressions to isolate items for a certain author, I figured out how to add ORCID identifiers to the <code>cg.creator.id</code> field</li>
 <li>For example, a GREL expression in a custom text facet to get all items with <code>dc.contributor.author[en_US]</code> of a certain author with several name variations (this is how you use a logical OR in OpenRefine):</li>
