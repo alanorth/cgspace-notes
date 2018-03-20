@@ -20,7 +20,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 <meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-03-19T18:18:28&#43;02:00"/>
+<meta property="article:modified_time" content="2018-03-20T17:37:20&#43;02:00"/>
 
 
 
@@ -51,9 +51,9 @@ Export a CSV of the IITA community metadata for Martin Mueller
   "@type": "BlogPosting",
   "headline": "March, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-03/",
-  "wordCount": "1819",
+  "wordCount": "1882",
   "datePublished": "2018-03-02T16:07:54&#43;02:00",
-  "dateModified": "2018-03-19T18:18:28&#43;02:00",
+  "dateModified": "2018-03-20T17:37:20&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -185,7 +185,7 @@ UPDATE 1
 <ul>
 <li>Looking at a CSV dump of the CIAT community I see there are tons of stupid text languages people add for their metadata</li>
 <li>This makes the CSV have tons of columns, for example <code>dc.title</code>, <code>dc.title[]</code>, <code>dc.title[en]</code>, <code>dc.title[eng]</code>, <code>dc.title[en_US]</code> and so on!</li>
-<li>I think I can fix — or at least normalize — them in the database:</li>
+<li>I think I can fix — or at least normalize — them in the database:</li>
 </ul>
 
 <pre><code>dspace=# select distinct text_lang from metadatavalue where resource_type_id=2;
@@ -477,6 +477,16 @@ UPDATE 1
 
 <ul>
 <li>Communicate with DSpace editors on Yammer about being more careful about spaces and character editing when doing manual metadata edits</li>
+<li>Merge the changes to CRP names to the <code>5_x-prod</code> branch and deploy on CGSpace (<a href="https://github.com/ilri/DSpace/pull/363">#363</a>)</li>
+<li>Run corrections for CRP names in the database:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Run all system updates on CGSpace (linode18) and reboot the server</li>
+<li>I started a full Discovery re-index on CGSpace because of the updated CRPs</li>
 </ul>
 
   
