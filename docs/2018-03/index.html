@@ -20,7 +20,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 <meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-03-21T11:44:06&#43;02:00"/>
+<meta property="article:modified_time" content="2018-03-21T18:11:22&#43;02:00"/>
 
 
 
@@ -51,9 +51,9 @@ Export a CSV of the IITA community metadata for Martin Mueller
   "@type": "BlogPosting",
   "headline": "March, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-03/",
-  "wordCount": "2343",
+  "wordCount": "2459",
   "datePublished": "2018-03-02T16:07:54&#43;02:00",
-  "dateModified": "2018-03-21T11:44:06&#43;02:00",
+  "dateModified": "2018-03-21T18:11:22&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -587,7 +587,29 @@ java.lang.OutOfMemoryError: Java heap space
 <li>Update <a href="https://github.com/ilri/rmg-ansible-public">Ansible playbooks</a> to use <a href="https://jdbc.postgresql.org/">PostgreSQL JBDC driver</a> 42.2.2</li>
 <li>Deploy the new JDBC driver on DSpace Test</li>
 <li>I&rsquo;m also curious to see how long the <code>dspace index-discovery -b</code> takes on DSpace Test where the DSpace installation directory is on one of Linode&rsquo;s new block storage volumes</li>
+</ul>
+
+<pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    208m19.155s
+user    8m39.138s
+sys     2m45.135s
+</code></pre>
+
+<ul>
+<li>So that&rsquo;s about three times as long as it took on CGSpace this morning</li>
 <li>I should also check the raw read speed with <code>hdparm -tT /dev/sdc</code></li>
+<li>Looking at Peter&rsquo;s author corrections there are some mistakes due to Windows 1252 encoding</li>
+<li>I need to find a way to filter these easily with OpenRefine</li>
+<li>For example, Peter has inadvertantly introduced Unicode character 0xfffd into several fields</li>
+<li>I can search for Unicode values by their hex code in OpenRefine using the following GREL expression:</li>
+</ul>
+
+<pre><code>isNotNull(value.match(/.*\ufffd.*/))
+</code></pre>
+
+<ul>
+<li>I need to be able to add many common characters though so that it is useful to copy and paste into a new project to find issues</li>
 </ul>
 
   
