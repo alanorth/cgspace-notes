@@ -20,7 +20,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 <meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-03-20T20:31:54&#43;02:00"/>
+<meta property="article:modified_time" content="2018-03-20T21:04:10&#43;02:00"/>
 
 
 
@@ -51,9 +51,9 @@ Export a CSV of the IITA community metadata for Martin Mueller
   "@type": "BlogPosting",
   "headline": "March, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-03/",
-  "wordCount": "1948",
+  "wordCount": "2113",
   "datePublished": "2018-03-02T16:07:54&#43;02:00",
-  "dateModified": "2018-03-20T20:31:54&#43;02:00",
+  "dateModified": "2018-03-20T21:04:10&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -510,6 +510,32 @@ java.lang.IllegalArgumentException: No choices plugin was configured for  field 
 
 <ul>
 <li>I have to figure that one out&hellip;</li>
+</ul>
+
+<h2 id="2018-03-21">2018-03-21</h2>
+
+<ul>
+<li>Looks like the indexing gets confused that there is still data in the <code>authority</code> column</li>
+<li>Unfortunately this causes those items to simply not be indexed, which users noticed because item counts were cut in half and old items showed up in RSS!</li>
+<li>Since we&rsquo;ve migrated the ORCID identifiers associated with the authority data to the <code>cg.creator.id</code> field we can nullify the authorities remaining in the database:</li>
+</ul>
+
+<pre><code class="language-sql">dspace=# UPDATE metadatavalue SET authority=NULL WHERE resource_type_id=2 AND metadata_field_id=3 AND authority IS NOT NULL;
+UPDATE 195463
+</code></pre>
+
+<ul>
+<li>After this the indexing works as usual and item counts and facets are back to normal</li>
+<li>Send Peter a list of all authors to correct:</li>
+</ul>
+
+<pre><code class="language-sql">dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element
+= 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv header;
+COPY 56156
+</code></pre>
+
+<ul>
+<li>Afterwards we&rsquo;ll want to do some batch tagging of ORCID identifiers to these names</li>
 </ul>
 
   
