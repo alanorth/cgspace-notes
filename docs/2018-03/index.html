@@ -20,7 +20,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 <meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-03-22T23:07:03&#43;02:00"/>
+<meta property="article:modified_time" content="2018-03-24T22:03:00&#43;02:00"/>
 
 
 
@@ -51,9 +51,9 @@ Export a CSV of the IITA community metadata for Martin Mueller
   "@type": "BlogPosting",
   "headline": "March, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-03/",
-  "wordCount": "2509",
+  "wordCount": "2695",
   "datePublished": "2018-03-02T16:07:54&#43;02:00",
-  "dateModified": "2018-03-22T23:07:03&#43;02:00",
+  "dateModified": "2018-03-24T22:03:00&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -624,6 +624,60 @@ sys     2m45.135s
 <ul>
 <li>More work on the Ubuntu 18.04 readiness stuff for the <a href="https://github.com/ilri/rmg-ansible-public">Ansible playbooks</a></li>
 <li>The playbook now uses the system&rsquo;s Ruby and Node.js so I don&rsquo;t have to manually install RVM and NVM after</li>
+</ul>
+
+<h2 id="2018-03-25">2018-03-25</h2>
+
+<ul>
+<li>Looking at Peter&rsquo;s author corrections and trying to work out a way to find errors in OpenRefine easily</li>
+<li>I can find all names that have acceptable characters using a GREL expression like:</li>
+</ul>
+
+<pre><code>isNotNull(value.match(/.*[a-zA-ZáÁéèïíñØøöóúü].*/))
+</code></pre>
+
+<ul>
+<li>But it&rsquo;s probably better to just say which characters I know for sure are not valid (like parentheses, pipe, or weird Unicode characters):</li>
+</ul>
+
+<pre><code>or(
+  isNotNull(value.match(/.*[(|)].*/)),
+  isNotNull(value.match(/.*\uFFFD.*/)),
+  isNotNull(value.match(/.*\u00A0.*/)),
+  isNotNull(value.match(/.*\u200A.*/))
+)
+</code></pre>
+
+<ul>
+<li>And here&rsquo;s one combined GREL expression to check for items marked as to delete or check so I can flag them and export them to a separate CSV (though perhaps it&rsquo;s time to add delete support to my <code>fix-metadata-values.py</code> script:</li>
+</ul>
+
+<pre><code>or(
+  isNotNull(value.match(/.*delete.*/i)),
+  isNotNull(value.match(/.*remove.*/i)),
+  isNotNull(value.match(/.*check.*/i))
+)
+</code></pre>
+
+<ul>
+<li><p>So I guess the routine is in OpenRefine is:</p>
+
+<ul>
+<li>Transform: trim leading/trailing whitespace</li>
+<li>Transform: collapse consecutive whitespace</li>
+<li>Custom text facet for items to delete/check</li>
+<li>Custom text facet for illegal characters</li>
+</ul></li>
+
+<li><p>Test the corrections and deletions locally, then run them on CGSpace:</p></li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/Correct-2928-Authors-2018-03-21.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3
+$ ./delete-metadata-values.py -i /tmp/Delete-8-Authors-2018-03-21.csv -f dc.contributor.author -m 3 -db dspacetest -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>Afterwards I started a full Discovery reindexing</li>
 </ul>
 
   
