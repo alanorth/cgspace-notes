@@ -20,7 +20,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 <meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-03-28T09:48:08&#43;03:00"/>
+<meta property="article:modified_time" content="2018-03-28T12:20:58&#43;03:00"/>
 
 
 
@@ -51,9 +51,9 @@ Export a CSV of the IITA community metadata for Martin Mueller
   "@type": "BlogPosting",
   "headline": "March, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-03/",
-  "wordCount": "2787",
+  "wordCount": "2950",
   "datePublished": "2018-03-02T16:07:54&#43;02:00",
-  "dateModified": "2018-03-28T09:48:08&#43;03:00",
+  "dateModified": "2018-03-28T12:20:58&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -699,7 +699,35 @@ $ ./delete-metadata-values.py -i /tmp/Delete-8-Authors-2018-03-21.csv -f dc.cont
 
 <ul>
 <li>DSpace Test crashed due to heap space so I&rsquo;ve increased it from 4096m to 5120m</li>
+<li>The error in Tomcat&rsquo;s <code>catalina.out</code> was:</li>
+</ul>
+
+<pre><code>Exception in thread &quot;RMI TCP Connection(idle)&quot; java.lang.OutOfMemoryError: Java heap space
+</code></pre>
+
+<ul>
 <li>Add ISI Journal (cg.isijournal) as an option in Atmire&rsquo;s Listing and Reports layout (<a href="https://github.com/ilri/DSpace/pull/370">#370</a>) for Abenet</li>
+<li>I noticed a few hundred CRPs using the old capitalized formatting so I corrected them:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db cgspace -u cgspace -p 'fuuu'
+Fixed 29 occurences of: CLIMATE CHANGE, AGRICULTURE AND FOOD SECURITY
+Fixed 7 occurences of: WATER, LAND AND ECOSYSTEMS
+Fixed 19 occurences of: AGRICULTURE FOR NUTRITION AND HEALTH
+Fixed 100 occurences of: ROOTS, TUBERS AND BANANAS
+Fixed 31 occurences of: HUMIDTROPICS
+Fixed 21 occurences of: MAIZE
+Fixed 11 occurences of: POLICIES, INSTITUTIONS, AND MARKETS
+Fixed 28 occurences of: GRAIN LEGUMES
+Fixed 3 occurences of: FORESTS, TREES AND AGROFORESTRY
+Fixed 5 occurences of: GENEBANKS
+</code></pre>
+
+<ul>
+<li>That&rsquo;s weird because we just updated them last week&hellip;</li>
+<li>Create a pull request to enable searching by ORCID identifier (<code>cg.creator.id</code>) in Discovery and Listings and Reports (<a href="https://github.com/ilri/DSpace/pull/371">#371</a>)</li>
+<li>I will test it on DSpace Test first!</li>
+<li>Fix one missing XMLUI string for &ldquo;Access Status&rdquo; (cg.identifier.status)</li>
 </ul>
 
   
