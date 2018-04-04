@@ -43,7 +43,7 @@ Catalina logs at least show some memory errors yesterday:
 
 
 "/>
-<meta name="generator" content="Hugo 0.37.1" />
+<meta name="generator" content="Hugo 0.38" />
 
 
     
@@ -53,7 +53,7 @@ Catalina logs at least show some memory errors yesterday:
   "@type": "BlogPosting",
   "headline": "April, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-04/",
-  "wordCount": "118",
+  "wordCount": "253",
   "datePublished": "2018-04-01T16:13:54&#43;02:00",
   "dateModified": "2018-04-01T17:21:41&#43;03:00",
   "author": {
@@ -144,6 +144,41 @@ Exception in thread &quot;ContainerBackgroundProcessor[StandardEngine[Catalina]]
 <li>I posted a message on Yammer to ask if people are using the Duplicate Check step from the Metadata Quality Module</li>
 <li>Help Lili Szilagyi with a question about statistics on some CCAFS items</li>
 </ul>
+
+<h2 id="2018-04-04">2018-04-04</h2>
+
+<ul>
+<li>Peter noticed that there were still some old CRP names on CGSpace, because I hadn&rsquo;t forced the Discovery index to be updated after I fixed the others last week</li>
+<li>For completeness I re-ran the CRP corrections on CGSpace:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db dspace -u dspace -p 'fuuu'
+Fixed 1 occurences of: AGRICULTURE FOR NUTRITION AND HEALTH
+</code></pre>
+
+<ul>
+<li>Then started a full Discovery index:</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx1024m'
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre>
+
+<ul>
+<li>Elizabeth from CIAT emailed to ask if I could help her by adding ORCID identifiers to all of Joseph Tohme&rsquo;s items</li>
+<li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
+</ul>
+
+<pre><code>$ ./add-orcid-identifiers-csv.py -i /tmp/jtohme-2018-04-04.csv -db dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>The CSV format of <code>jtohme-2018-04-04.csv</code> was:</li>
+</ul>
+
+<pre><code class="language-csv">dc.contributor.author,cg.creator.id
+&quot;Tohme, Joseph M.&quot;,Joe Tohme: 0000-0003-2765-7101
+</code></pre>
 
   
 
