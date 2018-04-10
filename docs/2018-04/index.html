@@ -21,7 +21,7 @@ Catalina logs at least show some memory errors yesterday:
 
 <meta property="article:published_time" content="2018-04-01T16:13:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-04-04T17:01:08&#43;03:00"/>
+<meta property="article:modified_time" content="2018-04-10T08:27:55&#43;03:00"/>
 
 
 
@@ -53,9 +53,9 @@ Catalina logs at least show some memory errors yesterday:
   "@type": "BlogPosting",
   "headline": "April, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-04/",
-  "wordCount": "1005",
+  "wordCount": "1297",
   "datePublished": "2018-04-01T16:13:54&#43;02:00",
-  "dateModified": "2018-04-04T17:01:08&#43;03:00",
+  "dateModified": "2018-04-10T08:27:55&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -351,7 +351,7 @@ X-XSS-Protection: 1; mode=block
 <p><img src="/cgspace-notes/2018/04/jmx_dspace_sessions-week.png" alt="Tomcat sessions week" /></p>
 
 <ul>
-<li>Looks like the number of total requests processed by nginx in March went down from the previous months:</li>
+<li>In other news, it looks like the number of total requests processed by nginx in March went down from the previous months:</li>
 </ul>
 
 <pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2018&quot;
@@ -361,6 +361,67 @@ real    0m13.658s
 user    0m16.533s
 sys     0m1.087s
 </code></pre>
+
+<ul>
+<li>In other other news, the database cleanup script has an issue again:</li>
+</ul>
+
+<pre><code>$ dspace cleanup -v
+...
+Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(151626) is still referenced from table &quot;bundle&quot;.
+</code></pre>
+
+<ul>
+<li>The solution is, as always:</li>
+</ul>
+
+<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (151626);'
+UPDATE 1
+</code></pre>
+
+<ul>
+<li>Looking at abandoned connections in Tomcat:</li>
+</ul>
+
+<pre><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon'
+2115
+</code></pre>
+
+<ul>
+<li>Apparently from these stacktraces we should be able to see which code is not closing connections properly</li>
+<li>Here&rsquo;s a pretty good overview of days where we had database issues recently:</li>
+</ul>
+
+<pre><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' | awk '{print $1,$2, $3}' | sort | uniq -c | sort -n
+      1 Feb 18, 2018
+      1 Feb 19, 2018
+      1 Feb 20, 2018
+      1 Feb 24, 2018
+      2 Feb 13, 2018
+      3 Feb 17, 2018
+      5 Feb 16, 2018
+      5 Feb 23, 2018
+      5 Feb 27, 2018
+      6 Feb 25, 2018
+     40 Feb 14, 2018
+     63 Feb 28, 2018
+    154 Mar 19, 2018
+    202 Feb 21, 2018
+    264 Feb 26, 2018
+    268 Mar 21, 2018
+    524 Feb 22, 2018
+    570 Feb 15, 2018
+</code></pre>
+
+<ul>
+<li>In Tomcat 8.5 the <code>removeAbandoned</code> property has been split into two: <code>removeAbandonedOnBorrow</code> and <code>removeAbandonedOnMaintenance</code></li>
+<li>See: <a href="https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#Database_Connection_Pool_(DBCP_2)_Configurations">https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#Database_Connection_Pool_(DBCP_2)_Configurations</a></li>
+<li>I assume we want <code>removeAbandonedOnBorrow</code> and make updates to the Tomcat 8 templates in Ansible</li>
+<li>After reading more documentation I see that Tomcat 8.5&rsquo;s default DBCP seems to now be Commons DBCP2 instead of Tomcat DBCP</li>
+<li>It can be overridden in Tomcat&rsquo;s <em>server.xml</em> by setting <code>factory=&quot;org.apache.tomcat.jdbc.pool.DataSourceFactory&quot;</code> in the <code>&lt;Resource&gt;</code></li>
+<li>I think we should use this default, so we&rsquo;ll need to remove some other settings that are specific to Tomcat&rsquo;s DBCP like <code>jdbcInterceptors</code> and <code>abandonWhenPercentageFull</code></li>
+</ul>
 
   
 
