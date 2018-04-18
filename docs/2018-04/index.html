@@ -21,7 +21,7 @@ Catalina logs at least show some memory errors yesterday:
 
 <meta property="article:published_time" content="2018-04-01T16:13:54&#43;02:00"/>
 
-<meta property="article:modified_time" content="2018-04-15T11:18:17&#43;03:00"/>
+<meta property="article:modified_time" content="2018-04-16T12:10:44&#43;03:00"/>
 
 
 
@@ -43,7 +43,7 @@ Catalina logs at least show some memory errors yesterday:
 
 
 "/>
-<meta name="generator" content="Hugo 0.38.2" />
+<meta name="generator" content="Hugo 0.39" />
 
 
     
@@ -53,9 +53,9 @@ Catalina logs at least show some memory errors yesterday:
   "@type": "BlogPosting",
   "headline": "April, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-04/",
-  "wordCount": "1613",
+  "wordCount": "1912",
   "datePublished": "2018-04-01T16:13:54&#43;02:00",
-  "dateModified": "2018-04-15T11:18:17&#43;03:00",
+  "dateModified": "2018-04-16T12:10:44&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -492,6 +492,44 @@ Total time: 4 minutes 12 seconds
 
 <ul>
 <li>Communicate with Bioversity about their project to migrate their e-Library (Typo3) and Sci-lit databases to CGSpace</li>
+</ul>
+
+<h2 id="2018-04-18">2018-04-18</h2>
+
+<ul>
+<li>IWMI people are asking about building a search query that outputs RSS for their reports</li>
+<li>They want the same results as this Discovery query: <a href="https://cgspace.cgiar.org/discover?filtertype_1=dateAccessioned&amp;filter_relational_operator_1=contains&amp;filter_1=2018&amp;submit_apply_filter=&amp;query=&amp;scope=10568%2F16814&amp;rpp=100&amp;sort_by=dc.date.issued_dt&amp;order=desc">https://cgspace.cgiar.org/discover?filtertype_1=dateAccessioned&amp;filter_relational_operator_1=contains&amp;filter_1=2018&amp;submit_apply_filter=&amp;query=&amp;scope=10568%2F16814&amp;rpp=100&amp;sort_by=dc.date.issued_dt&amp;order=desc</a></li>
+<li>They will need to use OpenSearch, but I can&rsquo;t remember all the parameters</li>
+<li>Apparently search sort options for OpenSearch are in <code>dspace.cfg</code>:</li>
+</ul>
+
+<pre><code>webui.itemlist.sort-option.1 = title:dc.title:title
+webui.itemlist.sort-option.2 = dateissued:dc.date.issued:date
+webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
+webui.itemlist.sort-option.4 = type:dc.type:text
+</code></pre>
+
+<ul>
+<li>They want items by issue date, so we need to use sort option 2</li>
+<li>According to the DSpace Manual there are only the following parameters to OpenSearch: format, scope, rpp, start, and sort_by</li>
+<li>The OpenSearch <code>query</code> parameter expects a Discovery search filter that is defined in <code>dspace/config/spring/api/discovery.xml</code></li>
+<li>So for IWMI they should be able to use something like this: <a href="https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;format=rss">https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;format=rss</a></li>
+<li>There are also <code>rpp</code> (results per page) and <code>start</code> parameters but in my testing now on DSpace 5.5 they behave very strangely</li>
+<li>For example, set <code>rpp=1</code> and then check the results for <code>start</code> values of 0, 1, and 2 and they are all the same!</li>
+<li>If I have time I will check if this behavior persists on DSpace 6.x on the official DSpace demo and file a bug</li>
+<li>Also, the DSpace Manual as of 5.x has very poor documentation for OpenSearch</li>
+<li>They don&rsquo;t tell you to use Discovery search filters in the <code>query</code> (with format <code>query=dateIssued:2018</code>)</li>
+<li>They don&rsquo;t tell you that the sort options are actually defined in <code>dspace.cfg</code> (ie, you need to use <code>2</code> instead of <code>dc.date.issued_dt</code>)</li>
+<li>They are missing the <code>order</code> parameter (ASC vs DESC)</li>
+<li>I notice that DSpace Test has crashed again, due to memory:</li>
+</ul>
+
+<pre><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
+178
+</code></pre>
+
+<ul>
+<li>I will increase the JVM heap size from 5120M to 6144M, though we don&rsquo;t have much room left to grow as DSpace Test (linode19) is using a smaller instance size than CGSpace</li>
 </ul>
 
   
