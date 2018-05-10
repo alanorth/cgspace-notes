@@ -27,7 +27,7 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 
 <meta property="article:published_time" content="2018-05-01T16:43:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-05-07T17:50:32&#43;03:00"/>
+<meta property="article:modified_time" content="2018-05-09T18:32:14&#43;03:00"/>
 
 
 
@@ -65,9 +65,9 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
   "@type": "BlogPosting",
   "headline": "May, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-05/",
-  "wordCount": "907",
+  "wordCount": "1150",
   "datePublished": "2018-05-01T16:43:54&#43;03:00",
-  "dateModified": "2018-05-07T17:50:32&#43;03:00",
+  "dateModified": "2018-05-09T18:32:14&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -266,6 +266,55 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 <ul>
 <li>Udana asked about the Book Chapters we had been proofing on DSpace Test in 2018-04</li>
 <li>I told him that there were still some TODO items for him on that data, for example to update the <code>dc.language.iso</code> field for the Spanish items</li>
+<li>I was trying to remember how I parsed the <code>input-forms.xml</code> using <code>xmllint</code> to extract subjects neatly</li>
+<li>I could use it with <a href="https://github.com/okfn/reconcile-csv">reconcile-csv</a> or to populate a Solr instance for reconciliation</li>
+<li>This XPath expression gets close, but outputs all items on one line:</li>
+</ul>
+
+<pre><code>$ xmllint --xpath '//value-pairs[@value-pairs-name=&quot;crpsubject&quot;]/pair/stored-value/node()' dspace/config/input-forms.xml        
+Agriculture for Nutrition and HealthBig DataClimate Change, Agriculture and Food SecurityExcellence in BreedingFishForests, Trees and AgroforestryGenebanksGrain Legumes and Dryland CerealsLivestockMaizePolicies, Institutions and MarketsRiceRoots, Tubers and BananasWater, Land and EcosystemsWheatAquatic Agricultural SystemsDryland CerealsDryland SystemsGrain LegumesIntegrated Systems for the Humid TropicsLivestock and Fish
+</code></pre>
+
+<ul>
+<li>Maybe <code>xmlstarlet</code> is better:</li>
+</ul>
+
+<pre><code>$ xmlstarlet sel -t -v '//value-pairs[@value-pairs-name=&quot;crpsubject&quot;]/pair/stored-value/text()' dspace/config/input-forms.xml
+Agriculture for Nutrition and Health
+Big Data
+Climate Change, Agriculture and Food Security
+Excellence in Breeding
+Fish
+Forests, Trees and Agroforestry
+Genebanks
+Grain Legumes and Dryland Cereals
+Livestock
+Maize
+Policies, Institutions and Markets
+Rice
+Roots, Tubers and Bananas
+Water, Land and Ecosystems
+Wheat
+Aquatic Agricultural Systems
+Dryland Cereals
+Dryland Systems
+Grain Legumes
+Integrated Systems for the Humid Tropics
+Livestock and Fish
+</code></pre>
+
+<ul>
+<li>Discuss Colombian BNARS harvesting the CIAT data from CGSpace</li>
+<li>They are using a system called Primo and the only options for data harvesting in that system are via FTP and OAI</li>
+<li>I told them to get all <a href="https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;set=com_10568_35697">CIAT records via OAI</a></li>
+<li>Just a note to myself, I figured out how to get reconcile-csv to run from source rather than running the old pre-compiled JAR file:</li>
+</ul>
+
+<pre><code>$ lein run /tmp/crps.csv id
+</code></pre>
+
+<ul>
+<li>I tried to reconcile against a CSV of our countries but reconcile-csv crashes</li>
 </ul>
 
   
