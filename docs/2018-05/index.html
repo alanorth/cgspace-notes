@@ -27,7 +27,7 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 
 <meta property="article:published_time" content="2018-05-01T16:43:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-05-13T18:30:25&#43;03:00"/>
+<meta property="article:modified_time" content="2018-05-15T13:25:03&#43;03:00"/>
 
 
 
@@ -65,9 +65,9 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
   "@type": "BlogPosting",
   "headline": "May, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-05/",
-  "wordCount": "1441",
+  "wordCount": "1811",
   "datePublished": "2018-05-01T16:43:54&#43;03:00",
-  "dateModified": "2018-05-13T18:30:25&#43;03:00",
+  "dateModified": "2018-05-15T13:25:03&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -340,6 +340,7 @@ Livestock and Fish
 
 <ul>
 <li>Send a message to the OpenRefine mailing list about the bug with reconciling multi-value cells</li>
+<li>Help Silvia Alonso get a list of all her publications since 2013 from Listings and Reports</li>
 </ul>
 
 <h2 id="2018-05-15">2018-05-15</h2>
@@ -368,6 +369,62 @@ return &quot;blank&quot;
 <li>More information and good examples here: <a href="https://programminghistorian.org/lessons/fetch-and-parse-data-with-openrefine">https://programminghistorian.org/lessons/fetch-and-parse-data-with-openrefine</a></li>
 <li>Finish looking at the 2,640 CIFOR records on DSpace Test (<a href="https://dspacetest.cgiar.org/handle/10568/92904"><sup>10568</sup>&frasl;<sub>92904</sub></a>), cleaning up authors and adding collection mappings</li>
 <li>They can now be moved to CGSpace as far as I&rsquo;m concerned, but I don&rsquo;t know if Sisay will do it or me</li>
+<li>I was checking the CIFOR data for duplicates using Atmire&rsquo;s Metadata Quality Module (and found some duplicates actually), but then DSpace died&hellip;</li>
+<li>I didn&rsquo;t see anything in the Tomcat, DSpace, or Solr logs, but I saw this in <code>dmest -T</code>:</li>
+</ul>
+
+<pre><code>[Tue May 15 12:10:01 2018] Out of memory: Kill process 3763 (java) score 706 or sacrifice child
+[Tue May 15 12:10:01 2018] Killed process 3763 (java) total-vm:14667688kB, anon-rss:5705268kB, file-rss:0kB, shmem-rss:0kB
+[Tue May 15 12:10:01 2018] oom_reaper: reaped process 3763 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+</code></pre>
+
+<ul>
+<li>So the Linux kernel killed Java&hellip;</li>
+<li>Maria from Bioversity mailed to say she got an error while submitting an item on CGSpace:</li>
+</ul>
+
+<pre><code>Unable to load Submission Information, since WorkspaceID (ID:S96060) is not a valid in-process submission
+</code></pre>
+
+<ul>
+<li>Looking in the DSpace log I see something related:</li>
+</ul>
+
+<pre><code>2018-05-15 12:35:30,858 INFO  org.dspace.submit.step.CompleteStep @ m.garruccio@cgiar.org:session_id=8AC4499945F38B45EF7A1226E3042DAE:submission_complete:Completed submission with id=96060
+</code></pre>
+
+<ul>
+<li>So I&rsquo;m not sure&hellip;</li>
+<li>I finally figured out how to get OpenRefine to reconcile values from Solr via <a href="https://github.com/codeforkjeff/conciliator">conciliator</a>:</li>
+<li>The trick was to use a more appropriate Solr fieldType <code>text_en</code> instead of <code>text_general</code> so that more terms match, for example uppercase and lower case:</li>
+</ul>
+
+<pre><code>$ ./bin/solr start
+$ ./bin/solr create_core -c countries
+$ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
+$ curl -X POST -H 'Content-type:application/json' --data-binary '{&quot;add-field&quot;: {&quot;name&quot;:&quot;country&quot;, &quot;type&quot;:&quot;text_en&quot;, &quot;multiValued&quot;:false, &quot;stored&quot;:true}}' http://localhost:8983/solr/countries/schema
+</code></pre>
+
+<ul>
+<li>It still doesn&rsquo;t catch simple mistakes like &ldquo;ALBANI&rdquo; or &ldquo;AL BANIA&rdquo; for &ldquo;ALBANIA&rdquo;, and it doesn&rsquo;t return scores, so I have to select matches manually:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/05/openrefine-solr-conciliator.png" alt="OpenRefine reconciling countries from local Solr" /></p>
+
+<ul>
+<li>I should probably make a general copy field and set it to be the default search field, like DSpace&rsquo;s search core does (see schema.xml):</li>
+</ul>
+
+<pre><code>&lt;defaultSearchField&gt;search_text&lt;/defaultSearchField&gt;
+...
+&lt;copyField source=&quot;*&quot; dest=&quot;search_text&quot;/&gt;
+</code></pre>
+
+<ul>
+<li>Actually, I wonder how much of their schema I could just copy&hellip;</li>
+<li>Apparently the default search field is the <code>df</code> parameter and you could technically just add it to the query string, so no need to bother with that in the schema now</li>
+<li>I copied over the DSpace <code>search_text</code> field type from the DSpace Solr config (had to remove some properties so Solr would start) but it doesn&rsquo;t seem to be any better at matching than the <code>text_en</code> type</li>
+<li>I think I need to focus on trying to return scores with conciliator</li>
 </ul>
 
   
