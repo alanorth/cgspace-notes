@@ -27,7 +27,7 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 
 <meta property="article:published_time" content="2018-05-01T16:43:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-05-17T09:45:45&#43;03:00"/>
+<meta property="article:modified_time" content="2018-05-17T10:51:46&#43;03:00"/>
 
 
 
@@ -65,9 +65,9 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
   "@type": "BlogPosting",
   "headline": "May, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-05/",
-  "wordCount": "2164",
+  "wordCount": "2267",
   "datePublished": "2018-05-01T16:43:54&#43;03:00",
-  "dateModified": "2018-05-17T09:45:45&#43;03:00",
+  "dateModified": "2018-05-17T10:51:46&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -461,7 +461,14 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <li>Testing reconciliation of countries against Solr via conciliator, I notice that <code>CÔTE D'IVOIRE</code> doesn&rsquo;t match <code>COTE D'IVOIRE</code>, whereas with reconcile-csv it does</li>
 <li>Also, when reconciling regions against Solr via conciliator <code>EASTERN AFRICA</code> doesn&rsquo;t match <code>EAST AFRICA</code>, whereas with reconcile-csv it does</li>
 <li>And <code>SOUTH AMERICA</code> matches both <code>SOUTH ASIA</code> and <code>SOUTH AMERICA</code> with the same match score of 2&hellip; WTF.</li>
-<li>It could be that I just need to tune the index or query filters in Solr (currently using the example <code>text_en</code> field type)</li>
+<li>It could be that I just need to tune the query filter in Solr (currently using the example <code>text_en</code> field type)</li>
+<li>Oh sweet, it turns out that the issue with searching for characters with accents is called &ldquo;code folding&rdquo; in Solr</li>
+<li>You can use either a <a href="https://lucene.apache.org/solr/guide/7_3/language-analysis.html"><code>solr.ASCIIFoldingFilterFactory</code> filter</a> or a <a href="https://lucene.apache.org/solr/guide/7_3/charfilterfactories.html"><code>solr.MappingCharFilterFactory</code> charFilter</a> mapping against <code>mapping-FoldToASCII.txt</code></li>
+<li>Also see: <a href="https://opensourceconnections.com/blog/2017/02/20/solr-utf8/">https://opensourceconnections.com/blog/2017/02/20/solr-utf8/</a></li>
+<li>Now <code>CÔTE D'IVOIRE</code> matches <code>COTE D'IVOIRE</code>!</li>
+<li>I&rsquo;m not sure which method is better, perhaps the <code>solr.ASCIIFoldingFilterFactory</code> filter because it doesn&rsquo;t require copying the <code>mapping-FoldToASCII.txt</code> file</li>
+<li>And actually I&rsquo;m not entirely sure about the order of filtering before tokenizing, etc&hellip;</li>
+<li>Ah, I see that <code>charFilter</code> must be before the tokenizer because it works on a stream, whereas <code>filter</code> operates on tokenized input so it must come after the tokenizer</li>
 </ul>
 
   
