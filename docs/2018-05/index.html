@@ -27,7 +27,7 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 
 <meta property="article:published_time" content="2018-05-01T16:43:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-05-30T09:05:40-07:00"/>
+<meta property="article:modified_time" content="2018-05-30T10:50:55-07:00"/>
 
 
 
@@ -65,9 +65,9 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
   "@type": "BlogPosting",
   "headline": "May, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-05/",
-  "wordCount": "3024",
+  "wordCount": "3135",
   "datePublished": "2018-05-01T16:43:54&#43;03:00",
-  "dateModified": "2018-05-30T09:05:40-07:00",
+  "dateModified": "2018-05-30T10:50:55-07:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -555,6 +555,16 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <li>It might be possible to adjust some things, but eventually we&rsquo;ll need a larger VPS instance</li>
 <li>For some reason there are no JVM stats in Munin, ugh</li>
 <li>Run all system updates on DSpace Test and reboot it</li>
+<li>I generated a list of CIFOR duplicates from the <code>CIFOR_May_9</code> collection using the Atmire MQM module and then dumped the HTML source so I could process it for sending to Vika</li>
+<li>I used grep to filter all relevant handle lines from the HTML source then used sed to insert a newline before each &ldquo;Item1&rdquo; line (as the duplicates are grouped like Item1, Item2, Item3 for each set of duplicates):</li>
+</ul>
+
+<pre><code>$ grep -E 'aspect.duplicatechecker.DuplicateResults.field.del_handle_[0-9]{1,3}_Item' ~/Desktop/https\ _dspacetest.cgiar.org_atmire_metadata-quality_duplicate-checker.html &gt; ~/cifor-duplicates.txt
+$ sed 's/.*Item1.*/\n&amp;/g' ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cleaned.txt
+</code></pre>
+
+<ul>
+<li>I told Vika to look through the list manually and indicate which ones are indeed duplicates that we should delete, and which ones to map to CIFOR&rsquo;s collection</li>
 </ul>
 
   
