@@ -27,7 +27,7 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 
 <meta property="article:published_time" content="2018-05-01T16:43:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-05-30T10:50:55-07:00"/>
+<meta property="article:modified_time" content="2018-05-30T14:48:10-07:00"/>
 
 
 
@@ -65,9 +65,9 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
   "@type": "BlogPosting",
   "headline": "May, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-05/",
-  "wordCount": "3135",
+  "wordCount": "3361",
   "datePublished": "2018-05-01T16:43:54&#43;03:00",
-  "dateModified": "2018-05-30T10:50:55-07:00",
+  "dateModified": "2018-05-30T14:48:10-07:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -565,7 +565,23 @@ $ sed 's/.*Item1.*/\n&amp;/g' ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cle
 
 <ul>
 <li>I told Vika to look through the list manually and indicate which ones are indeed duplicates that we should delete, and which ones to map to CIFOR&rsquo;s collection</li>
+<li>A few weeks ago Peter wanted a list of authors from the ILRI collections, so I need to find a way to get the handles of all those collections</li>
+<li>I can use the <code>/communities/{id}/collections</code> endpoint of the REST API but it only takes IDs (not handles) and doesn&rsquo;t seem to descend into sub communities</li>
+<li>Shit, so I need the IDs for the the top-level ILRI community and all its sub communities (and their sub communities)</li>
+<li>There has got to be a better way to do this than going to each community and getting their handles and IDs manually</li>
+<li>Oh shit, I literally already wrote a script to get all collections in a community hierarchy from the REST API: <a href="https://gist.github.com/alanorth/ddd7f555f0e487fe0e9d3eb4ff26ce50">rest-find-collections.py</a></li>
+<li>The output isn&rsquo;t great, but all the handles and IDs are printed in debug mode:</li>
 </ul>
+
+<pre><code>$ ./rest-find-collections.py -u https://cgspace.cgiar.org/rest -d 10568/1 2&gt; /tmp/ilri-collections.txt
+</code></pre>
+
+<ul>
+<li>Then I format the list of handles and put it into this SQL query to export authors from items ONLY in those collections (too many to list here):</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/67236','10568/67274',...))) group by text_value order by count desc) to /tmp/ilri-authors.csv with csv;
+</code></pre>
 
   
 
