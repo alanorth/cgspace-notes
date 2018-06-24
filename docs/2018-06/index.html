@@ -41,7 +41,7 @@ sys     2m7.289s
 
 <meta property="article:published_time" content="2018-06-04T19:49:54-07:00"/>
 
-<meta property="article:modified_time" content="2018-06-24T09:41:33&#43;03:00"/>
+<meta property="article:modified_time" content="2018-06-24T13:37:43&#43;03:00"/>
 
 
 
@@ -93,9 +93,9 @@ sys     2m7.289s
   "@type": "BlogPosting",
   "headline": "June, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-06/",
-  "wordCount": "2068",
+  "wordCount": "2280",
   "datePublished": "2018-06-04T19:49:54-07:00",
-  "dateModified": "2018-06-24T09:41:33&#43;03:00",
+  "dateModified": "2018-06-24T13:37:43&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -436,7 +436,7 @@ UPDATE 1
 <pre><code>$ dropdb -h localhost -U postgres dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
-$ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -W -h localhost /tmp/cgspace_2018-06-24.backup
+$ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost /tmp/cgspace_2018-06-24.backup
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
 </code></pre>
 
@@ -453,7 +453,53 @@ $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser
 <li>The smaller instances get increased storage and network speed but I doubt many are actually using much of their current allocations so we probably don&rsquo;t need to bother with upgrading them</li>
 <li>Last week Abenet asked if we could add <code>dc.language.iso</code> to the advanced search filters</li>
 <li>There is already a search filter for this field defined in <code>discovery.xml</code> but we aren&rsquo;t using it, so I quickly enabled and tested it, then merged it to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/380">#380</a>)</li>
+<li>Back to testing the DSpace 5.8 changes from Atmire, I had another issue with SQL migrations:</li>
 </ul>
+
+<pre><code>Caused by: org.flywaydb.core.api.FlywayException: Validate failed. Found differences between applied migrations and available migrations: Detected applied migration missing on the classpath: 5.8.2015.12.03.3
+</code></pre>
+
+<ul>
+<li>It took me a while to figure out that this migration is for MQM, which I removed after Atmire&rsquo;s original advice about the migrations so we actually need to delete this migration instead up updating it</li>
+<li>So I need to make sure to run the following during the DSpace 5.8 upgrade:</li>
+</ul>
+
+<pre><code>-- Delete existing CUA 4 migration if it exists
+delete from schema_version where version = '5.6.2015.12.03.2';
+
+-- Update version of CUA 4 migration
+update schema_version set version = '5.6.2015.12.03.2' where version = '5.5.2015.12.03.2';
+
+-- Delete MQM migration since we're no longer using it
+delete from schema_version where version = '5.5.2015.12.03.3';
+</code></pre>
+
+<ul>
+<li>After that you can run the migrations manually and then DSpace should work fine:</li>
+</ul>
+
+<pre><code>$ ~/dspace/bin/dspace database migrate ignored
+...
+Done.
+</code></pre>
+
+<ul>
+<li>Elizabeth from CIAT contacted me to ask if I could add ORCID identifiers to all of Andy Jarvis&rsquo; items on CGSpace</li>
+<li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
+</ul>
+
+<pre><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-24-andy-jarvis-orcid.csv -db dspacetest -u dspacetest -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>The contents of <code>2018-06-24-andy-jarvis-orcid.csv</code> were:</li>
+</ul>
+
+<pre><code>dc.contributor.author,cg.creator.id
+&quot;Jarvis, A.&quot;,Andy Jarvis: 0000-0001-6543-0798
+&quot;Jarvis, Andy&quot;,Andy Jarvis: 0000-0001-6543-0798
+&quot;Jarvis, Andrew&quot;,Andy Jarvis: 0000-0001-6543-0798
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
