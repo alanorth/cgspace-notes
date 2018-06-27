@@ -41,7 +41,7 @@ sys     2m7.289s
 
 <meta property="article:published_time" content="2018-06-04T19:49:54-07:00"/>
 
-<meta property="article:modified_time" content="2018-06-24T17:38:07&#43;03:00"/>
+<meta property="article:modified_time" content="2018-06-26T17:17:55&#43;03:00"/>
 
 
 
@@ -93,9 +93,9 @@ sys     2m7.289s
   "@type": "BlogPosting",
   "headline": "June, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-06/",
-  "wordCount": "2420",
+  "wordCount": "2734",
   "datePublished": "2018-06-04T19:49:54-07:00",
-  "dateModified": "2018-06-24T17:38:07&#43;03:00",
+  "dateModified": "2018-06-26T17:17:55&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -515,6 +515,50 @@ Done.
 <ul>
 <li>It&rsquo;s actually only a warning and it also appears in the logs on DSpace Test (which is currently running DSpace 5.5), so I need to keep troubleshooting</li>
 <li>Ah, I think I just need to run <code>dspace oai import</code></li>
+</ul>
+
+<h2 id="2018-06-27">2018-06-27</h2>
+
+<ul>
+<li>Vika from CIFOR sent back his annotations on the duplicates for the &ldquo;CIFOR_May_9&rdquo; archive import that I sent him last week</li>
+<li>I&rsquo;ll have to figure out how to separate those we&rsquo;re keeping, deleting, and mapping into CIFOR&rsquo;s archive collection</li>
+<li>First, get the 62 deletes from Vika&rsquo;s file and remove them from the collection:</li>
+</ul>
+
+<pre><code>$ grep delete 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-delete.txt
+$ wc -l cifor-handle-to-delete.txt
+62 cifor-handle-to-delete.txt
+$ wc -l 10568-92904.csv
+2461 10568-92904.csv
+$ while read line; do sed -i &quot;\#$line#d&quot; 10568-92904.csv; done &lt; cifor-handle-to-delete.txt
+$ wc -l 10568-92904.csv
+2399 10568-92904.csv
+</code></pre>
+
+<ul>
+<li>This iterates over the handles for deletion and uses <code>sed</code> with an alternative pattern delimiter of &lsquo;#&rsquo; (which must be escaped), because the pattern itself contains a &lsquo;/&rsquo;</li>
+<li>The mapped ones will be difficult because we need their internal IDs in order to map them, and there are 50 of them:</li>
+</ul>
+
+<pre><code>$ grep map 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-map.txt
+$ wc -l cifor-handle-to-map.txt
+50 cifor-handle-to-map.txt
+</code></pre>
+
+<ul>
+<li>I can either get them from the databse, or programatically export the metadata using <code>dspace metadata-export -i 10568/xxxxx</code>&hellip;</li>
+<li>Oooh, I can export the items one by one, concatenate them together, remove the headers, and extract the <code>id</code> and <code>collection</code> columns using <a href="https://csvkit.readthedocs.io/">csvkit</a>:</li>
+</ul>
+
+<pre><code>$ while read line; do filename=${line/\//-}.csv; dspace metadata-export -i $line -f $filename; done &lt; /tmp/cifor-handle-to-map.txt
+$ sed '/^id/d' 10568-*.csv | csvcut -c 1,2 &gt; map-to-cifor-archive.csv
+</code></pre>
+
+<ul>
+<li>Then I can use Open Refine to add the &ldquo;CIFOR Archive&rdquo; collection to the mappings</li>
+<li>Importing the 2398 items via <code>dspace metadata-import</code> ends up with a Java garbage collection error, so I think I need to do it in batches of 1,000</li>
+<li>After deleting the 62 duplicates, mapping the 50 items from elsewhere in CGSpace, and uploading 2,398 unique items, there are a total of 2,448 items added in this batch</li>
+<li>I&rsquo;ll let Abenet take one last look and then move them to CGSpace</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
