@@ -30,7 +30,7 @@ There is insufficient memory for the Java Runtime Environment to continue.
 
 <meta property="article:published_time" content="2018-07-01T12:56:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-07-08T23:20:36&#43;03:00"/>
+<meta property="article:modified_time" content="2018-07-09T07:51:04&#43;03:00"/>
 
 
 
@@ -71,9 +71,9 @@ There is insufficient memory for the Java Runtime Environment to continue.
   "@type": "BlogPosting",
   "headline": "July, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-07/",
-  "wordCount": "1064",
+  "wordCount": "1213",
   "datePublished": "2018-07-01T12:56:54&#43;03:00",
-  "dateModified": "2018-07-08T23:20:36&#43;03:00",
+  "dateModified": "2018-07-09T07:51:04&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -304,12 +304,44 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 <li>I wonder if I should convert some of the cron jobs to systemd services / timers&hellip;</li>
 <li>I sent a note to all our users on Yammer to ask them about possible maintenance on Sunday, July 14th</li>
 <li>Abenet wants to be able to search by journal title (dc.source) in the advanced Discovery search so I opened an issue for it (<a href="https://github.com/ilri/DSpace/issues/384">#384</a>)</li>
+<li>I regenerated the list of names for all our ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
 </ul>
 
-<h2 id="2018-07-08-1">2018-07-08</h2>
+<pre><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; /tmp/2018-07-08-orcids.txt
+$ ./resolve-orcids.py -i /tmp/2018-07-08-orcids.txt -o /tmp/2018-07-08-names.txt -d
+</code></pre>
+
+<ul>
+<li>But after comparing to the existing list of names I didn&rsquo;t see much change, so I just ignored it</li>
+</ul>
+
+<h2 id="2018-07-09">2018-07-09</h2>
 
 <ul>
 <li>Uptime Robot said that CGSpace was down for two minutes early this morning but I don&rsquo;t see anything in Tomcat logs or dmesg</li>
+<li>Uptime Robot said that CGSpace was down for two minutes again later in the day, and this time I saw a memory error in Tomcat&rsquo;s <code>catalina.out</code>:</li>
+</ul>
+
+<pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-557&quot; java.lang.OutOfMemoryError: Java heap space
+</code></pre>
+
+<ul>
+<li>I&rsquo;m not sure if it&rsquo;s the same error, but I see this in DSpace&rsquo;s <code>solr.log</code>:</li>
+</ul>
+
+<pre><code>2018-07-09 06:25:09,913 ERROR org.apache.solr.servlet.SolrDispatchFilter @ null:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+</code></pre>
+
+<ul>
+<li>I see a strange error around that time in <code>dspace.log.2018-07-08</code>:</li>
+</ul>
+
+<pre><code>2018-07-09 06:23:43,510 ERROR com.atmire.statistics.SolrLogThread @ IOException occured when talking to server at: http://localhost:8081/solr/statistics
+org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr/statistics
+</code></pre>
+
+<ul>
+<li>But not sure what caused that&hellip;</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
