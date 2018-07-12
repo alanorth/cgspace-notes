@@ -30,7 +30,7 @@ There is insufficient memory for the Java Runtime Environment to continue.
 
 <meta property="article:published_time" content="2018-07-01T12:56:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-07-10T17:34:30&#43;03:00"/>
+<meta property="article:modified_time" content="2018-07-11T16:55:30&#43;03:00"/>
 
 
 
@@ -71,9 +71,9 @@ There is insufficient memory for the Java Runtime Environment to continue.
   "@type": "BlogPosting",
   "headline": "July, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-07/",
-  "wordCount": "1740",
+  "wordCount": "2079",
   "datePublished": "2018-07-01T12:56:54&#43;03:00",
-  "dateModified": "2018-07-10T17:34:30&#43;03:00",
+  "dateModified": "2018-07-11T16:55:30&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -430,6 +430,69 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <li>Peter told Sisay to test this controlled vocabulary</li>
 <li>Discuss meeting in Nairobi in October</li>
 </ul></li>
+</ul>
+
+<h2 id="2018-07-12">2018-07-12</h2>
+
+<ul>
+<li>Uptime Robot said that CGSpace went down a few times last night, around 10:45 PM and 12:30 AM</li>
+<li>Here are the top ten IPs from last night and this morning:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;11/Jul/2018:22&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     48 66.249.64.91
+     50 35.227.26.162
+     57 157.55.39.234
+     59 157.55.39.71
+     62 147.99.27.190
+     82 95.108.181.88
+     92 40.77.167.90
+     97 183.128.40.185
+     97 240e:f0:44:fa53:745a:8afe:d221:1232
+   3634 208.110.72.10
+# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;12/Jul/2018:00&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     25 216.244.66.198
+     38 40.77.167.185
+     46 66.249.64.93
+     56 157.55.39.71
+     60 35.227.26.162
+     65 157.55.39.234
+     83 95.108.181.88
+     87 66.249.64.91
+     96 40.77.167.90
+   7075 208.110.72.10
+</code></pre>
+
+<ul>
+<li>We have never seen <code>208.110.72.10</code> before&hellip; so that&rsquo;s interesting!</li>
+<li>The user agent for these requests is: Pcore-HTTP/v0.44.0</li>
+<li>A brief Google search doesn&rsquo;t turn up any information about what this bot is, but lots of users complaining about it</li>
+<li>This bot does make a lot of requests all through the day, although it seems to re-use its Tomcat session:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+  17098 208.110.72.10
+# grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=208.110.72.10' dspace.log.2018-07-11
+1161
+# grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=208.110.72.10' dspace.log.2018-07-12
+1885
+</code></pre>
+
+<ul>
+<li>I think the problem is that, despite the bot requesting <code>robots.txt</code>, it almost exlusively requests dynamic pages from <code>/discover</code>:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | grep -o -E &quot;GET /(browse|discover|search-filter)&quot; | sort -n | uniq -c | sort -rn
+  13364 GET /discover
+    993 GET /search-filter
+    804 GET /browse
+# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | grep robots
+208.110.72.10 - - [12/Jul/2018:00:22:28 +0000] &quot;GET /robots.txt HTTP/1.1&quot; 200 1301 &quot;https://cgspace.cgiar.org/robots.txt&quot; &quot;Pcore-HTTP/v0.44.0
+</code></pre>
+
+<ul>
+<li>So this bot is just like Baiduspider, and I need to add it to the nginx rate limiting</li>
+<li>I&rsquo;ll also add it to Tomcat&rsquo;s Crawler Session Manager Valve to force the re-use of a common Tomcat sesssion for all crawlers just in case</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
