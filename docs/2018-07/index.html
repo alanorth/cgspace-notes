@@ -30,7 +30,7 @@ There is insufficient memory for the Java Runtime Environment to continue.
 
 <meta property="article:published_time" content="2018-07-01T12:56:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-07-12T09:00:08&#43;03:00"/>
+<meta property="article:modified_time" content="2018-07-12T17:07:17&#43;03:00"/>
 
 
 
@@ -71,9 +71,9 @@ There is insufficient memory for the Java Runtime Environment to continue.
   "@type": "BlogPosting",
   "headline": "July, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-07/",
-  "wordCount": "2156",
+  "wordCount": "2226",
   "datePublished": "2018-07-01T12:56:54&#43;03:00",
-  "dateModified": "2018-07-12T09:00:08&#43;03:00",
+  "dateModified": "2018-07-12T17:07:17&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -505,6 +505,16 @@ $ csvcut -c 1 &lt; /tmp/affiliations.csv &gt; /tmp/affiliations-1.csv
 <ul>
 <li>We also need to discuss standardizing our countries and comparing our ORCID iDs</li>
 </ul>
+
+<h2 id="2018-07-13">2018-07-13</h2>
+
+<ul>
+<li>Generate a list of affiliations for Peter and Abenet to go over so we can batch correct them before we deploy the new data visualization dashboard:</li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv header;
+COPY 4518
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
