@@ -30,7 +30,7 @@ There is insufficient memory for the Java Runtime Environment to continue.
 
 <meta property="article:published_time" content="2018-07-01T12:56:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-07-12T17:07:17&#43;03:00"/>
+<meta property="article:modified_time" content="2018-07-13T19:45:58&#43;03:00"/>
 
 
 
@@ -71,9 +71,9 @@ There is insufficient memory for the Java Runtime Environment to continue.
   "@type": "BlogPosting",
   "headline": "July, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-07/",
-  "wordCount": "2226",
+  "wordCount": "2561",
   "datePublished": "2018-07-01T12:56:54&#43;03:00",
-  "dateModified": "2018-07-12T17:07:17&#43;03:00",
+  "dateModified": "2018-07-13T19:45:58&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -515,6 +515,57 @@ $ csvcut -c 1 &lt; /tmp/affiliations.csv &gt; /tmp/affiliations-1.csv
 <pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv header;
 COPY 4518
 </code></pre>
+
+<h2 id="2018-07-15">2018-07-15</h2>
+
+<ul>
+<li>Run all system updates on CGSpace, add latest metadata changes from last week, and start the Linode instance upgrade</li>
+<li>After the upgrade I see we have more disk space available in the instance&rsquo;s dashboard, so I shut the instance down and resized it from 392GB to 650GB</li>
+<li>The resize was very quick (less than one minute) and after booting the instance back up I now have 631GB for the root filesystem (with 267GB available)!</li>
+<li>Peter had asked a question about how mapped items are displayed in the Altmetric dashboard</li>
+<li>For example, <a href="10568/82810"><sup>10568</sup>&frasl;<sub>82810</sub></a> is mapped to four collections, but only shows up in one &ldquo;department&rdquo; in their dashboard</li>
+<li>Altmetric help said that <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:cgspace.cgiar.org:10568/82810">according to OAI that item is only in one department</a></li>
+<li>I noticed that indeed there was only one collection listed, so I forced an OAI re-import on CGSpace:</li>
+</ul>
+
+<pre><code>$ dspace oai import -c
+OAI 2.0 manager action started
+Clearing index
+Index cleared
+Using full import.
+Full import
+100 items imported so far...
+200 items imported so far...
+...
+73900 items imported so far...
+Total: 73925 items
+Purging cached OAI responses.
+OAI 2.0 manager action ended. It took 697 seconds.
+</code></pre>
+
+<ul>
+<li>Now I see four colletions in OAI for that item!</li>
+<li>I need to ask the dspace-tech mailing list if the nightly OAI import catches the case of old items that have had metadata or mappings change</li>
+<li>ICARDA sent me a list of the ORCID iDs they have in the MEL system and it looks like almost 150 are new and unique to us!</li>
+</ul>
+
+<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
+1020
+$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
+1158
+</code></pre>
+
+<ul>
+<li>I combined the two lists and regenerated the names for all our the ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
+</ul>
+
+<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2018-07-15-orcid-ids.txt
+$ ./resolve-orcids.py -i /tmp/2018-07-15-orcid-ids.txt -o /tmp/2018-07-15-resolved-orcids.txt -d
+</code></pre>
+
+<ul>
+<li>Help Udana from WLE understand some Altmetrics concepts</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
