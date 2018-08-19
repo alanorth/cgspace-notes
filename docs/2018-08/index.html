@@ -34,7 +34,7 @@ I ran all system updates on DSpace Test and rebooted it
 
 <meta property="article:published_time" content="2018-08-01T11:52:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-08-16T15:40:38&#43;03:00"/>
+<meta property="article:modified_time" content="2018-08-16T18:59:45&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ I ran all system updates on DSpace Test and rebooted it
   "@type": "BlogPosting",
   "headline": "August, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-08/",
-  "wordCount": "834",
+  "wordCount": "1376",
   "datePublished": "2018-08-01T11:52:54&#43;03:00",
-  "dateModified": "2018-08-16T15:40:38&#43;03:00",
+  "dateModified": "2018-08-16T18:59:45&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -240,6 +240,137 @@ $ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h loca
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
 $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
 </code></pre>
+
+<h2 id="2018-08-19">2018-08-19</h2>
+
+<ul>
+<li>Keep working on the CIAT ORCID identifiers from Elizabeth</li>
+<li>In the spreadsheet she sent me there are some names with other versions in the database, so when it is obviously the same one (ie &ldquo;Schultze-Kraft, Rainer&rdquo; and &ldquo;Schultze-Kraft, R.&rdquo;) I will just tag them with ORCID identifiers too</li>
+<li>This is less obvious and more error prone with names like &ldquo;Peters&rdquo; where there are many more authors</li>
+<li>I see some errors in the variations of names as well, for example:</li>
+</ul>
+
+<pre><code>Verchot, Louis
+Verchot, L
+Verchot, L. V.
+Verchot, L.V
+Verchot, L.V.
+Verchot, LV
+Verchot, Louis V.
+</code></pre>
+
+<ul>
+<li>I&rsquo;ll just tag them all with Louis Verchot&rsquo;s ORCID identifier&hellip;</li>
+<li>In the end, I&rsquo;ll run the following CSV with my <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers-csv.py</a> script:</li>
+</ul>
+
+<pre><code>dc.contributor.author,cg.creator.id
+&quot;Campbell, Bruce&quot;,Bruce M Campbell: 0000-0002-0123-4859
+&quot;Campbell, Bruce M.&quot;,Bruce M Campbell: 0000-0002-0123-4859
+&quot;Campbell, B.M&quot;,Bruce M Campbell: 0000-0002-0123-4859
+&quot;Peters, Michael&quot;,Michael Peters: 0000-0003-4237-3916
+&quot;Peters, M.&quot;,Michael Peters: 0000-0003-4237-3916
+&quot;Peters, M.K.&quot;,Michael Peters: 0000-0003-4237-3916
+&quot;Tamene, Lulseged&quot;,Lulseged Tamene: 0000-0002-3806-8890
+&quot;Desta, Lulseged Tamene&quot;,Lulseged Tamene: 0000-0002-3806-8890
+&quot;Läderach, Peter&quot;,Peter Läderach: 0000-0001-8708-6318
+&quot;Lundy, Mark&quot;,Mark Lundy: 0000-0002-5241-3777
+&quot;Schultze-Kraft, Rainer&quot;,Rainer Schultze-Kraft: 0000-0002-4563-0044
+&quot;Schultze-Kraft, R.&quot;,Rainer Schultze-Kraft: 0000-0002-4563-0044
+&quot;Verchot, Louis&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Verchot, L&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Verchot, L. V.&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Verchot, L.V&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Verchot, L.V.&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Verchot, LV&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Verchot, Louis V.&quot;,Louis Verchot: 0000-0001-8309-6754
+&quot;Mukankusi, Clare&quot;,Clare Mukankusi: 0000-0001-7837-4545
+&quot;Mukankusi, Clare M.&quot;,Clare Mukankusi: 0000-0001-7837-4545
+&quot;Wyckhuys, Kris&quot;,Kris Wyckhuys: 0000-0003-0922-488X
+&quot;Wyckhuys, Kris A. G.&quot;,Kris Wyckhuys: 0000-0003-0922-488X
+&quot;Wyckhuys, Kris A.G.&quot;,Kris Wyckhuys: 0000-0003-0922-488X
+&quot;Chirinda, Ngonidzashe&quot;,Ngonidzashe Chirinda: 0000-0002-4213-6294
+&quot;Chirinda, Ngoni&quot;,Ngonidzashe Chirinda: 0000-0002-4213-6294
+&quot;Ngonidzashe, Chirinda&quot;,Ngonidzashe Chirinda: 0000-0002-4213-6294
+</code></pre>
+
+<ul>
+<li>The invocation would be:</li>
+</ul>
+
+<pre><code>$ ./add-orcid-identifiers-csv.py -i 2018-08-16-ciat-orcid.csv -db dspace -u dspace -p 'fuuu'
+</code></pre>
+
+<ul>
+<li>I ran the script on DSpace Test and CGSpace and tagged a total of 986 ORCID identifiers</li>
+<li>Looking at the list of author affialitions from Peter one last time</li>
+<li>I notice that I should add the Unicode character 0x00b4 (`) to my list of invalid characters to look for in Open Refine, making the latest version of the GREL expression being:</li>
+</ul>
+
+<pre><code>or(
+  isNotNull(value.match(/.*\uFFFD.*/)),
+  isNotNull(value.match(/.*\u00A0.*/)),
+  isNotNull(value.match(/.*\u200A.*/)),
+  isNotNull(value.match(/.*\u2019.*/)),
+  isNotNull(value.match(/.*\u00b4.*/))
+)
+</code></pre>
+
+<ul>
+<li>This character all by itself is indicative of encoding issues in French, Italian, and Spanish names, for example: De´veloppement and Investigacio´n</li>
+<li>I will run the following on DSpace Test and CGSpace:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
+$ ./delete-metadata-values.py -i /tmp/2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
+</code></pre>
+
+<ul>
+<li>Then force an update of the Discovery index on DSpace Test:</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    72m12.570s
+user    6m45.305s
+sys     2m2.461s
+</code></pre>
+
+<ul>
+<li>And then on CGSpace:</li>
+</ul>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    79m44.392s
+user    8m50.730s
+sys     2m20.248s
+</code></pre>
+
+<ul>
+<li>Run system updates on DSpace Test and reboot the server</li>
+<li>In unrelated news, I see some newish Russian bot making a few thousand requests per day and not re-using its XMLUI session:</li>
+</ul>
+
+<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep '19/Aug/2018' | grep -c 5.9.6.51
+1553
+# grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2018-08-19 
+1724
+</code></pre>
+
+<ul>
+<li>I don&rsquo;t even know how its possible for the bot to use MORE sessions than total requests&hellip;</li>
+<li>The user agent is:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)
+</code></pre>
+
+<ul>
+<li>So I&rsquo;m thinking we should add &ldquo;crawl&rdquo; to the Tomcat Crawler Session Manager valve, as we already have &ldquo;bot&rdquo; that catches Googlebot, Bingbot, etc.</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
