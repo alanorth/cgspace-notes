@@ -34,7 +34,7 @@ I ran all system updates on DSpace Test and rebooted it
 
 <meta property="article:published_time" content="2018-08-01T11:52:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-08-19T18:42:55&#43;03:00"/>
+<meta property="article:modified_time" content="2018-08-20T13:49:43&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ I ran all system updates on DSpace Test and rebooted it
   "@type": "BlogPosting",
   "headline": "August, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-08/",
-  "wordCount": "1484",
+  "wordCount": "1686",
   "datePublished": "2018-08-01T11:52:54&#43;03:00",
-  "dateModified": "2018-08-19T18:42:55&#43;03:00",
+  "dateModified": "2018-08-20T13:49:43&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -379,7 +379,16 @@ sys     2m20.248s
 <li>Finish up reconciling Atmire&rsquo;s pull request for DSpace 5.8 changes with the latest status of our <code>5_x-prod</code> branch</li>
 <li>I had to do some <code>git rev-list --reverse --no-merges oldestcommit..newestcommit</code> and <code>git cherry-pick -S</code> hackery to get everything all in order</li>
 <li>After building I ran the Atmire schema migrations and forced old migrations, then did the <code>ant update</code></li>
-<li>I tried to build it on DSpace Test, but it seems to still need more RAM to complete (like I experienced last month), so I stopped Tomcat and set <code>JAVA_OPTS</code> to 1024m and tried the mvn package again</li>
+<li>I tried to build it on DSpace Test, but it seems to still need more RAM to complete (like I experienced last month), so I stopped Tomcat and set <code>JAVA_OPTS</code> to 1024m and tried the <code>mvn package</code> again</li>
+<li>Still the <code>mvn package</code> takes forever and essentially hangs on processing the xmlui-mirage2 overlay (though after building all the themes)</li>
+<li>I will try to reduce Tomcat memory from 4608m to 4096m and then retry the <code>mvn package</code> with 1024m of <code>JAVA_OPTS</code> again</li>
+<li>After running the <code>mvn package</code> for the third time and waiting an hour, I attached <code>strace</code> to the Java process and saw that it was indeed reading XMLUI theme data&hellip; so I guess I just need to wait more</li>
+<li>After waiting two hours the maven process completed and installation was successful</li>
+<li>I restarted Tomcat and it seems everything is working well, so I&rsquo;ll merge the pull request and try to schedule the CGSpace upgrade for this coming Sunday, August 26th</li>
+<li>I merged <a href="https://github.com/ilri/DSpace/pull/378">Atmire&rsquo;s pull request</a> into our <code>5_x-dspace-5.8</code> temporary brach and then cherry-picked all the changes from <code>5_x-prod</code> since April, 2018 when that temporary branch was created</li>
+<li>As the branch histories are very different I cannot merge the new 5.8 branch into the current <code>5_x-prod</code> branch</li>
+<li>Instead, I will archive the current <code>5_x-prod</code> DSpace 5.5 branch as <code>5_x-prod-dspace-5.5</code> and then hard reset <code>5_x-prod</code> based on <code>5_x-dspace-5.8</code></li>
+<li>Unfortunately this will mess up the references in pull requests and issues on GitHub</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
