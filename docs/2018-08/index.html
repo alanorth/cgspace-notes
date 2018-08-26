@@ -34,7 +34,7 @@ I ran all system updates on DSpace Test and rebooted it
 
 <meta property="article:published_time" content="2018-08-01T11:52:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-08-23T10:49:23&#43;03:00"/>
+<meta property="article:modified_time" content="2018-08-23T16:34:16&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ I ran all system updates on DSpace Test and rebooted it
   "@type": "BlogPosting",
   "headline": "August, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-08/",
-  "wordCount": "2101",
+  "wordCount": "2245",
   "datePublished": "2018-08-01T11:52:54&#43;03:00",
-  "dateModified": "2018-08-23T10:49:23&#43;03:00",
+  "dateModified": "2018-08-23T16:34:16&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -434,6 +434,54 @@ sys     2m20.248s
 
 <pre><code>$ dspace import -a -e s.webshet@cgiar.org -s /home/swebshet/ictupdates_uploads_August_21 -m /tmp/2018-08-23-cta-ictupdates.map
 </code></pre>
+
+<h2 id="2018-08-26">2018-08-26</h2>
+
+<ul>
+<li>Doing the DSpace 5.8 upgrade on CGSpace (linode18)</li>
+<li>I already finished the Maven build, now I&rsquo;ll take a backup of the PostgreSQL database and do a database cleanup just in case:</li>
+</ul>
+
+<pre><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-08-26-before-dspace-58.backup dspace
+$ dspace cleanup -v
+</code></pre>
+
+<ul>
+<li>Now I can stop Tomcat and do the install:</li>
+</ul>
+
+<pre><code>$ cd dspace/target/dspace-installer
+$ ant update clean_backups update_geolite
+</code></pre>
+
+<ul>
+<li>After the successful Ant update I can run the database migrations:</li>
+</ul>
+
+<pre><code>$ psql dspace dspace
+
+dspace=&gt; \i /tmp/Atmire-DSpace-5.8-Schema-Migration.sql 
+DELETE 0
+UPDATE 1
+DELETE 1
+dspace=&gt; \q
+
+$ dspace database migrate ignored
+</code></pre>
+
+<ul>
+<li>Then I&rsquo;ll run all system updates and reboot the server:</li>
+</ul>
+
+<pre><code>$ sudo su -
+# apt update &amp;&amp; apt full-upgrade
+# apt clean &amp;&amp; apt autoclean &amp;&amp; apt autoremove
+# reboot
+</code></pre>
+
+<ul>
+<li>After reboot I logged in and cleared all the XMLUI caches and everything looked to be working fine</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
