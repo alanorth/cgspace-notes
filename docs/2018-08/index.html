@@ -34,7 +34,7 @@ I ran all system updates on DSpace Test and rebooted it
 
 <meta property="article:published_time" content="2018-08-01T11:52:54&#43;03:00"/>
 
-<meta property="article:modified_time" content="2018-08-23T16:34:16&#43;03:00"/>
+<meta property="article:modified_time" content="2018-08-26T09:38:15&#43;03:00"/>
 
 
 
@@ -79,9 +79,9 @@ I ran all system updates on DSpace Test and rebooted it
   "@type": "BlogPosting",
   "headline": "August, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-08/",
-  "wordCount": "2245",
+  "wordCount": "2426",
   "datePublished": "2018-08-01T11:52:54&#43;03:00",
-  "dateModified": "2018-08-23T16:34:16&#43;03:00",
+  "dateModified": "2018-08-26T09:38:15&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -481,6 +481,25 @@ $ dspace database migrate ignored
 
 <ul>
 <li>After reboot I logged in and cleared all the XMLUI caches and everything looked to be working fine</li>
+<li>Adam from WLE had asked a few weeks ago about getting the metadata for a bunch of items related to gender from 2013 until now</li>
+<li>They want a CSV with <em>all</em> metadata, which the Atmire Listings and Reports module can&rsquo;t do</li>
+<li>I exported a list of items from Listings and Reports with the following criteria: from year 2013 until now, have WLE subject <code>GENDER</code> or <code>GENDER POVERTY AND INSTITUTIONS</code>, and CRP <code>Water, Land and Ecosystems</code></li>
+<li>Then I extracted the Handle links from the report so I could export each item&rsquo;s metadata as CSV</li>
+</ul>
+
+<pre><code>$ grep -o -E &quot;[0-9]{5}/[0-9]{0,5}&quot; listings-export.txt &gt; /tmp/iwmi-gender-items.txt
+</code></pre>
+
+<ul>
+<li>Then on the DSpace server I exported the metadata for each item one by one:</li>
+</ul>
+
+<pre><code>$ while read -r line; do dspace metadata-export -f &quot;/tmp/${line/\//-}.csv&quot; -i $line; sleep 2; done &lt; /tmp/iwmi-gender-items.txt
+</code></pre>
+
+<ul>
+<li>But from here I realized that each of the fifty-nine items will have different columns in their CSVs, making it difficult to combine them</li>
+<li>I&rsquo;m not sure how to proceed without writing some script to parse and join the CSVs, and I don&rsquo;t think it&rsquo;s worth my time</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
