@@ -18,7 +18,7 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-09/" /><meta property="article:published_time" content="2018-09-02T09:55:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-09-10T11:59:08&#43;03:00"/>
+<meta property="article:modified_time" content="2018-09-10T18:19:00&#43;03:00"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2018"/>
 <meta name="twitter:description" content="2018-09-02
@@ -41,9 +41,9 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
   "@type": "BlogPosting",
   "headline": "September, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-09/",
-  "wordCount": "996",
+  "wordCount": "1221",
   "datePublished": "2018-09-02T09:55:54&#43;03:00",
-  "dateModified": "2018-09-10T11:59:08&#43;03:00",
+  "dateModified": "2018-09-10T18:19:00&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -257,6 +257,69 @@ UPDATE 15
 <li>Start working on adding metadata for access and usage rights that we started earlier in 2018 (and also in 2017)</li>
 <li>The current <code>cg.identifier.status</code> field will become &ldquo;Access rights&rdquo; and <code>dc.rights</code> will become &ldquo;Usage rights&rdquo;</li>
 <li>I have some work in progress on the <a href="https://github.com/alanorth/DSpace/tree/5_x-rights"><code>5_x-rights</code> branch</a></li>
+<li>Linode said that CGSpace (linode18) had a high CPU load earlier today</li>
+<li>When I looked, I see it&rsquo;s the same Russian IP that I noticed last month:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Sep/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+   1459 157.55.39.202
+   1579 95.108.181.88
+   1615 157.55.39.147
+   1714 66.249.64.91
+   1924 50.116.102.77
+   3696 157.55.39.106
+   3763 157.55.39.148
+   4470 70.32.83.92
+   4724 35.237.175.180
+  14132 5.9.6.51
+</code></pre>
+
+<ul>
+<li>And this bot is still creating more Tomcat sessions than Nginx requests (WTF?):</li>
+</ul>
+
+<pre><code># grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2018-09-10 
+14133
+</code></pre>
+
+<ul>
+<li>The user agent is still the same:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)
+</code></pre>
+
+<ul>
+<li>I added <code>.*crawl.*</code> to the Tomcat Session Crawler Manager Valve, so I&rsquo;m not sure why the bot is creating so many sessions&hellip;</li>
+<li>I just tested that user agent on CGSpace and it <em>does not</em> create a new session:</li>
+</ul>
+
+<pre><code>$ http --print Hh https://cgspace.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)'
+GET / HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Host: cgspace.cgiar.org
+User-Agent: Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Language: en-US
+Content-Type: text/html;charset=utf-8
+Date: Mon, 10 Sep 2018 20:43:04 GMT
+Server: nginx
+Strict-Transport-Security: max-age=15768000
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-Cocoon-Version: 2.2.0
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+</code></pre>
+
+<ul>
+<li>I will have to keep an eye on it and perhaps add it to the list of &ldquo;bad bots&rdquo; that get rate limited</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
