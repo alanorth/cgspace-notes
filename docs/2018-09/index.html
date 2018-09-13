@@ -18,7 +18,7 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-09/" /><meta property="article:published_time" content="2018-09-02T09:55:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-09-12T17:02:14&#43;03:00"/>
+<meta property="article:modified_time" content="2018-09-13T12:48:20&#43;03:00"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2018"/>
 <meta name="twitter:description" content="2018-09-02
@@ -41,9 +41,9 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
   "@type": "BlogPosting",
   "headline": "September, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-09/",
-  "wordCount": "1458",
+  "wordCount": "1638",
   "datePublished": "2018-09-02T09:55:54&#43;03:00",
-  "dateModified": "2018-09-12T17:02:14&#43;03:00",
+  "dateModified": "2018-09-13T12:48:20&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -348,9 +348,49 @@ $ sudo docker run --name dspacedb -v dspacetest_data:/var/lib/postgresql/data -e
 <li>Altmetric said it was somehow related to the OAI <code>dateStamp</code> not getting updated when the mappings changed, but I said that back in <a href="/cgspace-notes/2018-07/">2018-07</a> when this happened it was because the OAI was actually just not reflecting all the item&rsquo;s mappings</li>
 <li>After forcing a complete re-indexing of OAI the mappings were fine</li>
 <li>The <code>dateStamp</code> is most probably only updated when the item&rsquo;s metadata changes, not its mappings, so if Altmetric is relying on that we&rsquo;re in a tricky spot</li>
-<li>We need to make sure that our OAI isn&rsquo;t publicizing stale data&hellip; I was going to post something on the dspace-tech mailing list, but never did
-<!-- vim: set sw=2 ts=2: --></li>
+<li>We need to make sure that our OAI isn&rsquo;t publicizing stale data&hellip; I was going to post something on the dspace-tech mailing list, but never did</li>
+<li>Linode says that CGSpace (linode18) has had high CPU for the past two hours</li>
+<li>The top IP addresses today are:</li>
 </ul>
+
+<pre><code># zcat --force /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;13/Sep/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10                                                                                                
+     32 46.229.161.131
+     38 104.198.9.108
+     39 66.249.64.91
+     56 157.55.39.224
+     57 207.46.13.49
+     58 40.77.167.120
+     78 169.255.105.46
+    702 54.214.112.202
+   1840 50.116.102.77
+   4469 70.32.83.92
+</code></pre>
+
+<ul>
+<li>And the top two addresses seem to be re-using their Tomcat sessions properly:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=70.32.83.92' dspace.log.2018-09-13 | sort | uniq
+7
+$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-13 | sort | uniq
+2
+</code></pre>
+
+<ul>
+<li>So I&rsquo;m not sure what&rsquo;s going on</li>
+<li>Valerio asked me if there&rsquo;s a way to get the page views and downloads from CGSpace</li>
+<li>I said no, but that we might be able to piggyback on the Atmire statlet REST API</li>
+<li>For example, when you expand the &ldquo;statlet&rdquo; at the bottom of an item like <a href="https://cgspace.cgiar.org/handle/10568/97103"><sup>10568</sup>&frasl;<sub>97103</sub></a> you can see the following request in the browser console:</li>
+</ul>
+
+<pre><code>https://cgspace.cgiar.org/rest/statlets?handle=10568/97103&amp;_=1536844046540
+</code></pre>
+
+<ul>
+<li>That JSON file has the total page views and item downloads for the item&hellip;</li>
+</ul>
+
+<!-- vim: set sw=2 ts=2: -->
 
   
 
