@@ -18,7 +18,7 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-09/" /><meta property="article:published_time" content="2018-09-02T09:55:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-09-17T19:53:08&#43;03:00"/>
+<meta property="article:modified_time" content="2018-09-18T01:16:21&#43;03:00"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2018"/>
 <meta name="twitter:description" content="2018-09-02
@@ -41,9 +41,9 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
   "@type": "BlogPosting",
   "headline": "September, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-09/",
-  "wordCount": "2386",
+  "wordCount": "2546",
   "datePublished": "2018-09-02T09:55:54&#43;03:00",
-  "dateModified": "2018-09-17T19:53:08&#43;03:00",
+  "dateModified": "2018-09-18T01:16:21&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -488,6 +488,35 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-
 <ul>
 <li>That one returns 766, which is exactly 1655 minus 889&hellip;</li>
 <li>Also, Solr&rsquo;s <code>fq</code> is similar to the regular <code>q</code> query parameter, but it is considered for the Solr query cache so it should be faster for multiple queries</li>
+</ul>
+
+<h2 id="2018-09-18">2018-09-18</h2>
+
+<ul>
+<li>I managed to create a simple proof of concept REST API to expose item view and download statistics: <a href="https://github.com/alanorth/cgspace-statistics-api">cgspace-statistics-api</a></li>
+<li>It uses the Python-based <a href="https://falcon.readthedocs.io">Falcon</a> web framework and talks to Solr directly using the <a href="https://github.com/moonlitesolutions/SolrClient">SolrClient</a> library (which seems to have issues in Python 3.7 currently)</li>
+<li>After deploying on DSpace Test I can then get the stats for an item using its ID:</li>
+</ul>
+
+<pre><code>$ http -b 'https://dspacetest.cgiar.org/rest/statistics/item?id=110988'
+{
+    &quot;downloads&quot;: 2,
+    &quot;id&quot;: 110988,
+    &quot;views&quot;: 15
+}
+</code></pre>
+
+<ul>
+<li>The numbers are different than those that come from Atmire&rsquo;s statlets for some reason, but as I&rsquo;m querying Solr directly, I have no idea where their numbers come from!</li>
+<li>Moayad from CodeObia asked if I could make the API be able to paginate over all items, for example: /statistics?limit=100&amp;page=1</li>
+<li>Getting all the item IDs from PostgreSQL is certainly easy:</li>
+</ul>
+
+<pre><code>dspace=# select item_id from item where in_archive is True and withdrawn is False and discoverable is True;
+</code></pre>
+
+<ul>
+<li>The rest of the Falcon tooling will be more difficult&hellip;</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
