@@ -18,7 +18,7 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-09/" /><meta property="article:published_time" content="2018-09-02T09:55:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-09-26T20:13:29&#43;03:00"/>
+<meta property="article:modified_time" content="2018-09-27T09:30:28&#43;03:00"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2018"/>
 <meta name="twitter:description" content="2018-09-02
@@ -41,9 +41,9 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
   "@type": "BlogPosting",
   "headline": "September, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-09/",
-  "wordCount": "4398",
+  "wordCount": "4564",
   "datePublished": "2018-09-02T09:55:54&#43;03:00",
-  "dateModified": "2018-09-26T20:13:29&#43;03:00",
+  "dateModified": "2018-09-27T09:30:28&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -748,6 +748,42 @@ sys     2m18.485s
 <li>I&rsquo;m not exactly sure what their problem now is, though (confusing)</li>
 <li>I updated the dspace-statistiscs-api to use psycopg2&rsquo;s <code>execute_values()</code> to insert batches of 100 values into PostgreSQL instead of doing every insert individually</li>
 <li>On CGSpace this reduces the total run time of <code>indexer.py</code> from 432 seconds to 400 seconds (most of the time is actually spent in getting the data from Solr though)</li>
+</ul>
+
+<h2 id="2018-09-27">2018-09-27</h2>
+
+<ul>
+<li>Linode emailed to say that CGSpace&rsquo;s (linode19) CPU load was high for a few hours last night</li>
+<li>Looking in the nginx logs around that time I see some new IPs that look like they are harvesting things:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;26/Sep/2018:(19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    295 34.218.226.147
+    296 66.249.64.95
+    350 157.55.39.185
+    359 207.46.13.28
+    371 157.55.39.85
+    388 40.77.167.148
+    444 66.249.64.93
+    544 68.6.87.12
+    834 66.249.64.91
+    902 35.237.175.180
+</code></pre>
+
+<ul>
+<li><code>35.237.175.180</code> is on Google Cloud</li>
+<li><code>68.6.87.12</code> is on Cox Communications in the US (?)</li>
+<li>These hosts are not using proper user agents and are not re-using their Tomcat sessions:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=35.237.175.180' dspace.log.2018-09-26 | sort | uniq
+5423
+$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=68.6.87.12' dspace.log.2018-09-26 | sort | uniq
+758
+</code></pre>
+
+<ul>
+<li>I will add their IPs to the list of bad bots in nginx so we can add a &ldquo;bot&rdquo; user agent to them and let Tomcat&rsquo;s Crawler Session Manager Valve handle them</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
