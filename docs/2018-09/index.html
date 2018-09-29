@@ -18,7 +18,7 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-09/" /><meta property="article:published_time" content="2018-09-02T09:55:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-09-27T10:52:23&#43;03:00"/>
+<meta property="article:modified_time" content="2018-09-27T19:16:20&#43;03:00"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2018"/>
 <meta name="twitter:description" content="2018-09-02
@@ -41,9 +41,9 @@ I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I
   "@type": "BlogPosting",
   "headline": "September, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-09/",
-  "wordCount": "4574",
+  "wordCount": "4705",
   "datePublished": "2018-09-02T09:55:54&#43;03:00",
-  "dateModified": "2018-09-27T10:52:23&#43;03:00",
+  "dateModified": "2018-09-27T19:16:20&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -726,7 +726,7 @@ Indexing item downloads (page 260 of 260)
 <li>I did a batch replacement of the access rights with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script on DSpace Test:</li>
 </ul>
 
-<pre><code>$ ./fix-metadata-values.py -i /tmp/fix-access-status.csv -db dspace-u dspace-p 'fuuu' -f cg.identifier.status -t correct -m 206
+<pre><code>$ ./fix-metadata-values.py -i /tmp/fix-access-status.csv -db dspace -u dspace -p 'fuuu' -f cg.identifier.status -t correct -m 206
 </code></pre>
 
 <ul>
@@ -786,6 +786,25 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=68.6.87.12' dspace.log.2018-09-26 
 <li>I will add their IPs to the list of bad bots in nginx so we can add a &ldquo;bot&rdquo; user agent to them and let Tomcat&rsquo;s Crawler Session Manager Valve handle them</li>
 <li>I asked Atmire to prepare an invoice for 125 credits</li>
 </ul>
+
+<h2 id="2018-09-29">2018-09-29</h2>
+
+<ul>
+<li>I merged some changes to author affiliations from Sisay as well as some corrections to organizational names using smart quotes like <code>Université d’Abomey Calavi</code> (<a href="https://github.com/ilri/DSpace/pull/388">#388</a>)</li>
+<li>Peter sent me a list of 43 author names to fix, but it had some encoding errors like <code>BelalcÃ¡zar, John</code> like usual (I will tell him to stop trying to export as UTF-8 because it never seems to work)</li>
+<li>I did batch replaces for both on CGSpace with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i 2018-09-29-fix-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
+$ ./fix-metadata-values.py -i 2018-09-29-fix-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3
+</code></pre>
+
+<ul>
+<li>Afterwards I started a full Discovery re-index:</li>
+</ul>
+
+<pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
