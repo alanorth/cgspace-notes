@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-03T11:52:48&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-03T17:54:58&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "231",
+  "wordCount": "460",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-03T11:52:48&#43;03:00",
+  "dateModified": "2018-10-03T17:54:58&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -149,6 +149,52 @@ Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 <ul>
 <li>It appears to be Jim Lorenzen&hellip; I need to check that later!</li>
 <li>I merged the changes to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/390">#390</a>)</li>
+<li>Linode sent another alert about CPU usage on CGSpace (linode18) this evening</li>
+<li>It seems that Moayad is making quite a lot of requests today:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Oct/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+   1594 157.55.39.160
+   1627 157.55.39.173
+   1774 136.243.6.84
+   4228 35.237.175.180
+   4497 70.32.83.92
+   4856 66.249.64.59
+   7120 50.116.102.77
+  12518 138.201.49.199
+  87646 34.218.226.147
+ 111729 213.139.53.62
+</code></pre>
+
+<ul>
+<li>But in super positive news, he says they are using my new <a href="https://github.com/alanorth/dspace-statistics-api">dspace-statistics-api</a> and it&rsquo;s MUCH faster than using Atmire CUA&rsquo;s internal &ldquo;restlet&rdquo; API</li>
+<li>I don&rsquo;t recognize the <code>138.201.49.199</code> IP, but it is in Germany (Hetzner) and appears to be paginating over some browse pages and downloading bitstreams:</li>
+</ul>
+
+<pre><code># grep 138.201.49.199 /var/log/nginx/access.log | grep -o -E 'GET /[a-z]+' | sort | uniq -c
+   8324 GET /bitstream
+   4193 GET /handle
+</code></pre>
+
+<ul>
+<li>Suspiciously, it&rsquo;s only grabbing the CGIAR System Office community (handle prefix 10947):</li>
+</ul>
+
+<pre><code># grep 138.201.49.199 /var/log/nginx/access.log | grep -o -E 'GET /handle/[0-9]{5}' | sort | uniq -c
+      7 GET /handle/10568
+   4186 GET /handle/10947
+</code></pre>
+
+<ul>
+<li>The user agent is suspicious too:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
+</code></pre>
+
+<ul>
+<li>It&rsquo;s clearly a bot and it&rsquo;s not re-using its Tomcat session, so I will add its IP to the nginx bad bot list</li>
+<li>I looked in Solr&rsquo;s statistics core and these hits were actually all counted as <code>isBot:false</code> (of course)&hellip; hmmm</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
