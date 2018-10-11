@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-10T13:33:00&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-11T09:32:54&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "1092",
+  "wordCount": "1368",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-10T13:33:00&#43;03:00",
+  "dateModified": "2018-10-11T09:32:54&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -289,7 +289,6 @@ org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.c
 <ul>
 <li>This works, but I&rsquo;m not sure what ImageMagick&rsquo;s long-term plan is if they are going to disable ALL image formats&hellip;</li>
 <li>I suppose I need to enable a workaround for this in Ansible?</li>
-<li>Also I note that for a few days the item views on DSpace Test are broken&hellip; I think Sisay must have been doing something</li>
 </ul>
 
 <h2 id="2018-10-11">2018-10-11</h2>
@@ -301,6 +300,43 @@ org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.c
 
 <pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2018-10-11-top-1500-subject.csv WITH CSV HEADER;
 COPY 1500
+</code></pre>
+
+<ul>
+<li>Give WorldFish advice about Handles because they are talking to some company called KnowledgeArc who recommends they do not use Handles!</li>
+<li>Last week I emailed Altmetric to ask if their software would notice mentions of our Handle in the format &ldquo;handle:<sup>10568</sup>&frasl;<sub>80775</sub>&rdquo; because I noticed that the <a href="https://landportal.org/library/resources/handle1056880775/unlocking-farming-potential-bangladesh%E2%80%99-polders">Land Portal does this</a></li>
+<li>Altmetric support responded to say no, but the reason is that Land Portal is doing even more strange stuff by not using <code>&lt;meta&gt;</code> tags in their page header, and using &ldquo;dct:identifier&rdquo; property instead of &ldquo;dc:identifier&rdquo;</li>
+<li>I re-created my local DSpace databse container using <a href="https://github.com/containers/libpod">podman</a> instead of Docker:</li>
+</ul>
+
+<pre><code>$ mkdir -p ~/.local/lib/containers/volumes/dspacedb_data
+$ sudo podman create --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
+$ sudo podman start dspacedb
+$ createuser -h localhost -U postgres --pwprompt dspacetest
+$ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
+$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
+$ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost ~/Downloads/cgspace_2018-10-11.backup
+$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+$ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
+</code></pre>
+
+<ul>
+<li>I tried to make an Artifactory in podman, but it seems to have problems because Artifactory is distributed on the Bintray repository</li>
+<li>I can pull the <code>docker.bintray.io/jfrog/artifactory-oss:latest</code> image, but not start it</li>
+<li>I decided to use a Sonatype Nexus repository instead:</li>
+</ul>
+
+<pre><code>$ mkdir -p ~/.local/lib/containers/volumes/nexus_data
+$ sudo podman run --name nexus -d -v /home/aorth/.local/lib/containers/volumes/nexus_data:/nexus_data -p 8081:8081 sonatype/nexus3
+</code></pre>
+
+<ul>
+<li>With a few changes to my local Maven <code>settings.xml</code> it is working well</li>
+<li>Generate a list of the top 10,000 authors for Peter Ballantyne to look through:</li>
+</ul>
+
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 3 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 10000) to /tmp/2018-10-11-top-10000-authors.csv WITH CSV HEADER;
+COPY 10000
 </code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
