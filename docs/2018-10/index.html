@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-13T21:17:20&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-14T09:48:26&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "1616",
+  "wordCount": "1818",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-13T21:17:20&#43;03:00",
+  "dateModified": "2018-10-14T09:48:26&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -385,6 +385,18 @@ COPY 10000
 
 <ul>
 <li>Run all system updates on CGSpace (linode19) and reboot the server</li>
+<li>After rebooting the server I noticed that Handles are not resolving, and the <code>dspace-handle-server</code> systemd service is not running (or rather, it exited with success)</li>
+<li>Restarting the service with systemd works for a few seconds, then the java process quits</li>
+<li>I suspect that the systemd service type needs to be <code>forking</code> rather than <code>simple</code>, because the service calls the default DSpace <code>start-handle-server</code> shell script, which uses <code>nohup</code> and <code>&amp;</code> to background the java process</li>
+<li>It would be nice if there was a cleaner way to start the service and then just log to the systemd journal rather than all this hiding and log redirecting</li>
+<li>Email the Landportal.org people to ask if they would consider Dublin Core metadata tags in their page&rsquo;s header, rather than the HTML properties they are using in their body</li>
+<li>Peter pointed out that some thumbnails were still not getting generated
+
+<ul>
+<li>When I tried to generate them manually I noticed that the path to the CMYK profile had changed because Ubuntu upgraded Ghostscript from 9.18 to 9.25 last week&hellip; WTF?</li>
+<li>Looks like I can use <code>/usr/share/ghostscript/current</code> instead of <code>/usr/share/ghostscript/9.25</code>&hellip;</li>
+</ul></li>
+<li>I limited the tall thumbnails even further to 170px because Peter said CTA&rsquo;s were still too tall at 200px (<a href="https://github.com/ilri/DSpace/pull/396">#396</a>)</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
