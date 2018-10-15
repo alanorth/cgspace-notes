@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-15T08:14:22&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-15T16:03:02&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "1938",
+  "wordCount": "2088",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-15T08:14:22&#43;03:00",
+  "dateModified": "2018-10-15T16:03:02&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -410,8 +410,21 @@ COPY 10000
 
 <ul>
 <li>I created a new collection and added him as the administrator so he can test submission</li>
+<li>He said he actually wants to test creation of communities, collections, etc, so I had to make him a super admin for now</li>
+<li>I told him we need to think about the workflow more seriously in the future</li>
 </ul></li>
+<li>I ended up having some issues with podman and went back to Docker, so I had to re-create my containers:</li>
 </ul>
+
+<pre><code>$ sudo docker run --name nexus --network dspace-build -d -v /home/aorth/.local/lib/containers/volumes/nexus_data:/nexus_data -p 8081:8081 sonatype/nexus3
+$ sudo docker run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
+$ createuser -h localhost -U postgres --pwprompt dspacetest
+$ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
+$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
+$ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost ~/Downloads/cgspace_2018-10-11.backup
+$ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
+$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
