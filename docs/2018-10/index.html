@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-15T16:03:02&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-15T17:26:03&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "2088",
+  "wordCount": "2132",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-15T16:03:02&#43;03:00",
+  "dateModified": "2018-10-15T17:26:03&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -424,6 +424,15 @@ $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
 $ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost ~/Downloads/cgspace_2018-10-11.backup
 $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+</code></pre>
+
+<h2 id="2018-10-16">2018-10-16</h2>
+
+<ul>
+<li>Generate a list of the schema on CGSpace so CodeObia can compare with MELSpace:</li>
+</ul>
+
+<pre><code>dspace=# \copy (SELECT (CASE when metadata_schema_id=1 THEN 'dc' WHEN metadata_schema_id=2 THEN 'cg' END) AS schema, element, qualifier, scope_note FROM metadatafieldregistry where metadata_schema_id IN (1,2)) TO /tmp/cgspace-schema.csv WITH CSV HEADER;
 </code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
