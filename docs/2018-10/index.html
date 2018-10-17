@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-16T17:26:18&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-17T00:33:01&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "2451",
+  "wordCount": "3021",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-16T17:26:18&#43;03:00",
+  "dateModified": "2018-10-17T00:33:01&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -486,6 +486,58 @@ $ time http --print h 'https://dspacetest.cgiar.org/rest/items?expand=metadata,b
 
 <ul>
 <li>I sent a mail to dspace-tech to ask how to profile this&hellip;</li>
+</ul>
+
+<h2 id="2018-10-17">2018-10-17</h2>
+
+<ul>
+<li>I decided to update most of the existing metadata values that we have in <code>dc.rights</code> on CGSpace to be machine readable in SPDX format (with Creative Commons version if it was included)</li>
+<li>Most of the are from Bioversity, and I asked Maria for permission before updating them</li>
+<li>I manually went through and looked at the existing values and updated them in several batches:</li>
+</ul>
+
+<pre><code>UPDATE metadatavalue SET text_value='CC-BY-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%CC BY %';
+UPDATE metadatavalue SET text_value='CC-BY-NC-ND-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value LIKE '%BY-NC-ND%' AND text_value LIKE '%by-nc-nd%';
+UPDATE metadatavalue SET text_value='CC-BY-NC-SA-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value LIKE '%BY-NC-SA%' AND text_value LIKE '%by-nc-sa%';
+UPDATE metadatavalue SET text_value='CC-BY-3.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%3.0%' AND text_value LIKE '%/by/%';
+UPDATE metadatavalue SET text_value='CC-BY-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value LIKE '%/by/%' AND text_value NOT LIKE '%zero%';
+UPDATE metadatavalue SET text_value='CC-BY-NC-2.5' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE
+'%/by-nc%' AND text_value LIKE '%2.5%';
+UPDATE metadatavalue SET text_value='CC-BY-NC-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%/by-nc%' AND text_value LIKE '%4.0%';
+UPDATE metadatavalue SET text_value='CC-BY-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value LIKE '%Attribution %' AND text_value NOT LIKE '%zero%';
+UPDATE metadatavalue SET text_value='CC-BY-NC-SA-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value NOT LIKE '%zero%' AND text_value LIKE '%4.0%' AND text_value LIKE '%Attribution-NonCommercial-ShareAlike%';
+UPDATE metadatavalue SET text_value='CC-BY-NC-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value NOT LIKE '%zero%' AND text_value LIKE '%Attribution-NonCommercial %';
+UPDATE metadatavalue SET text_value='CC-BY-NC-3.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%3.0%' AND text_value NOT LIKE '%zero%' AND text_value LIKE '%Attribution-NonCommercial %';
+UPDATE metadatavalue SET text_value='CC-BY-3.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%3.0%' AND text_value NOT LIKE '%zero%' AND text_value LIKE '%Attribution %';
+UPDATE metadatavalue SET text_value='CC-BY-ND-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND resource_id=78184;
+UPDATE metadatavalue SET text_value='CC-BY' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value NOT LIKE '%zero%' AND text_value NOT LIKE '%CC0%' AND text_value LIKE '%Attribution %' AND text_value NOT LIKE '%CC-%';
+UPDATE metadatavalue SET text_value='CC-BY-NC-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND resource_id=78564;
+</code></pre>
+
+<ul>
+<li>I will update the values on CGSpace soon</li>
+<li>We also need to re-think the <code>dc.rights</code> field in the submission form: we should probably use a popup controlled vocabulary and list the Creative Commons values with version numbers and allow the user to enter their own (like the ORCID identifier field)</li>
+<li>Ask Jane if we can use some of the BDP money to host AReS explorer on a more powerful server</li>
+<li>IWMI sent me a list of new ORCID identifiers for their staff so I combined them with our list, updated the names with my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script, and regenerated the controlled vocabulary:</li>
+</ul>
+
+<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json MEL\ ORCID_V2.json 2018-10-17-IWMI-ORCIDs.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt;
+2018-10-17-orcids.txt
+$ ./resolve-orcids.py -i 2018-10-17-orcids.txt -o 2018-10-17-names.txt -d
+$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+</code></pre>
+
+<ul>
+<li>I also decided to add the ORCID identifiers that MEL had sent us a few months ago&hellip;</li>
+<li>One problem I had with the <code>resolve-orcids.py</code> script is that one user seems to have disabled their profile data since we last updated:</li>
+</ul>
+
+<pre><code>Looking up the names associated with ORCID iD: 0000-0001-7930-5752
+Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
+</code></pre>
+
+<ul>
+<li>So I need to handle that situation in the script for sure, but I&rsquo;m not sure what to do organizationally or ethically, since that user disabled their name! Do we remove him from the list?</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
