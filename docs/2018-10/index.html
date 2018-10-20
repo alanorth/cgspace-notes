@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-18T23:24:31&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-18T23:57:22&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "3156",
+  "wordCount": "3376",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-18T23:24:31&#43;03:00",
+  "dateModified": "2018-10-18T23:57:22&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -556,6 +556,50 @@ $ exit
 # systemctl start postgresql
 # dpkg -r postgresql-9.5 postgresql-client-9.5 postgresql-contrib-9.5
 </code></pre>
+
+<h2 id="2018-10-19">2018-10-19</h2>
+
+<ul>
+<li>Help Francesca from Bioversity generate a report about items they uploaded in 2015 through 2018</li>
+<li>Linode emailed me to say that CGSpace (linode18) had high CPU usage for a few hours this afternoon</li>
+<li>Looking at the nginx logs around that time I see the following IPs making the most requests:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Oct/2018:(12|13|14|15)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    361 207.46.13.179
+    395 181.115.248.74
+    485 66.249.64.93
+    535 157.55.39.213
+    536 157.55.39.99
+    551 34.218.226.147
+    580 157.55.39.173
+   1516 35.237.175.180
+   1629 66.249.64.91
+   1758 5.9.6.51
+</code></pre>
+
+<ul>
+<li>5.9.6.51 is MegaIndex, which I&rsquo;ve seen before&hellip;</li>
+</ul>
+
+<h2 id="2018-10-20">2018-10-20</h2>
+
+<ul>
+<li>I was going to try to run Solr in Docker because I learned I can run Docker on Travis-CI (for testing my dspace-statistics-api), but the oldest official Solr images are for 5.5, and DSpace&rsquo;s Solr configuration is for 4.9</li>
+<li>This means our existing Solr configuration doesn&rsquo;t run in Solr 5.5:</li>
+</ul>
+
+<pre><code>$ sudo docker pull solr:5
+$ sudo docker run --name my_solr -v ~/dspace/solr/statistics/conf:/tmp/conf -d -p 8983:8983 -t solr:5
+$ sudo docker logs my_solr
+...
+ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics] Caused by: solr.IntField
+</code></pre>
+
+<ul>
+<li>Apparently a bunch of variable types were removed in <a href="https://issues.apache.org/jira/browse/SOLR-5936">Solr 5</a></li>
+<li>So for now it&rsquo;s actually a huge pain in the ass to run the tests for my dspace-statistics-api</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
