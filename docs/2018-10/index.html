@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-18T23:57:22&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-20T18:17:59&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "3376",
+  "wordCount": "3542",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-18T23:57:22&#43;03:00",
+  "dateModified": "2018-10-20T18:17:59&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -599,7 +599,51 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 <ul>
 <li>Apparently a bunch of variable types were removed in <a href="https://issues.apache.org/jira/browse/SOLR-5936">Solr 5</a></li>
 <li>So for now it&rsquo;s actually a huge pain in the ass to run the tests for my dspace-statistics-api</li>
+<li>Linode sent a message that the CPU usage was high on CGSpace (linode18) last night</li>
+<li>According to the nginx logs around that time it was 5.9.6.51 (MegaIndex) again:</li>
 </ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Oct/2018:(14|15|16)&quot; | awk '{print $1}' | sort
+ | uniq -c | sort -n | tail -n 10
+    249 207.46.13.179
+    250 157.55.39.173
+    301 54.166.207.223
+    303 157.55.39.213
+    310 66.249.64.95
+    362 34.218.226.147
+    381 66.249.64.93
+    415 35.237.175.180
+   1205 66.249.64.91
+   1227 5.9.6.51
+</code></pre>
+
+<ul>
+<li>This bot is only using the XMLUI and it does <em>not</em> seem to be re-using its sessions:</li>
+</ul>
+
+<pre><code># grep -c 5.9.6.51 /var/log/nginx/*.log
+/var/log/nginx/access.log:9323
+/var/log/nginx/error.log:0
+/var/log/nginx/library-access.log:0
+/var/log/nginx/oai.log:0
+/var/log/nginx/rest.log:0
+/var/log/nginx/statistics.log:0
+# grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2018-10-20 | sort | uniq
+8915
+</code></pre>
+
+<ul>
+<li>Last month I added &ldquo;crawl&rdquo; to the Tomcat Crawler Session Manager Valve&rsquo;s regular expression matching, and it seems to be working for MegaIndex&rsquo;s user agent:</li>
+</ul>
+
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/1' User-Agent:'&quot;Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)&quot;'
+</code></pre>
+
+<ul>
+<li>So I&rsquo;m not sure why this bot uses so many sessions — is it because it requests very slowly?</li>
+</ul>
+
+<h2 id="2018-10-21">2018-10-21</h2>
 
 <!-- vim: set sw=2 ts=2: -->
 
