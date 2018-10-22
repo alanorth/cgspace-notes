@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-21T08:06:40&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-21T12:22:33&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "3546",
+  "wordCount": "3644",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-21T08:06:40&#43;03:00",
+  "dateModified": "2018-10-21T12:22:33&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -647,6 +647,22 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 
 <ul>
 <li>Discuss AfricaRice joining CGSpace</li>
+</ul>
+
+<h2 id="2018-10-22">2018-10-22</h2>
+
+<ul>
+<li>Post message to Yammer about usage rights (dc.rights)</li>
+<li>Change <code>build.properties</code> to use HTTPS for Handles in our <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a></li>
+<li>We will still need to do a batch update of the <code>dc.identifier.uri</code> and other fields in the database:</li>
+</ul>
+
+<pre><code>dspace=# UPDATE metadatavalue SET text_value=replace(text_value, 'http://', 'https://') WHERE resource_type_id=2 AND text_value LIKE 'http://hdl.handle.net%';
+</code></pre>
+
+<ul>
+<li>While I was doing that I found two items using CGSpace URLs instead of handles in their <code>dc.identifier.uri</code> so I corrected those</li>
+<li>I also found several items that had invalid characters or multiple Handles in some related URL field like <code>cg.link.reference</code> so I corrected those too</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
