@@ -9,7 +9,7 @@
 <meta property="og:description" content="2018-10-01  Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now  2018-10-03  I see Moayad was busy collecting item views and downloads from CGSpace yesterday:  # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk &#39;{print $1} &#39; | sort | uniq -c | sort -n | tail -n 10 933 40." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-10/" /><meta property="article:published_time" content="2018-10-01T22:31:54&#43;03:00"/>
-<meta property="article:modified_time" content="2018-10-22T18:02:19&#43;03:00"/>
+<meta property="article:modified_time" content="2018-10-23T11:29:17&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2018"/>
@@ -24,9 +24,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-10/",
-  "wordCount": "3794",
+  "wordCount": "3922",
   "datePublished": "2018-10-01T22:31:54&#43;03:00",
-  "dateModified": "2018-10-22T18:02:19&#43;03:00",
+  "dateModified": "2018-10-23T11:29:17&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -682,6 +682,31 @@ UPDATE 76608
 <ul>
 <li>Improve the usage rights (dc.rights) on CGSpace again by adding the long names in the submission form, as well as adding versio 3.0 and Creative Commons Zero (CC0) public domain license (<a href="https://github.com/ilri/DSpace/pull/399">#399</a>)</li>
 <li>Add &ldquo;usage rights&rdquo; to the XMLUI item display (<a href="https://github.com/ilri/DSpace/pull/400">#400</a>)</li>
+<li>I emailed the MARLO guys to ask if they can send us a dump of rights data and Handles from their system so we can tag our older items on CGSpace</li>
+<li>Testing REST login and logout via httpie because Felix from Earlham says he&rsquo;s having issues:</li>
+</ul>
+
+<pre><code>$ http --print b POST 'https://dspacetest.cgiar.org/rest/login' email='testdeposit@cgiar.org' password=deposit
+acef8a4a-41f3-4392-b870-e873790f696b
+
+$ http POST 'https://dspacetest.cgiar.org/rest/logout' rest-dspace-token:acef8a4a-41f3-4392-b870-e873790f696b
+</code></pre>
+
+<ul>
+<li>Also works via curl (login, check status, logout, check status):</li>
+</ul>
+
+<pre><code>$ curl -H &quot;Content-Type: application/json&quot; --data '{&quot;email&quot;:&quot;testdeposit@cgiar.org&quot;, &quot;password&quot;:&quot;deposit&quot;}' https://dspacetest.cgiar.org/rest/login
+e09fb5e1-72b0-4811-a2e5-5c1cd78293cc
+$ curl -X GET -H &quot;Content-Type: application/json&quot; -H &quot;Accept: application/json&quot; -H &quot;rest-dspace-token: e09fb5e1-72b0-4811-a2e5-5c1cd78293cc&quot; https://dspacetest.cgiar.org/rest/status
+{&quot;okay&quot;:true,&quot;authenticated&quot;:true,&quot;email&quot;:&quot;testdeposit@cgiar.org&quot;,&quot;fullname&quot;:&quot;Test deposit&quot;,&quot;token&quot;:&quot;e09fb5e1-72b0-4811-a2e5-5c1cd78293cc&quot;}
+$ curl -X POST -H &quot;Content-Type: application/json&quot; -H &quot;rest-dspace-token: e09fb5e1-72b0-4811-a2e5-5c1cd78293cc&quot; https://dspacetest.cgiar.org/rest/logout
+$ curl -X GET -H &quot;Content-Type: application/json&quot; -H &quot;Accept: application/json&quot; -H &quot;rest-dspace-token: e09fb5e1-72b0-4811-a2e5-5c1cd78293cc&quot; https://dspacetest.cgiar.org/rest/status
+{&quot;okay&quot;:true,&quot;authenticated&quot;:false,&quot;email&quot;:null,&quot;fullname&quot;:null,&quot;token&quot;:null}%
+</code></pre>
+
+<ul>
+<li>Improve the documentatin of my <a href="https://github.com/alanorth/dspace-statistics-api">dspace-statistics-api</a></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
