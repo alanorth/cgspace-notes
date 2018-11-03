@@ -105,6 +105,65 @@
 <li>Send a note about my <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a> to the dspace-tech mailing list</li>
 </ul>
 
+<h2 id="2018-11-03">2018-11-03</h2>
+
+<ul>
+<li>Linode has been sending mails a few times a day recently that CGSpace (linode18) has had high CPU usage</li>
+<li>Today these are the top 10 IPs:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Nov/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+   1300 66.249.64.63
+   1384 35.237.175.180
+   1430 138.201.52.218
+   1455 207.46.13.156
+   1500 40.77.167.175
+   1979 50.116.102.77
+   2790 66.249.64.61
+   3367 84.38.130.177
+   4537 70.32.83.92
+  22508 66.249.64.59
+</code></pre>
+
+<ul>
+<li>The <code>66.249.64.x</code> are definitely Google</li>
+<li><code>70.32.83.92</code> is well known, probably CCAFS or something, as it&rsquo;s only a few thousand requests and always to REST API</li>
+<li><code>84.38.130.177</code> is some new IP in Latvia that is only hitting the XMLUI, using the following user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.792.0 Safari/535.1
+</code></pre>
+
+<ul>
+<li>They at least seem to be re-using their Tomcat sessions:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=84.38.130.177' dspace.log.2018-11-03 | sort | uniq
+342
+</code></pre>
+
+<ul>
+<li><code>50.116.102.77</code> is also a regular REST API user</li>
+<li><code>40.77.167.175</code> and <code>207.46.13.156</code> seem to be Bing</li>
+<li><code>138.201.52.218</code> seems to be on Hetzner in Germany, but is using this user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
+</code></pre>
+
+<ul>
+<li>And it doesn&rsquo;t seem they are re-using their Tomcat sessions:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=138.201.52.218' dspace.log.2018-11-03 | sort | uniq
+1243
+</code></pre>
+
+<ul>
+<li>Ah, we&rsquo;ve apparently seen this server exactly a year ago in 2017-11, making 40,000 requests in one day&hellip;</li>
+<li>I wonder if it&rsquo;s worth adding them to the list of bots in the nginx config?</li>
+</ul>
+
 <p></p>
   <a href='https://alanorth.github.io/cgspace-notes/2018-11/'>Read more →</a>
 </article> 
