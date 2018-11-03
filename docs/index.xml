@@ -31,58 +31,6 @@
 &lt;li&gt;Today these are the top 10 IPs:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;03/Nov/2018&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
-   1300 66.249.64.63
-   1384 35.237.175.180
-   1430 138.201.52.218
-   1455 207.46.13.156
-   1500 40.77.167.175
-   1979 50.116.102.77
-   2790 66.249.64.61
-   3367 84.38.130.177
-   4537 70.32.83.92
-  22508 66.249.64.59
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;The &lt;code&gt;66.249.64.x&lt;/code&gt; are definitely Google&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;70.32.83.92&lt;/code&gt; is well known, probably CCAFS or something, as it&amp;rsquo;s only a few thousand requests and always to REST API&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;84.38.130.177&lt;/code&gt; is some new IP in Latvia that is only hitting the XMLUI, using the following user agent:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.792.0 Safari/535.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;They at least seem to be re-using their Tomcat sessions:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=84.38.130.177&#39; dspace.log.2018-11-03 | sort | uniq
-342
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;50.116.102.77&lt;/code&gt; is also a regular REST API user&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;40.77.167.175&lt;/code&gt; and &lt;code&gt;207.46.13.156&lt;/code&gt; seem to be Bing&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;138.201.52.218&lt;/code&gt; seems to be on Hetzner in Germany, but is using this user agent:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;And it doesn&amp;rsquo;t seem they are re-using their Tomcat sessions:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=138.201.52.218&#39; dspace.log.2018-11-03 | sort | uniq
-1243
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Ah, we&amp;rsquo;ve apparently seen this server exactly a year ago in 2017-11, making 40,000 requests in one day&amp;hellip;&lt;/li&gt;
-&lt;li&gt;I wonder if it&amp;rsquo;s worth adding them to the list of bots in the nginx config?&lt;/li&gt;
-&lt;/ul&gt;
-
 &lt;p&gt;&lt;/p&gt;</description>
     </item>
     
