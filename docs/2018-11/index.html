@@ -23,7 +23,7 @@ Today these are the top 10 IPs:
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-11/" /><meta property="article:published_time" content="2018-11-01T16:41:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-11-03T18:13:49&#43;02:00"/>
+<meta property="article:modified_time" content="2018-11-04T01:02:29&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2018"/>
@@ -52,9 +52,9 @@ Today these are the top 10 IPs:
   "@type": "BlogPosting",
   "headline": "November, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-11/",
-  "wordCount": "586",
+  "wordCount": "791",
   "datePublished": "2018-11-01T16:41:30&#43;02:00",
-  "dateModified": "2018-11-03T18:13:49&#43;02:00",
+  "dateModified": "2018-11-04T01:02:29&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -251,7 +251,79 @@ Today these are the top 10 IPs:
 <ul>
 <li>If they want to download all our metadata and PDFs they should use an API rather than scraping the XMLUI</li>
 <li>I will add them to the list of bot IPs in nginx for now and think about enforcing rate limits in XMLUI later</li>
-<li>Also, this is the third (?) time a mysterious IP in Hetzner has done this&hellip; who is this?</li>
+<li>Also, this is the third (?) time a mysterious IP on Hetzner has done this&hellip; who is this?</li>
+</ul>
+
+<h2 id="2018-11-04">2018-11-04</h2>
+
+<ul>
+<li>Forward Peter&rsquo;s information about CGSpace financials to Modi from ICRISAT</li>
+<li>Linode emailed about the CPU load and outgoing bandwidth on CGSpace (linode18) again</li>
+<li>Here are the top ten IPs active so far this morning:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;04/Nov/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+   1083 2a03:2880:11ff:2::face:b00c
+   1105 2a03:2880:11ff:d::face:b00c
+   1111 2a03:2880:11ff:f::face:b00c
+   1134 84.38.130.177
+   1893 50.116.102.77
+   2040 66.249.64.63
+   4210 66.249.64.61
+   4534 70.32.83.92
+  13036 78.46.89.18
+  20407 66.249.64.59
+</code></pre>
+
+<ul>
+<li><code>78.46.89.18</code> is back&hellip; and still making tons of Tomcat sessions:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.89.18' dspace.log.2018-11-04 | sort | uniq
+8765
+</code></pre>
+
+<ul>
+<li>Also, now we have a ton of Facebook crawlers:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;04/Nov/2018&quot; | grep &quot;2a03:2880:11ff:&quot; | awk '{print $1}' | sort | uniq -c | sort -n
+    905 2a03:2880:11ff:b::face:b00c
+    955 2a03:2880:11ff:5::face:b00c
+    965 2a03:2880:11ff:e::face:b00c
+    984 2a03:2880:11ff:8::face:b00c
+    993 2a03:2880:11ff:3::face:b00c
+    994 2a03:2880:11ff:7::face:b00c
+   1006 2a03:2880:11ff:10::face:b00c
+   1011 2a03:2880:11ff:4::face:b00c
+   1023 2a03:2880:11ff:6::face:b00c
+   1026 2a03:2880:11ff:9::face:b00c
+   1039 2a03:2880:11ff:1::face:b00c
+   1043 2a03:2880:11ff:c::face:b00c
+   1070 2a03:2880:11ff::face:b00c
+   1075 2a03:2880:11ff:a::face:b00c
+   1093 2a03:2880:11ff:2::face:b00c
+   1107 2a03:2880:11ff:d::face:b00c
+   1116 2a03:2880:11ff:f::face:b00c
+</code></pre>
+
+<ul>
+<li>They are really making shit tons of Tomcat sessions:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11-04 | sort | uniq
+14368
+</code></pre>
+
+<ul>
+<li>Their user agent is:</li>
+</ul>
+
+<pre><code>facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)
+</code></pre>
+
+<ul>
+<li>I will add it to the Tomcat Crawler Session Manager valve</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
