@@ -21,7 +21,7 @@ Today these are the top 10 IPs:
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-11/" /><meta property="article:published_time" content="2018-11-01T16:41:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-11-26T22:46:12&#43;02:00"/>
+<meta property="article:modified_time" content="2018-11-27T08:01:10&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2018"/>
@@ -48,9 +48,9 @@ Today these are the top 10 IPs:
   "@type": "BlogPosting",
   "headline": "November, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-11/",
-  "wordCount": "2486",
+  "wordCount": "2652",
   "datePublished": "2018-11-01T16:41:30&#43;02:00",
-  "dateModified": "2018-11-26T22:46:12&#43;02:00",
+  "dateModified": "2018-11-27T08:01:10&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -437,7 +437,7 @@ Today these are the top 10 IPs:
 <h2 id="2018-11-13">2018-11-13</h2>
 
 <ul>
-<li>Help troubleshoot an issue with Judy Kimani submitting to the <em>ILRI project reports, papers and documents</em> collection on CGSpace</li>
+<li>Help troubleshoot an issue with Judy Kimani submitting to the <a href="https://cgspace.cgiar.org/handle/10568/78">ILRI project reports, papers and documents</a> collection on CGSpace</li>
 <li>For some reason there is an existing group for the &ldquo;Accept/Reject&rdquo; workflow step, but it&rsquo;s empty</li>
 <li>I added Judy to the group and told her to try again</li>
 <li>Sisay changed his leave to be full days until December so I need to finish the IITA records that he was working on (<a href="https://dspacetest.cgiar.org/handle/10568/107871">IITA_ ALIZZY1802-csv_oct23</a></li>
@@ -606,6 +606,24 @@ $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 
 <ul>
 <li>We know 70.32.83.92 is CCAFS harvester on MediaTemple, but 205.186.128.185 is new appears to be a new CCAFS harvester</li>
+<li>I think we might want to prune some old accounts from CGSpace, perhaps users who haven&rsquo;t logged in in the last two years would be a conservative bunch:</li>
+</ul>
+
+<pre><code>$ dspace dsrun org.dspace.eperson.Groomer -a -b 11/27/2016 | wc -l
+409
+$ dspace dsrun org.dspace.eperson.Groomer -a -b 11/27/2016 -d
+</code></pre>
+
+<ul>
+<li>This deleted about 380 users, skipping those who have submissions in the repository</li>
+<li>Judy Kimani was having problems taking tasks in the <a href="https://cgspace.cgiar.org/handle/10568/78">ILRI project reports, papers and documents</a> collection again
+
+<ul>
+<li>The workflow step 1 (accept/reject) is now undefined for some reason</li>
+<li>Last week the group was defined, but empty, so we added her to the group and she was able to take the tasks</li>
+<li>Since then it looks like the group was deleted, so now she didn&rsquo;t have permission to take or leave the tasks in her pool</li>
+<li>We added her back to the group, then she was able to take the tasks, and then we removed the group again, as we generally don&rsquo;t use this step in CGSpace</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
