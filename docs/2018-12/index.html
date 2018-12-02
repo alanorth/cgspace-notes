@@ -21,7 +21,7 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" /><meta property="article:published_time" content="2018-12-02T02:09:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-12-02T10:47:41&#43;02:00"/>
+<meta property="article:modified_time" content="2018-12-02T10:57:41&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2018"/>
@@ -48,9 +48,9 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
   "@type": "BlogPosting",
   "headline": "December, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
-  "wordCount": "301",
+  "wordCount": "463",
   "datePublished": "2018-12-02T02:09:30&#43;02:00",
-  "dateModified": "2018-12-02T10:47:41&#43;02:00",
+  "dateModified": "2018-12-02T10:57:41&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -170,6 +170,34 @@ zsh: segmentation fault (core dumped)  gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -
 
 <pre><code>$ gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=png16m -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r72x72 -dFirstPage=1 -dLastPage=1 -sOutputFile=/tmp/out%d -f/home/aorth/Desktop/Food\ safety\ Kenya\ fruits.pdf
 DEBUG: FC_WEIGHT didn't match
+</code></pre>
+
+<ul>
+<li>Start proofing the latest round of 226 IITA archive records that Bosede sent last week and Sisay uploaded to DSpace Test this weekend (<a href="https://dspacetest.cgiar.org/handle/10568/108298">IITA_Dec_1_1997 aka Daniel1807</a>)
+
+<ul>
+<li>One item missing the authorship type</li>
+<li>Some invalid countries (smart quotes, mispellings)</li>
+<li>Added countries to some items that mentioned research in particular countries in their abstracts</li>
+<li>One item had &ldquo;MADAGASCAR&rdquo; for ISI Journal</li>
+<li>Minor corrections in IITA subject (LIVELIHOOD→LIVELIHOODS)</li>
+<li>Trim whitespace in abstract field</li>
+<li>Fix some sponsors (though some with &ldquo;Governments of Canada&rdquo; etc I&rsquo;m not sure why those are plural)</li>
+<li>Eighteen items had <code>en||fr</code> for the language, but the content was only in French so changed them to just <code>fr</code></li>
+<li>Six items had encoding errors in French text so I will ask Bosede to re-do them carefully</li>
+<li>Correct and normalize a few AGROVOC subjects</li>
+</ul></li>
+<li>Expand my &ldquo;encoding error&rdquo; detection GREL to include <code>~</code> as I saw a lot of that in some copy pasted French text recently:</li>
+</ul>
+
+<pre><code>or(
+  isNotNull(value.match(/.*\uFFFD.*/)),
+  isNotNull(value.match(/.*\u00A0.*/)),
+  isNotNull(value.match(/.*\u200A.*/)),
+  isNotNull(value.match(/.*\u2019.*/)),
+  isNotNull(value.match(/.*\u00b4.*/)),
+  isNotNull(value.match(/.*\u007e.*/))
+)
 </code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
