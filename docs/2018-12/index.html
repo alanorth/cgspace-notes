@@ -21,7 +21,7 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" /><meta property="article:published_time" content="2018-12-02T02:09:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-12-03T12:35:27&#43;02:00"/>
+<meta property="article:modified_time" content="2018-12-03T13:16:42&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2018"/>
@@ -48,9 +48,9 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
   "@type": "BlogPosting",
   "headline": "December, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
-  "wordCount": "1195",
+  "wordCount": "1503",
   "datePublished": "2018-12-02T02:09:30&#43;02:00",
-  "dateModified": "2018-12-03T12:35:27&#43;02:00",
+  "dateModified": "2018-12-03T13:16:42&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -329,6 +329,46 @@ Producer:       Microsoft® Word 2016
 Creator:        Microsoft® Word for Office 365
 Producer:       Microsoft® Word for Office 365
 </code></pre>
+
+<ul>
+<li>I remembered an old technique I was using to generate thumbnails in 2015 using Inkscape followed by ImageMagick or GraphicsMagick:</li>
+</ul>
+
+<pre><code>$ inkscape Food\ safety\ Kenya\ fruits.pdf -z --export-dpi=72 --export-area-drawing --export-png='cover.png'
+$ gm convert -resize x600 -flatten -quality 85 cover.png cover.jpg
+</code></pre>
+
+<ul>
+<li>I&rsquo;ve tried a few times this week to register for the <a href="https://www.evisa.gov.et/">Ethiopian eVisa website</a>, but it is never successful</li>
+<li>In the end I tried one last time to just apply without registering and it was apparently successful</li>
+<li>Testing DSpace 5.8 (<code>5_x-prod</code> branch) in an Ubuntu 18.04 VM with Tomcat 8.5 and had some issues:
+
+<ul>
+<li>JSPUI shows an internal error (log shows something about tag cloud, though, so might be unrelated)</li>
+<li>Atmire Listings and Reports, which use JSPUI, asks you to log in again and then doesn&rsquo;t work</li>
+<li>Content and Usage Analysis doesn&rsquo;t show up in the sidebar after logging in</li>
+<li>I can navigate to <a href="https://dspacetest.cgiar.org/atmire/reporting-suite/usage-graph-editor">/atmire/reporting-suite/usage-graph-editor</a>, but it&rsquo;s only the Atmire theme and a &ldquo;page not found&rdquo; message</li>
+<li>Related messages from dspace.log:</li>
+</ul></li>
+</ul>
+
+<pre><code>2018-12-03 15:44:00,030 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-datatables not found
+2018-12-03 15:44:03,390 ERROR com.atmire.app.webui.servlet.ExportServlet @ Error converter plugin not found: interface org.infoCon.ConverterPlugin
+...
+2018-12-03 15:45:01,667 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-listing-and-reports not found
+</code></pre>
+
+<ul>
+<li>I tested it on my local environment with Tomcat 8.5.34 and the JSPUI application still has an error (again, the logs show something about tag cloud, so be unrelated), and the Listings and Reports still asks you to log in again, despite already being logged in in XMLUI, but does appear to work (I generated a report and exported a PDF)</li>
+<li>I think the errors about missing Atmire components must be important, here on my local machine as well (though not the one about atmire-listings-and-reports):</li>
+</ul>
+
+<pre><code>2018-12-03 16:44:00,009 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-datatables not found
+</code></pre>
+
+<ul>
+<li>This has got to be part Ubuntu Tomcat packaging, and part DSpace 5.x Tomcat 8.5 readiness&hellip;?</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
