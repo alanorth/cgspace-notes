@@ -21,7 +21,7 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" /><meta property="article:published_time" content="2018-12-02T02:09:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-12-02T17:55:32&#43;02:00"/>
+<meta property="article:modified_time" content="2018-12-03T12:35:27&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2018"/>
@@ -48,9 +48,9 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
   "@type": "BlogPosting",
   "headline": "December, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
-  "wordCount": "875",
+  "wordCount": "1195",
   "datePublished": "2018-12-02T02:09:30&#43;02:00",
-  "dateModified": "2018-12-02T17:55:32&#43;02:00",
+  "dateModified": "2018-12-03T12:35:27&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -263,7 +263,72 @@ DEBUG: FC_WEIGHT didn't match
 
 <ul>
 <li>I inspected the troublesome PDF using <a href="http://jhove.openpreservation.org/">jhove</a> and noticed that it is using <code>ISO PDF/A-1, Level B</code> and the other one doesn&rsquo;t list a profile, though I don&rsquo;t think this is relevant</li>
+<li>I found another item that fails when generating a thumbnail (<a href="https://hdl.handle.net/10568/98391"><sup>10568</sup>&frasl;<sub>98391</sub></a>, DSpace complains:</li>
 </ul>
+
+<pre><code>org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&quot;gs&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pngalpha&quot; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &quot;-r72x72&quot; -dFirstPage=1 -dLastPage=1 &quot;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&quot; &quot;-f/tmp/magick-14296Q0rJjfCeIj3w&quot; &quot;-f/tmp/magick-14296k_K6MWqwvpDm&quot;' (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&quot;gs&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pngalpha&quot; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &quot;-r72x72&quot; -dFirstPage=1 -dLastPage=1 &quot;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&quot; &quot;-f/tmp/magick-14296Q0rJjfCeIj3w&quot; &quot;-f/tmp/magick-14296k_K6MWqwvpDm&quot;' (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.Info.getBaseInfo(Info.java:360)
+        at org.im4java.core.Info.&lt;init&gt;(Info.java:151)
+        at org.dspace.app.mediafilter.ImageMagickThumbnailFilter.getImageFile(ImageMagickThumbnailFilter.java:142)
+        at org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.getDestinationStream(ImageMagickPdfThumbnailFilter.java:24)
+        at org.dspace.app.mediafilter.FormatFilter.processBitstream(FormatFilter.java:170)
+        at org.dspace.app.mediafilter.MediaFilterManager.filterBitstream(MediaFilterManager.java:475)
+        at org.dspace.app.mediafilter.MediaFilterManager.filterItem(MediaFilterManager.java:429)
+        at org.dspace.app.mediafilter.MediaFilterManager.applyFiltersItem(MediaFilterManager.java:401)
+        at org.dspace.app.mediafilter.MediaFilterManager.main(MediaFilterManager.java:237)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+Caused by: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&quot;gs&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pngalpha&quot; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &quot;-r72x72&quot; -dFirstPage=1 -dLastPage=1 &quot;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&quot; &quot;-f/tmp/magick-14296Q0rJjfCeIj3w&quot; &quot;-f/tmp/magick-14296k_K6MWqwvpDm&quot;' (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.ImageCommand.run(ImageCommand.java:219)
+        at org.im4java.core.Info.getBaseInfo(Info.java:342)
+        ... 14 more
+Caused by: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&quot;gs&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pngalpha&quot; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &quot;-r72x72&quot; -dFirstPage=1 -dLastPage=1 &quot;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&quot; &quot;-f/tmp/magick-14296Q0rJjfCeIj3w&quot; &quot;-f/tmp/magick-14296k_K6MWqwvpDm&quot;' (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.ImageCommand.finished(ImageCommand.java:253)
+        at org.im4java.process.ProcessStarter.run(ProcessStarter.java:314)
+        at org.im4java.core.ImageCommand.run(ImageCommand.java:215)
+        ... 15 more
+</code></pre>
+
+<ul>
+<li>And on my Arch Linux environment ImageMagick&rsquo;s <code>convert</code> also segfaults:</li>
+</ul>
+
+<pre><code>$ convert bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf\[0\] -thumbnail x600 -flatten bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf.jpg
+zsh: abort (core dumped)  convert bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf\[0\]  x60
+</code></pre>
+
+<ul>
+<li>But GraphicsMagick&rsquo;s <code>convert</code> works:</li>
+</ul>
+
+<pre><code>$ gm convert bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf\[0\] -thumbnail x600 -flatten bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf.jpg
+</code></pre>
+
+<ul>
+<li>So far the only thing that stands out is that the two files that don&rsquo;t work were created with Microsoft Office 2016:</li>
+</ul>
+
+<pre><code>$ pdfinfo bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf | grep -E '^(Creator|Producer)'
+Creator:        Microsoft® Word 2016
+Producer:       Microsoft® Word 2016
+$ pdfinfo Food\ safety\ Kenya\ fruits.pdf | grep -E '^(Creator|Producer)'
+Creator:        Microsoft® Word 2016
+Producer:       Microsoft® Word 2016
+</code></pre>
+
+<ul>
+<li>And the one that works was created with Office 365:</li>
+</ul>
+
+<pre><code>$ pdfinfo Info\ Note\ Mainstreaming\ gender\ and\ social\ differentiation\ into\ CCAFS\ research\ activities\ in\ West\ Africa-converted.pdf | grep -E '^(Creator|Producer)'
+Creator:        Microsoft® Word for Office 365
+Producer:       Microsoft® Word for Office 365
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
