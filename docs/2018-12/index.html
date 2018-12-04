@@ -21,7 +21,7 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" /><meta property="article:published_time" content="2018-12-02T02:09:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-12-03T13:16:42&#43;02:00"/>
+<meta property="article:modified_time" content="2018-12-03T18:28:21&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2018"/>
@@ -48,9 +48,9 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
   "@type": "BlogPosting",
   "headline": "December, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
-  "wordCount": "1503",
+  "wordCount": "1826",
   "datePublished": "2018-12-02T02:09:30&#43;02:00",
-  "dateModified": "2018-12-03T13:16:42&#43;02:00",
+  "dateModified": "2018-12-03T18:28:21&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -369,6 +369,87 @@ $ gm convert -resize x600 -flatten -quality 85 cover.png cover.jpg
 <ul>
 <li>This has got to be part Ubuntu Tomcat packaging, and part DSpace 5.x Tomcat 8.5 readiness&hellip;?</li>
 </ul>
+
+<h2 id="2018-12-04">2018-12-04</h2>
+
+<ul>
+<li>Last night Linode sent a message that the load on CGSpace (linode18) was too high, here&rsquo;s a list of the top users at the time and throughout the day:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Dec/2018:1(5|6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    225 40.77.167.142
+    226 66.249.64.63
+    232 46.101.86.248
+    285 45.5.186.2
+    333 54.70.40.11
+    411 193.29.13.85
+    476 34.218.226.147
+    962 66.249.70.27
+   1193 35.237.175.180
+   1450 2a01:4f8:140:3192::2
+# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Dec/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+   1141 207.46.13.57
+   1299 197.210.168.174
+   1341 54.70.40.11
+   1429 40.77.167.142
+   1528 34.218.226.147
+   1973 66.249.70.27
+   2079 50.116.102.77
+   2494 78.46.79.71
+   3210 2a01:4f8:140:3192::2
+   4190 35.237.175.180
+</code></pre>
+
+<ul>
+<li><code>35.237.175.180</code> is known to us (CCAFS?), and I&rsquo;ve already added it to the list of bot IPs in nginx, which appears to be working:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=35.237.175.180' dspace.log.2018-12-03
+4772
+$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=35.237.175.180' dspace.log.2018-12-03 | sort | uniq | wc -l
+630
+</code></pre>
+
+<ul>
+<li>I haven&rsquo;t seen <code>2a01:4f8:140:3192::2</code> before. Its user agent is some new bot:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (compatible; BLEXBot/1.0; +http://webmeup-crawler.com/)
+</code></pre>
+
+<ul>
+<li>At least it seems the Tomcat Crawler Session Manager Valve is working to re-use the common bot XMLUI sessions:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=2a01:4f8:140:3192::2' dspace.log.2018-12-03
+5111
+$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=2a01:4f8:140:3192::2' dspace.log.2018-12-03 | sort | uniq | wc -l
+419
+</code></pre>
+
+<ul>
+<li><code>78.46.79.71</code> is another host on Hetzner with the following user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
+</code></pre>
+
+<ul>
+<li>This is not the first time a host on Hetzner has used a &ldquo;normal&rdquo; user agent to make thousands of requests</li>
+<li>At least it is re-using its Tomcat sessions somehow:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.79.71' dspace.log.2018-12-03
+2044
+$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.79.71' dspace.log.2018-12-03 | sort | uniq | wc -l
+1
+</code></pre>
+
+<ul>
+<li>In other news, it&rsquo;s good to see my re-work of the database connectivity in the <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a> actually caused a reduction of persistent database connections (from 1 to 0, but still!):</li>
+</ul>
+
+<p><img src="/cgspace-notes/2018/12/postgres_connections_db-month.png" alt="PostgreSQL connections day" /></p>
 
 <!-- vim: set sw=2 ts=2: -->
 
