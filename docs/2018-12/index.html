@@ -21,7 +21,7 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" /><meta property="article:published_time" content="2018-12-02T02:09:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-12-04T10:02:51&#43;02:00"/>
+<meta property="article:modified_time" content="2018-12-05T17:20:48&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2018"/>
@@ -48,9 +48,9 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
   "@type": "BlogPosting",
   "headline": "December, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
-  "wordCount": "1835",
+  "wordCount": "2009",
   "datePublished": "2018-12-02T02:09:30&#43;02:00",
-  "dateModified": "2018-12-04T10:02:51&#43;02:00",
+  "dateModified": "2018-12-05T17:20:48&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -455,6 +455,49 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.79.71' dspace.log.2018-12-03
 
 <ul>
 <li>Discuss RSS issues with IWMI and WLE people</li>
+</ul>
+
+<h2 id="2018-12-06">2018-12-06</h2>
+
+<ul>
+<li>Linode sent a message that the CPU usage of CGSpace (linode18) is too high last night</li>
+<li>I looked in the logs and there&rsquo;s nothing particular going on:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;05/Dec/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+   1225 157.55.39.177
+   1240 207.46.13.12
+   1261 207.46.13.101
+   1411 207.46.13.157
+   1529 34.218.226.147
+   2085 50.116.102.77
+   3334 2a01:7e00::f03c:91ff:fe0a:d645
+   3733 66.249.70.27
+   3815 35.237.175.180
+   7669 54.70.40.11
+</code></pre>
+
+<ul>
+<li><code>54.70.40.11</code> is some new bot with the following user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (compatible) SemanticScholarBot (+https://www.semanticscholar.org/crawler)
+</code></pre>
+
+<ul>
+<li>But Tomcat is forcing them to re-use their Tomcat sessions with the Crawler Session Manager valve:</li>
+</ul>
+
+<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=54.70.40.11' dspace.log.2018-12-05
+6980
+$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=54.70.40.11' dspace.log.2018-12-05 | sort | uniq | wc -l
+1156
+</code></pre>
+
+<ul>
+<li><code>2a01:7e00::f03c:91ff:fe0a:d645</code> appears to be the CKM dev server where Danny is testing harvesting via Drupal</li>
+<li>It seems they are hitting the XMLUI&rsquo;s OpenSearch a bit, but mostly on the REST API so no issues here yet</li>
+<li><code>Drupal</code> is already in the Tomcat Crawler Session Manager Valve&rsquo;s regex so that&rsquo;s good!</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
