@@ -21,7 +21,7 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" /><meta property="article:published_time" content="2018-12-02T02:09:30&#43;02:00"/>
-<meta property="article:modified_time" content="2018-12-19T11:05:04&#43;02:00"/>
+<meta property="article:modified_time" content="2018-12-20T12:56:16&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2018"/>
@@ -48,9 +48,9 @@ I noticed that there is another issue with PDF thumbnails on CGSpace, and I see 
   "@type": "BlogPosting",
   "headline": "December, 2018",
   "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
-  "wordCount": "2576",
+  "wordCount": "2940",
   "datePublished": "2018-12-02T02:09:30&#43;02:00",
-  "dateModified": "2018-12-19T11:05:04&#43;02:00",
+  "dateModified": "2018-12-20T12:56:16&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -599,6 +599,75 @@ $ ls -lh cgspace_2018-12-19.backup*
 
 <ul>
 <li>Looks like it&rsquo;s really not worth it&hellip;</li>
+<li>Peter pointed out that Discovery filters for CTA subjects on item pages were not working</li>
+<li>It looks like there were some mismatches in the Discovery index names and the XMLUI configuration, so I fixed them (<a href="https://github.com/ilri/DSpace/pull/406">#406</a>)</li>
+<li>Peter asked if we could create a controlled vocabulary for publishers (<code>dc.publisher</code>)</li>
+<li>I see we have about 3500 distinct publishers:</li>
+</ul>
+
+<pre><code># SELECT COUNT(DISTINCT(text_value)) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=39;
+ count
+-------
+  3522
+(1 row)
+</code></pre>
+
+<ul>
+<li>I reverted the metadata changes related to &ldquo;Unrestricted Access&rdquo; and &ldquo;Restricted Access&rdquo; on DSpace Test because we&rsquo;re not pushing forward with the new status terms for now</li>
+<li>Purge remaining Oracle Java 8 stuff from CGSpace (linode18) since we migrated to OpenJDK a few months ago:</li>
+</ul>
+
+<pre><code># dpkg -P oracle-java8-installer oracle-java8-set-default
+</code></pre>
+
+<ul>
+<li>Update usage rights on CGSpace as we agreed with Maria Garruccio and Peter last month:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-11-27-update-rights.csv -f dc.rights -t correct -m 53 -db dspace -u dspace -p 'fuu' -d
+Connected to database.
+Fixed 466 occurences of: Copyrighted; Any re-use allowed
+</code></pre>
+
+<ul>
+<li>Upgrade PostgreSQL on CGSpace (linode18) from 9.5 to 9.6:</li>
+</ul>
+
+<pre><code># apt install postgresql-9.6 postgresql-client-9.6 postgresql-contrib-9.6 postgresql-server-dev-9.6
+# pg_ctlcluster 9.5 main stop
+# tar -cvzpf var-lib-postgresql-9.5.tar.gz /var/lib/postgresql/9.5
+# tar -cvzpf etc-postgresql-9.5.tar.gz /etc/postgresql/9.5
+# pg_ctlcluster 9.6 main stop
+# pg_dropcluster 9.6 main
+# pg_upgradecluster 9.5 main
+# pg_dropcluster 9.5 main
+# dpkg -l | grep postgresql | grep 9.5 | awk '{print $2}' | xargs dpkg -r
+</code></pre>
+
+<ul>
+<li>I&rsquo;ve been running PostgreSQL 9.6 for months on my local development and public DSpace Test (linode19) environments</li>
+<li>Run all system updates on CGSpace (linode18) and restart the server</li>
+<li>Try to run the DSpace cleanup script on CGSpace (linode18), but I get some errors about foreign key constraints:</li>
+</ul>
+
+<pre><code>$ dspace cleanup -v
+ - Deleting bitstream information (ID: 158227)
+ - Deleting bitstream record from database (ID: 158227)
+Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(158227) is still referenced from table &quot;bundle&quot;.
+...
+</code></pre>
+
+<ul>
+<li>As always, the solution is to delete those IDs manually in PostgreSQL:</li>
+</ul>
+
+<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (158227, 158251);'
+UPDATE 1
+</code></pre>
+
+<ul>
+<li>After all that I started a full Discovery reindex to get the index name changes and rights updates</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
