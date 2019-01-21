@@ -27,7 +27,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-01/" /><meta property="article:published_time" content="2019-01-02T09:48:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-01-20T17:14:43&#43;02:00"/>
+<meta property="article:modified_time" content="2019-01-21T12:54:29&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="January, 2019"/>
@@ -60,9 +60,9 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
   "@type": "BlogPosting",
   "headline": "January, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-01/",
-  "wordCount": "3120",
+  "wordCount": "3266",
   "datePublished": "2019-01-02T09:48:30&#43;02:00",
-  "dateModified": "2019-01-20T17:14:43&#43;02:00",
+  "dateModified": "2019-01-21T12:54:29&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -930,6 +930,33 @@ $ http 'http://localhost:3000/solr/statistics-2018/select?indent=on&amp;rows=0&a
 <ul>
 <li>I opened an issue on the GitHub issue tracker (<a href="https://github.com/ilri/dspace-statistics-api/issues/10">#10</a>)</li>
 <li>I don&rsquo;t think the <a href="https://solrclient.readthedocs.io/en/latest/">SolrClient library</a> we are currently using supports these type of queries so we might have to just do raw queries with requests</li>
+<li>The <a href="https://github.com/django-haystack/pysolr">pysolr</a> library says it supports multicore indexes, but I am not sure it does (or at least not with our setup):</li>
+</ul>
+
+<pre><code>import pysolr
+solr = pysolr.Solr('http://localhost:3000/solr/statistics')
+results = solr.search('type:2', **{'fq': 'isBot:false AND statistics_type:view', 'facet': 'true', 'facet.field': 'id', 'facet.mincount': 1, 'facet.limit': 10, 'facet.offset': 0, 'rows': 0})
+print(results.facets['facet_fields'])
+{'id': ['77572', 646, '93185', 380, '92932', 375, '102499', 372, '101430', 337, '77632', 331, '102449', 289, '102485', 276, '100849', 270, '47080', 260]}
+</code></pre>
+
+<ul>
+<li>If I double check one item from above, for example <code>77572</code>, it appears this is only working on the current statistics core and not the shards:</li>
+</ul>
+
+<pre><code>import pysolr
+solr = pysolr.Solr('http://localhost:3000/solr/statistics')
+results = solr.search('type:2 id:77572', **{'fq': 'isBot:false AND statistics_type:view'})
+print(results.hits)
+646
+solr = pysolr.Solr('http://localhost:3000/solr/statistics-2018/')
+results = solr.search('type:2 id:77572', **{'fq': 'isBot:false AND statistics_type:view'})
+print(results.hits)
+595
+</code></pre>
+
+<ul>
+<li>So I guess I need to figure out how to use join queries and maybe even switch to using raw Python requests with JSON</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
