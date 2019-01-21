@@ -27,7 +27,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-01/" /><meta property="article:published_time" content="2019-01-02T09:48:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-01-21T12:54:29&#43;02:00"/>
+<meta property="article:modified_time" content="2019-01-21T14:16:56&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="January, 2019"/>
@@ -60,9 +60,9 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
   "@type": "BlogPosting",
   "headline": "January, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-01/",
-  "wordCount": "3266",
+  "wordCount": "3507",
   "datePublished": "2019-01-02T09:48:30&#43;02:00",
-  "dateModified": "2019-01-21T12:54:29&#43;02:00",
+  "dateModified": "2019-01-21T14:16:56&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -957,7 +957,44 @@ print(results.hits)
 
 <ul>
 <li>So I guess I need to figure out how to use join queries and maybe even switch to using raw Python requests with JSON</li>
+<li>This enumerates the list of Solr cores and returns JSON format:</li>
 </ul>
+
+<pre><code>http://localhost:3000/solr/admin/cores?action=STATUS&amp;wt=json
+</code></pre>
+
+<ul>
+<li>I think I figured out how to search across shards, I needed to give the whole URL to each other core</li>
+<li>Now I get more results when I start adding the other statistics cores:</li>
+</ul>
+
+<pre><code>$ http 'http://localhost:3000/solr/statistics/select?&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound&lt;result name=&quot;response&quot; numFound=&quot;2061320&quot; start=&quot;0&quot;&gt;
+$ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;16280292&quot; start=&quot;0&quot; maxScore=&quot;1.0&quot;&gt;
+$ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018,localhost:8081/solr/statistics-2017&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;25606142&quot; start=&quot;0&quot; maxScore=&quot;1.0&quot;&gt;
+$ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018,localhost:8081/solr/statistics-2017,localhost:8081/solr/statistics-2016&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;31532212&quot; start=&quot;0&quot; maxScore=&quot;1.0&quot;&gt;
+</code></pre>
+
+<ul>
+<li>I should be able to modify the dspace-statistics-api to check the shards via the Solr core status, then add the <code>shards</code> parameter to each query to make the search distributed among the cores</li>
+<li>I implemented a proof of concept to query the Solr STATUS for active cores and to add them with a <code>shards</code> query string</li>
+<li>A few things I noticed:
+
+<ul>
+<li>Solr doesn&rsquo;t mind if you use an empty <code>shards</code> parameter</li>
+<li>Solr doesn&rsquo;t mind if you have an extra comma at the end of the <code>shards</code> parameter</li>
+<li>If you are searching multiple cores, you need to include the base core in the <code>shards</code> parameter as well</li>
+<li>For example, compare the following two queries, first including the base core and the shard in the <code>shards</code> parameter, and then only including the shard:</li>
+</ul></li>
+</ul>
+
+<pre><code>$ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics,localhost:8081/solr/statistics-2018' | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;275&quot; start=&quot;0&quot; maxScore=&quot;12.205825&quot;&gt;
+$ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics-2018' | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;241&quot; start=&quot;0&quot; maxScore=&quot;12.205825&quot;&gt;
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
