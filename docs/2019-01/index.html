@@ -27,7 +27,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-01/" /><meta property="article:published_time" content="2019-01-02T09:48:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-01-23T10:46:23&#43;02:00"/>
+<meta property="article:modified_time" content="2019-01-23T13:38:00&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="January, 2019"/>
@@ -60,9 +60,9 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
   "@type": "BlogPosting",
   "headline": "January, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-01/",
-  "wordCount": "3697",
+  "wordCount": "4073",
   "datePublished": "2019-01-02T09:48:30&#43;02:00",
-  "dateModified": "2019-01-23T10:46:23&#43;02:00",
+  "dateModified": "2019-01-23T13:38:00&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1002,7 +1002,37 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 <li>Release <a href="https://github.com/ilri/dspace-statistics-api/releases/tag/v0.9.0">version 0.9.0 of the dspace-statistics-api</a> to address the issue of querying multiple Solr statistics shards</li>
 <li>I deployed it on DSpace Test (linode19) and restarted the indexer and now it shows all the stats from 2018 as well (756 pages of views, intead of 6)</li>
 <li>I deployed it on CGSpace (linode18) and restarted the indexer as well</li>
+<li>Linode sent an alert that CGSpace (linode18) was using high CPU this afternoon, the top ten IPs during that time were:</li>
 </ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;22/Jan/2019:1(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    155 40.77.167.106
+    176 2003:d5:fbda:1c00:1106:c7a0:4b17:3af8
+    189 107.21.16.70
+    217 54.83.93.85
+    310 46.174.208.142
+    346 83.103.94.48
+    360 45.5.186.2
+    595 154.113.73.30
+    716 196.191.127.37
+    915 35.237.175.180
+</code></pre>
+
+<ul>
+<li>35.237.175.180 is known to us</li>
+<li>I don&rsquo;t think we&rsquo;ve seen 196.191.127.37 before. Its user agent is:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/7.0.185.1002 Safari/537.36
+</code></pre>
+
+<ul>
+<li>Interestingly this IP is located in Addis Ababa&hellip;</li>
+<li>Another interesting one is 154.113.73.30, which is apparently at IITA Nigeria and uses the user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+</code></pre>
 
 <h2 id="2019-01-23">2019-01-23</h2>
 
@@ -1029,6 +1059,44 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 
 <ul>
 <li>Note that we need to use <code>infinity</code> instead of <code>unlimited</code> for the address space</li>
+</ul></li>
+
+<li><p>Create accounts for Bosun from IITA and Valerio from ICARDA / CGMEL on DSpace Test</p></li>
+
+<li><p>Maria Garruccio asked me for a list of author affiliations from all of their submitted items so she can clean them up</p></li>
+
+<li><p>I got a list of their collections from the CGSpace XMLUI and then used an SQL query to dump the unique values to CSV:</p></li>
+</ul>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/35501', '10568/41728', '10568/49622', '10568/56589', '10568/56592', '10568/65064', '10568/65718', '10568/65719', '10568/67373', '10568/67731', '10568/68235', '10568/68546', '10568/69089', '10568/69160', '10568/69419', '10568/69556', '10568/70131', '10568/70252', '10568/70978'))) group by text_value order by count desc) to /tmp/bioversity-affiliations.csv with csv;
+COPY 1109
+</code></pre>
+
+<ul>
+<li>Send a mail to the dspace-tech mailing list about the OpenSearch issue we had with the Livestock CRP</li>
+<li>Linode sent an alert that CGSpace (linode18) had a high load this morning, here are the top ten IPs during that time:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    222 54.226.25.74
+    241 40.77.167.13
+    272 46.101.86.248
+    297 35.237.175.180
+    332 45.5.184.72
+    355 34.218.226.147
+    404 66.249.64.155
+   4637 205.186.128.185
+   4637 70.32.83.92
+   9265 45.5.186.2
+</code></pre>
+
+<ul>
+<li>I think it&rsquo;s the usual IPs:
+
+<ul>
+<li>45.5.186.2 is CIAT</li>
+<li>70.32.83.92 is CCAFS</li>
+<li>205.186.128.185 is CCAFS or perhaps another Macaroni Bros harvester (new ILRI website?)</li>
 </ul></li>
 </ul>
 
