@@ -27,7 +27,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-01/" /><meta property="article:published_time" content="2019-01-02T09:48:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-01-25T19:45:15&#43;02:00"/>
+<meta property="article:modified_time" content="2019-01-27T17:25:19&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="January, 2019"/>
@@ -60,9 +60,9 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
   "@type": "BlogPosting",
   "headline": "January, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-01/",
-  "wordCount": "4866",
+  "wordCount": "5532",
   "datePublished": "2019-01-02T09:48:30&#43;02:00",
-  "dateModified": "2019-01-25T19:45:15&#43;02:00",
+  "dateModified": "2019-01-27T17:25:19&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1237,6 +1237,155 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 </ul></li>
 </ul>
 
+<h2 id="2019-01-28">2019-01-28</h2>
+
+<ul>
+<li>Udana from WLE asked me about the interaction between their publication website and their items on CGSpace
+
+<ul>
+<li>There is an item that is mapped into their collection from IWMI and is missing their <code>cg.identifier.wletheme</code> metadata</li>
+<li>I told him that, as far as I remember, when WLE introduced Phase II research themes in 2017 we decided to infer theme ownership from the collection hierarchy and we created a <a href="https://cgspace.cgiar.org/handle/10568/81268">WLE Phase II Research Themes</a> subCommunity</li>
+<li>Perhaps they need to ask Macaroni Bros about the mapping</li>
+</ul></li>
+<li>Linode alerted that CGSpace (linode18) was using too much CPU again this morning, here are the active IPs from the web server log at the time:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     67 207.46.13.50
+    105 41.204.190.40
+    117 34.218.226.147
+    126 35.237.175.180
+    203 213.55.99.121
+    332 45.5.184.72
+    377 5.9.6.51
+    512 45.5.184.2
+   4644 205.186.128.185
+   4644 70.32.83.92
+</code></pre>
+
+<ul>
+<li>There seems to be a pattern with <code>70.32.83.92</code> and <code>205.186.128.185</code> lately!</li>
+<li>Every morning at 8AM they are the top users&hellip; I should tell them to stagger their requests&hellip;</li>
+<li>I signed up for a <a href="https://visualping.io/">VisualPing</a> of the <a href="https://jdbc.postgresql.org/download.html">PostgreSQL JDBC driver download page</a> to my CGIAR email address
+
+<ul>
+<li>Hopefully this will one day alert me that a new driver is released!</li>
+</ul></li>
+<li>Last night Linode sent an alert that CGSpace (linode18) was using high CPU, here are the most active IPs in the hours just before, during, and after the alert:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:(17|18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    310 45.5.184.2
+    425 5.143.231.39
+    526 54.70.40.11
+   1003 199.47.87.141
+   1374 35.237.175.180
+   1455 5.9.6.51
+   1501 66.249.66.223
+   1771 66.249.66.219
+   2107 199.47.87.140
+   2540 45.5.186.2
+</code></pre>
+
+<ul>
+<li>Of course there is CIAT&rsquo;s <code>45.5.186.2</code>, but also <code>45.5.184.2</code> appears to be CIAT&hellip; I wonder why they have two harvesters?</li>
+<li><code>199.47.87.140</code> and <code>199.47.87.141</code> is TurnItIn with the following user agent:</li>
+</ul>
+
+<pre><code>TurnitinBot (https://turnitin.com/robot/crawlerinfo.html)
+</code></pre>
+
+<h2 id="2019-01-29">2019-01-29</h2>
+
+<ul>
+<li>Linode sent an alert about CGSpace (linode18) CPU usage this morning, here are the top IPs in the web server logs just before, during, and after the alert:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;29/Jan/2019:0(3|4|5|6|7)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    334 45.5.184.72
+    429 66.249.66.223
+    522 35.237.175.180
+    555 34.218.226.147
+    655 66.249.66.221
+    844 5.9.6.51
+   2507 66.249.66.219
+   4645 70.32.83.92
+   4646 205.186.128.185
+   9329 45.5.186.2
+</code></pre>
+
+<ul>
+<li><code>45.5.186.2</code> is CIAT as usual&hellip;</li>
+<li><code>70.32.83.92</code> and <code>205.186.128.185</code> are CCAFS as usual&hellip;</li>
+<li><code>66.249.66.219</code> is Google&hellip;</li>
+<li>I&rsquo;m thinking it might finally be time to increase the threshold of the Linode CPU alerts
+
+<ul>
+<li>I adjusted the alert threshold from 250% to 275%</li>
+</ul></li>
+</ul>
+
+<h2 id="2019-01-30">2019-01-30</h2>
+
+<ul>
+<li>Got another alert from Linode about CGSpace (linode18) this morning, here are the top IPs before, during, and after the alert:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    273 46.101.86.248
+    301 35.237.175.180
+    334 45.5.184.72
+    387 5.9.6.51
+    527 2a01:4f8:13b:1296::2
+   1021 34.218.226.147
+   1448 66.249.66.219
+   4649 205.186.128.185
+   4649 70.32.83.92
+   5163 45.5.184.2
+</code></pre>
+
+<ul>
+<li>I might need to adjust the threshold again, because the load average this morning was 296% and the activity looks pretty normal (as always recently)</li>
+</ul>
+
+<h2 id="2019-01-31">2019-01-31</h2>
+
+<ul>
+<li>Linode sent alerts about CGSpace (linode18) last night and this morning, here are the top IPs before, during, and after those times:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:(16|17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    436 18.196.196.108
+    460 157.55.39.168
+    460 207.46.13.96
+    500 197.156.105.116
+    728 54.70.40.11
+   1560 5.9.6.51
+   1562 35.237.175.180
+   1601 85.25.237.71
+   1894 66.249.66.219
+   2610 45.5.184.2
+# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;31/Jan/2019:0(2|3|4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    318 207.46.13.242
+    334 45.5.184.72
+    486 35.237.175.180
+    609 34.218.226.147
+    620 66.249.66.219
+   1054 5.9.6.51
+   4391 70.32.83.92
+   4428 205.186.128.185
+   6758 85.25.237.71
+   9239 45.5.186.2
+</code></pre>
+
+<ul>
+<li><code>45.5.186.2</code> and <code>45.5.184.2</code> are CIAT as always</li>
+<li><code>85.25.237.71</code> is some new server in Germany that I&rsquo;ve never seen before with the user agent:</li>
+</ul>
+
+<pre><code>Linguee Bot (http://www.linguee.com/bot; bot@linguee.com)
+</code></pre>
+
 <!-- vim: set sw=2 ts=2: -->
 
   
@@ -1258,6 +1407,8 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2019-02/">February, 2019</a></li>
+
 <li><a href="/cgspace-notes/2019-01/">January, 2019</a></li>
 
 <li><a href="/cgspace-notes/2018-12/">December, 2018</a></li>
@@ -1265,8 +1416,6 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <li><a href="/cgspace-notes/2018-11/">November, 2018</a></li>
 
 <li><a href="/cgspace-notes/2018-10/">October, 2018</a></li>
-
-<li><a href="/cgspace-notes/2018-09/">September, 2018</a></li>
 
     </ol>
   </section>
