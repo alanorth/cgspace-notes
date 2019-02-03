@@ -89,7 +89,7 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "367",
+  "wordCount": "640",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
   "dateModified": "2019-02-02T11:36:24&#43;02:00",
   "author": {
@@ -226,6 +226,77 @@ sys     0m1.979s
 <li><code>45.5.184.2</code> is CIAT and <code>85.25.237.71</code> is the new Linguee bot that I first noticed a few days ago</li>
 <li>I will increase the Linode alert threshold from 275 to 300% because this is becoming too much!</li>
 <li>I tested the Atmire Metadata Quality Module (MQM)&rsquo;s duplicate checked on the some <a href="https://dspacetest.cgiar.org/handle/10568/81268">WLE items</a> that I helped Udana with a few months ago on DSpace Test (linode19) and indeed it found many duplicates!</li>
+</ul>
+
+<h2 id="2019-02-03">2019-02-03</h2>
+
+<ul>
+<li>This is seriously getting annoying, Linode sent another alert this morning that CGSpace (linode18) load was 377%!</li>
+<li>Here are the top IPs before, during, and after that time:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Feb/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    325 85.25.237.71
+    340 45.5.184.72
+    431 5.143.231.8
+    756 5.9.6.51
+   1048 34.218.226.147
+   1203 66.249.66.219
+   1496 195.201.104.240
+   4658 205.186.128.185
+   4658 70.32.83.92
+   4852 45.5.184.2
+</code></pre>
+
+<ul>
+<li><code>45.5.184.2</code> is CIAT, <code>70.32.83.92</code> and <code>205.186.128.185</code> are Macaroni Bros harvesters for CCAFS I think</li>
+<li><code>195.201.104.240</code> is a new IP address in Germany with the following user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
+</code></pre>
+
+<ul>
+<li>This user was making 20–60 requests per minute this morning&hellip; seems like I should try to block this type of behavior heuristically, regardless of user agent!</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Feb/2019&quot; | grep 195.201.104.240 | grep -o -E '03/Feb/2019:0[0-9]:[0-9][0-9]' | uniq -c | sort -n | tail -n 20
+     19 03/Feb/2019:07:42
+     20 03/Feb/2019:07:12
+     21 03/Feb/2019:07:27
+     21 03/Feb/2019:07:28
+     25 03/Feb/2019:07:23
+     25 03/Feb/2019:07:29
+     26 03/Feb/2019:07:33
+     28 03/Feb/2019:07:38
+     30 03/Feb/2019:07:31
+     33 03/Feb/2019:07:35
+     33 03/Feb/2019:07:37
+     38 03/Feb/2019:07:40
+     43 03/Feb/2019:07:24
+     43 03/Feb/2019:07:32
+     46 03/Feb/2019:07:36
+     47 03/Feb/2019:07:34
+     47 03/Feb/2019:07:39
+     47 03/Feb/2019:07:41
+     51 03/Feb/2019:07:26
+     59 03/Feb/2019:07:25
+</code></pre>
+
+<ul>
+<li>At least they re-used their Tomcat session!</li>
+</ul>
+
+<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=195.201.104.240' dspace.log.2019-02-03 | sort | uniq | wc -l
+1
+</code></pre>
+
+<ul>
+<li>This user was making requests to <code>/browse</code>, which is not currently under the existing rate limiting of dynamic pages in our nginx config
+
+<ul>
+<li>I <a href="https://github.com/ilri/rmg-ansible-public/commit/36dfb072d6724fb5cdc81ef79cab08ed9ce427ad">extended the existing <code>dynamicpages</code> (12/m) rate limit to <code>/browse</code> and <code>/discover</code></a> with an allowance for bursting of up to five requests for &ldquo;real&rdquo; users</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
