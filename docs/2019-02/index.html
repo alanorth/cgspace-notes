@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-05T09:22:06&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-06T16:50:39&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "1435",
+  "wordCount": "1724",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-05T09:22:06&#43;02:00",
+  "dateModified": "2019-02-06T16:50:39&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -484,6 +484,70 @@ PESCAS E AQUACULTURE,PISCICULTURA||AQUACULTURE
    4661 70.32.83.92
    5102 45.5.186.2
 </code></pre>
+
+<h2 id="2019-02-07">2019-02-07</h2>
+
+<ul>
+<li>Linode sent an alert last night that the load on CGSpace (linode18) was over 300%</li>
+<li>Here are the top IPs in the web server and API logs before, during, and after that time, respectively:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;06/Feb/2019:(17|18|19|20|23)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+      5 66.249.66.209
+      6 2a01:4f8:210:51ef::2
+      6 40.77.167.75
+      9 104.198.9.108
+      9 157.55.39.192
+     10 157.55.39.244
+     12 66.249.66.221
+     20 95.108.181.88
+     27 66.249.66.219
+   2381 45.5.186.2
+# zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;06/Feb/2019:(17|18|19|20|23)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    455 45.5.186.2
+    506 40.77.167.75
+    559 54.70.40.11
+    825 157.55.39.244
+    871 2a01:4f8:140:3192::2
+    938 157.55.39.192
+   1058 85.25.237.71
+   1416 5.9.6.51
+   1606 66.249.66.219
+   1718 35.237.175.180
+</code></pre>
+
+<ul>
+<li>Then again this morning another alert:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;07/Feb/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+      5 66.249.66.223
+      8 104.198.9.108
+     13 110.54.160.222
+     24 66.249.66.219
+     25 175.158.217.98
+    214 34.218.226.147
+    346 45.5.184.72
+   4529 45.5.186.2
+   4661 205.186.128.185
+   4661 70.32.83.92
+# zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;07/Feb/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    145 157.55.39.237
+    154 66.249.66.221
+    214 34.218.226.147
+    261 35.237.175.180
+    273 2a01:4f8:140:3192::2
+    300 169.48.66.92
+    487 5.143.231.39
+    766 5.9.6.51
+    771 85.25.237.71
+    848 66.249.66.219
+</code></pre>
+
+<ul>
+<li>So it seems that the load issue comes from the REST API, not the XMLUI</li>
+<li>I could probably rate limit the REST API, or maybe just keep increasing the alert threshold so I don&rsquo;t get alert spam (this is probably the correct approach because it seems like the REST API can keep up with the requests and is returning HTTP 200 status as far as I can tell)</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
