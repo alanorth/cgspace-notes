@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-07T16:41:08&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-08T16:38:56&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "1993",
+  "wordCount": "2147",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-07T16:41:08&#43;02:00",
+  "dateModified": "2019-02-08T16:38:56&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -598,6 +598,49 @@ Please see the DSpace documentation for assistance.
 
 <ul>
 <li>I tried to log into Outlook 365 with the credentials but I think the ones I have must be wrong, so I will ask ICT to reset the password</li>
+</ul>
+
+<h2 id="2019-02-09">2019-02-09</h2>
+
+<ul>
+<li>Linode sent alerts about CPU load yesterday morning, yesterday night, and this morning! All over 300% CPU load!</li>
+<li>This is just for this morning:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;09/Feb/2019:(07|08|09|10|11)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    289 35.237.175.180
+    290 66.249.66.221
+    296 18.195.78.144
+    312 207.46.13.201
+    393 207.46.13.64
+    526 2a01:4f8:140:3192::2
+    580 151.80.203.180
+    742 5.143.231.38
+   1046 5.9.6.51
+   1331 66.249.66.219
+# zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;09/Feb/2019:(07|08|09|10|11)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+      4 66.249.83.30
+      5 49.149.10.16
+      8 207.46.13.64
+      9 207.46.13.201
+     11 105.63.86.154
+     11 66.249.66.221
+     31 66.249.66.219
+    297 2001:41d0:d:1990::
+    908 34.218.226.147
+   1947 50.116.102.77
+</code></pre>
+
+<ul>
+<li>I know 66.249.66.219 is Google, 5.9.6.51 is MegaIndex, and 5.143.231.38 is SputnikBot</li>
+<li>Ooh, but 151.80.203.180 is some malicious bot making requests for <code>/etc/passwd</code> like this:</li>
+</ul>
+
+<pre><code>/bitstream/handle/10568/68981/Identifying%20benefit%20flows%20studies%20on%20the%20potential%20monetary%20and%20non%20monetary%20benefits%20arising%20from%20the%20International%20Treaty%20on%20Plant%20Genetic_1671.pdf?sequence=1&amp;amp;isAllowed=../etc/passwd
+</code></pre>
+
+<ul>
+<li>151.80.203.180 is on OVH so I sent a message to their abuse email&hellip;</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
