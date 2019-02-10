@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-10T13:32:53&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-10T14:51:51&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "2587",
+  "wordCount": "2742",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-10T13:32:53&#43;02:00",
+  "dateModified": "2019-02-10T14:51:51&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -711,8 +711,37 @@ Please see the DSpace documentation for assistance.
 <li>Last week Hector Tobon from CCAFS asked me about the Creative Commons 3.0 Intergovernmental Organizations (IGO) license because it is not in the list of SPDX licenses
 
 <ul>
-<li>Today I made a request to the <a href="https://github.com/spdx/license-list-XML/blob/master/CONTRIBUTING.md">SPDX using their web form</a> to include this class of Creative Commons licenses](<a href="https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations">https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations</a>)</li>
+<li>Today I made <a href="http://13.57.134.254/app/license_requests/15/">a request</a> to the <a href="https://github.com/spdx/license-list-XML/blob/master/CONTRIBUTING.md">SPDX using their web form</a> to include this class of Creative Commons licenses](<a href="https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations">https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations</a>)</li>
 </ul></li>
+<li>Testing the <code>mail.server.disabled</code> property that I noticed in <code>dspace.cfg</code> recently
+
+<ul>
+<li>Setting it to true results in the following message when I try the <code>dspace test-email</code> helper on DSpace Test:</li>
+</ul></li>
+</ul>
+
+<pre><code>Error sending email:
+ - Error: cannot test email because mail.server.disabled is set to true
+</code></pre>
+
+<ul>
+<li>I&rsquo;m not sure why I didn&rsquo;t know about this configuration option before, and always maintained multiple configurations for development and production
+
+<ul>
+<li>I will modify the <a href="https://github.com/ilri/rmg-ansible-public">Ansible DSpace role</a> to use this in its <code>build.properties</code> template</li>
+</ul></li>
+<li>I updated my local Sonatype nexus Docker image and had an issue with the volume for some reason so I decided to just start from scratch:</li>
+</ul>
+
+<pre><code># docker rm nexus
+# docker pull sonatype/nexus3
+# mkdir -p /home/aorth/.local/lib/containers/volumes/nexus_data
+# chown 200:200 /home/aorth/.local/lib/containers/volumes/nexus_data
+# docker run --name nexus --network dspace-build -d -v /home/aorth/.local/lib/containers/volumes/nexus_data:/nexus-data -p 8081:8081 sonatype/nexus3
+</code></pre>
+
+<ul>
+<li>For some reason my <code>mvn package</code> for DSpace is not working now&hellip; I might go back to <a href="https://mjanja.ch/2018/02/cache-maven-artifacts-with-artifactory/">using Artifactory for caching</a> instead</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
