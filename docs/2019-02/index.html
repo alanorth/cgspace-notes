@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-11T11:17:27&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-12T09:24:28&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "2900",
+  "wordCount": "3049",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-11T11:17:27&#43;02:00",
+  "dateModified": "2019-02-12T09:24:28&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -771,6 +771,31 @@ Please see the DSpace documentation for assistance.
 
 <ul>
 <li>(DSpace 5 appears to use JPEG 92 quality so I do the same)</li>
+<li>Thinking about making &ldquo;top items&rdquo; endpoints in my <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a></li>
+<li>I could use the following SQL queries very easily to get the top items by views or downloads:</li>
+</ul>
+
+<pre><code>dspacestatistics=# SELECT * FROM items WHERE views &gt; 0 ORDER BY views DESC LIMIT 10;
+dspacestatistics=# SELECT * FROM items WHERE downloads &gt; 0 ORDER BY downloads DESC LIMIT 10;
+</code></pre>
+
+<ul>
+<li>I&rsquo;d have to think about what to make the REST API endpoints, perhaps: <code>/statistics/top/items?limit=10</code></li>
+<li>But how do I do top items by views / downloads separately?</li>
+<li>I re-deployed DSpace 6.3 locally to test the PDFBox thumbnails, especially to see if they handle CMYK files properly
+
+<ul>
+<li>The quality is JPEG 75 and I don&rsquo;t see a way to set the thumbnail dimensions, but the resulting image is indeed sRGB:</li>
+</ul></li>
+</ul>
+
+<pre><code>$ identify -verbose alc_contrastes_desafios.pdf.jpg
+...
+  Colorspace: sRGB
+</code></pre>
+
+<ul>
+<li>I will read the PDFBox thumbnailer documentation to see if I can change the size and quality</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
