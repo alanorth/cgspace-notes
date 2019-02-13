@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-12T09:24:28&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-12T20:12:43&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "3049",
+  "wordCount": "3280",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-12T09:24:28&#43;02:00",
+  "dateModified": "2019-02-12T20:12:43&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -797,6 +797,50 @@ dspacestatistics=# SELECT * FROM items WHERE downloads &gt; 0 ORDER BY downloads
 <ul>
 <li>I will read the PDFBox thumbnailer documentation to see if I can change the size and quality</li>
 </ul>
+
+<h2 id="2019-02-13">2019-02-13</h2>
+
+<ul>
+<li>ILRI ICT reset the password for the CGSpace mail account, but I still can&rsquo;t get it to send mail from DSpace&rsquo;s <code>test-email</code> utility</li>
+<li>I even added extra mail properties to <code>dspace.cfg</code> as suggested by someone on the dspace-tech mailing list:</li>
+</ul>
+
+<pre><code>mail.extraproperties = mail.smtp.starttls.required = true, mail.smtp.auth=true
+</code></pre>
+
+<ul>
+<li>But the result is still:</li>
+</ul>
+
+<pre><code>Error sending email:
+ - Error: com.sun.mail.smtp.SMTPSendFailedException: 530 5.7.57 SMTP; Client was not authenticated to send anonymous mail during MAIL FROM [AM6PR06CA0001.eurprd06.prod.outlook.com]
+</code></pre>
+
+<ul>
+<li>I tried to log into the Outlook 365 web mail and it doesn&rsquo;t work so I&rsquo;ve emailed ILRI ICT again</li>
+<li>After reading the <a href="https://javaee.github.io/javamail/FAQ#commonmistakes">common mistakes in the JavaMail FAQ</a> I reconfigured the extra properties in DSpace&rsquo;s mail configuration to be simply:</li>
+</ul>
+
+<pre><code>mail.extraproperties = mail.smtp.starttls.enable=true
+</code></pre>
+
+<ul>
+<li>&hellip; and then I was able to send a mail using my personal account where I know the credentials work</li>
+<li>The CGSpace account still gets this error message:</li>
+</ul>
+
+<pre><code>Error sending email:
+ - Error: javax.mail.AuthenticationFailedException
+</code></pre>
+
+<ul>
+<li>I updated the <a href="https://github.com/ilri/DSpace/pull/410">DSpace SMTP settings in <code>dspace.cfg</code></a> as well as the <a href="https://github.com/ilri/rmg-ansible-public/commit/ab5fe4d10e16413cd04ffb1bc3179dc970d6d47c">variables in the DSpace role of the Ansible infrastructure scripts</a></li>
+<li>Thierry from CTA is having issues with his account on DSpace Test, and there is no admin password reset function on DSpace (only via email, which is disabled on DSpace Test), so I have to delete and re-create his account:</li>
+</ul>
+
+<pre><code>$ dspace user --delete --email blah@cta.int
+$ dspace user --add --givenname Thierry --surname Lewyllie --email blah@cta.int --password 'blah'
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
