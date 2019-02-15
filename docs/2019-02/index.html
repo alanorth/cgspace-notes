@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-14T21:30:51&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-15T17:30:02&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "4131",
+  "wordCount": "4200",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-14T21:30:51&#43;02:00",
+  "dateModified": "2019-02-15T17:30:02&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -981,6 +981,20 @@ $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser
 
 <ul>
 <li>And it&rsquo;s all running without root!</li>
+<li>Then re-create my Artifactory container as well, taking into account ulimit open file requirements by Artifactory as well as the user limitations caused by rootless subuid mappings:</li>
+</ul>
+
+<pre><code>$ podman volume create artifactory_data
+artifactory_data
+$ podman create --ulimit nofile=32000:32000 --name artifactory -v artifactory_data:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-oss
+$ buildah unshare
+$ chown -R 1030:1030 ~/.local/share/containers/storage/volumes/artifactory_data
+$ exit
+$ podman start artifactory
+</code></pre>
+
+<ul>
+<li>More on the <a href="https://podman.io/blogs/2018/10/03/podman-remove-content-homedir.html">subuid permissions issue with rootless containers here</a></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
