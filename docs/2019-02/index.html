@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-14T19:44:18&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-14T21:30:51&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "3685",
+  "wordCount": "4131",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-14T19:44:18&#43;02:00",
+  "dateModified": "2019-02-14T21:30:51&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -905,6 +905,82 @@ $ podman run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspace
 <li>Help Sarah Kasyoka finish an item submission that she was having issues with due to the file size</li>
 <li>I increased the nginx upload limit, but she said she was having problems and couldn&rsquo;t really tell me why</li>
 <li>I logged in as her and completed the submission with no problems&hellip;</li>
+</ul>
+
+<h2 id="2019-02-15">2019-02-15</h2>
+
+<ul>
+<li>Tomcat was killed around 3AM by the kernel&rsquo;s OOM killer according to <code>dmesg</code>:</li>
+</ul>
+
+<pre><code>[Fri Feb 15 03:10:42 2019] Out of memory: Kill process 12027 (java) score 670 or sacrifice child
+[Fri Feb 15 03:10:42 2019] Killed process 12027 (java) total-vm:14108048kB, anon-rss:5450284kB, file-rss:0kB, shmem-rss:0kB
+[Fri Feb 15 03:10:43 2019] oom_reaper: reaped process 12027 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+</code></pre>
+
+<ul>
+<li>The <code>tomcat7</code> service shows:</li>
+</ul>
+
+<pre><code>Feb 15 03:10:44 linode19 systemd[1]: tomcat7.service: Main process exited, code=killed, status=9/KILL
+</code></pre>
+
+<ul>
+<li>I suspect it was related to the media-filter cron job that runs at 3AM but I don&rsquo;t see anything particular in the log files</li>
+<li>I want to try to normalize the <code>text_lang</code> values to make working with metadata easier</li>
+<li>We currently have a bunch of weird values that DSpace uses like <code>NULL</code>, <code>en_US</code>, and <code>en</code> and others that have been entered manually by editors:</li>
+</ul>
+
+<pre><code>dspace=# SELECT DISTINCT text_lang, count(*) FROM metadatavalue WHERE resource_type_id=2 GROUP BY text_lang ORDER BY count DESC;
+ text_lang |  count
+-----------+---------
+           | 1069539
+ en_US     |  577110
+           |  334768
+ en        |  133501
+ es        |      12
+ *         |      11
+ es_ES     |       2
+ fr        |       2
+ spa       |       2
+ E.        |       1
+ ethnob    |       1
+</code></pre>
+
+<ul>
+<li>The majority are <code>NULL</code>, <code>en_US</code>, the blank string, and <code>en</code>—the rest are not enough to be significant</li>
+<li>Theoretically this field could help if you wanted to search for Spanish-language fields in the API or something, but even for the English fields there are two different values (and those are from DSpace itself)!</li>
+<li>I&rsquo;m going to normalized these to <code>NULL</code> at least on DSpace Test for now:</li>
+</ul>
+
+<pre><code>dspace=# UPDATE metadatavalue SET text_lang = NULL WHERE resource_type_id=2 AND text_lang IS NOT NULL;
+UPDATE 1045410
+</code></pre>
+
+<ul>
+<li>I started proofing IITA&rsquo;s 2019-01 records that Sisay uploaded this week
+
+<ul>
+<li>There were 259 records in IITA&rsquo;s original spreadsheet, but there are 276 in Sisay&rsquo;s collection</li>
+<li>Also, I found that there are at least twenty duplicates in these records that we will need to address</li>
+</ul></li>
+<li>ILRI ICT fixed the password for the CGSpace support email account and I tested it on Outlook 365 web and DSpace and it works</li>
+<li>Re-create my local PostgreSQL container to for new PostgreSQL version and to use podman&rsquo;s volumes:</li>
+</ul>
+
+<pre><code>$ podman pull postgres:9.6-alpine
+$ podman volume create dspacedb_data
+$ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
+$ createuser -h localhost -U postgres --pwprompt dspacetest
+$ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
+$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
+$ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost dspace_2019-02-11.backup
+$ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
+$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+</code></pre>
+
+<ul>
+<li>And it&rsquo;s all running without root!</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
