@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-15T17:30:02&#43;02:00"/>
+<meta property="article:modified_time" content="2019-02-15T17:37:14&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "4200",
+  "wordCount": "4292",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-15T17:30:02&#43;02:00",
+  "dateModified": "2019-02-15T17:37:14&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -995,6 +995,29 @@ $ podman start artifactory
 
 <ul>
 <li>More on the <a href="https://podman.io/blogs/2018/10/03/podman-remove-content-homedir.html">subuid permissions issue with rootless containers here</a></li>
+</ul>
+
+<h2 id="2019-02-17">2019-02-17</h2>
+
+<ul>
+<li>I ran DSpace&rsquo;s cleanup task on CGSpace (linode18) and there were errors:</li>
+</ul>
+
+<pre><code>$ dspace cleanup -v
+Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(162844) is still referenced from table &quot;bundle&quot;.
+</code></pre>
+
+<ul>
+<li><p>The solution is, as always:</p>
+
+<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (162844);'
+UPDATE 1
+</code></pre></li>
+
+<li><p>I merged the Atmire Metadata Quality Module (MQM) changes to the <code>5_x-prod</code> branch and deployed it on CGSpace (<a href="https://github.com/ilri/DSpace/pull/407">#407</a>)</p></li>
+
+<li><p>Then I ran all system updates on CGSpace server and rebooted it</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
