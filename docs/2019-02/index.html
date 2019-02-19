@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-18T15:00:47-08:00"/>
+<meta property="article:modified_time" content="2019-02-18T16:30:34-08:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "4900",
+  "wordCount": "5236",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-18T15:00:47-08:00",
+  "dateModified": "2019-02-18T16:30:34-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1157,6 +1157,60 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 <ul>
 <li>I merged the changes to the <code>5_x-prod</code> branch and they will go live the next time we re-deploy CGSpace (<a href="https://github.com/ilri/DSpace/pull/412">#412</a>)</li>
 </ul>
+
+<h2 id="2019-02-19">2019-02-19</h2>
+
+<ul>
+<li>Linode sent another alert about CPU usage on CGSpace (linode18) averaging 417% this morning</li>
+<li>Unfortunately, I don&rsquo;t see any strange activity in the web server API or XMLUI logs at that time in particular</li>
+<li>So far today the top ten IPs in the XMLUI logs are:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;19/Feb/2019:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+  11541 18.212.208.240
+  11560 3.81.136.184
+  11562 3.88.237.84
+  11569 34.230.15.139
+  11572 3.80.128.247
+  11573 3.91.17.126
+  11586 54.82.89.217
+  11610 54.209.39.13
+  11657 54.175.90.13
+  14686 143.233.242.130
+</code></pre>
+
+<ul>
+<li>143.233.242.130 is in Greece and using the user agent &ldquo;Indy Library&rdquo;, like the top IP yesterday (94.71.244.172)</li>
+<li>That user agent is in our Tomcat list of crawlers so at least its resource usage is controlled by forcing it to use a single Tomcat session, but I don&rsquo;t know if DSpace recognizes if this is a bot or not, so the logs are probably skewed because of this</li>
+<li>The user is requesting only things like <code>/handle/10568/56199?show=full</code> so it&rsquo;s nothing malicious, only annoying</li>
+<li>Otherwise there are still shit loads of IPs from Amazon still hammering the server, though I see HTTP 503 errors now after yesterday&rsquo;s nginx rate limiting updates
+
+<ul>
+<li>I should really try to script something around <a href="https://ipapi.co/api/">ipapi.co</a> to get these quickly and easily</li>
+</ul></li>
+<li>The top requests in the API logs today are:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;19/Feb/2019:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     42 66.249.66.221
+     44 156.156.81.215
+     55 3.85.54.129
+     76 66.249.66.219
+     87 34.209.213.122
+   1550 34.218.226.147
+   2127 50.116.102.77
+   4684 205.186.128.185
+  11429 45.5.186.2
+  12360 2a01:7e00::f03c:91ff:fe0a:d645
+</code></pre>
+
+<ul>
+<li><code>2a01:7e00::f03c:91ff:fe0a:d645</code> is on Linode, and I can see from the XMLUI access logs that it is Drupal, so I assume it is part of the new ILRI website harvester&hellip;</li>
+<li>Jesus, Linode just sent another alert as we speak that the load on CGSpace (linode18) has been at 450% the last two hours! I&rsquo;m so fucking sick of this</li>
+<li>Our usage stats have exploded the last few months:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2019/02/usage-stats.png" alt="Usage stats" /></p>
 
 <!-- vim: set sw=2 ts=2: -->
 
