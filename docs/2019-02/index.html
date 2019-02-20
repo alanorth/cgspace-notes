@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-18T16:30:34-08:00"/>
+<meta property="article:modified_time" content="2019-02-19T12:42:33-08:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "5236",
+  "wordCount": "5473",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-18T16:30:34-08:00",
+  "dateModified": "2019-02-19T12:42:33-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1211,6 +1211,60 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 
 <p><img src="/cgspace-notes/2019/02/usage-stats.png" alt="Usage stats" /></p>
+
+<ul>
+<li>I need to follow up with the DSpace developers and Atmire to see how they classify which requests are bots so we can try to estimate the impact caused by these users and perhaps try to update the list to make the stats more accurate</li>
+<li>I found one IP address in Nigeria that has an Android user agent and has requested a bitstream from <a href="https://cgspace.cgiar.org/handle/10568/96140"><sup>10568</sup>&frasl;<sub>96140</sub></a> almost 200 times:</li>
+</ul>
+
+<pre><code># grep 41.190.30.105 /var/log/nginx/access.log | grep -c 'acgg_progress_report.pdf'
+185
+</code></pre>
+
+<ul>
+<li>Wow, and another IP in Nigeria made a bunch more yesterday from the same user agent:</li>
+</ul>
+
+<pre><code># grep 41.190.3.229 /var/log/nginx/access.log.1 | grep -c 'acgg_progress_report.pdf'
+346
+</code></pre>
+
+<ul>
+<li>In the last two days alone there were 1,000 requests for this PDF, mostly from Nigeria!</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep acgg_progress_report.pdf | grep -v 'upstream response is buffered' | awk '{print $1}' | sort | uniq -c | sort -n
+      1 139.162.146.60
+      1 157.55.39.159
+      1 196.188.127.94
+      1 196.190.127.16
+      1 197.183.33.222
+      1 66.249.66.221
+      2 104.237.146.139
+      2 175.158.209.61
+      2 196.190.63.120
+      2 196.191.127.118
+      2 213.55.99.121
+      2 82.145.223.103
+      3 197.250.96.248
+      4 196.191.127.125
+      4 197.156.77.24
+      5 105.112.75.237
+    185 41.190.30.105
+    346 41.190.3.229
+    503 41.190.31.73
+</code></pre>
+
+<ul>
+<li>That is so weird, they are all using this Android user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Linux; Android 7.0; TECNO Camon CX Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 Mobile Safari/537.36
+</code></pre>
+
+<ul>
+<li>I wrote a quick and dirty Python script called <code>resolve-addresses.py</code> to resolve IP addresses to their owning organization&rsquo;s name, ASN, and country using the <a href="https://ipapi.co">IPAPI.co API</a></li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
