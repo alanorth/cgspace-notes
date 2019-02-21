@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-20T17:36:22-08:00"/>
+<meta property="article:modified_time" content="2019-02-20T18:20:09-08:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "5730",
+  "wordCount": "5947",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-20T17:36:22-08:00",
+  "dateModified": "2019-02-20T18:20:09-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1293,6 +1293,44 @@ $ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: applica
 <li>See this <a href="https://jira.duraspace.org/browse/VIVO-1655">issue on the VIVO tracker</a> for more information about this endpoint</li>
 <li>The old-school AGROVOC SOAP WSDL works with the <a href="https://python-zeep.readthedocs.io/en/master/">Zeep Python library</a>, but in my tests the results are way too broad despite trying to use a &ldquo;exact match&rdquo; searching</li>
 </ul>
+
+<h2 id="2019-02-21">2019-02-21</h2>
+
+<ul>
+<li>I wrote a script <a href="https://github.com/ilri/DSpace/blob/5_x-prod/agrovoc-lookup.py">agrovoc-lookup.py</a> to resolve subject terms against the public AGROVOC REST API</li>
+<li>It allows specifying the language the term should be queried in as well as output files to save the matched and unmatched terms to</li>
+<li>I ran our top 1500 subjects through English, Spanish, and French and saved the matched and unmatched terms to separate files:</li>
+</ul>
+
+<pre><code>$ ./agrovoc-lookup.py -l en -i /tmp/top-1500-subjects.txt -om /tmp/matched-subjects-en.txt -or /tmp/rejected-subjects-en.txt
+$ ./agrovoc-lookup.py -l es -i /tmp/top-1500-subjects.txt -om /tmp/matched-subjects-es.txt -or /tmp/rejected-subjects-es.txt
+$ ./agrovoc-lookup.py -l fr -i /tmp/top-1500-subjects.txt -om /tmp/matched-subjects-fr.txt -or /tmp/rejected-subjects-fr.txt
+</code></pre>
+
+<ul>
+<li>Then I generated a list of all the unique matched terms:</li>
+</ul>
+
+<pre><code>$ cat /tmp/matched-subjects-* | sort | uniq &gt; /tmp/2019-02-21-matched-subjects.txt
+</code></pre>
+
+<ul>
+<li>And then a list of all the unique <em>unmatched</em> terms using some utility I&rsquo;ve never heard of before called <code>comm</code>:</li>
+</ul>
+
+<pre><code>$ sort /tmp/top-1500-subjects.txt &gt; /tmp/subjects-sorted.txt
+$ comm -13 /tmp/2019-02-21-matched-subjects.txt /tmp/subjects-sorted.txt &gt; /tmp/2019-02-21-unmatched-subjects.txt
+</code></pre>
+
+<ul>
+<li>Generate a list of countries and regions from CGSpace for Sisay to look through:</li>
+</ul>
+
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 228 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC) to /tmp/2019-02-21-countries.csv WITH CSV HEADER;
+COPY 202
+dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 227 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC) to /tmp/2019-02-21-regions.csv WITH CSV HEADER;
+COPY 33
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
