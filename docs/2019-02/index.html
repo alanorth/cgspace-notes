@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-24T16:58:00-08:00"/>
+<meta property="article:modified_time" content="2019-02-24T17:29:12-08:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "6638",
+  "wordCount": "7043",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-24T16:58:00-08:00",
+  "dateModified": "2019-02-24T17:29:12-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1428,6 +1428,102 @@ return &quot;unmatched&quot;
 <li>A few of them are actually in previous IITA batch updates, which means they have been uploaded to CGSpace yet, so I worry that there would be many more</li>
 <li>I want to re-synchronize CGSpace to DSpace Test to make sure that the duplicate checking is accurate, but I&rsquo;m not sure I can because the Earlham guys are still testing COPO actively on DSpace Test</li>
 </ul></li>
+</ul>
+
+<h2 id="2019-02-25">2019-02-25</h2>
+
+<ul>
+<li>There seems to be something going on with Solr on CGSpace (linode18) because statistics on communities and collections are blank for January and February this year</li>
+<li>I see some errors started recently in Solr (yesterday):</li>
+</ul>
+
+<pre><code>$ grep -c ERROR /home/cgspace.cgiar.org/log/solr.log.2019-02-*
+/home/cgspace.cgiar.org/log/solr.log.2019-02-11.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-12.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-13.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-14.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-15.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-16.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-17.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-18.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-19.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-20.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-21.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-22.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-23.xz:0
+/home/cgspace.cgiar.org/log/solr.log.2019-02-24:34
+</code></pre>
+
+<ul>
+<li>But I don&rsquo;t see anything interesting in yesterday&rsquo;s Solr log&hellip;</li>
+<li>I see this in the Tomcat 7 logs yesterday:</li>
+</ul>
+
+<pre><code>Feb 25 21:09:29 linode18 tomcat7[1015]: Error while updating
+Feb 25 21:09:29 linode18 tomcat7[1015]: java.lang.UnsupportedOperationException: Multiple update components target the same field:solr_update_time_stamp
+Feb 25 21:09:29 linode18 tomcat7[1015]:         at org.dspace.statistics.SolrLogger$9.visit(SourceFile:1241)
+Feb 25 21:09:29 linode18 tomcat7[1015]:         at org.dspace.statistics.SolrLogger.visitEachStatisticShard(SourceFile:268)
+Feb 25 21:09:29 linode18 tomcat7[1015]:         at org.dspace.statistics.SolrLogger.update(SourceFile:1225)
+Feb 25 21:09:29 linode18 tomcat7[1015]:         at org.dspace.statistics.SolrLogger.update(SourceFile:1220)
+Feb 25 21:09:29 linode18 tomcat7[1015]:         at org.dspace.statistics.StatisticsLoggingConsumer.consume(SourceFile:103)
+...
+</code></pre>
+
+<ul>
+<li>In the Solr admin GUI I see we have the following error: &ldquo;statistics-2011: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher&rdquo;</li>
+<li>I restarted Tomcat and upon startup I see lots of errors in the systemd journal, like:</li>
+</ul>
+
+<pre><code>Feb 25 21:37:49 linode18 tomcat7[28363]: SEVERE: IOException while loading persisted sessions: java.io.StreamCorruptedException: invalid type code: 00
+Feb 25 21:37:49 linode18 tomcat7[28363]: java.io.StreamCorruptedException: invalid type code: 00
+Feb 25 21:37:49 linode18 tomcat7[28363]:         at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1601)
+Feb 25 21:37:49 linode18 tomcat7[28363]:         at java.io.ObjectInputStream.defaultReadFields(ObjectInputStream.java:2287)
+Feb 25 21:37:49 linode18 tomcat7[28363]:         at java.io.ObjectInputStream.defaultReadObject(ObjectInputStream.java:561)
+Feb 25 21:37:49 linode18 tomcat7[28363]:         at java.lang.Throwable.readObject(Throwable.java:914)
+Feb 25 21:37:49 linode18 tomcat7[28363]:         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Feb 25 21:37:49 linode18 tomcat7[28363]:         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</code></pre>
+
+<ul>
+<li>I don&rsquo;t think that&rsquo;s related&hellip;</li>
+<li>Also, now the Solr admin UI says &ldquo;statistics-2015: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher&rdquo;</li>
+<li>In the Solr log I see:</li>
+</ul>
+
+<pre><code>2019-02-25 21:38:14,246 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2015]: Error opening new searcher
+org.apache.solr.common.SolrException: Error opening new searcher
+        at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:873)
+        at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:646)
+...
+Caused by: org.apache.solr.common.SolrException: Error opening new searcher
+        at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
+        at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
+        at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
+        ... 31 more
+Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2015/data/index/write.lock
+        at org.apache.lucene.store.Lock.obtain(Lock.java:89)
+        at org.apache.lucene.index.IndexWriter.&lt;init&gt;(IndexWriter.java:753)
+        at org.apache.solr.update.SolrIndexWriter.&lt;init&gt;(SolrIndexWriter.java:77)
+        at org.apache.solr.update.SolrIndexWriter.create(SolrIndexWriter.java:64)
+        at org.apache.solr.update.DefaultSolrCoreState.createMainIndexWriter(DefaultSolrCoreState.java:279)
+        at org.apache.solr.update.DefaultSolrCoreState.getIndexWriter(DefaultSolrCoreState.java:111)
+        at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1528)
+        ... 33 more
+2019-02-25 21:38:14,250 ERROR org.apache.solr.core.SolrCore @ org.apache.solr.common.SolrException: Error CREATEing SolrCore 'statistics-2015': Unable to create core [statistics-2015] Caused by: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2015/data/index/write.lock
+</code></pre>
+
+<ul>
+<li>I tried to shutdown Tomcat and remove the locks:</li>
+</ul>
+
+<pre><code># systemctl stop tomcat7
+# find /home/cgspace.cgiar.org/solr -iname &quot;*.lock&quot; -delete
+# systemctl start tomcat7
+</code></pre>
+
+<ul>
+<li>&hellip; but the problem still occurs</li>
+<li>I can see that there are still hits being recorded for items (in the Solr admin UI as well as my statistics API), so the main stats core is working at least!</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
