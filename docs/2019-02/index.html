@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-21T17:21:37-08:00"/>
+<meta property="article:modified_time" content="2019-02-21T18:16:33-08:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "6074",
+  "wordCount": "6551",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-21T17:21:37-08:00",
+  "dateModified": "2019-02-21T18:16:33-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1345,6 +1345,83 @@ COPY 33
 <li>PLANT PRODUCTION &amp; HEALTH research theme to items with PLANT HEALTH subject</li>
 <li>NUTRITION &amp; HUMAN HEALTH research theme to items with NUTRITION subject</li>
 </ul></li>
+</ul>
+
+<h2 id="2019-02-22">2019-02-22</h2>
+
+<ul>
+<li>Help Udana from WLE with some issues related to CGSpace items on their <a href="https://www.wle.cgiar.org/publications">Publications website</a>
+
+<ul>
+<li>He wanted some IWMI items to show up in their publications website</li>
+<li>The items were mapped into WLE collections, but still weren&rsquo;t showing up on the publications website</li>
+<li>I told him that he needs to add the <code>cg.identifier.wletheme</code> to the items so that the website indexer finds them</li>
+<li>A few days ago he added the metadata to <a href="https://cgspace.cgiar.org/handle/10568/93011"><sup>10568</sup>&frasl;<sub>93011</sub></a> and now I see that the item is present on the <a href="https://www.wle.cgiar.org/resource-recovery-waste-business-models-energy-nutrient-and-water-reuse-low-and-middle-income">WLE publications website</a></li>
+</ul></li>
+
+<li><p>Start looking at IITA&rsquo;s latest round of batch uploads called <a href="https://dspacetest.cgiar.org/handle/10568/108684">&ldquo;IITA_Feb_14&rdquo; on DSpace Test</a></p>
+
+<ul>
+<li>One mispelled authorship type</li>
+<li>A few dozen incorrect inconsistent affiliations (I dumped a list of the top 1500 affiliations and reconciled against it, but it was still a lot of work)</li>
+<li>One issue with smart quotes in countries</li>
+<li>A few IITA subjects with syntax errors</li>
+<li>Some whitespace and consistency issues in sponsorships</li>
+<li>Eight items with invalid ISBN: 0-471-98560-3</li>
+<li>Two incorrectly formatted ISSNs</li>
+<li>Lots of incorrect values in subjects, but that&rsquo;s a difficult problem to do in an automated way</li>
+</ul></li>
+
+<li><p>I figured out how to query AGROVOC from OpenRefine using Jython by creating a custom text facet:</p></li>
+</ul>
+
+<pre><code>import json
+import re
+import urllib
+import urllib2
+
+pattern = re.compile('^S[A-Z ]+$')
+if pattern.match(value):
+  url = 'http://agrovoc.uniroma2.it/agrovoc/rest/v1/search?query=' + urllib.quote_plus(value) + '&amp;lang=en'
+  get = urllib2.urlopen(url)
+  data = json.load(get)
+  if len(data['results']) == 1:
+    return &quot;matched&quot;
+
+return &quot;unmatched&quot;
+</code></pre>
+
+<ul>
+<li>You have to make sure to URL encode the value with <code>quote_plus()</code> and it totally works, but it seems to refresh the facets (and therefore re-query everything) when you select a facet so that makes it basically unusable</li>
+<li>There is a <a href="https://programminghistorian.org/en/lessons/fetch-and-parse-data-with-openrefine#example-2-url-queries-and-parsing-json">good resource discussing OpenRefine, Jython, and web scraping</a></li>
+</ul>
+
+<h2 id="2019-02-24">2019-02-24</h2>
+
+<ul>
+<li>I decided to try to validate the AGROVOC subjects in IITA&rsquo;s recent batch upload by dumping all their terms, checking them in en/es/fr with <code>agrovoc-lookup.py</code>, then reconciling against the final list using reconcile-csv with OpenRefine</li>
+<li>I&rsquo;m not sure how to deal with terms like &ldquo;CORN&rdquo; that are alternative labels (<code>altLabel</code>) in AGROVOC where the preferred label (<code>prefLabel</code>) would be &ldquo;MAIZE&rdquo;</li>
+<li>For example, <a href="http://agrovoc.uniroma2.it/agrovoc/rest/v1/search?query=CORN*&amp;lang=en">a query</a> for <code>CORN*</code> returns:</li>
+</ul>
+
+<pre><code>    &quot;results&quot;: [
+        {
+            &quot;altLabel&quot;: &quot;corn (maize)&quot;,
+            &quot;lang&quot;: &quot;en&quot;,
+            &quot;prefLabel&quot;: &quot;maize&quot;,
+            &quot;type&quot;: [
+                &quot;skos:Concept&quot;
+            ],
+            &quot;uri&quot;: &quot;http://aims.fao.org/aos/agrovoc/c_12332&quot;,
+            &quot;vocab&quot;: &quot;agrovoc&quot;
+        },
+</code></pre>
+
+<ul>
+<li>There are dozens of other entries like &ldquo;corn (soft wheat)&rdquo;, &ldquo;corn (zea)&rdquo;, &ldquo;corn bran&rdquo;, &ldquo;Cornales&rdquo;, etc that could potentially match and to determine if they are related programatically is difficult</li>
+<li>Shit, and then there are terms like &ldquo;GENETIC DIVERSITY&rdquo; that should <a href="http://agrovoc.uniroma2.it/agrovoc/agrovoc/en/page/c_33952">technically be</a> &ldquo;genetic diversity (as resource)&rdquo;</li>
+<li>I applied all changes to the IITA Feb 14 batch data except the affiliations and sponsorships because I think I made some mistakes with the copying of reconciled values so I will try to look at those again separately</li>
+<li>I went back and re-did the affiliations and sponsorships and then applied them on the IITA Feb 14 collection on DSpace Test</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
