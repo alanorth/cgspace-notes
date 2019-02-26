@@ -42,7 +42,7 @@ sys     0m1.979s
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-02/" />
 <meta property="article:published_time" content="2019-02-01T21:37:30&#43;02:00"/>
-<meta property="article:modified_time" content="2019-02-25T14:11:13-08:00"/>
+<meta property="article:modified_time" content="2019-02-25T15:20:12-08:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2019"/>
@@ -89,9 +89,9 @@ sys     0m1.979s
   "@type": "BlogPosting",
   "headline": "February, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-02/",
-  "wordCount": "7135",
+  "wordCount": "7238",
   "datePublished": "2019-02-01T21:37:30&#43;02:00",
-  "dateModified": "2019-02-25T14:11:13-08:00",
+  "dateModified": "2019-02-25T15:20:12-08:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1527,6 +1527,23 @@ Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed 
 <li>On a hunch I tried adding <code>ulimit -v unlimited</code> to the Tomcat <code>catalina.sh</code> and now Solr starts up with no core errors and I actually have statistics for January and February on <a href="https://cgspace.cgiar.org/handle/10568/16814">some communities</a>, but not <a href="https://cgspace.cgiar.org/handle/10568/1">others</a></li>
 <li>I wonder if the address space limits that I added via <code>LimitAS=infinity</code> in the systemd service are somehow not working?</li>
 <li>I did some tests with calling a shell script from systemd on DSpace Test (linode19) and the <code>LimitAS</code> setting does work, and the <code>infinity</code> setting in systemd does get translated to &ldquo;unlimited&rdquo; on the service</li>
+<li>I thought it might be open file limit, but it seems we&rsquo;re nowhere near the current limit of 16384:</li>
+</ul>
+
+<pre><code># lsof -u dspace | wc -l
+3016
+</code></pre>
+
+<ul>
+<li>For what it&rsquo;s worth I see the same errors about <code>solr_update_time_stamp</code> on DSpace Test (linode19)</li>
+<li>Update DSpace Test to <a href="https://tomcat.apache.org/tomcat-7.0-doc/changelog.html#Tomcat_7.0.93_(violetagg)">Tomcat 7.0.93</a></li>
+<li>Something seems to have happened (some Atmire scheduled task, perhaps the CUA one at 7AM?) on CGSpace because I checked a few communities and collections on CGSpace and there are now statistics for January and February</li>
+</ul>
+
+<p><img src="/cgspace-notes/2019/02/statlets-working.png" alt="CGSpace statlets working again" /></p>
+
+<ul>
+<li>I still have not figured out what the <em>real</em> cause for the Solr cores to not load was, though</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
