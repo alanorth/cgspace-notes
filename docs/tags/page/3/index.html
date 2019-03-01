@@ -10,7 +10,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/tags/" />
 
-<meta property="og:updated_time" content="2017-07-01T18:03:52&#43;03:00"/>
+<meta property="og:updated_time" content="2017-08-01T11:51:52&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tags"/>
@@ -29,7 +29,7 @@
     "@type": "Person",
     "name": "Alan Orth"
   },
-  "dateModified": "2017-07-01T18:03:52&#43;03:00",
+  "dateModified": "2017-08-01T11:51:52&#43;03:00",
   "keywords": "notes,notes,",
   "description": "Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."
 }
@@ -86,6 +86,46 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2017-08/">August, 2017</a></h2>
+    <p class="blog-post-meta"><time datetime="2017-08-01T11:51:52&#43;03:00">Tue Aug 01, 2017</time> by Alan Orth in 
+
+<i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
+
+</p>
+  </header>
+  <h2 id="2017-08-01">2017-08-01</h2>
+
+<ul>
+<li>Linode sent an alert that CGSpace (linode18) was using 350% CPU for the past two hours</li>
+<li>I looked in the Activity pane of the Admin Control Panel and it seems that Google, Baidu, Yahoo, and Bing are all crawling with massive numbers of bots concurrently (~100 total, mostly Baidu and Google)</li>
+<li>The good thing is that, according to <code>dspace.log.2017-08-01</code>, they are all using the same Tomcat session</li>
+<li>This means our Tomcat Crawler Session Valve is working</li>
+<li>But many of the bots are browsing dynamic URLs like:
+
+<ul>
+<li>/handle/10568/3353/discover</li>
+<li>/handle/10568/16510/browse</li>
+</ul></li>
+<li>The <code>robots.txt</code> only blocks the top-level <code>/discover</code> and <code>/browse</code> URLs&hellip; we will need to find a way to forbid them from accessing these!</li>
+<li>Relevant issue from DSpace Jira (semi resolved in DSpace 6.0): <a href="https://jira.duraspace.org/browse/DS-2962">https://jira.duraspace.org/browse/DS-2962</a></li>
+<li>It turns out that we&rsquo;re already adding the <code>X-Robots-Tag &quot;none&quot;</code> HTTP header, but this only forbids the search engine from <em>indexing</em> the page, not crawling it!</li>
+<li>Also, the bot has to successfully browse the page first so it can receive the HTTP header&hellip;</li>
+<li>We might actually have to <em>block</em> these requests with HTTP 403 depending on the user agent</li>
+<li>Abenet pointed out that the CGIAR Library Historical Archive collection I sent July 20th only had ~100 entries, instead of 2415</li>
+<li>This was due to newline characters in the <code>dc.description.abstract</code> column, which caused OpenRefine to choke when exporting the CSV</li>
+<li>I exported a new CSV from the collection on DSpace Test and then manually removed the characters in vim using <code>g/^$/d</code></li>
+<li>Then I cleaned up the author authorities and HTML characters in OpenRefine and sent the file back to Abenet</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2017-08/'>Read more →</a>
+</article> 
 
 
 
@@ -352,38 +392,6 @@ DELETE 1
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title"><a href="https://alanorth.github.io/cgspace-notes/2016-10/">October, 2016</a></h2>
-    <p class="blog-post-meta"><time datetime="2016-10-03T15:53:00&#43;03:00">Mon Oct 03, 2016</time> by Alan Orth in 
-
-<i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
-
-</p>
-  </header>
-  <h2 id="2016-10-03">2016-10-03</h2>
-
-<ul>
-<li>Testing adding <a href="https://wiki.duraspace.org/display/DSDOC5x/ORCID+Integration#ORCIDIntegration-EditingexistingitemsusingBatchCSVEditing">ORCIDs to a CSV</a> file for a single item to see if the author orders get messed up</li>
-<li>Need to test the following scenarios to see how author order is affected:
-
-<ul>
-<li>ORCIDs only</li>
-<li>ORCIDs plus normal authors</li>
-</ul></li>
-<li>I exported a random item&rsquo;s metadata as CSV, deleted <em>all columns</em> except id and collection, and made a new coloum called <code>ORCID:dc.contributor.author</code> with the following random ORCIDs from the ORCID registry:</li>
-</ul>
-
-<pre><code>0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
-</code></pre>
-  <a href='https://alanorth.github.io/cgspace-notes/2016-10/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/tags/page/2/" rel="prev" role="button">Previous page</a>
@@ -408,6 +416,8 @@ DELETE 1
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2019-03/">March, 2019</a></li>
+
 <li><a href="/cgspace-notes/2019-02/">February, 2019</a></li>
 
 <li><a href="/cgspace-notes/2019-01/">January, 2019</a></li>
@@ -415,8 +425,6 @@ DELETE 1
 <li><a href="/cgspace-notes/2018-12/">December, 2018</a></li>
 
 <li><a href="/cgspace-notes/2018-11/">November, 2018</a></li>
-
-<li><a href="/cgspace-notes/2018-10/">October, 2018</a></li>
 
     </ol>
   </section>
