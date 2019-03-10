@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-08T14:41:01&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-09T23:01:50&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "991",
+  "wordCount": "1180",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-08T14:41:01&#43;02:00",
+  "dateModified": "2019-03-09T23:01:50&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -273,6 +273,31 @@ UPDATE 44
 
 <ul>
 <li>I ran the corrections on CGSpace and DSpace Test</li>
+</ul>
+
+<h2 id="2019-03-10">2019-03-10</h2>
+
+<ul>
+<li>Working on tagging IITA&rsquo;s items with their new research theme (<code>cg.identifier.iitatheme</code>) based on their existing IITA subjects (see <a href="/cgspace-notes/2018-02/">notes from 2019-02</a>)</li>
+<li>I exported the entire IITA community from CGSpace and then used <code>csvcut</code> to extract only the needed fields:</li>
+</ul>
+
+<pre><code>$ csvcut -c 'id,cg.subject.iita,cg.subject.iita[],cg.subject.iita[en],cg.subject.iita[en_US]' ~/Downloads/10568-68616.csv &gt; /tmp/iita.csv
+</code></pre>
+
+<ul>
+<li><p>After importing to OpenRefine I realized that tagging items based on their subjects is tricky because of the row/record mode of OpenRefine when you split the multi-value cells as well as the fact that some items might need to be tagged twice (thus needing a <code>||</code>)</p></li>
+
+<li><p>I think it might actually be easier to filter by IITA subject, then by IITA theme (if needed), and then do transformations with some conditional values in GREL expressions like:</p></li>
+</ul>
+
+<pre><code>if(isBlank(value), 'PLANT PRODUCTION &amp; HEALTH', value + '||PLANT PRODUCTION &amp; HEALTH')
+</code></pre>
+
+<ul>
+<li>Then it&rsquo;s more annoying because there are four IITA subject columns&hellip;</li>
+<li>In total this would add research themes to 1,755 items</li>
+<li>I want to double check one last time with Bosede that they would like to do this, because I also see that this will tag a few hundred items from the 1970s and 1980s</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
