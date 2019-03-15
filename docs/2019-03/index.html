@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-14T20:18:29&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-14T22:15:10&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "1471",
+  "wordCount": "1790",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-14T20:18:29&#43;02:00",
+  "dateModified": "2019-03-14T22:15:10&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -350,6 +350,138 @@ done
 <li>And looking at those items more closely, only one of them has an <em>issue date</em> of after 2018-04, so I will only update that one (as the countrie&rsquo;s name only changed in 2018-04)</li>
 <li>Run all system updates and reboot linode20</li>
 <li>Follow up with Felix from Earlham to see if he&rsquo;s done testing DSpace Test with COPO so I can re-sync the server from CGSpace</li>
+</ul>
+
+<h2 id="2019-03-15">2019-03-15</h2>
+
+<ul>
+<li>CGSpace (linode18) has the blank page error again</li>
+<li>I&rsquo;m not sure if it&rsquo;s related, but I see the following error in DSpace&rsquo;s log:</li>
+</ul>
+
+<pre><code>2019-03-15 14:09:32,685 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
+java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@55ba10b5 is closed.
+        at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
+        at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
+        at org.apache.tomcat.dbcp.dbcp.PoolingDataSource$PoolGuardConnectionWrapper.prepareStatement(PoolingDataSource.java:313)
+        at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:220)
+        at org.dspace.authorize.AuthorizeManager.getPolicies(AuthorizeManager.java:612)
+        at org.dspace.content.crosswalk.METSRightsCrosswalk.disseminateElement(METSRightsCrosswalk.java:154)
+        at org.dspace.content.crosswalk.METSRightsCrosswalk.disseminateElement(METSRightsCrosswalk.java:300)
+</code></pre>
+
+<ul>
+<li>Interestingly, I see a pattern of these errors increasing, with single and double digit numbers over the past month, but spikes of over 1,000 today, yesterday, and on 2019-03-08, which was exactly the first time we saw this blank page error recently</li>
+</ul>
+
+<pre><code># grep -c 'SQL QueryTable Error' dspace.log.2019-0*
+dspace.log.2019-02-01:6
+dspace.log.2019-02-02:1
+dspace.log.2019-02-03:0
+dspace.log.2019-02-04:4
+dspace.log.2019-02-05:4
+dspace.log.2019-02-06:3
+dspace.log.2019-02-07:0
+dspace.log.2019-02-08:2
+dspace.log.2019-02-09:0
+dspace.log.2019-02-10:0
+dspace.log.2019-02-11:1
+dspace.log.2019-02-12:2
+dspace.log.2019-02-13:1
+dspace.log.2019-02-14:74
+dspace.log.2019-02-15:47
+dspace.log.2019-02-16:44
+dspace.log.2019-02-17:37
+dspace.log.2019-02-18:191
+dspace.log.2019-02-19:51
+dspace.log.2019-02-20:32
+dspace.log.2019-02-21:64
+dspace.log.2019-02-22:48
+dspace.log.2019-02-23:32
+dspace.log.2019-02-24:25
+dspace.log.2019-02-25:53
+dspace.log.2019-02-26:63
+dspace.log.2019-02-27:28
+dspace.log.2019-02-28:31
+dspace.log.2019-03-01:29
+dspace.log.2019-03-02:24
+dspace.log.2019-03-03:41
+dspace.log.2019-03-04:25
+dspace.log.2019-03-05:48
+dspace.log.2019-03-06:48
+dspace.log.2019-03-07:42
+dspace.log.2019-03-08:1781
+dspace.log.2019-03-09:22
+dspace.log.2019-03-10:23
+dspace.log.2019-03-11:52
+dspace.log.2019-03-12:474
+dspace.log.2019-03-13:37
+dspace.log.2019-03-14:924
+dspace.log.2019-03-15:770
+</code></pre>
+
+<ul>
+<li>There are not too many connections currently in PostgreSQL:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      6 dspaceApi
+     10 dspaceCli
+     15 dspaceWeb
+</code></pre>
+
+<ul>
+<li>I didn&rsquo;t see anything interesting in the PostgreSQL logs, though this stack trace from the Tomcat logs (in the systemd journal) from earlier today <em>might</em> be related?</li>
+</ul>
+
+<pre><code>SEVERE: Servlet.service() for servlet [spring] in context with path [] threw exception [org.springframework.web.util.NestedServletException: Request processing failed; nested exception is java.util.EmptyStackException] with root cause
+java.util.EmptyStackException
+        at java.util.Stack.peek(Stack.java:102)
+        at java.util.Stack.pop(Stack.java:84)
+        at org.apache.cocoon.callstack.CallStack.leave(CallStack.java:54)
+        at org.apache.cocoon.servletservice.CallStackHelper.leaveServlet(CallStackHelper.java:85)
+        at org.apache.cocoon.servletservice.ServletServiceContext$PathDispatcher.forward(ServletServiceContext.java:484)
+        at org.apache.cocoon.servletservice.ServletServiceContext$PathDispatcher.forward(ServletServiceContext.java:443)
+        at org.apache.cocoon.servletservice.spring.ServletFactoryBean$ServiceInterceptor.invoke(ServletFactoryBean.java:264)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:172)
+        at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:202)
+        at com.sun.proxy.$Proxy90.service(Unknown Source)
+        at org.dspace.springmvc.CocoonView.render(CocoonView.java:113)
+        at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1180)
+        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:950)
+        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:852)
+        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:882)
+        at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:778)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:624)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:731)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+        at org.dspace.rdf.negotiation.NegotiationFilter.doFilter(NegotiationFilter.java:59)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+        at org.dspace.utils.servlet.DSpaceWebappServletFilter.doFilter(DSpaceWebappServletFilter.java:78)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:219)
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:110)
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:104)
+        at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:234)
+        at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:1025)
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:445)
+        at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1137)
+        at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:637)
+        at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:317)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+        at java.lang.Thread.run(Thread.java:748)
+</code></pre>
+
+<ul>
+<li>For now I will just restart Tomcat&hellip;</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
