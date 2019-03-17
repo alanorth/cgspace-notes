@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-17T17:43:06&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-17T18:46:27&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "1917",
+  "wordCount": "1996",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-17T17:43:06&#43;02:00",
+  "dateModified": "2019-03-17T18:46:27&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -499,7 +499,13 @@ java.util.EmptyStackException
 <ul>
 <li>Run all system updates on CGSpace (linode18) and re-deploy the <code>5_x-prod</code> branch and reboot the server</li>
 </ul></li>
-<li>Re-sync DSpace Test with a fresh database snapshot and assetstore from CGSpace</li>
+<li>Re-sync DSpace Test with a fresh database snapshot and assetstore from CGSpace
+
+<ul>
+<li>After restarting Tomcat, Solr was giving the &ldquo;Error opening new searcher&rdquo; error for all cores</li>
+<li>I stopped Tomcat, added <code>ulimit -v unlimited</code> to the <code>catalina.sh</code> script and deleted all old locks in the DSpace <code>solr</code> directory and then DSpace started up normally</li>
+<li>I&rsquo;m still not exactly sure why I see this error and if the <code>ulimit</code> trick actually helps, as the <code>tomcat7.service</code> has <code>LimitAS=infinity</code> anyways (and from checking the PID&rsquo;s limits file in <code>/proc</code> it seems to be applied)</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
