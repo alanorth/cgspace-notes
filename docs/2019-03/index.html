@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-22T15:49:36&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-23T12:50:02&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "4249",
+  "wordCount": "4332",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-22T15:49:36&#43;02:00",
+  "dateModified": "2019-03-23T12:50:02&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -932,7 +932,16 @@ org.postgresql.util.PSQLException: This statement has been closed.
 <ul>
 <li>It&rsquo;s hard to tell because we have <code>logAbanded</code> enabled, but I don&rsquo;t see anything in the <code>tomcat7</code> service logs in the systemd journal</li>
 </ul></li>
-<li>I sent another mail to the dspace-tech mailing list with my observations</li>
+
+<li><p>I sent another mail to the dspace-tech mailing list with my observations</p></li>
+
+<li><p>I spent some time trying to test and debug the Tomcat connection pool&rsquo;s settings, but for some reason our logs are either messed up or no connections are actually getting abandoned</p></li>
+
+<li><p>I compiled this <a href="https://github.com/gnosly/TomcatJdbcConnectionTest">TomcatJdbcConnectionTest</a> and created a bunch of database connections and waited a few minutes but they never got abandoned until I created over <code>maxActive</code> (75), after which almost all were purged at once</p>
+
+<ul>
+<li>So perhaps our settings are not working right, but at least I know the logging works now&hellip;</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
