@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-25T12:39:22&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-25T12:59:24&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "4722",
+  "wordCount": "5067",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-25T12:39:22&#43;02:00",
+  "dateModified": "2019-03-25T12:59:24&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1000,6 +1000,80 @@ org.postgresql.util.PSQLException: This statement has been closed.
 <li>Now I see all my interceptor settings etc in jconsole, where I didn&rsquo;t see them before (also a new <code>tomcat.jdbc</code> mbean)!</li>
 <li>No wonder our settings didn&rsquo;t quite match the ones in the <a href="https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html">Tomcat DBCP Pool docs</a></li>
 </ul></li>
+<li>Uptime Robot reported that CGSpace went down and I see the load is very high</li>
+<li>The top IPs around the time in the nginx API and web logs were:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;25/Mar/2019:(18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+      9 190.252.43.162
+     12 157.55.39.140
+     18 157.55.39.54
+     21 66.249.66.211
+     27 40.77.167.185
+     29 138.220.87.165
+     30 157.55.39.168
+     36 157.55.39.9
+     50 52.23.239.229
+   2380 45.5.186.2
+# zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;25/Mar/2019:(18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    354 18.195.78.144
+    363 190.216.179.100
+    386 40.77.167.185
+    484 157.55.39.168
+    507 157.55.39.9
+    536 2a01:4f8:140:3192::2
+   1123 66.249.66.211
+   1186 93.179.69.74
+   1222 35.174.184.209
+   1720 2a01:4f8:13b:1296::2
+</code></pre>
+
+<ul>
+<li>The IPs look pretty normal except we&rsquo;ve never seen <code>93.179.69.74</code> before, and it uses the following user agent:</li>
+</ul>
+
+<pre><code>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.20 Safari/535.1
+</code></pre>
+
+<ul>
+<li>Surprisingly they are re-using their Tomcat session:</li>
+</ul>
+
+<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=93.179.69.74' dspace.log.2019-03-25 | sort | uniq | wc -l
+1
+</code></pre>
+
+<ul>
+<li>That&rsquo;s weird because the total number of sessions today seems low compared to recent days:</li>
+</ul>
+
+<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-25 | sort -u | wc -l
+5657
+$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-24 | sort -u | wc -l
+17710
+$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-23 | sort -u | wc -l
+17179
+$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
+7904
+</code></pre>
+
+<ul>
+<li>PostgreSQL seems to be pretty busy:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+     11 dspaceApi
+     10 dspaceCli
+     67 dspaceWeb
+</code></pre>
+
+<ul>
+<li>I restarted Tomcat and deployed the new Tomcat JDBC settings on CGSpace since I had to restart the server anyways
+
+<ul>
+<li>I need to watch this carefully though because I&rsquo;ve read some places that Tomcat&rsquo;s DBCP doesn&rsquo;t track statements and might create memory leaks if an application doesn&rsquo;t close statements before a connection gets returned back to the pool</li>
+</ul></li>
+<li>According the Uptime Robot the server was up and down a few more times over the next hour so I restarted Tomcat again</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
