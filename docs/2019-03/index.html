@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-26T18:25:05&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-26T19:41:33&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "5785",
+  "wordCount": "5878",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-26T18:25:05&#43;02:00",
+  "dateModified": "2019-03-26T19:41:33&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1201,7 +1201,22 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 
 <ul>
 <li>I will add their IPs to the list of bot IPs in nginx so I can tag them as bots to let Tomcat&rsquo;s Crawler Session Manager Valve to force them to re-use their session</li>
+<li>Another user agent behaving badly in Colombia is &ldquo;GuzzleHttp/6.3.3 curl/7.47.0 PHP/7.0.30-0ubuntu0.16.04.1&rdquo;</li>
+<li>I will add curl to the Tomcat Crawler Session Manager because anyone using curl is most likely an automated read-only request</li>
+<li>I will add GuzzleHttp to the nginx badbots rate limiting, because it is making requests to dynamic Discovery pages</li>
 </ul>
+
+<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep 45.5.184.72 | grep -E &quot;26/Mar/2019:&quot; | grep -E '(discover|browse)' | wc -l                                        
+119
+</code></pre>
+
+<ul>
+<li>What&rsquo;s strange is that I can&rsquo;t see any of their requests in the DSpace log&hellip;</li>
+</ul>
+
+<pre><code>$ grep -I -c 45.5.184.72 dspace.log.2019-03-26 
+0
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
