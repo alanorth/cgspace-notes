@@ -25,7 +25,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-03/" />
 <meta property="article:published_time" content="2019-03-01T12:16:30&#43;01:00"/>
-<meta property="article:modified_time" content="2019-03-27T09:51:30&#43;02:00"/>
+<meta property="article:modified_time" content="2019-03-28T19:10:06&#43;02:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2019"/>
@@ -55,9 +55,9 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
   "@type": "BlogPosting",
   "headline": "March, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-03/",
-  "wordCount": "5900",
+  "wordCount": "6151",
   "datePublished": "2019-03-01T12:16:30&#43;01:00",
-  "dateModified": "2019-03-27T09:51:30&#43;02:00",
+  "dateModified": "2019-03-28T19:10:06&#43;02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1222,6 +1222,53 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 
 <ul>
 <li>Run the corrections and deletions to AGROVOC (dc.subject) on DSpace Test and CGSpace, and then start a full re-index of Discovery</li>
+<li>What the hell is going on with this CTA publication?</li>
+</ul>
+
+<pre><code># grep Spore-192-EN-web.pdf /var/log/nginx/access.log | awk '{print $1}' | sort | uniq -c | sort -n
+      1 37.48.65.147
+      1 80.113.172.162
+      2 108.174.5.117
+      2 83.110.14.208
+      4 18.196.8.188
+     84 18.195.78.144
+    644 18.194.46.84
+   1144 18.196.196.108
+</code></pre>
+
+<ul>
+<li>None of these 18.x.x.x IPs specify a user agent and they are all on Amazon!</li>
+<li>Shortly after I started the re-indexing UptimeRobot began to complain that CGSpace was down, then up, then down, then up&hellip;</li>
+<li>I see the load on the server is about 10.0 again for some reason though I don&rsquo;t know WHAT is causing that load
+
+<ul>
+<li>It could be the CPU steal metric, as if Linode has oversold the CPU resources on this VM host&hellip;</li>
+</ul></li>
+<li>Here are the Munin graphs of CPU usage for the last day, week, and year:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2019/03/cpu-day-fs8.png" alt="CPU day" /></p>
+
+<p><img src="/cgspace-notes/2019/03/cpu-week-fs8.png" alt="CPU week" /></p>
+
+<p><img src="/cgspace-notes/2019/03/cpu-year-fs8.png" alt="CPU year" /></p>
+
+<ul>
+<li>What&rsquo;s clear from this is that some other VM on our host has heavy usage for about four hours at 6AM and 6PM and that during that time the load on our server spikes
+
+<ul>
+<li>CPU steal has drastically increased since March 25th</li>
+<li>It might be time to move to a dedicated CPU VM instances, or even real servers</li>
+</ul></li>
+<li>In other news, I see that it&rsquo;s not even the end of the month yet and we have 3.6 million hits already:</li>
+</ul>
+
+<pre><code># zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
+3654911
+</code></pre>
+
+<ul>
+<li>In other other news I see that DSpace has no statistics for years before 2019 currently, yet when I connect to Solr I see all the cores up</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
