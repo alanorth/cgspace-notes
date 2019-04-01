@@ -17,7 +17,35 @@
       <pubDate>Mon, 01 Apr 2019 09:00:43 +0300</pubDate>
       
       <guid>https://alanorth.github.io/cgspace-notes/2019-04/</guid>
-      <description>&lt;h2 id=&#34;2019-04-01&#34;&gt;2019-04-01&lt;/h2&gt;</description>
+      <description>&lt;h2 id=&#34;2019-04-01&#34;&gt;2019-04-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Meeting with AgroKnow to discuss CGSpace, ILRI data, AReS, GARDIAN, etc
+
+&lt;ul&gt;
+&lt;li&gt;They asked if we had plans to enable RDF support in CGSpace&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;There have been 4,400 more downloads of the CTA Spore publication from those strange Amazon IP addresses today
+
+&lt;ul&gt;
+&lt;li&gt;I suspected that some might not be successful, because the stats show less, but today they were all HTTP 200!&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &#39;Spore-192-EN-web.pdf&#39; | grep -E &#39;(18.196.196.108|18.195.78.144|18.195.218.6)&#39; | awk &#39;{print $9}&#39; | sort | uniq -c | sort -n | tail -n 5
+   4432 200
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In the last two weeks there have been 47,000 downloads of this &lt;em&gt;same exact PDF&lt;/em&gt; by these three IP addresses&lt;/li&gt;
+&lt;li&gt;Apply country and region corrections and deletions on DSpace Test and CGSpace:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.country -m 228 -t ACTION -d
+$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.region -m 231 -t action -d
+$ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 228 -f cg.coverage.country -d
+$ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 231 -f cg.coverage.region -d
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
