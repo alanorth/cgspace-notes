@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-02T20:32:18&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-03T17:01:31&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "347",
+  "wordCount": "492",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-02T20:32:18&#43;03:00",
+  "dateModified": "2019-04-03T17:01:31&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -203,7 +203,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </ul></li>
 </ul>
 
-<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2019-04-03-orcid-ids.txt
+<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort -u &gt; /tmp/2019-04-03-orcid-ids.txt
 </code></pre>
 
 <ul>
@@ -213,6 +213,36 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 
 <pre><code>$ ./resolve-orcids.py -i /tmp/2019-04-03-orcid-ids.txt -o 2019-04-03-orcid-ids.txt -d
 </code></pre>
+
+<ul>
+<li>After that I added the XML formatting, formatted the file with tidy, and sorted the names in vim</li>
+<li>One user&rsquo;s name has changed so I will update those using my <code>fix-metadata-values.py</code> script:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i 2019-04-03-update-orcids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -m 240 -t correct -d
+</code></pre>
+
+<ul>
+<li>I created a pull request and merged the changes to the 5_x-prod branch (<a href="https://github.com/ilri/DSpace/pull/417">#417</a>)</li>
+<li>A few days ago I noticed some weird update process for the statistics-2018 Solr core and I see it&rsquo;s still going:</li>
+</ul>
+
+<pre><code>2019-04-03 16:34:02,262 INFO  org.dspace.statistics.SolrLogger @ Updating : 1754500/21701 docs in http://localhost:8081/solr//statistics-2018
+</code></pre>
+
+<ul>
+<li>Interestingly, there are 5666 occurences, and they are mostly for the 2018 core:</li>
+</ul>
+
+<pre><code>$ grep 'org.dspace.statistics.SolrLogger @ Updating' /home/cgspace.cgiar.org/log/dspace.log.2019-04-03 | awk '{print $11}' | sort | uniq -c
+      1 
+      3 http://localhost:8081/solr//statistics-2017
+   5662 http://localhost:8081/solr//statistics-2018
+</code></pre>
+
+<ul>
+<li>I will have to keep an eye on it because nothing should be updating 2018 stats in 2019&hellip;</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
