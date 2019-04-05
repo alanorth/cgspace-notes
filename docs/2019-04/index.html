@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-03T17:01:31&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-03T17:40:05&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "492",
+  "wordCount": "621",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-03T17:01:31&#43;03:00",
+  "dateModified": "2019-04-03T17:40:05&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -242,6 +242,37 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 
 <ul>
 <li>I will have to keep an eye on it because nothing should be updating 2018 stats in 2019&hellip;</li>
+</ul>
+
+<h2 id="2019-04-05">2019-04-05</h2>
+
+<ul>
+<li>Uptime Robot reported that CGSpace (linode18) went down tonight</li>
+<li>I see there are lots of PostgreSQL connections:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      5 dspaceApi
+     10 dspaceCli
+    250 dspaceWeb
+</code></pre>
+
+<ul>
+<li>I still see those weird messages about updating the statistics-2018 Solr core:</li>
+</ul>
+
+<pre><code>2019-04-05 21:06:53,770 INFO  org.dspace.statistics.SolrLogger @ Updating : 2444600/21697 docs in http://localhost:8081/solr//statistics-2018
+</code></pre>
+
+<ul>
+<li>Looking at <code>iostat 1 10</code> I also see some CPU steal has come back, and I can confirm it by looking at the Munin graphs:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2019/04/cpu-week.png" alt="CPU usage week" /></p>
+
+<ul>
+<li>The other thing visible there is that the past few days the load has spiked to 500% and I don&rsquo;t think it&rsquo;s a coincidence that the Solr updating thing is happening&hellip;</li>
+<li>I ran all system updates and rebooted the server</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
