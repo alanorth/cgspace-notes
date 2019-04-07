@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-06T12:01:09&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-06T12:06:14&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "1056",
+  "wordCount": "1457",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-06T12:01:09&#43;03:00",
+  "dateModified": "2019-04-06T12:06:14&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -357,6 +357,139 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <ul>
 <li>I made a pull request to update this and merged it to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/418">#418</a>)</li>
 </ul></li>
+</ul>
+
+<h2 id="2019-04-07">2019-04-07</h2>
+
+<ul>
+<li>Looking into the impact of harvesters like <code>45.5.184.72</code>, I see in Solr that this user is not categorized as a bot so it definitely impacts the usage stats by some tens of thousands <em>per day</em></li>
+<li>Last week CTA switched their frontend code to use HEAD requests instead of GET requests for PDF bitstreams
+
+<ul>
+<li>I am trying to see if these are registered as downloads in Solr or not</li>
+<li>I see 96,925 downloads from their AWS gateway IPs in 2019-03:</li>
+</ul></li>
+</ul>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=type%3A0+AND+(ip%3A18.196.196.108+OR+ip%3A18.195.78.144+OR+ip%3A18.195.218.6)&amp;fq=statistics_type%3Aview&amp;fq=bundleName%3AORIGINAL&amp;fq=dateYearMonth%3A2019-03&amp;rows=0&amp;wt=json&amp;indent=true'
+{
+    &quot;response&quot;: {
+        &quot;docs&quot;: [],
+        &quot;numFound&quot;: 96925,
+        &quot;start&quot;: 0
+    },
+    &quot;responseHeader&quot;: {
+        &quot;QTime&quot;: 1,
+        &quot;params&quot;: {
+            &quot;fq&quot;: [
+                &quot;statistics_type:view&quot;,
+                &quot;bundleName:ORIGINAL&quot;,
+                &quot;dateYearMonth:2019-03&quot;
+            ],
+            &quot;indent&quot;: &quot;true&quot;,
+            &quot;q&quot;: &quot;type:0 AND (ip:18.196.196.108 OR ip:18.195.78.144 OR ip:18.195.218.6)&quot;,
+            &quot;rows&quot;: &quot;0&quot;,
+            &quot;wt&quot;: &quot;json&quot;
+        },
+        &quot;status&quot;: 0
+    }
+}
+</code></pre>
+
+<ul>
+<li>Strangely I don&rsquo;t see many hits in 2019-04:</li>
+</ul>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=type%3A0+AND+(ip%3A18.196.196.108+OR+ip%3A18.195.78.144+OR+ip%3A18.195.218.6)&amp;fq=statistics_type%3Aview&amp;fq=bundleName%3AORIGINAL&amp;fq=dateYearMonth%3A2019-04&amp;rows=0&amp;wt=json&amp;indent=true'
+{
+    &quot;response&quot;: {
+        &quot;docs&quot;: [],
+        &quot;numFound&quot;: 38,
+        &quot;start&quot;: 0
+    },
+    &quot;responseHeader&quot;: {
+        &quot;QTime&quot;: 1,
+        &quot;params&quot;: {
+            &quot;fq&quot;: [
+                &quot;statistics_type:view&quot;,
+                &quot;bundleName:ORIGINAL&quot;,
+                &quot;dateYearMonth:2019-04&quot;
+            ],
+            &quot;indent&quot;: &quot;true&quot;,
+            &quot;q&quot;: &quot;type:0 AND (ip:18.196.196.108 OR ip:18.195.78.144 OR ip:18.195.218.6)&quot;,
+            &quot;rows&quot;: &quot;0&quot;,
+            &quot;wt&quot;: &quot;json&quot;
+        },
+        &quot;status&quot;: 0
+    }
+}
+</code></pre>
+
+<ul>
+<li>Making some tests on GET vs HEAD requests on the <a href="https://dspacetest.cgiar.org/handle/10568/100289">CTA Spore 192 item</a> on DSpace Test:</li>
+</ul>
+
+<pre><code>$ http --print Hh GET https://dspacetest.cgiar.org/bitstream/handle/10568/100289/Spore-192-EN-web.pdf
+GET /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Host: dspacetest.cgiar.org
+User-Agent: HTTPie/1.0.2
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Language: en-US
+Content-Length: 2069158
+Content-Type: application/pdf;charset=ISO-8859-1
+Date: Sun, 07 Apr 2019 08:38:34 GMT
+Expires: Sun, 07 Apr 2019 09:38:34 GMT
+Last-Modified: Thu, 14 Mar 2019 11:20:05 GMT
+Server: nginx
+Set-Cookie: JSESSIONID=21A492CC31CA8845278DFA078BD2D9ED; Path=/; Secure; HttpOnly
+Vary: User-Agent
+X-Cocoon-Version: 2.2.0
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Robots-Tag: none
+X-XSS-Protection: 1; mode=block
+
+$ http --print Hh HEAD https://dspacetest.cgiar.org/bitstream/handle/10568/100289/Spore-192-EN-web.pdf      
+HEAD /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1                                                            
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Host: dspacetest.cgiar.org
+User-Agent: HTTPie/1.0.2
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Language: en-US
+Content-Length: 2069158
+Content-Type: application/pdf;charset=ISO-8859-1
+Date: Sun, 07 Apr 2019 08:39:01 GMT
+Expires: Sun, 07 Apr 2019 09:39:01 GMT
+Last-Modified: Thu, 14 Mar 2019 11:20:05 GMT
+Server: nginx
+Set-Cookie: JSESSIONID=36C8502257CC6C72FD3BC9EBF91C4A0E; Path=/; Secure; HttpOnly                                            
+Vary: User-Agent
+X-Cocoon-Version: 2.2.0
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Robots-Tag: none
+X-XSS-Protection: 1; mode=block
+</code></pre>
+
+<ul>
+<li>And from the server side, the nginx logs show:</li>
+</ul>
+
+<pre><code>78.x.x.x - - [07/Apr/2019:01:38:35 -0700] &quot;GET /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1&quot; 200 68078 &quot;-&quot; &quot;HTTPie/1.0.2&quot;
+78.x.x.x - - [07/Apr/2019:01:39:01 -0700] &quot;HEAD /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1&quot; 200 0 &quot;-&quot; &quot;HTTPie/1.0.2&quot;
+</code></pre>
+
+<ul>
+<li>So definitely the <em>size</em> of the transfer is more efficient with a HEAD, but I need to wait to see if these requests show up in Solr</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
