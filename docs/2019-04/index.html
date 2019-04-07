@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-07T18:08:38&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-07T21:05:52&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "2174",
+  "wordCount": "2222",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-07T18:08:38&#43;03:00",
+  "dateModified": "2019-04-07T21:05:52&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -609,7 +609,18 @@ X-XSS-Protection: 1; mode=block
 <li><code>45.5.184.72</code> is CIAT, who I already blocked and am waiting to hear from</li>
 <li><code>2a01:4f8:140:3192::2</code> is BLEXbot, which should be handled by the Tomcat Crawler Session Manager Valve</li>
 <li><code>2408:8214:7a00:868f:7c1e:e0f3:20c6:c142</code> is some stupid Chinese bot making malicious POST requests</li>
-<li>Anyways, it seems that the issue with CGSpace being &ldquo;down&rdquo; is actually because of CPU steal again!!!</li>
+<li>There are free database connections in the pool:</li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      5 dspaceApi
+      7 dspaceCli
+     23 dspaceWeb
+</code></pre>
+
+<ul>
+<li>It seems that the issue with CGSpace being &ldquo;down&rdquo; is actually because of CPU steal again!!!</li>
+<li>I opened a ticket with support and asked them to migrate the VM to a less busy host</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
