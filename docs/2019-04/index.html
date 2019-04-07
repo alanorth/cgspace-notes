@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-06T12:06:14&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-07T11:45:34&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "1457",
+  "wordCount": "1954",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-06T12:06:14&#43;03:00",
+  "dateModified": "2019-04-07T11:45:34&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -363,7 +363,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 
 <ul>
 <li>Looking into the impact of harvesters like <code>45.5.184.72</code>, I see in Solr that this user is not categorized as a bot so it definitely impacts the usage stats by some tens of thousands <em>per day</em></li>
-<li>Last week CTA switched their frontend code to use HEAD requests instead of GET requests for PDF bitstreams
+<li>Last week CTA switched their frontend code to use HEAD requests instead of GET requests for bitstreams
 
 <ul>
 <li>I am trying to see if these are registered as downloads in Solr or not</li>
@@ -489,7 +489,86 @@ X-XSS-Protection: 1; mode=block
 </code></pre>
 
 <ul>
-<li>So definitely the <em>size</em> of the transfer is more efficient with a HEAD, but I need to wait to see if these requests show up in Solr</li>
+<li>So definitely the <em>size</em> of the transfer is more efficient with a HEAD, but I need to wait to see if these requests show up in Solr
+
+<ul>
+<li>After twenty minutes of waiting I still don&rsquo;t see any new requests in the statistics core, but when I try the requests from the command line again I see the following in the DSpace log:</li>
+</ul></li>
+</ul>
+
+<pre><code>2019-04-07 02:05:30,966 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous:session_id=EF2DB6E4F69926C5555B3492BB0071A8:ip_addr=78.x.x.x:view_bitstream:bitstream_id=165818
+2019-04-07 02:05:39,265 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous:session_id=B6381FC590A5160D84930102D068C7A3:ip_addr=78.x.x.x:view_bitstream:bitstream_id=165818
+</code></pre>
+
+<ul>
+<li>So my inclination is that both HEAD and GET requests are registered as views as far as Solr and DSpace are concerned
+
+<ul>
+<li>Strangely, the statistics Solr core says it hasn&rsquo;t been modified in 24 hours, so I tried to start the &ldquo;optimize&rdquo; process from the Admin UI and I see this in the Solr log:</li>
+</ul></li>
+</ul>
+
+<pre><code>2019-04-07 02:08:44,186 INFO  org.apache.solr.update.UpdateHandler @ start commit{,optimize=true,openSearcher=true,waitSearcher=true,expungeDeletes=false,softCommit=false,prepareCommit=false}
+</code></pre>
+
+<ul>
+<li>Ugh, even after optimizing there are no Solr results for requests from my IP, and actually I only see 18 results from 2019-04 so far and none of them are <code>statistics_type:view</code>&hellip; very weird
+
+<ul>
+<li>I don&rsquo;t even see many hits for days after 2019-03-17, when I migrated the server to Ubuntu 18.04 and copied the statistics core from CGSpace (linode18)</li>
+<li>I will try to re-deploy the <code>5_x-dev</code> branch and test again</li>
+</ul></li>
+<li>According to the <a href="https://wiki.duraspace.org/display/DSDOC5x/SOLR+Statistics">DSpace 5.x Solr documentation</a> the default commit time is after 15 minutes or 10,000 documents (see <code>solrconfig.xml</code>)</li>
+<li>I looped some GET and HEAD requests to a bitstream on my local instance and after some time I see that they <em>do</em> register as downloads (even though they are internal):</li>
+</ul>
+
+<pre><code>$ http --print b 'http://localhost:8080/solr/statistics/select?q=type%3A0+AND+time%3A2019-04-07*&amp;fq=statistics_type%3Aview&amp;fq=isInternal%3Atrue&amp;rows=0&amp;wt=json&amp;indent=true'
+{
+    &quot;response&quot;: {
+        &quot;docs&quot;: [],
+        &quot;numFound&quot;: 909,
+        &quot;start&quot;: 0
+    },
+    &quot;responseHeader&quot;: {
+        &quot;QTime&quot;: 0,
+        &quot;params&quot;: {
+            &quot;fq&quot;: [
+                &quot;statistics_type:view&quot;,
+                &quot;isInternal:true&quot;
+            ],
+            &quot;indent&quot;: &quot;true&quot;,
+            &quot;q&quot;: &quot;type:0 AND time:2019-04-07*&quot;,
+            &quot;rows&quot;: &quot;0&quot;,
+            &quot;wt&quot;: &quot;json&quot;
+        },
+        &quot;status&quot;: 0
+    }
+}
+</code></pre>
+
+<ul>
+<li>I confirmed the same on CGSpace itself after making one HEAD request</li>
+<li>So I&rsquo;m pretty sure it&rsquo;s something about DSpace Test using the CGSpace statistics core, and not that I deployed Solr 4.10.4 there last week
+
+<ul>
+<li>I deployed Solr 4.10.4 locally and ran a bunch of requests for bitstreams and they do show up in the Solr statistics log, so the issue must be with re-using the existing Solr core from CGSpace</li>
+</ul></li>
+<li>Now this gets more frustrating: I did the same GET and HEAD tests on a local Ubuntu 16.04 VM with Solr 4.10.2 and 4.10.4 and the statistics are recorded
+
+<ul>
+<li>This leads me to believe there is something specifically wrong with DSpace Test (linode19)</li>
+<li>The only thing I can think of is that the JVM is using G1GC instead of ConcMarkSweepGC</li>
+</ul></li>
+<li>Holy shit, all this is actually because of the GeoIP1 deprecation and a missing <code>GeoLiteCity.dat</code>
+
+<ul>
+<li>For some reason the missing GeoIP data causes stats to not be recorded whatsoever and there is no error!</li>
+<li>See: <a href="https://jira.duraspace.org/browse/DS-3986">DS-3986</a></li>
+<li>See: <a href="https://jira.duraspace.org/browse/DS-4020">DS-4020</a></li>
+<li>See: <a href="https://jira.duraspace.org/browse/DS-3832">DS-3832</a></li>
+<li>DSpace 5.10 upgraded to use GeoIP2, but we are on 5.8 so I just copied the missing database file from another server because it has been <em>removed</em> from MaxMind&rsquo;s server as of 2018-04-01</li>
+<li>Now I made 100 requests and I see them in the Solr statistics&hellip; fuck my life for wasting five hours debugging this</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
