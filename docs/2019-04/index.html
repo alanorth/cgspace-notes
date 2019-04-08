@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-07T21:17:16&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-08T11:26:20&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "2397",
+  "wordCount": "2631",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-07T21:17:16&#43;03:00",
+  "dateModified": "2019-04-08T11:26:20&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -659,7 +659,38 @@ X-XSS-Protection: 1; mode=block
 
 <ul>
 <li>We should create a new list of affiliations to update our controlled vocabulary again</li>
+<li>I dumped a list of the top 1500 affiliations:</li>
 </ul>
+
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 211 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-04-08-top-1500-affiliations.csv WITH CSV HEADER;
+COPY 1500
+</code></pre>
+
+<ul>
+<li>Fix a few more messed up affiliations that have return characters in them (use Ctrl-V Ctrl-M to re-create control character):</li>
+</ul>
+
+<pre><code>dspace=# UPDATE metadatavalue SET text_value='International Institute for Environment and Development' WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE 'International Institute^M%';
+dspace=# UPDATE metadatavalue SET text_value='Kenya Agriculture and Livestock Research Organization' WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE 'Kenya Agricultural  and Livestock  Research^M%';
+</code></pre>
+
+<ul>
+<li>I noticed a bunch of subjects and affiliations that use stylized apostrophes so I will export those and then batch update them:</li>
+</ul>
+
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE '%’%') to /tmp/2019-04-08-affiliations-apostrophes.csv WITH CSV HEADER;
+COPY 60
+dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 57 AND text_value LIKE '%’%') to /tmp/2019-04-08-subject-apostrophes.csv WITH CSV HEADER;
+COPY 20
+</code></pre>
+
+<ul>
+<li>I cleaned them up in OpenRefine and then applied the fixes on CGSpace and DSpace Test:</li>
+</ul>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-60-affiliations-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct -d
+$ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-20-subject-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
