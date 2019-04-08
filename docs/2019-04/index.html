@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-08T16:29:20&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-08T19:55:20&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "2729",
+  "wordCount": "2827",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-08T16:29:20&#43;03:00",
+  "dateModified": "2019-04-08T19:55:20&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -710,7 +710,32 @@ $ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-20-subject-apostrophes.csv -db
 <ul>
 <li>But still I see 10 to 30% CPU steal so I think it&rsquo;s probably a big factor</li>
 <li>Linode Support still didn&rsquo;t respond to my ticket from yesterday, so I attached a new output of <code>iostat 1 10</code> and asked them to move the VM to a less busy host</li>
+<li>The web server logs are not very busy:</li>
 </ul>
+
+<pre><code># zcat --force /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E &quot;08/Apr/2019:(17|18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    124 40.77.167.135
+    135 95.108.181.88
+    139 157.55.39.206
+    190 66.249.79.133
+    202 45.5.186.2
+    284 207.46.13.95
+    359 18.196.196.108
+    457 157.55.39.164
+    457 40.77.167.132
+   3822 45.5.184.72
+# zcat --force /var/log/nginx/{rest,oai}.log /var/log/nginx/{rest,oai}.log.1 | grep -E &quot;08/Apr/2019:(17|18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+      5 129.0.79.206
+      5 41.205.240.21
+      7 207.46.13.95
+      7 66.249.79.133
+      7 66.249.79.135
+      7 95.108.181.88
+      8 40.77.167.111
+     19 157.55.39.164
+     20 40.77.167.132
+    370 51.254.16.223
+</code></pre>
 
 <!-- vim: set sw=2 ts=2: -->
 
