@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-08T11:26:20&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-08T16:29:20&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https://alanorth.github.io/cgspace-notes/2019-04/",
-  "wordCount": "2631",
+  "wordCount": "2729",
   "datePublished": "2019-04-01T09:00:43&#43;03:00",
-  "dateModified": "2019-04-08T11:26:20&#43;03:00",
+  "dateModified": "2019-04-08T16:29:20&#43;03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -691,6 +691,26 @@ COPY 20
 <pre><code>$ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-60-affiliations-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct -d
 $ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-20-subject-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d
 </code></pre>
+
+<ul>
+<li>UptimeRobot said that CGSpace (linode18) went down tonight
+
+<ul>
+<li>The load average is at <code>9.42, 8.87, 7.87</code></li>
+<li>I looked at PostgreSQL and see shitloads of connections there:</li>
+</ul></li>
+</ul>
+
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      5 dspaceApi
+      7 dspaceCli
+    250 dspaceWeb
+</code></pre>
+
+<ul>
+<li>But still I see 10 to 30% CPU steal so I think it&rsquo;s probably a big factor</li>
+<li>Linode Support still didn&rsquo;t respond to my ticket from yesterday, so I attached a new output of <code>iostat 1 10</code> and asked them to move the VM to a less busy host</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
