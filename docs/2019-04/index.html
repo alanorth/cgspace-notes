@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-11T14:23:30&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-13T12:15:55&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "3655",
+  "wordCount": "3724",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-11T14:23:30\x2b03:00",
+  "dateModified": "2019-04-13T12:15:55\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -101,8 +101,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
     <!-- combined, minified CSS -->
     <link href="https://alanorth.github.io/cgspace-notes/css/style.css" rel="stylesheet" integrity="sha384-G5B34w7DFTumWTswxYzTX7NWfbvQEg1HbFFEg6ItN03uTAAoS2qkPS/fu3LhuuSA" crossorigin="anonymous">
 
-    
-
+    <!-- RSS 2.0 feed -->
     
 
     
@@ -889,6 +888,33 @@ $ ./delete-metadata-values.py -i /tmp/2019-04-11-delete-6-subjects.csv -db dspac
 </ul>
 
 <p><img src="/cgspace-notes/2019/04/visualvm-solr-indexing-solr-settings.png" alt="Java GC during Solr indexing Solr 4.10.4 settings" /></p>
+
+<h2 id="2019-04-14">2019-04-14</h2>
+
+<ul>
+<li>Change DSpace Test (linode19) to use the Java GC tuning from the Solr 4.14.4 startup script:</li>
+</ul>
+
+<pre><code>GC_TUNE=&quot;-XX:NewRatio=3 \
+    -XX:SurvivorRatio=4 \
+    -XX:TargetSurvivorRatio=90 \
+    -XX:MaxTenuringThreshold=8 \
+    -XX:+UseConcMarkSweepGC \
+    -XX:+UseParNewGC \
+    -XX:ConcGCThreads=4 -XX:ParallelGCThreads=4 \
+    -XX:+CMSScavengeBeforeRemark \
+    -XX:PretenureSizeThreshold=64m \
+    -XX:+UseCMSInitiatingOccupancyOnly \
+    -XX:CMSInitiatingOccupancyFraction=50 \
+    -XX:CMSMaxAbortablePrecleanTime=6000 \
+    -XX:+CMSParallelRemarkEnabled \
+    -XX:+ParallelRefProcEnabled&quot;
+</code></pre>
+
+<ul>
+<li>I need to remember to check the Munin JVM graphs in a few days</li>
+<li>It might be placebo, but the site <em>does</em> feel snappier&hellip;</li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
