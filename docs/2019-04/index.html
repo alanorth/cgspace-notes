@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-14T16:59:47&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-15T12:58:07&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "3748",
+  "wordCount": "3901",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-14T16:59:47\x2b03:00",
+  "dateModified": "2019-04-15T12:58:07\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -923,6 +923,38 @@ $ ./delete-metadata-values.py -i /tmp/2019-04-11-delete-6-subjects.csv -db dspac
 
 <ul>
 <li><a href="https://github.com/ilri/dspace-statistics-api/releases/tag/v1.0.0">Tag version 1.0.0</a> and deploy it on DSpace Test</li>
+</ul></li>
+<li>Pretty annoying to see CGSpace (linode18) with 20–50% CPU steal according to <code>iostat 1 10</code>, though I haven&rsquo;t had any Linode alerts in a few days</li>
+<li>Abenet sent me a list of ILRI items that don&rsquo;t have CRPs added to them
+
+<ul>
+<li>The spreadsheet only had Handles (no IDs), so I&rsquo;m experimenting with using Python in OpenRefine to get the IDs</li>
+<li>I cloned the handle column and then did a transform to get the IDs from the CGSpace REST API:</li>
+</ul></li>
+</ul>
+
+<pre><code>import json
+import re
+import urllib
+import urllib2
+
+handle = re.findall('[0-9]+/[0-9]+', value)
+
+url = 'https://cgspace.cgiar.org/rest/handle/' + handle[0]
+req = urllib2.Request(url)
+req.add_header('User-agent', 'Alan Python bot')
+res = urllib2.urlopen(req)
+data = json.load(res)
+item_id = data['id']
+
+return item_id
+</code></pre>
+
+<ul>
+<li>Luckily none of the items already had CRPs, so I didn&rsquo;t have to worry about them getting removed
+
+<ul>
+<li>It would have been much trickier if I had to get the CRPs for the items first, then add the CRPs&hellip;</li>
 </ul></li>
 </ul>
 
