@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-15T23:01:19&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-16T13:07:33&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "3963",
+  "wordCount": "4630",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-15T23:01:19\x2b03:00",
+  "dateModified": "2019-04-16T13:07:33\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -971,6 +971,106 @@ sys     2m13.463s
 <ul>
 <li>Export IITA&rsquo;s community from CGSpace because they want to experiment with importing it into their internal DSpace for some testing or something</li>
 </ul>
+
+<h2 id="2019-04-17">2019-04-17</h2>
+
+<ul>
+<li>Reading an interesting <a href="https://teaspoon-consulting.com/articles/solr-cache-tuning.html">blog post about Solr caching</a></li>
+<li>Did some tests of the dspace-statistics-api on my local DSpace instance with 28 million documents in a sharded statistics core (<code>statistics</code> and <code>statistics-2018</code>) and monitored the memory usage of Tomcat in VisualVM</li>
+<li>4GB heap, CMS GC, 512 filter cache, 512 query cache, with 28 million documents in two shards
+
+<ul>
+<li>Run 1:</li>
+<li>Time: 3.11s user 0.44s system 0% cpu 13:45.07 total</li>
+<li>Tomcat (not Solr) max JVM heap usage: 2.04 GiB</li>
+<li>Run 2:</li>
+<li>Time: 3.23s user 0.43s system 0% cpu 13:46.10 total</li>
+<li>Tomcat (not Solr) max JVM heap usage: 2.06 GiB</li>
+<li>Run 3:</li>
+<li>Time: 3.23s user 0.42s system 0% cpu 13:14.70 total</li>
+<li>Tomcat (not Solr) max JVM heap usage: 2.13 GiB</li>
+<li><code>filterCache</code> size: 482, <code>cumulative_lookups</code>: 7062712, <code>cumulative_hits</code>: 167903, <code>cumulative_hitratio</code>: 0.02</li>
+<li>queryResultCache size: 2</li>
+</ul></li>
+<li>4GB heap, CMS GC, 1024 filter cache, 512 query cache, with 28 million documents in two shards
+
+<ul>
+<li>Run 1:</li>
+<li>Time: 2.92s user 0.39s system 0% cpu 12:33.08 total</li>
+<li>Tomcat (not Solr) max JVM heap usage: 2.16 GiB</li>
+<li>Run 2:</li>
+<li>Time: 3.10s user 0.39s system 0% cpu 12:25.32 total</li>
+<li>Tomcat (not Solr) max JVM heap usage: 2.07 GiB</li>
+<li>Run 3:</li>
+<li>Time: 3.29s user 0.36s system 0% cpu 11:53.47 total</li>
+<li>Tomcat (not Solr) max JVM heap usage: 2.08 GiB</li>
+<li><code>filterCache</code> size: 951, <code>cumulative_lookups</code>: 7062712, <code>cumulative_hits</code>: 254379, <code>cumulative_hitratio</code>: 0.04</li>
+</ul></li>
+<li>4GB heap, CMS GC, 2048 filter cache, 512 query cache, with 28 million documents in two shards
+
+<ul>
+<li>Run 1:</li>
+<li>Time: 2.90s user 0.48s system 0% cpu 10:37.31 total</li>
+<li>Tomcat max JVM heap usage: 1.96 GiB</li>
+<li><code>filterCache</code> size: 1901, <code>cumulative_lookups</code>: 2354237, <code>cumulative_hits</code>: 180111, <code>cumulative_hitratio</code>: 0.08</li>
+<li>Run 2:</li>
+<li>Time: 2.97s user 0.39s system 0% cpu 10:40.06 total</li>
+<li>Tomcat max JVM heap usage: 2.09 GiB</li>
+<li><code>filterCache</code> size: 1901, <code>cumulative_lookups</code>: 4708473, <code>cumulative_hits</code>: 360068, <code>cumulative_hitratio</code>: 0.08</li>
+<li>Run 3:</li>
+<li>Time: 3.28s user 0.37s system 0% cpu 10:49.56 total</li>
+<li>Tomcat max JVM heap usage: 2.05 GiB</li>
+<li><code>filterCache</code> size: 1901, <code>cumulative_lookups</code>: 7062712, <code>cumulative_hits</code>: 540020, <code>cumulative_hitratio</code>: 0.08</li>
+</ul></li>
+<li>4GB heap, CMS GC, 4096 filter cache, 512 query cache, with 28 million documents in two shards
+
+<ul>
+<li>Run 1:</li>
+<li>Time: 2.88s user 0.35s system 0% cpu 8:29.55 total</li>
+<li>Tomcat max JVM heap usage: 2.15 GiB</li>
+<li><code>filterCache</code> size: 3770, <code>cumulative_lookups</code>: 2354237, <code>cumulative_hits</code>: 414512, <code>cumulative_hitratio</code>: 0.18</li>
+<li>Run 2:</li>
+<li>Time: 3.01s user 0.38s system 0% cpu 9:15.65 total</li>
+<li>Tomcat max JVM heap usage: 2.17 GiB</li>
+<li><code>filterCache</code> size: 3945, <code>cumulative_lookups</code>: 4708473, <code>cumulative_hits</code>: 829093, <code>cumulative_hitratio</code>: 0.18</li>
+<li>Run 3:</li>
+<li>Time: 3.01s user 0.40s system 0% cpu 9:01.31 total</li>
+<li>Tomcat max JVM heap usage: 2.07 GiB</li>
+<li><code>filterCache</code> size: 3770, <code>cumulative_lookups</code>: 7062712, <code>cumulative_hits</code>: 1243632, <code>cumulative_hitratio</code>: 0.18</li>
+</ul></li>
+<li>The biggest takeaway I have is that this workload benefits from a larger <code>filterCache</code> (for Solr fq parameter), but barely uses the <code>queryResultCache</code> (for Solr q parameter) at all
+
+<ul>
+<li>The number of hits goes up and the time taken decreases when we increase the <code>filterCache</code>, and total JVM heap memory doesn&rsquo;t seem to increase much at all</li>
+<li>I guess the <code>queryResultCache</code> size is always 2 because I&rsquo;m only doing two queries: <code>type:0</code> and <code>type:2</code> (downloads and views, respectively)</li>
+</ul></li>
+<li>Here is the general pattern of running three sequential indexing runs as seen in VisualVM while monitoring the Tomcat process:</li>
+</ul>
+
+<p><img src="/cgspace-notes/2019/04/visualvm-solr-indexing-4096-filterCache.png" alt="VisualVM Tomcat 4096 filterCache" /></p>
+
+<ul>
+<li>I ran one test with a <code>filterCache</code> of 16384 to try to see if I could make the Tomcat JVM memory balloon, but actually it <em>drastically</em> increased the performance and memory usage of the dspace-statistics-api indexer</li>
+<li>4GB heap, CMS GC, 16384 filter cache, 512 query cache, with 28 million documents in two shards
+
+<ul>
+<li>Run 1:</li>
+<li>Time: 2.85s user 0.42s system 2% cpu 2:28.92 total</li>
+<li>Tomcat max JVM heap usage: 1.90 GiB</li>
+<li><code>filterCache</code> size: 14851, <code>cumulative_lookups</code>: 2354237, <code>cumulative_hits</code>: 2331186, <code>cumulative_hitratio</code>: 0.99</li>
+<li>Run 2:</li>
+<li>Time: 2.90s user 0.37s system 2% cpu 2:23.50 total</li>
+<li>Tomcat max JVM heap usage: 1.27 GiB</li>
+<li><code>filterCache</code> size: 15834, <code>cumulative_lookups</code>: 4708476, <code>cumulative_hits</code>: 4664762, <code>cumulative_hitratio</code>: 0.99</li>
+<li>Run 3:</li>
+<li>Time: 2.93s user 0.39s system 2% cpu 2:26.17 total</li>
+<li>Tomcat max JVM heap usage: 1.05 GiB</li>
+<li><code>filterCache</code> size: 15248, <code>cumulative_lookups</code>: 7062715, <code>cumulative_hits</code>: 6998267, <code>cumulative_hitratio</code>: 0.99</li>
+</ul></li>
+<li>The JVM garbage collection graph is MUCH flatter, and memory usage is much lower (not to mention a drop in GC-related CPU usage)!</li>
+</ul>
+
+<p><img src="/cgspace-notes/2019/04/visualvm-solr-indexing-16384-filterCache.png" alt="VisualVM Tomcat 16384 filterCache" /></p>
 
 <!-- vim: set sw=2 ts=2: -->
 
