@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-18T19:00:15&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-20T11:48:26&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "4875",
+  "wordCount": "5031",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-18T19:00:15\x2b03:00",
+  "dateModified": "2019-04-20T11:48:26\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1122,6 +1122,33 @@ sys     2m13.463s
 
 <ul>
 <li>For future reference, Linode mentioned that they consider CPU steal above 8% to be significant</li>
+<li>Regarding the other Linode issue about speed, I did a test with <code>iperf</code> between linode18 and linode19:</li>
+</ul>
+
+<pre><code># iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 45.79.x.x port 5001 connected with 139.162.x.x port 51378
+------------------------------------------------------------
+Client connecting to 139.162.x.x, TCP port 5001
+TCP window size: 85.0 KByte (default)
+------------------------------------------------------------
+[  5] local 45.79.x.x port 36440 connected with 139.162.x.x port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  5]  0.0-10.2 sec   172 MBytes   142 Mbits/sec
+[  4]  0.0-10.5 sec   202 MBytes   162 Mbits/sec
+</code></pre>
+
+<ul>
+<li>Even with the software firewalls disabled the rsync speed was low, so it&rsquo;s not a rate limiting issue</li>
+<li>I also tried to download a file over HTTPS from CGSpace to DSpace Test, but it was capped at 20KiB/sec
+
+<ul>
+<li>I updated the Linode issue with this information</li>
+</ul></li>
+<li>I&rsquo;m going to try to switch the kernel to the latest upstream (5.0.8) instead of Linode&rsquo;s latest x86_64</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
