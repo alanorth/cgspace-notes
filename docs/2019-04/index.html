@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-24T16:50:24&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-24T17:15:13&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "5667",
+  "wordCount": "6018",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-24T16:50:24\x2b03:00",
+  "dateModified": "2019-04-24T17:15:13\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1250,7 +1250,82 @@ dspace.log.2019-04-20:1515
 <ul>
 <li>I told him we never finished it, and that he should try to use the <code>/items/find-by-metadata-field</code> endpoint, with the caveat that you need to match the language attribute exactly (ie &ldquo;en&rdquo;, &ldquo;en_US&rdquo;, null, etc)</li>
 <li>I asked him how many terms they are interested in, as we could probably make it easier by normalizing the language attributes of these fields (it would help us anyways)</li>
+<li>He says he&rsquo;s getting HTTP 401 errors when trying to search for CPWF subject terms, which I can reproduce:</li>
 </ul></li>
+</ul>
+
+<pre><code>$ curl -f -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
+curl: (22) The requested URL returned error: 401
+</code></pre>
+
+<ul>
+<li>Note that curl only shows the HTTP 401 error if you use <code>-f</code> (fail), and only then if you <em>don&rsquo;t</em> include <code>-s</code>
+
+<ul>
+<li>I see there are about 1,000 items using CPWF subject &ldquo;WATER MANAGEMENT&rdquo; in the database, so there should definitely be results</li>
+<li>The breakdown of <code>text_lang</code> fields used in those items is 942:</li>
+</ul></li>
+</ul>
+
+<pre><code>dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT' AND text_lang='en_US';
+ count 
+-------
+   376
+(1 row)
+
+dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT' AND text_lang='';
+ count 
+-------
+   149
+(1 row)
+
+dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT' AND text_lang IS NULL;
+ count 
+-------
+   417
+(1 row)
+</code></pre>
+
+<ul>
+<li>I see that the HTTP 401 issue seems to be a bug due to an item that the user doesn&rsquo;t have permission to access&hellip; from the DSpace log:</li>
+</ul>
+
+<pre><code>2019-04-24 08:11:51,129 INFO  org.dspace.rest.ItemsResource @ Looking for item with metadata(key=cg.subject.cpwf,value=WATER MANAGEMENT, language=en_US).
+2019-04-24 08:11:51,231 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous::view_item:handle=10568/72448
+2019-04-24 08:11:51,238 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous::view_item:handle=10568/72491
+2019-04-24 08:11:51,243 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous::view_item:handle=10568/75703
+2019-04-24 08:11:51,252 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item!
+</code></pre>
+
+<ul>
+<li>Nevertheless, if I request using the <code>null</code> language I get 1020 results, plus 179 for a blank language attribute:</li>
+</ul>
+
+<pre><code>$ curl -s -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: null}' | jq length
+1020
+$ curl -s -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;&quot;}' | jq length
+179
+</code></pre>
+
+<ul>
+<li>This is weird because I see 942–1156 items with &ldquo;WATER MANAGEMENT&rdquo; (depending on wildcard matching for errors in subject spelling):</li>
+</ul>
+
+<pre><code>dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT';
+ count 
+-------
+   942
+(1 row)
+
+dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value LIKE '%WATER MANAGEMENT%';
+ count 
+-------
+  1156
+(1 row)
+</code></pre>
+
+<ul>
+<li>I sent a message to the dspace-tech mailing list to ask for help</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
