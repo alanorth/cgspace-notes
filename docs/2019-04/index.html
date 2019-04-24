@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-22T16:09:58&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-23T13:04:37&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "5349",
+  "wordCount": "5633",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-22T16:09:58\x2b03:00",
+  "dateModified": "2019-04-23T13:04:37\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1214,6 +1214,41 @@ dspace.log.2019-04-20:1515
 
 <ul>
 <li>The work was mostly similar to the About page at <code>/page/about</code>, but in addition to adding i18n strings etc, I had to add the logic for the trail to <code>dspace-xmlui-mirage2/src/main/webapp/xsl/preprocess/general.xsl</code></li>
+</ul></li>
+</ul>
+
+<h2 id="2019-04-24">2019-04-24</h2>
+
+<ul>
+<li>Linode migrated CGSpace (linode18) to a new host, but I am still getting poor performance when copying data to DSpace Test (linode19)
+
+<ul>
+<li>I asked them if we can migrate DSpace Test to a new host</li>
+<li>They migrated DSpace Test to a new host and the rsync speed from Frankfurt was still capped at 20KiB/sec&hellip;</li>
+<li>I booted DSpace Test to a rescue CD and tried the rsync from CGSpace there too, but it was still capped at 20KiB/sec&hellip;</li>
+</ul></li>
+<li>Finally upload the 218 IITA items from March to CGSpace
+
+<ul>
+<li>Abenet and I had to do a little bit more work to correct the metadata of one item that appeared to be a duplicate, but really just had the wrong DOI</li>
+</ul></li>
+<li>While I was uploading the IITA records I noticed that twenty of the records Sisay uploaded in 2018-09 had double Handles (<code>dc.identifier.uri</code>)
+
+<ul>
+<li>According to my notes in 2018-09 I had noticed this when he uploaded the records and told him to remove them, but he didn&rsquo;t&hellip;</li>
+<li>I exported the IITA community as a CSV then used <code>csvcut</code> to extract the two URI columns and identify and fix the records:</li>
+</ul></li>
+</ul>
+
+<pre><code>$ csvcut -c id,dc.identifier.uri,'dc.identifier.uri[]' ~/Downloads/2019-04-24-IITA.csv &gt; /tmp/iita.csv
+</code></pre>
+
+<ul>
+<li>Carlos Tejo from the Land Portal had been emailing me this week to ask about the old REST API that Tsega was building in 2017
+
+<ul>
+<li>I told him we never finished it, and that he should try to use the <code>/items/find-by-metadata-field</code> endpoint, with the caveat that you need to match the language attribute exactly (ie &ldquo;en&rdquo;, &ldquo;en_US&rdquo;, null, etc)</li>
+<li>I asked him how many terms they are interested in, as we could probably make it easier by normalizing the language attributes of these fields (it would help us anyways)</li>
 </ul></li>
 </ul>
 
