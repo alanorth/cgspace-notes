@@ -38,7 +38,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-04/" />
 <meta property="article:published_time" content="2019-04-01T09:00:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-04-24T17:15:13&#43;03:00"/>
+<meta property="article:modified_time" content="2019-04-24T18:49:55&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2019"/>
@@ -81,9 +81,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
   "@type": "BlogPosting",
   "headline": "April, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-04\/",
-  "wordCount": "6018",
+  "wordCount": "6298",
   "datePublished": "2019-04-01T09:00:43\x2b03:00",
-  "dateModified": "2019-04-24T17:15:13\x2b03:00",
+  "dateModified": "2019-04-24T18:49:55\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1326,6 +1326,56 @@ dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AN
 
 <ul>
 <li>I sent a message to the dspace-tech mailing list to ask for help</li>
+</ul>
+
+<h2 id="2019-04-25">2019-04-25</h2>
+
+<ul>
+<li>Peter pointed out that we need to remove Delicious and Google+ from our social sharing links
+
+<ul>
+<li>Also, it would be nice if we could include the item title in the shared link</li>
+<li>I created an issue on GitHub to track this (<a href="https://github.com/ilri/DSpace/issues/419">#419</a>)</li>
+</ul></li>
+<li>I tested the REST API after logging in with my super admin account and I was able to get results for the problematic query:</li>
+</ul>
+
+<pre><code>$ curl -f -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/login&quot; -d '{&quot;email&quot;:&quot;example@me.com&quot;,&quot;password&quot;:&quot;fuuuuu&quot;}'
+$ curl -f -H &quot;Content-Type: application/json&quot; -H &quot;rest-dspace-token: b43d41a6-5ac1-455d-b49a-616b8debc25b&quot; -X GET &quot;https://dspacetest.cgiar.org/rest/status&quot;
+$ curl -f -H &quot;rest-dspace-token: b43d41a6-5ac1-455d-b49a-616b8debc25b&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
+</code></pre>
+
+<ul>
+<li>I created a normal user for Carlos to try as an unprivileged user:</li>
+</ul>
+
+<pre><code>$ dspace user --add --givenname Carlos --surname Tejo --email blah@blah.com --password 'ddmmdd'
+</code></pre>
+
+<ul>
+<li>But still I get the HTTP 401 and I have no idea which item is causing it</li>
+<li>I enabled more verbose logging in <code>ItemsResource.java</code> and now I can at least see the item ID that causes the failure&hellip;
+
+<ul>
+<li>The item is not even in the archive, but somehow it is discoverable</li>
+</ul></li>
+</ul>
+
+<pre><code>dspace=# SELECT * FROM item WHERE item_id=74648;
+ item_id | submitter_id | in_archive | withdrawn |       last_modified        | owning_collection | discoverable
+---------+--------------+------------+-----------+----------------------------+-------------------+--------------
+   74648 |          113 | f          | f         | 2016-03-30 09:00:52.131+00 |                   | t
+(1 row)
+</code></pre>
+
+<ul>
+<li>Meet with CodeObia to see progress on AReS version 2</li>
+<li>Marissa Van Epp asked me to add a few new metadata values to their Phase II Project Tags field (cg.identifier.ccafsprojectpii)
+
+<ul>
+<li>I created a <a href="https://github.com/ilri/DSpace/pull/420">pull request</a> for it and will do it the next time I run updates on CGSpace</li>
+</ul></li>
+<li>Communicate with Carlos Tejo from the Land Portal about the <code>/items/find-by-metadata-value</code> endpoint</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
