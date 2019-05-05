@@ -45,7 +45,7 @@ Most worryingly, there are encoding errors in the abstracts for eleven items, fo
 
 I think I will need to ask Udana to re-copy and paste the abstracts with more care using Google Docs
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -144,36 +144,36 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <h2 id="2019-03-03">2019-03-03</h2>
 
 <ul>
-<li>Trying to finally upload IITA&rsquo;s 259 Feb 14 items to CGSpace so I exported them from DSpace Test:</li>
-</ul>
+<li><p>Trying to finally upload IITA&rsquo;s 259 Feb 14 items to CGSpace so I exported them from DSpace Test:</p>
 
 <pre><code>$ mkdir 2019-03-03-IITA-Feb14
 $ dspace export -i 10568/108684 -t COLLECTION -m -n 0 -d 2019-03-03-IITA-Feb14
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>As I was inspecting the archive I noticed that there were some problems with the bitsreams:
+<li><p>As I was inspecting the archive I noticed that there were some problems with the bitsreams:</p>
 
 <ul>
 <li>First, Sisay didn&rsquo;t include the bitstream descriptions</li>
 <li>Second, only five items had bitstreams and I remember in the discussion with IITA that there should have been nine!</li>
 <li>I had to refer to the original CSV from January to find the file names, then download and add them to the export contents manually!</li>
 </ul></li>
-<li>After adding the missing bitstreams and descriptions manually I tested them again locally, then imported them to a temporary collection on CGSpace:</li>
-</ul>
+
+<li><p>After adding the missing bitstreams and descriptions manually I tested them again locally, then imported them to a temporary collection on CGSpace:</p>
 
 <pre><code>$ dspace import -a -c 10568/99832 -e aorth@stfu.com -m 2019-03-03-IITA-Feb14.map -s /tmp/2019-03-03-IITA-Feb14
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>DSpace&rsquo;s export function doesn&rsquo;t include the collections for some reason, so you need to import them somewhere first, then export the collection metadata and re-map the items to proper owning collections based on their types using OpenRefine or something</li>
-<li>After re-importing to CGSpace to apply the mappings, I deleted the collection on DSpace Test and ran the <code>dspace cleanup</code> script</li>
-<li>Merge the IITA research theme changes from last month to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/413">#413</a>)
+<li><p>DSpace&rsquo;s export function doesn&rsquo;t include the collections for some reason, so you need to import them somewhere first, then export the collection metadata and re-map the items to proper owning collections based on their types using OpenRefine or something</p></li>
+
+<li><p>After re-importing to CGSpace to apply the mappings, I deleted the collection on DSpace Test and ran the <code>dspace cleanup</code> script</p></li>
+
+<li><p>Merge the IITA research theme changes from last month to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/413">#413</a>)</p>
 
 <ul>
 <li>I will deploy to CGSpace soon and then think about how to batch tag all IITA&rsquo;s existing items with this metadata</li>
 </ul></li>
-<li>Deploy Tomcat 7.0.93 on CGSpace (linode18) after having tested it on DSpace Test (linode19) for a week</li>
+
+<li><p>Deploy Tomcat 7.0.93 on CGSpace (linode18) after having tested it on DSpace Test (linode19) for a week</p></li>
 </ul>
 
 <h2 id="2019-03-06">2019-03-06</h2>
@@ -181,39 +181,38 @@ $ dspace export -i 10568/108684 -t COLLECTION -m -n 0 -d 2019-03-03-IITA-Feb14
 <ul>
 <li>Abenet was having problems with a CIP user account, I think that the user could not register</li>
 <li>I suspect it&rsquo;s related to the email issue that ICT hasn&rsquo;t responded about since last week</li>
-<li>As I thought, I still cannot send emails from CGSpace:</li>
-</ul>
+
+<li><p>As I thought, I still cannot send emails from CGSpace:</p>
 
 <pre><code>$ dspace test-email
 
 About to send test email:
- - To: blah@stfu.com
- - Subject: DSpace test email
- - Server: smtp.office365.com
+- To: blah@stfu.com
+- Subject: DSpace test email
+- Server: smtp.office365.com
 
 Error sending email:
- - Error: javax.mail.AuthenticationFailedException
-</code></pre>
+- Error: javax.mail.AuthenticationFailedException
+</code></pre></li>
 
-<ul>
-<li>I will send a follow-up to ICT to ask them to reset the password</li>
+<li><p>I will send a follow-up to ICT to ask them to reset the password</p></li>
 </ul>
 
 <h2 id="2019-03-07">2019-03-07</h2>
 
 <ul>
 <li>ICT reset the email password and I confirmed that it is working now</li>
-<li>Generate a controlled vocabulary of 1187 AGROVOC subjects from the top 1500 that I checked last month, dumping the terms themselves using <code>csvcut</code> and then applying XML controlled vocabulary format in vim and then checking with tidy for good measure:</li>
-</ul>
+
+<li><p>Generate a controlled vocabulary of 1187 AGROVOC subjects from the top 1500 that I checked last month, dumping the terms themselves using <code>csvcut</code> and then applying XML controlled vocabulary format in vim and then checking with tidy for good measure:</p>
 
 <pre><code>$ csvcut -c name 2019-02-22-subjects.csv &gt; dspace/config/controlled-vocabularies/dc-contributor-author.xml
 $ # apply formatting in XML file
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.xml
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I tested the AGROVOC controlled vocabulary locally and will deploy it on DSpace Test soon so people can see it</li>
-<li>Atmire noticed my message about the &ldquo;solr_update_time_stamp&rdquo; error on the dspace-tech mailing list and created an issue on their tracker to discuss it with me
+<li><p>I tested the AGROVOC controlled vocabulary locally and will deploy it on DSpace Test soon so people can see it</p></li>
+
+<li><p>Atmire noticed my message about the &ldquo;solr_update_time_stamp&rdquo; error on the dspace-tech mailing list and created an issue on their tracker to discuss it with me</p>
 
 <ul>
 <li>They say the error is harmless, but has nevertheless been fixed in their newer module versions</li>
@@ -223,21 +222,21 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.x
 <h2 id="2019-03-08">2019-03-08</h2>
 
 <ul>
-<li>There&rsquo;s an issue with CGSpace right now where all items are giving a blank page in the XMLUI
+<li><p>There&rsquo;s an issue with CGSpace right now where all items are giving a blank page in the XMLUI</p>
 
 <ul>
 <li><del>Interestingly, if I check an item in the REST API it is also mostly blank: only the title and the ID!</del> On second thought I realize I probably was just seeing the default view without any &ldquo;expands&rdquo;</li>
-<li>I don&rsquo;t see anything unusual in the Tomcat logs, though there are thousands of those <code>solr_update_time_stamp</code> errors:</li>
-</ul></li>
-</ul>
+
+<li><p>I don&rsquo;t see anything unusual in the Tomcat logs, though there are thousands of those <code>solr_update_time_stamp</code> errors:</p>
 
 <pre><code># journalctl -u tomcat7 | grep -c 'Multiple update components target the same field:solr_update_time_stamp'
 1076
-</code></pre>
+</code></pre></li>
+</ul></li>
 
-<ul>
-<li>I restarted Tomcat and it&rsquo;s OK now&hellip;</li>
-<li>Skype meeting with Peter and Abenet and Sisay
+<li><p>I restarted Tomcat and it&rsquo;s OK now&hellip;</p></li>
+
+<li><p>Skype meeting with Peter and Abenet and Sisay</p>
 
 <ul>
 <li>We want to try to crowd source the correction of invalid AGROVOC terms starting with the ~313 invalid ones from our top 1500</li>
@@ -254,49 +253,45 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.x
 <li>I shared a post on Yammer informing our editors to try to AGROVOC controlled list</li>
 <li>The SPDX legal committee had a meeting and discussed the addition of CC-BY-ND-3.0-IGO and other IGO licenses to their list, but it seems unlikely (<a href="https://github.com/spdx/license-list-XML/issues/767#issuecomment-470709673">spdx/license-list-XML/issues/767</a>)</li>
 <li>The FireOak report highlights the fact that several CGSpace collections have mixed-content errors due to the use of HTTP links in the Feedburner forms</li>
-<li>I see 46 occurrences of these with this query:</li>
-</ul>
+
+<li><p>I see 46 occurrences of these with this query:</p>
 
 <pre><code>dspace=# SELECT text_value FROM metadatavalue WHERE resource_type_id in (3,4) AND (text_value LIKE '%http://feedburner.%' OR text_value LIKE '%http://feeds.feedburner.%');
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I can replace these globally using the following SQL:</li>
-</ul>
+<li><p>I can replace these globally using the following SQL:</p>
 
 <pre><code>dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'http://feedburner.','https//feedburner.', 'g') WHERE resource_type_id in (3,4) AND text_value LIKE '%http://feedburner.%';
 UPDATE 43
 dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'http://feeds.feedburner.','https//feeds.feedburner.', 'g') WHERE resource_type_id in (3,4) AND text_value LIKE '%http://feeds.feedburner.%';
 UPDATE 44
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I ran the corrections on CGSpace and DSpace Test</li>
+<li><p>I ran the corrections on CGSpace and DSpace Test</p></li>
 </ul>
 
 <h2 id="2019-03-10">2019-03-10</h2>
 
 <ul>
 <li>Working on tagging IITA&rsquo;s items with their new research theme (<code>cg.identifier.iitatheme</code>) based on their existing IITA subjects (see <a href="/cgspace-notes/2018-02/">notes from 2019-02</a>)</li>
-<li>I exported the entire IITA community from CGSpace and then used <code>csvcut</code> to extract only the needed fields:</li>
-</ul>
+
+<li><p>I exported the entire IITA community from CGSpace and then used <code>csvcut</code> to extract only the needed fields:</p>
 
 <pre><code>$ csvcut -c 'id,cg.subject.iita,cg.subject.iita[],cg.subject.iita[en],cg.subject.iita[en_US]' ~/Downloads/10568-68616.csv &gt; /tmp/iita.csv
-</code></pre>
+</code></pre></li>
 
-<ul>
 <li><p>After importing to OpenRefine I realized that tagging items based on their subjects is tricky because of the row/record mode of OpenRefine when you split the multi-value cells as well as the fact that some items might need to be tagged twice (thus needing a <code>||</code>)</p></li>
 
-<li><p>I think it might actually be easier to filter by IITA subject, then by IITA theme (if needed), and then do transformations with some conditional values in GREL expressions like:</p></li>
-</ul>
+<li><p>I think it might actually be easier to filter by IITA subject, then by IITA theme (if needed), and then do transformations with some conditional values in GREL expressions like:</p>
 
 <pre><code>if(isBlank(value), 'PLANT PRODUCTION &amp; HEALTH', value + '||PLANT PRODUCTION &amp; HEALTH')
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then it&rsquo;s more annoying because there are four IITA subject columns&hellip;</li>
-<li>In total this would add research themes to 1,755 items</li>
-<li>I want to double check one last time with Bosede that they would like to do this, because I also see that this will tag a few hundred items from the 1970s and 1980s</li>
+<li><p>Then it&rsquo;s more annoying because there are four IITA subject columns&hellip;</p></li>
+
+<li><p>In total this would add research themes to 1,755 items</p></li>
+
+<li><p>I want to double check one last time with Bosede that they would like to do this, because I also see that this will tag a few hundred items from the 1970s and 1980s</p></li>
 </ul>
 
 <h2 id="2019-03-11">2019-03-11</h2>
@@ -321,149 +316,142 @@ UPDATE 44
 <li>I see thirty-six items using Swaziland country metadata, and Peter says we should change only those from 2018 and 2019</li>
 <li>I think that I could get the resource IDs from SQL and then export them using <code>dspace metadata-export</code>&hellip;</li>
 </ul></li>
-<li>This is a bit ugly, but it works (using the <a href="https://wiki.duraspace.org/display/DSPACE/Helper+SQL+functions+for+DSpace+5">DSpace 5 SQL helper function</a> to resolve ID to handle):</li>
-</ul>
+
+<li><p>This is a bit ugly, but it works (using the <a href="https://wiki.duraspace.org/display/DSPACE/Helper+SQL+functions+for+DSpace+5">DSpace 5 SQL helper function</a> to resolve ID to handle):</p>
 
 <pre><code>for id in $(psql -U postgres -d dspacetest -h localhost -c &quot;SELECT resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=228 AND text_value LIKE '%SWAZILAND%'&quot; | grep -oE '[0-9]{3,}'); do
 
-    echo &quot;Getting handle for id: ${id}&quot;
+echo &quot;Getting handle for id: ${id}&quot;
 
-    handle=$(psql -U postgres -d dspacetest -h localhost -c &quot;SELECT ds5_item2itemhandle($id)&quot; | grep -oE '[0-9]{5}/[0-9]+')
+handle=$(psql -U postgres -d dspacetest -h localhost -c &quot;SELECT ds5_item2itemhandle($id)&quot; | grep -oE '[0-9]{5}/[0-9]+')
 
-    ~/dspace/bin/dspace metadata-export -f /tmp/${id}.csv -i $handle
+~/dspace/bin/dspace metadata-export -f /tmp/${id}.csv -i $handle
 
 done
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then I couldn&rsquo;t figure out a clever way to join all the CSVs, so I just grepped them to find the IDs with dates from 2018 and 2019 and there are apparently only three:</li>
-</ul>
+<li><p>Then I couldn&rsquo;t figure out a clever way to join all the CSVs, so I just grepped them to find the IDs with dates from 2018 and 2019 and there are apparently only three:</p>
 
 <pre><code>$ grep -oE '201[89]' /tmp/*.csv | sort -u
 /tmp/94834.csv:2018
 /tmp/95615.csv:2018
 /tmp/96747.csv:2018
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And looking at those items more closely, only one of them has an <em>issue date</em> of after 2018-04, so I will only update that one (as the countrie&rsquo;s name only changed in 2018-04)</li>
-<li>Run all system updates and reboot linode20</li>
-<li>Follow up with Felix from Earlham to see if he&rsquo;s done testing DSpace Test with COPO so I can re-sync the server from CGSpace</li>
+<li><p>And looking at those items more closely, only one of them has an <em>issue date</em> of after 2018-04, so I will only update that one (as the countrie&rsquo;s name only changed in 2018-04)</p></li>
+
+<li><p>Run all system updates and reboot linode20</p></li>
+
+<li><p>Follow up with Felix from Earlham to see if he&rsquo;s done testing DSpace Test with COPO so I can re-sync the server from CGSpace</p></li>
 </ul>
 
 <h2 id="2019-03-15">2019-03-15</h2>
 
 <ul>
 <li>CGSpace (linode18) has the blank page error again</li>
-<li>I&rsquo;m not sure if it&rsquo;s related, but I see the following error in DSpace&rsquo;s log:</li>
-</ul>
+
+<li><p>I&rsquo;m not sure if it&rsquo;s related, but I see the following error in DSpace&rsquo;s log:</p>
 
 <pre><code>2019-03-15 14:09:32,685 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
 java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@55ba10b5 is closed.
-        at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
-        at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
-        at org.apache.tomcat.dbcp.dbcp.PoolingDataSource$PoolGuardConnectionWrapper.prepareStatement(PoolingDataSource.java:313)
-        at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:220)
-        at org.dspace.authorize.AuthorizeManager.getPolicies(AuthorizeManager.java:612)
-        at org.dspace.content.crosswalk.METSRightsCrosswalk.disseminateElement(METSRightsCrosswalk.java:154)
-        at org.dspace.content.crosswalk.METSRightsCrosswalk.disseminateElement(METSRightsCrosswalk.java:300)
-</code></pre>
+    at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
+    at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
+    at org.apache.tomcat.dbcp.dbcp.PoolingDataSource$PoolGuardConnectionWrapper.prepareStatement(PoolingDataSource.java:313)
+    at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:220)
+    at org.dspace.authorize.AuthorizeManager.getPolicies(AuthorizeManager.java:612)
+    at org.dspace.content.crosswalk.METSRightsCrosswalk.disseminateElement(METSRightsCrosswalk.java:154)
+    at org.dspace.content.crosswalk.METSRightsCrosswalk.disseminateElement(METSRightsCrosswalk.java:300)
+</code></pre></li>
 
-<ul>
-<li>Interestingly, I see a pattern of these errors increasing, with single and double digit numbers over the past month, <del>but spikes of over 1,000 today</del>, yesterday, and on 2019-03-08, which was exactly the first time we saw this blank page error recently</li>
-</ul>
+<li><p>Interestingly, I see a pattern of these errors increasing, with single and double digit numbers over the past month, <del>but spikes of over 1,000 today</del>, yesterday, and on 2019-03-08, which was exactly the first time we saw this blank page error recently</p>
 
 <pre><code>$ grep -I 'SQL QueryTable Error' dspace.log.2019-0* | awk -F: '{print $1}' | sort | uniq -c | tail -n 25
-      5 dspace.log.2019-02-27
-     11 dspace.log.2019-02-28
-     29 dspace.log.2019-03-01
-     24 dspace.log.2019-03-02
-     41 dspace.log.2019-03-03
-     11 dspace.log.2019-03-04
-      9 dspace.log.2019-03-05
-     15 dspace.log.2019-03-06
-      7 dspace.log.2019-03-07
-      9 dspace.log.2019-03-08
-     22 dspace.log.2019-03-09
-     23 dspace.log.2019-03-10
-     18 dspace.log.2019-03-11
-     13 dspace.log.2019-03-12
-     10 dspace.log.2019-03-13
-     25 dspace.log.2019-03-14
-     12 dspace.log.2019-03-15
-     67 dspace.log.2019-03-16
-     72 dspace.log.2019-03-17
-      8 dspace.log.2019-03-18
-     15 dspace.log.2019-03-19
-     21 dspace.log.2019-03-20
-     29 dspace.log.2019-03-21
-     41 dspace.log.2019-03-22
-   4807 dspace.log.2019-03-23
-</code></pre>
+  5 dspace.log.2019-02-27
+ 11 dspace.log.2019-02-28
+ 29 dspace.log.2019-03-01
+ 24 dspace.log.2019-03-02
+ 41 dspace.log.2019-03-03
+ 11 dspace.log.2019-03-04
+  9 dspace.log.2019-03-05
+ 15 dspace.log.2019-03-06
+  7 dspace.log.2019-03-07
+  9 dspace.log.2019-03-08
+ 22 dspace.log.2019-03-09
+ 23 dspace.log.2019-03-10
+ 18 dspace.log.2019-03-11
+ 13 dspace.log.2019-03-12
+ 10 dspace.log.2019-03-13
+ 25 dspace.log.2019-03-14
+ 12 dspace.log.2019-03-15
+ 67 dspace.log.2019-03-16
+ 72 dspace.log.2019-03-17
+  8 dspace.log.2019-03-18
+ 15 dspace.log.2019-03-19
+ 21 dspace.log.2019-03-20
+ 29 dspace.log.2019-03-21
+ 41 dspace.log.2019-03-22
+4807 dspace.log.2019-03-23
+</code></pre></li>
 
-<ul>
-<li>(Update on 2019-03-23 to use correct grep query)</li>
-<li>There are not too many connections currently in PostgreSQL:</li>
-</ul>
+<li><p>(Update on 2019-03-23 to use correct grep query)</p></li>
+
+<li><p>There are not too many connections currently in PostgreSQL:</p>
 
 <pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
-      6 dspaceApi
-     10 dspaceCli
-     15 dspaceWeb
-</code></pre>
+  6 dspaceApi
+ 10 dspaceCli
+ 15 dspaceWeb
+</code></pre></li>
 
-<ul>
-<li>I didn&rsquo;t see anything interesting in the PostgreSQL logs, though this stack trace from the Tomcat logs (in the systemd journal) from earlier today <em>might</em> be related?</li>
-</ul>
+<li><p>I didn&rsquo;t see anything interesting in the PostgreSQL logs, though this stack trace from the Tomcat logs (in the systemd journal) from earlier today <em>might</em> be related?</p>
 
 <pre><code>SEVERE: Servlet.service() for servlet [spring] in context with path [] threw exception [org.springframework.web.util.NestedServletException: Request processing failed; nested exception is java.util.EmptyStackException] with root cause
 java.util.EmptyStackException
-        at java.util.Stack.peek(Stack.java:102)
-        at java.util.Stack.pop(Stack.java:84)
-        at org.apache.cocoon.callstack.CallStack.leave(CallStack.java:54)
-        at org.apache.cocoon.servletservice.CallStackHelper.leaveServlet(CallStackHelper.java:85)
-        at org.apache.cocoon.servletservice.ServletServiceContext$PathDispatcher.forward(ServletServiceContext.java:484)
-        at org.apache.cocoon.servletservice.ServletServiceContext$PathDispatcher.forward(ServletServiceContext.java:443)
-        at org.apache.cocoon.servletservice.spring.ServletFactoryBean$ServiceInterceptor.invoke(ServletFactoryBean.java:264)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:172)
-        at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:202)
-        at com.sun.proxy.$Proxy90.service(Unknown Source)
-        at org.dspace.springmvc.CocoonView.render(CocoonView.java:113)
-        at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1180)
-        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:950)
-        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:852)
-        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:882)
-        at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:778)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:624)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:731)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-        at org.dspace.rdf.negotiation.NegotiationFilter.doFilter(NegotiationFilter.java:59)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-        at org.dspace.utils.servlet.DSpaceWebappServletFilter.doFilter(DSpaceWebappServletFilter.java:78)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:219)
-        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:110)
-        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
-        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
-        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:104)
-        at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:234)
-        at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:1025)
-        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
-        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:445)
-        at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1137)
-        at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:637)
-        at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:317)
-        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-        at java.lang.Thread.run(Thread.java:748)
-</code></pre>
+    at java.util.Stack.peek(Stack.java:102)
+    at java.util.Stack.pop(Stack.java:84)
+    at org.apache.cocoon.callstack.CallStack.leave(CallStack.java:54)
+    at org.apache.cocoon.servletservice.CallStackHelper.leaveServlet(CallStackHelper.java:85)
+    at org.apache.cocoon.servletservice.ServletServiceContext$PathDispatcher.forward(ServletServiceContext.java:484)
+    at org.apache.cocoon.servletservice.ServletServiceContext$PathDispatcher.forward(ServletServiceContext.java:443)
+    at org.apache.cocoon.servletservice.spring.ServletFactoryBean$ServiceInterceptor.invoke(ServletFactoryBean.java:264)
+    at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:172)
+    at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:202)
+    at com.sun.proxy.$Proxy90.service(Unknown Source)
+    at org.dspace.springmvc.CocoonView.render(CocoonView.java:113)
+    at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1180)
+    at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:950)
+    at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:852)
+    at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:882)
+    at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:778)
+    at javax.servlet.http.HttpServlet.service(HttpServlet.java:624)
+    at javax.servlet.http.HttpServlet.service(HttpServlet.java:731)
+    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+    at org.dspace.rdf.negotiation.NegotiationFilter.doFilter(NegotiationFilter.java:59)
+    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+    at org.dspace.utils.servlet.DSpaceWebappServletFilter.doFilter(DSpaceWebappServletFilter.java:78)
+    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+    at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:219)
+    at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:110)
+    at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
+    at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
+    at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:104)
+    at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:234)
+    at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:1025)
+    at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+    at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:445)
+    at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1137)
+    at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:637)
+    at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:317)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+    at java.lang.Thread.run(Thread.java:748)
+</code></pre></li>
 
-<ul>
-<li>For now I will just restart Tomcat&hellip;</li>
+<li><p>For now I will just restart Tomcat&hellip;</p></li>
 </ul>
 
 <h2 id="2019-03-17">2019-03-17</h2>
@@ -491,22 +479,21 @@ java.util.EmptyStackException
 <li>I&rsquo;m not entirely sure if it&rsquo;s related, but I tried to delete the old migrations and then force running the ignored ones like when we upgraded to <a href="/cgspace-notes/2018-06/">DSpace 5.8 in 2018-06</a> and then after restarting Tomcat I could see the item displays again</li>
 </ul></li>
 <li>I copied the 2019 Solr statistics core from CGSpace to DSpace Test and it works (and is only 5.5GB currently), so now we have some useful stats on DSpace Test for the CUA module and the dspace-statistics-api</li>
-<li>I ran DSpace&rsquo;s cleanup task on CGSpace (linode18) and there were errors:</li>
-</ul>
+
+<li><p>I ran DSpace&rsquo;s cleanup task on CGSpace (linode18) and there were errors:</p>
 
 <pre><code>$ dspace cleanup -v
 Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(164496) is still referenced from table &quot;bundle&quot;.
-</code></pre>
+Detail: Key (bitstream_id)=(164496) is still referenced from table &quot;bundle&quot;.
+</code></pre></li>
 
-<ul>
-<li>The solution is, as always:</li>
-</ul>
+<li><p>The solution is, as always:</p>
 
 <pre><code># su - postgres
 $ psql dspacetest -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (164496);'
 UPDATE 1
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2019-03-18">2019-03-18</h2>
 
@@ -517,8 +504,8 @@ UPDATE 1
 <li>We have a Spanish and French subjects so this is very important</li>
 <li>Also there were some subjects with apostrophes, dashes, and periods&hellip; these are probably invalid AGROVOC subject terms, but we should save them to the rejects file instead of skipping them nevertheless</li>
 </ul></li>
-<li>Dump top 1500 subjects from CGSpace to try one more time to generate a list of invalid terms using my <code>agrovoc-lookup.py</code> script:</li>
-</ul>
+
+<li><p>Dump top 1500 subjects from CGSpace to try one more time to generate a list of invalid terms using my <code>agrovoc-lookup.py</code> script:</p>
 
 <pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-03-18-top-1500-subject.csv WITH CSV HEADER;
 COPY 1500
@@ -534,174 +521,161 @@ $ sort -u 2019-03-18-top-1500-subject.csv &gt; /tmp/1500-subjects-sorted.txt
 $ comm -13 /tmp/subjects-matched-sorted.txt /tmp/1500-subjects-sorted.txt &gt; 2019-03-18-subjects-unmatched.txt
 $ wc -l 2019-03-18-subjects-unmatched.txt
 182 2019-03-18-subjects-unmatched.txt
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So the new total of matched terms with the updated regex is 1317 and unmatched is 183 (previous number of matched terms was 1187)</li>
-<li>Create and merge a pull request to update the controlled vocabulary for AGROVOC terms (<a href="https://github.com/ilri/DSpace/pull/416">#416</a>)</li>
-<li>We are getting the blank page issue on CGSpace again today and I see a <del>large number</del> of the &ldquo;SQL QueryTable Error&rdquo; in the DSpace log again (last time was 2019-03-15):</li>
-</ul>
+<li><p>So the new total of matched terms with the updated regex is 1317 and unmatched is 183 (previous number of matched terms was 1187)</p></li>
+
+<li><p>Create and merge a pull request to update the controlled vocabulary for AGROVOC terms (<a href="https://github.com/ilri/DSpace/pull/416">#416</a>)</p></li>
+
+<li><p>We are getting the blank page issue on CGSpace again today and I see a <del>large number</del> of the &ldquo;SQL QueryTable Error&rdquo; in the DSpace log again (last time was 2019-03-15):</p>
 
 <pre><code>$ grep -c 'SQL QueryTable Error' dspace.log.2019-03-1[5678]
 dspace.log.2019-03-15:929
 dspace.log.2019-03-16:67
 dspace.log.2019-03-17:72
 dspace.log.2019-03-18:1038
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Though WTF, this grep seems to be giving weird inaccurate results actually, and the real number of errors is much lower if I exclude the &ldquo;binary file matches&rdquo; result with <code>-I</code>:</li>
-</ul>
+<li><p>Though WTF, this grep seems to be giving weird inaccurate results actually, and the real number of errors is much lower if I exclude the &ldquo;binary file matches&rdquo; result with <code>-I</code>:</p>
 
 <pre><code>$ grep -I 'SQL QueryTable Error' dspace.log.2019-03-18 | wc -l
 8
 $ grep -I 'SQL QueryTable Error' dspace.log.2019-03-{08,14,15,16,17,18} | awk -F: '{print $1}' | sort | uniq -c
-      9 dspace.log.2019-03-08
-     25 dspace.log.2019-03-14
-     12 dspace.log.2019-03-15
-     67 dspace.log.2019-03-16
-     72 dspace.log.2019-03-17
-      8 dspace.log.2019-03-18
-</code></pre>
+  9 dspace.log.2019-03-08
+ 25 dspace.log.2019-03-14
+ 12 dspace.log.2019-03-15
+ 67 dspace.log.2019-03-16
+ 72 dspace.log.2019-03-17
+  8 dspace.log.2019-03-18
+</code></pre></li>
 
-<ul>
-<li>It seems to be something with grep doing binary matching on some log files for some reason, so I guess I need to always use <code>-I</code> to say binary files don&rsquo;t match</li>
-<li>Anyways, the full error in DSpace&rsquo;s log is:</li>
-</ul>
+<li><p>It seems to be something with grep doing binary matching on some log files for some reason, so I guess I need to always use <code>-I</code> to say binary files don&rsquo;t match</p></li>
+
+<li><p>Anyways, the full error in DSpace&rsquo;s log is:</p>
 
 <pre><code>2019-03-18 12:26:23,331 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error - 
 java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@75eaa668 is closed.
-        at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
-        at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
-        at org.apache.tomcat.dbcp.dbcp.PoolingDataSource$PoolGuardConnectionWrapper.prepareStatement(PoolingDataSource.java:313)
-        at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:220)
-</code></pre>
+    at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
+    at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
+    at org.apache.tomcat.dbcp.dbcp.PoolingDataSource$PoolGuardConnectionWrapper.prepareStatement(PoolingDataSource.java:313)
+    at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:220)
+</code></pre></li>
 
-<ul>
-<li>There is a low number of connections to PostgreSQL currently:</li>
-</ul>
+<li><p>There is a low number of connections to PostgreSQL currently:</p>
 
 <pre><code>$ psql -c 'select * from pg_stat_activity' | wc -l
 33
 $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
-      6 dspaceApi
-      7 dspaceCli
-     15 dspaceWeb
-</code></pre>
+  6 dspaceApi
+  7 dspaceCli
+ 15 dspaceWeb
+</code></pre></li>
 
-<ul>
-<li>I looked in the PostgreSQL logs, but all I see are a bunch of these errors going back two months to January:</li>
-</ul>
+<li><p>I looked in the PostgreSQL logs, but all I see are a bunch of these errors going back two months to January:</p>
 
 <pre><code>2019-01-13 06:25:13.062 CET [9157] postgres@template1 ERROR:  column &quot;waiting&quot; does not exist at character 217
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This is unrelated and apparently due to <a href="https://github.com/munin-monitoring/munin/issues/746">Munin checking a column that was changed in PostgreSQL 9.6</a></li>
-<li>I suspect that this issue with the blank pages might not be PostgreSQL after all, perhaps it&rsquo;s a Cocoon thing?</li>
-<li>Looking in the cocoon logs I see a large number of warnings about &ldquo;Can not load requested doc&rdquo; around 11AM and 12PM:</li>
-</ul>
+<li><p>This is unrelated and apparently due to <a href="https://github.com/munin-monitoring/munin/issues/746">Munin checking a column that was changed in PostgreSQL 9.6</a></p></li>
+
+<li><p>I suspect that this issue with the blank pages might not be PostgreSQL after all, perhaps it&rsquo;s a Cocoon thing?</p></li>
+
+<li><p>Looking in the cocoon logs I see a large number of warnings about &ldquo;Can not load requested doc&rdquo; around 11AM and 12PM:</p>
 
 <pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-18 | grep -oE '2019-03-18 [0-9]{2}:' | sort | uniq -c
-      2 2019-03-18 00:
-      6 2019-03-18 02:
-      3 2019-03-18 04:
-      1 2019-03-18 05:
-      1 2019-03-18 07:
-      2 2019-03-18 08:
-      4 2019-03-18 09:
-      5 2019-03-18 10:
-    863 2019-03-18 11:
-    203 2019-03-18 12:
-     14 2019-03-18 13:
-      1 2019-03-18 14:
-</code></pre>
+  2 2019-03-18 00:
+  6 2019-03-18 02:
+  3 2019-03-18 04:
+  1 2019-03-18 05:
+  1 2019-03-18 07:
+  2 2019-03-18 08:
+  4 2019-03-18 09:
+  5 2019-03-18 10:
+863 2019-03-18 11:
+203 2019-03-18 12:
+ 14 2019-03-18 13:
+  1 2019-03-18 14:
+</code></pre></li>
 
-<ul>
-<li>And a few days ago on 2019-03-15 when I happened last it was in the afternoon when it happened and the same pattern occurs then around 1–2PM:</li>
-</ul>
+<li><p>And a few days ago on 2019-03-15 when I happened last it was in the afternoon when it happened and the same pattern occurs then around 1–2PM:</p>
 
 <pre><code>$ xzgrep 'Can not load requested doc' cocoon.log.2019-03-15.xz | grep -oE '2019-03-15 [0-9]{2}:' | sort | uniq -c
-      4 2019-03-15 01:
-      3 2019-03-15 02:
-      1 2019-03-15 03:
-     13 2019-03-15 04:
-      1 2019-03-15 05:
-      2 2019-03-15 06:
-      3 2019-03-15 07:
-     27 2019-03-15 09:
-      9 2019-03-15 10:
-      3 2019-03-15 11:
-      2 2019-03-15 12:
-    531 2019-03-15 13:
-    274 2019-03-15 14:
-      4 2019-03-15 15:
-     75 2019-03-15 16:
-      5 2019-03-15 17:
-      5 2019-03-15 18:
-      6 2019-03-15 19:
-      2 2019-03-15 20:
-      4 2019-03-15 21:
-      3 2019-03-15 22:
-      1 2019-03-15 23:
-</code></pre>
+  4 2019-03-15 01:
+  3 2019-03-15 02:
+  1 2019-03-15 03:
+ 13 2019-03-15 04:
+  1 2019-03-15 05:
+  2 2019-03-15 06:
+  3 2019-03-15 07:
+ 27 2019-03-15 09:
+  9 2019-03-15 10:
+  3 2019-03-15 11:
+  2 2019-03-15 12:
+531 2019-03-15 13:
+274 2019-03-15 14:
+  4 2019-03-15 15:
+ 75 2019-03-15 16:
+  5 2019-03-15 17:
+  5 2019-03-15 18:
+  6 2019-03-15 19:
+  2 2019-03-15 20:
+  4 2019-03-15 21:
+  3 2019-03-15 22:
+  1 2019-03-15 23:
+</code></pre></li>
 
-<ul>
-<li>And again on 2019-03-08, surprise surprise, it happened in the morning:</li>
-</ul>
+<li><p>And again on 2019-03-08, surprise surprise, it happened in the morning:</p>
 
 <pre><code>$ xzgrep 'Can not load requested doc' cocoon.log.2019-03-08.xz | grep -oE '2019-03-08 [0-9]{2}:' | sort | uniq -c
-     11 2019-03-08 01:
-      3 2019-03-08 02:
-      1 2019-03-08 03:
-      2 2019-03-08 04:
-      1 2019-03-08 05:
-      1 2019-03-08 06:
-      1 2019-03-08 08:
-    425 2019-03-08 09:
-    432 2019-03-08 10:
-    717 2019-03-08 11:
-     59 2019-03-08 12:
-</code></pre>
+ 11 2019-03-08 01:
+  3 2019-03-08 02:
+  1 2019-03-08 03:
+  2 2019-03-08 04:
+  1 2019-03-08 05:
+  1 2019-03-08 06:
+  1 2019-03-08 08:
+425 2019-03-08 09:
+432 2019-03-08 10:
+717 2019-03-08 11:
+ 59 2019-03-08 12:
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;m not sure if it&rsquo;s cocoon or that&rsquo;s just a symptom of something else</li>
+<li><p>I&rsquo;m not sure if it&rsquo;s cocoon or that&rsquo;s just a symptom of something else</p></li>
 </ul>
 
 <h2 id="2019-03-19">2019-03-19</h2>
 
-<ul>
+<ul class="task-list">
 <li>I found a handful of AGROVOC subjects that use a non-breaking space (0x00a0) instead of a regular space, which makes for a pretty confusing debugging&hellip;</li>
-<li>I will replace these in the database immediately to save myself the headache later:</li>
-</ul>
+
+<li><p>I will replace these in the database immediately to save myself the headache later:</p>
 
 <pre><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = 57 AND text_value ~ '.+\u00a0.+';
- count 
+count 
 -------
-    84
+84
 (1 row)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Perhaps my <code>agrovoc-lookup.py</code> script could notify if it finds these because they potentially give false negatives</li>
-<li>CGSpace (linode18) is having problems with Solr again, I&rsquo;m seeing &ldquo;Error opening new searcher&rdquo; in the Solr logs and there are no stats for previous years</li>
-<li>Apparently the Solr statistics shards didn&rsquo;t load properly when we restarted Tomcat <em>yesterday</em>:</li>
-</ul>
+<li><p>Perhaps my <code>agrovoc-lookup.py</code> script could notify if it finds these because they potentially give false negatives</p></li>
+
+<li><p>CGSpace (linode18) is having problems with Solr again, I&rsquo;m seeing &ldquo;Error opening new searcher&rdquo; in the Solr logs and there are no stats for previous years</p></li>
+
+<li><p>Apparently the Solr statistics shards didn&rsquo;t load properly when we restarted Tomcat <em>yesterday</em>:</p>
 
 <pre><code>2019-03-18 12:32:39,799 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2018]: Error opening new searcher
 ...
 Caused by: org.apache.solr.common.SolrException: Error opening new searcher
-        at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
-        at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
-        at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
-        ... 31 more
+    at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
+    at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
+    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
+    ... 31 more
 Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>For reference, I don&rsquo;t see the <code>ulimit -v unlimited</code> in the <code>catalina.sh</code> script, though the <code>tomcat7</code> systemd service has <code>LimitAS=infinity</code></li>
-<li>The limits of the current Tomcat java process are:</li>
-</ul>
+<li><p>For reference, I don&rsquo;t see the <code>ulimit -v unlimited</code> in the <code>catalina.sh</code> script, though the <code>tomcat7</code> systemd service has <code>LimitAS=infinity</code></p></li>
+
+<li><p>The limits of the current Tomcat java process are:</p>
 
 <pre><code># cat /proc/27182/limits 
 Limit                     Soft Limit           Hard Limit           Units     
@@ -721,31 +695,32 @@ Max msgqueue size         819200               819200               bytes
 Max nice priority         0                    0                    
 Max realtime priority     0                    0                    
 Max realtime timeout      unlimited            unlimited            us
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will try to add <code>ulimit -v unlimited</code> to the Catalina startup script and check the output of the limits to see if it&rsquo;s different in practice, as some wisdom on Stack Overflow says this solves the Solr core issues and I&rsquo;ve superstitiously tried it various times in the past
+<li><p>I will try to add <code>ulimit -v unlimited</code> to the Catalina startup script and check the output of the limits to see if it&rsquo;s different in practice, as some wisdom on Stack Overflow says this solves the Solr core issues and I&rsquo;ve superstitiously tried it various times in the past</p>
 
 <ul>
 <li>The result is the same before and after, so <em>adding the ulimit directly is unneccessary</em> (whether or not unlimited address space is useful or not is another question)</li>
 </ul></li>
-<li>For now I will just stop Tomcat, delete Solr locks, then start Tomcat again:</li>
-</ul>
+
+<li><p>For now I will just stop Tomcat, delete Solr locks, then start Tomcat again:</p>
 
 <pre><code># systemctl stop tomcat7
 # find /home/cgspace.cgiar.org/solr/ -iname &quot;*.lock&quot; -delete
 # systemctl start tomcat7
-</code></pre>
+</code></pre></li>
 
-<ul class="task-list">
-<li>After restarting I confirmed that all Solr statistics cores were loaded successfully&hellip;</li>
-<li>Another avenue might be to look at point releases in Solr 4.10.x, as we&rsquo;re running 4.10.2 and they released 4.10.3 and 4.10.4 back in 2014 or 2015
+<li><p>After restarting I confirmed that all Solr statistics cores were loaded successfully&hellip;</p></li>
+
+<li><p>Another avenue might be to look at point releases in Solr 4.10.x, as we&rsquo;re running 4.10.2 and they released 4.10.3 and 4.10.4 back in 2014 or 2015</p>
 
 <ul>
 <li>I see several issues regarding locks and IndexWriter that were fixed in Solr and Lucene 4.10.3 and 4.10.4&hellip;</li>
 </ul></li>
-<li>I sent a mail to the dspace-tech mailing list to ask about Solr issues</li>
-<li>Testing Solr 4.10.4 on DSpace 5.8:
+
+<li><p>I sent a mail to the dspace-tech mailing list to ask about Solr issues</p></li>
+
+<li><p>Testing Solr 4.10.4 on DSpace 5.8:</p>
 
 <ul class="task-list">
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Discovery indexing</label></li>
@@ -767,41 +742,40 @@ Max realtime timeout      unlimited            unlimited            us
 <h2 id="2019-03-21">2019-03-21</h2>
 
 <ul>
-<li>It&rsquo;s been two days since we had the blank page issue on CGSpace, and looking in the Cocoon logs I see very low numbers of the errors that we were seeing the last time the issue occurred:</li>
-</ul>
+<li><p>It&rsquo;s been two days since we had the blank page issue on CGSpace, and looking in the Cocoon logs I see very low numbers of the errors that we were seeing the last time the issue occurred:</p>
 
 <pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-20 | grep -oE '2019-03-20 [0-9]{2}:' | sort | uniq -c
-      3 2019-03-20 00:
-     12 2019-03-20 02:
+  3 2019-03-20 00:
+ 12 2019-03-20 02:
 $ grep 'Can not load requested doc' cocoon.log.2019-03-21 | grep -oE '2019-03-21 [0-9]{2}:' | sort | uniq -c
-      4 2019-03-21 00:
-      1 2019-03-21 02:
-      4 2019-03-21 03:
-      1 2019-03-21 05:
-      4 2019-03-21 06:
-     11 2019-03-21 07:
-     14 2019-03-21 08:
-      3 2019-03-21 09:
-      4 2019-03-21 10:
-      5 2019-03-21 11:
-      4 2019-03-21 12:
-      3 2019-03-21 13:
-      6 2019-03-21 14:
-      2 2019-03-21 15:
-      3 2019-03-21 16:
-      3 2019-03-21 18:
-      1 2019-03-21 19:
-      6 2019-03-21 20:
-</code></pre>
+  4 2019-03-21 00:
+  1 2019-03-21 02:
+  4 2019-03-21 03:
+  1 2019-03-21 05:
+  4 2019-03-21 06:
+ 11 2019-03-21 07:
+ 14 2019-03-21 08:
+  3 2019-03-21 09:
+  4 2019-03-21 10:
+  5 2019-03-21 11:
+  4 2019-03-21 12:
+  3 2019-03-21 13:
+  6 2019-03-21 14:
+  2 2019-03-21 15:
+  3 2019-03-21 16:
+  3 2019-03-21 18:
+  1 2019-03-21 19:
+  6 2019-03-21 20:
+</code></pre></li>
 
-<ul>
-<li>To investigate the Solr lock issue I added a <code>find</code> command to the Tomcat 7 service with <code>ExecStartPre</code> and <code>ExecStopPost</code> and noticed that the lock files are always there&hellip;
+<li><p>To investigate the Solr lock issue I added a <code>find</code> command to the Tomcat 7 service with <code>ExecStartPre</code> and <code>ExecStopPost</code> and noticed that the lock files are always there&hellip;</p>
 
 <ul>
 <li>Perhaps the lock files are less of an issue than I thought?</li>
 <li>I will share my thoughts with the dspace-tech community</li>
 </ul></li>
-<li>In other news, I notice that that systemd always thinks that Tomcat has failed when it stops because the JVM exits with code 143, which is apparently normal when processes gracefully receive a SIGTERM (128 + 15 == 143)
+
+<li><p>In other news, I notice that that systemd always thinks that Tomcat has failed when it stops because the JVM exits with code 143, which is apparently normal when processes gracefully receive a SIGTERM (128 + 15 == 143)</p>
 
 <ul>
 <li>We can add <code>SuccessExitStatus=143</code> to the systemd service so that it knows this is a successful exit</li>
@@ -818,115 +792,109 @@ $ grep 'Can not load requested doc' cocoon.log.2019-03-21 | grep -oE '2019-03-21
 <h2 id="2019-03-23">2019-03-23</h2>
 
 <ul>
-<li>CGSpace (linode18) is having the blank page issue again and it seems to have started last night around 21:00:</li>
-</ul>
+<li><p>CGSpace (linode18) is having the blank page issue again and it seems to have started last night around 21:00:</p>
 
 <pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-22 | grep -oE '2019-03-22 [0-9]{2}:' | sort | uniq -c
-      2 2019-03-22 00:
-     69 2019-03-22 01:
-      1 2019-03-22 02:
-     13 2019-03-22 03:
-      2 2019-03-22 05:
-      2 2019-03-22 06:
-      8 2019-03-22 07:
-      4 2019-03-22 08:
-     12 2019-03-22 09:
-      7 2019-03-22 10:
-      1 2019-03-22 11:
-      2 2019-03-22 12:
-     14 2019-03-22 13:
-      4 2019-03-22 15:
-      7 2019-03-22 16:
-      7 2019-03-22 17:
-      3 2019-03-22 18:
-      3 2019-03-22 19:
-      7 2019-03-22 20:
-    323 2019-03-22 21:
-    685 2019-03-22 22:
-    357 2019-03-22 23:
+  2 2019-03-22 00:
+ 69 2019-03-22 01:
+  1 2019-03-22 02:
+ 13 2019-03-22 03:
+  2 2019-03-22 05:
+  2 2019-03-22 06:
+  8 2019-03-22 07:
+  4 2019-03-22 08:
+ 12 2019-03-22 09:
+  7 2019-03-22 10:
+  1 2019-03-22 11:
+  2 2019-03-22 12:
+ 14 2019-03-22 13:
+  4 2019-03-22 15:
+  7 2019-03-22 16:
+  7 2019-03-22 17:
+  3 2019-03-22 18:
+  3 2019-03-22 19:
+  7 2019-03-22 20:
+323 2019-03-22 21:
+685 2019-03-22 22:
+357 2019-03-22 23:
 $ grep 'Can not load requested doc' cocoon.log.2019-03-23 | grep -oE '2019-03-23 [0-9]{2}:' | sort | uniq -c
-    575 2019-03-23 00:
-    445 2019-03-23 01:
-    518 2019-03-23 02:
-    436 2019-03-23 03:
-    387 2019-03-23 04:
-    593 2019-03-23 05:
-    468 2019-03-23 06:
-    541 2019-03-23 07:
-    440 2019-03-23 08:
-    260 2019-03-23 09:
-</code></pre>
+575 2019-03-23 00:
+445 2019-03-23 01:
+518 2019-03-23 02:
+436 2019-03-23 03:
+387 2019-03-23 04:
+593 2019-03-23 05:
+468 2019-03-23 06:
+541 2019-03-23 07:
+440 2019-03-23 08:
+260 2019-03-23 09:
+</code></pre></li>
 
-<ul>
-<li>I was curious to see if clearing the Cocoon cache in the XMLUI control panel would fix it, but it didn&rsquo;t</li>
-<li>Trying to drill down more, I see that the bulk of the errors started aroundi 21:20:</li>
-</ul>
+<li><p>I was curious to see if clearing the Cocoon cache in the XMLUI control panel would fix it, but it didn&rsquo;t</p></li>
+
+<li><p>Trying to drill down more, I see that the bulk of the errors started aroundi 21:20:</p>
 
 <pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-22 | grep -oE '2019-03-22 21:[0-9]' | sort | uniq -c
-      1 2019-03-22 21:0
-      1 2019-03-22 21:1
-     59 2019-03-22 21:2
-     69 2019-03-22 21:3
-     89 2019-03-22 21:4
-    104 2019-03-22 21:5
-</code></pre>
+  1 2019-03-22 21:0
+  1 2019-03-22 21:1
+ 59 2019-03-22 21:2
+ 69 2019-03-22 21:3
+ 89 2019-03-22 21:4
+104 2019-03-22 21:5
+</code></pre></li>
 
-<ul>
-<li>Looking at the Cocoon log around that time I see the full error is:</li>
-</ul>
+<li><p>Looking at the Cocoon log around that time I see the full error is:</p>
 
 <pre><code>2019-03-22 21:21:34,378 WARN  org.apache.cocoon.components.xslt.TraxErrorListener  - Can not load requested doc: unknown protocol: cocoon at jndi:/localhost/themes/CIAT/xsl/../../0_CGIAR/xsl//aspect/artifactbrowser/common.xsl:141:90
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>A few milliseconds before that time I see this in the DSpace log:</li>
-</ul>
+<li><p>A few milliseconds before that time I see this in the DSpace log:</p>
 
 <pre><code>2019-03-22 21:21:34,356 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
 org.postgresql.util.PSQLException: This statement has been closed.
-        at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
-        at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
-        at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
-        at org.postgresql.jdbc.PgStatement$StatementResultHandler.handleResultRows(PgStatement.java:204)
-        at org.postgresql.core.ResultHandlerDelegate.handleResultRows(ResultHandlerDelegate.java:29)
-        at org.postgresql.core.v3.QueryExecutorImpl$1.handleResultRows(QueryExecutorImpl.java:528)
-        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2120)
-        at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:308)
-        at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:441)
-        at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:365)
-        at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:143)
-        at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:106)
-        at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
-        at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
-        at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:224)
-        at org.dspace.storage.rdbms.DatabaseManager.querySingleTable(DatabaseManager.java:375)
-        at org.dspace.storage.rdbms.DatabaseManager.findByUnique(DatabaseManager.java:544)
-        at org.dspace.storage.rdbms.DatabaseManager.find(DatabaseManager.java:501)
-        at org.dspace.eperson.Group.find(Group.java:706)
+    at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
+    at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
+    at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
+    at org.postgresql.jdbc.PgStatement$StatementResultHandler.handleResultRows(PgStatement.java:204)
+    at org.postgresql.core.ResultHandlerDelegate.handleResultRows(ResultHandlerDelegate.java:29)
+    at org.postgresql.core.v3.QueryExecutorImpl$1.handleResultRows(QueryExecutorImpl.java:528)
+    at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2120)
+    at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:308)
+    at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:441)
+    at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:365)
+    at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:143)
+    at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:106)
+    at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+    at org.apache.tomcat.dbcp.dbcp.DelegatingPreparedStatement.executeQuery(DelegatingPreparedStatement.java:96)
+    at org.dspace.storage.rdbms.DatabaseManager.queryTable(DatabaseManager.java:224)
+    at org.dspace.storage.rdbms.DatabaseManager.querySingleTable(DatabaseManager.java:375)
+    at org.dspace.storage.rdbms.DatabaseManager.findByUnique(DatabaseManager.java:544)
+    at org.dspace.storage.rdbms.DatabaseManager.find(DatabaseManager.java:501)
+    at org.dspace.eperson.Group.find(Group.java:706)
 ...
 2019-03-22 21:21:34,381 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL query singleTable Error -
 org.postgresql.util.PSQLException: This statement has been closed.
-        at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
-        at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
-        at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
+    at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
+    at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
+    at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
 ...
 2019-03-22 21:21:34,386 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL findByUnique Error -
 org.postgresql.util.PSQLException: This statement has been closed.
-        at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
-        at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
-        at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
+    at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
+    at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
+    at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
 ...
 2019-03-22 21:21:34,395 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL find Error -
 org.postgresql.util.PSQLException: This statement has been closed.
-        at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
-        at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
-        at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
-        at org.postgresql.jdbc.PgStatement$StatementResultHandler.handleResultRows(PgStatement.java:204)
-</code></pre>
+    at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
+    at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
+    at org.postgresql.jdbc.PgStatement.createResultSet(PgStatement.java:153)
+    at org.postgresql.jdbc.PgStatement$StatementResultHandler.handleResultRows(PgStatement.java:204)
+</code></pre></li>
 
-<ul>
-<li>I restarted Tomcat and now the item displays are working again for now</li>
-<li>I am wondering if this is an issue with removing abandoned connections in Tomcat&rsquo;s JDBC pooling?
+<li><p>I restarted Tomcat and now the item displays are working again for now</p></li>
+
+<li><p>I am wondering if this is an issue with removing abandoned connections in Tomcat&rsquo;s JDBC pooling?</p>
 
 <ul>
 <li>It&rsquo;s hard to tell because we have <code>logAbanded</code> enabled, but I don&rsquo;t see anything in the <code>tomcat7</code> service logs in the systemd journal</li>
@@ -947,21 +915,23 @@ org.postgresql.util.PSQLException: This statement has been closed.
 
 <ul>
 <li>I did some more tests with the <a href="https://github.com/gnosly/TomcatJdbcConnectionTest">TomcatJdbcConnectionTest</a> thing and while monitoring the number of active connections in jconsole and after adjusting the limits quite low I eventually saw some connections get abandoned</li>
-<li>I forgot that to connect to a remote JMX session with jconsole you need to use a dynamic SSH SOCKS proxy (as I originally <a href="/cgspace-notes/2017-11/">discovered in 2017-11</a>:</li>
-</ul>
+
+<li><p>I forgot that to connect to a remote JMX session with jconsole you need to use a dynamic SSH SOCKS proxy (as I originally <a href="/cgspace-notes/2017-11/">discovered in 2017-11</a>:</p>
 
 <pre><code>$ jconsole -J-DsocksProxyHost=localhost -J-DsocksProxyPort=3000 service:jmx:rmi:///jndi/rmi://localhost:5400/jmxrmi -J-DsocksNonProxyHosts=
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I need to remember to check the active connections next time we have issues with blank item pages on CGSpace</li>
-<li>In other news, I&rsquo;ve been running G1GC on DSpace Test (linode19) since 2018-11-08 without realizing it, which is probably a good thing</li>
-<li>I deployed the latest <code>5_x-prod</code> branch on CGSpace (linode18) and added more validation to the JDBC pool in our Tomcat config
+<li><p>I need to remember to check the active connections next time we have issues with blank item pages on CGSpace</p></li>
+
+<li><p>In other news, I&rsquo;ve been running G1GC on DSpace Test (linode19) since 2018-11-08 without realizing it, which is probably a good thing</p></li>
+
+<li><p>I deployed the latest <code>5_x-prod</code> branch on CGSpace (linode18) and added more validation to the JDBC pool in our Tomcat config</p>
 
 <ul>
 <li>This includes the new <code>testWhileIdle</code> and <code>testOnConnect</code> pool settings as well as the two new JDBC interceptors: <code>StatementFinalizer</code> and <code>ConnectionState</code> that should hopefully make sure our connections in the pool are valid</li>
 </ul></li>
-<li>I spent one hour looking at the invalid AGROVOC terms from last week
+
+<li><p>I spent one hour looking at the invalid AGROVOC terms from last week</p>
 
 <ul>
 <li>It doesn&rsquo;t seem like any of the editors did any work on this so I did most of them</li>
@@ -983,68 +953,62 @@ org.postgresql.util.PSQLException: This statement has been closed.
 <li>Maybe I need to re-evaluate the &ldquo;defauts&rdquo; of Tomcat 7&rsquo;s DBCP and set them explicitly in our config</li>
 <li>From Tomcat 8 they seem to default to Apache Commons&rsquo; DBCP 2.x</li>
 </ul></li>
-<li>Also, CGSpace doesn&rsquo;t have many Cocoon errors yet this morning:</li>
-</ul>
+
+<li><p>Also, CGSpace doesn&rsquo;t have many Cocoon errors yet this morning:</p>
 
 <pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-25 | grep -oE '2019-03-25 [0-9]{2}:' | sort | uniq -c
-      4 2019-03-25 00:
-      1 2019-03-25 01:
-</code></pre>
+  4 2019-03-25 00:
+  1 2019-03-25 01:
+</code></pre></li>
 
-<ul>
-<li>Holy shit I just realized we&rsquo;ve been using the wrong DBCP pool in Tomcat
+<li><p>Holy shit I just realized we&rsquo;ve been using the wrong DBCP pool in Tomcat</p>
 
 <ul>
 <li>By default you get the Commons DBCP one unless you specify factory <code>org.apache.tomcat.jdbc.pool.DataSourceFactory</code></li>
 <li>Now I see all my interceptor settings etc in jconsole, where I didn&rsquo;t see them before (also a new <code>tomcat.jdbc</code> mbean)!</li>
 <li>No wonder our settings didn&rsquo;t quite match the ones in the <a href="https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html">Tomcat DBCP Pool docs</a></li>
 </ul></li>
-<li>Uptime Robot reported that CGSpace went down and I see the load is very high</li>
-<li>The top IPs around the time in the nginx API and web logs were:</li>
-</ul>
+
+<li><p>Uptime Robot reported that CGSpace went down and I see the load is very high</p></li>
+
+<li><p>The top IPs around the time in the nginx API and web logs were:</p>
 
 <pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;25/Mar/2019:(18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-      9 190.252.43.162
-     12 157.55.39.140
-     18 157.55.39.54
-     21 66.249.66.211
-     27 40.77.167.185
-     29 138.220.87.165
-     30 157.55.39.168
-     36 157.55.39.9
-     50 52.23.239.229
-   2380 45.5.186.2
+  9 190.252.43.162
+ 12 157.55.39.140
+ 18 157.55.39.54
+ 21 66.249.66.211
+ 27 40.77.167.185
+ 29 138.220.87.165
+ 30 157.55.39.168
+ 36 157.55.39.9
+ 50 52.23.239.229
+2380 45.5.186.2
 # zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;25/Mar/2019:(18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    354 18.195.78.144
-    363 190.216.179.100
-    386 40.77.167.185
-    484 157.55.39.168
-    507 157.55.39.9
-    536 2a01:4f8:140:3192::2
-   1123 66.249.66.211
-   1186 93.179.69.74
-   1222 35.174.184.209
-   1720 2a01:4f8:13b:1296::2
-</code></pre>
+354 18.195.78.144
+363 190.216.179.100
+386 40.77.167.185
+484 157.55.39.168
+507 157.55.39.9
+536 2a01:4f8:140:3192::2
+1123 66.249.66.211
+1186 93.179.69.74
+1222 35.174.184.209
+1720 2a01:4f8:13b:1296::2
+</code></pre></li>
 
-<ul>
-<li>The IPs look pretty normal except we&rsquo;ve never seen <code>93.179.69.74</code> before, and it uses the following user agent:</li>
-</ul>
+<li><p>The IPs look pretty normal except we&rsquo;ve never seen <code>93.179.69.74</code> before, and it uses the following user agent:</p>
 
 <pre><code>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.20 Safari/535.1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Surprisingly they are re-using their Tomcat session:</li>
-</ul>
+<li><p>Surprisingly they are re-using their Tomcat session:</p>
 
 <pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=93.179.69.74' dspace.log.2019-03-25 | sort | uniq | wc -l
 1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>That&rsquo;s weird because the total number of sessions today seems low compared to recent days:</li>
-</ul>
+<li><p>That&rsquo;s weird because the total number of sessions today seems low compared to recent days:</p>
 
 <pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-25 | sort -u | wc -l
 5657
@@ -1054,196 +1018,197 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-23 | sort -u | wc -l
 17179
 $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
 7904
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>PostgreSQL seems to be pretty busy:</li>
-</ul>
+<li><p>PostgreSQL seems to be pretty busy:</p>
 
 <pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
-     11 dspaceApi
-     10 dspaceCli
-     67 dspaceWeb
-</code></pre>
+ 11 dspaceApi
+ 10 dspaceCli
+ 67 dspaceWeb
+</code></pre></li>
 
-<ul>
-<li>I restarted Tomcat and deployed the new Tomcat JDBC settings on CGSpace since I had to restart the server anyways
+<li><p>I restarted Tomcat and deployed the new Tomcat JDBC settings on CGSpace since I had to restart the server anyways</p>
 
 <ul>
 <li>I need to watch this carefully though because I&rsquo;ve read some places that Tomcat&rsquo;s DBCP doesn&rsquo;t track statements and might create memory leaks if an application doesn&rsquo;t close statements before a connection gets returned back to the pool</li>
 </ul></li>
-<li>According the Uptime Robot the server was up and down a few more times over the next hour so I restarted Tomcat again</li>
+
+<li><p>According the Uptime Robot the server was up and down a few more times over the next hour so I restarted Tomcat again</p></li>
 </ul>
 
 <h2 id="2019-03-26">2019-03-26</h2>
 
 <ul>
 <li>UptimeRobot says CGSpace went down again and I see the load is again at 14.0!</li>
-<li>Here are the top IPs in nginx logs in the last hour:</li>
-</ul>
+
+<li><p>Here are the top IPs in nginx logs in the last hour:</p>
 
 <pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;26/Mar/2019:(06|07)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10 
-      3 35.174.184.209
-      3 66.249.66.81
-      4 104.198.9.108
-      4 154.77.98.122
-      4 2.50.152.13
-     10 196.188.12.245
-     14 66.249.66.80
-    414 45.5.184.72
-    535 45.5.186.2
-   2014 205.186.128.185
+  3 35.174.184.209
+  3 66.249.66.81
+  4 104.198.9.108
+  4 154.77.98.122
+  4 2.50.152.13
+ 10 196.188.12.245
+ 14 66.249.66.80
+414 45.5.184.72
+535 45.5.186.2
+2014 205.186.128.185
 # zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;26/Mar/2019:(06|07)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    157 41.204.190.40
-    160 18.194.46.84
-    160 54.70.40.11
-    168 31.6.77.23
-    188 66.249.66.81
-    284 3.91.79.74
-    405 2a01:4f8:140:3192::2
-    471 66.249.66.80
-    712 35.174.184.209
-    784 2a01:4f8:13b:1296::2
-</code></pre>
+157 41.204.190.40
+160 18.194.46.84
+160 54.70.40.11
+168 31.6.77.23
+188 66.249.66.81
+284 3.91.79.74
+405 2a01:4f8:140:3192::2
+471 66.249.66.80
+712 35.174.184.209
+784 2a01:4f8:13b:1296::2
+</code></pre></li>
 
-<ul>
-<li>The two IPV6 addresses are something called BLEXBot, which seems to check the robots.txt file and the completely ignore it by making thousands of requests to dynamic pages like Browse and Discovery</li>
-<li>Then <code>35.174.184.209</code> is MauiBot, which does the same thing</li>
-<li>Also <code>3.91.79.74</code> does, which appears to be CCBot</li>
-<li>I will add these three to the &ldquo;bad bot&rdquo; rate limiting that I originally used for Baidu</li>
-<li>Going further, these are the IPs making requests to Discovery and Browse pages so far today:</li>
-</ul>
+<li><p>The two IPV6 addresses are something called BLEXBot, which seems to check the robots.txt file and the completely ignore it by making thousands of requests to dynamic pages like Browse and Discovery</p></li>
+
+<li><p>Then <code>35.174.184.209</code> is MauiBot, which does the same thing</p></li>
+
+<li><p>Also <code>3.91.79.74</code> does, which appears to be CCBot</p></li>
+
+<li><p>I will add these three to the &ldquo;bad bot&rdquo; rate limiting that I originally used for Baidu</p></li>
+
+<li><p>Going further, these are the IPs making requests to Discovery and Browse pages so far today:</p>
 
 <pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;(discover|browse)&quot; | grep -E &quot;26/Mar/2019:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    120 34.207.146.166
-    128 3.91.79.74
-    132 108.179.57.67
-    143 34.228.42.25
-    185 216.244.66.198
-    430 54.70.40.11
-   1033 93.179.69.74
-   1206 2a01:4f8:140:3192::2
-   2678 2a01:4f8:13b:1296::2
-   3790 35.174.184.209
-</code></pre>
+120 34.207.146.166
+128 3.91.79.74
+132 108.179.57.67
+143 34.228.42.25
+185 216.244.66.198
+430 54.70.40.11
+1033 93.179.69.74
+1206 2a01:4f8:140:3192::2
+2678 2a01:4f8:13b:1296::2
+3790 35.174.184.209
+</code></pre></li>
 
-<ul>
-<li><code>54.70.40.11</code> is SemanticScholarBot</li>
-<li><code>216.244.66.198</code> is DotBot</li>
-<li><code>93.179.69.74</code> is some IP in Ukraine, which I will add to the list of bot IPs in nginx</li>
-<li>I can only hope that this helps the load go down because all this traffic is disrupting the service for normal users and well-behaved bots (and interrupting my dinner and breakfast)</li>
-<li>Looking at the database usage I&rsquo;m wondering why there are so many connections from the DSpace CLI:</li>
-</ul>
+<li><p><code>54.70.40.11</code> is SemanticScholarBot</p></li>
+
+<li><p><code>216.244.66.198</code> is DotBot</p></li>
+
+<li><p><code>93.179.69.74</code> is some IP in Ukraine, which I will add to the list of bot IPs in nginx</p></li>
+
+<li><p>I can only hope that this helps the load go down because all this traffic is disrupting the service for normal users and well-behaved bots (and interrupting my dinner and breakfast)</p></li>
+
+<li><p>Looking at the database usage I&rsquo;m wondering why there are so many connections from the DSpace CLI:</p>
 
 <pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
-       5 dspaceApi
-     10 dspaceCli
-     13 dspaceWeb
-</code></pre>
+   5 dspaceApi
+ 10 dspaceCli
+ 13 dspaceWeb
+</code></pre></li>
 
-<ul>
-<li>Looking closer I see they are all idle&hellip; so at least I know the load isn&rsquo;t coming from some background nightly task or something</li>
-<li>Make a minor edit to my <code>agrovoc-lookup.py</code> script to match subject terms with parentheses like <code>COCOA (PLANT)</code></li>
-<li>Test 89 corrections and 79 deletions for AGROVOC subject terms from the ones I cleaned up in the last week</li>
-</ul>
+<li><p>Looking closer I see they are all idle&hellip; so at least I know the load isn&rsquo;t coming from some background nightly task or something</p></li>
+
+<li><p>Make a minor edit to my <code>agrovoc-lookup.py</code> script to match subject terms with parentheses like <code>COCOA (PLANT)</code></p></li>
+
+<li><p>Test 89 corrections and 79 deletions for AGROVOC subject terms from the ones I cleaned up in the last week</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/2019-03-26-AGROVOC-89-corrections.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d -n
 $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db dspace -u dspace -p 'fuuu' -m 57 -f dc.subject -d -n
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>UptimeRobot says CGSpace is down again, but it seems to just be slow, as the load is over 10.0</li>
-<li>Looking at the nginx logs I don&rsquo;t see anything terribly abusive, but SemrushBot has made ~3,000 requests to Discovery and Browse pages today:</li>
-</ul>
+<li><p>UptimeRobot says CGSpace is down again, but it seems to just be slow, as the load is over 10.0</p></li>
+
+<li><p>Looking at the nginx logs I don&rsquo;t see anything terribly abusive, but SemrushBot has made ~3,000 requests to Discovery and Browse pages today:</p>
 
 <pre><code># grep SemrushBot /var/log/nginx/access.log | grep -E &quot;26/Mar/2019&quot; | grep -E '(discover|browse)' | wc -l
 2931
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So I&rsquo;m adding it to the badbot rate limiting in nginx, and actually, I kinda feel like just blocking all user agents with &ldquo;bot&rdquo; in the name for a few days to see if things calm down&hellip; maybe not just yet</li>
-<li>Otherwise, these are the top users in the web and API logs the last hour (18–19):</li>
-</ul>
+<li><p>So I&rsquo;m adding it to the badbot rate limiting in nginx, and actually, I kinda feel like just blocking all user agents with &ldquo;bot&rdquo; in the name for a few days to see if things calm down&hellip; maybe not just yet</p></li>
+
+<li><p>Otherwise, these are the top users in the web and API logs the last hour (18–19):</p>
 
 <pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;26/Mar/2019:(18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10 
-     54 41.216.228.158
-     65 199.47.87.140
-     75 157.55.39.238
-     77 157.55.39.237
-     89 157.55.39.236
-    100 18.196.196.108
-    128 18.195.78.144
-    277 2a01:4f8:13b:1296::2
-    291 66.249.66.80
-    328 35.174.184.209
+ 54 41.216.228.158
+ 65 199.47.87.140
+ 75 157.55.39.238
+ 77 157.55.39.237
+ 89 157.55.39.236
+100 18.196.196.108
+128 18.195.78.144
+277 2a01:4f8:13b:1296::2
+291 66.249.66.80
+328 35.174.184.209
 # zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;26/Mar/2019:(18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-      2 2409:4066:211:2caf:3c31:3fae:2212:19cc
-      2 35.10.204.140
-      2 45.251.231.45
-      2 95.108.181.88
-      2 95.137.190.2
-      3 104.198.9.108
-      3 107.167.109.88
-      6 66.249.66.80
-     13 41.89.230.156
-   1860 45.5.184.2
-</code></pre>
+  2 2409:4066:211:2caf:3c31:3fae:2212:19cc
+  2 35.10.204.140
+  2 45.251.231.45
+  2 95.108.181.88
+  2 95.137.190.2
+  3 104.198.9.108
+  3 107.167.109.88
+  6 66.249.66.80
+ 13 41.89.230.156
+1860 45.5.184.2
+</code></pre></li>
 
-<ul>
-<li>For the XMLUI I see <code>18.195.78.144</code> and <code>18.196.196.108</code> requesting only CTA items and with no user agent</li>
-<li>They are responsible for almost 1,000 XMLUI sessions today:</li>
-</ul>
+<li><p>For the XMLUI I see <code>18.195.78.144</code> and <code>18.196.196.108</code> requesting only CTA items and with no user agent</p></li>
+
+<li><p>They are responsible for almost 1,000 XMLUI sessions today:</p>
 
 <pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=(18.195.78.144|18.196.196.108)' dspace.log.2019-03-26 | sort | uniq | wc -l
 937
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will add their IPs to the list of bot IPs in nginx so I can tag them as bots to let Tomcat&rsquo;s Crawler Session Manager Valve to force them to re-use their session</li>
-<li>Another user agent behaving badly in Colombia is &ldquo;GuzzleHttp/6.3.3 curl/7.47.0 PHP/7.0.30-0ubuntu0.16.04.1&rdquo;</li>
-<li>I will add curl to the Tomcat Crawler Session Manager because anyone using curl is most likely an automated read-only request</li>
-<li>I will add GuzzleHttp to the nginx badbots rate limiting, because it is making requests to dynamic Discovery pages</li>
-</ul>
+<li><p>I will add their IPs to the list of bot IPs in nginx so I can tag them as bots to let Tomcat&rsquo;s Crawler Session Manager Valve to force them to re-use their session</p></li>
+
+<li><p>Another user agent behaving badly in Colombia is &ldquo;GuzzleHttp/6.3.3 curl/7.47.0 PHP/7.0.30-0ubuntu0.16.04.1&rdquo;</p></li>
+
+<li><p>I will add curl to the Tomcat Crawler Session Manager because anyone using curl is most likely an automated read-only request</p></li>
+
+<li><p>I will add GuzzleHttp to the nginx badbots rate limiting, because it is making requests to dynamic Discovery pages</p>
 
 <pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep 45.5.184.72 | grep -E &quot;26/Mar/2019:&quot; | grep -E '(discover|browse)' | wc -l                                        
 119
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>What&rsquo;s strange is that I can&rsquo;t see any of their requests in the DSpace log&hellip;</li>
-</ul>
+<li><p>What&rsquo;s strange is that I can&rsquo;t see any of their requests in the DSpace log&hellip;</p>
 
 <pre><code>$ grep -I -c 45.5.184.72 dspace.log.2019-03-26 
 0
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2019-03-28">2019-03-28</h2>
 
 <ul>
 <li>Run the corrections and deletions to AGROVOC (dc.subject) on DSpace Test and CGSpace, and then start a full re-index of Discovery</li>
-<li>What the hell is going on with this CTA publication?</li>
-</ul>
+
+<li><p>What the hell is going on with this CTA publication?</p>
 
 <pre><code># grep Spore-192-EN-web.pdf /var/log/nginx/access.log | awk '{print $1}' | sort | uniq -c | sort -n
-      1 37.48.65.147
-      1 80.113.172.162
-      2 108.174.5.117
-      2 83.110.14.208
-      4 18.196.8.188
-     84 18.195.78.144
-    644 18.194.46.84
-   1144 18.196.196.108
-</code></pre>
+  1 37.48.65.147
+  1 80.113.172.162
+  2 108.174.5.117
+  2 83.110.14.208
+  4 18.196.8.188
+ 84 18.195.78.144
+644 18.194.46.84
+1144 18.196.196.108
+</code></pre></li>
 
-<ul>
-<li>None of these 18.x.x.x IPs specify a user agent and they are all on Amazon!</li>
-<li>Shortly after I started the re-indexing UptimeRobot began to complain that CGSpace was down, then up, then down, then up&hellip;</li>
-<li>I see the load on the server is about 10.0 again for some reason though I don&rsquo;t know WHAT is causing that load
+<li><p>None of these 18.x.x.x IPs specify a user agent and they are all on Amazon!</p></li>
+
+<li><p>Shortly after I started the re-indexing UptimeRobot began to complain that CGSpace was down, then up, then down, then up&hellip;</p></li>
+
+<li><p>I see the load on the server is about 10.0 again for some reason though I don&rsquo;t know WHAT is causing that load</p>
 
 <ul>
 <li>It could be the CPU steal metric, as if Linode has oversold the CPU resources on this VM host&hellip;</li>
 </ul></li>
-<li>Here are the Munin graphs of CPU usage for the last day, week, and year:</li>
+
+<li><p>Here are the Munin graphs of CPU usage for the last day, week, and year:</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2019/03/cpu-day-fs8.png" alt="CPU day" /></p>
@@ -1260,15 +1225,14 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 <li>It might be time to move to a dedicated CPU VM instances, or even real servers</li>
 <li>For now I just sent a support ticket to bring this to Linode&rsquo;s attention</li>
 </ul></li>
-<li>In other news, I see that it&rsquo;s not even the end of the month yet and we have 3.6 million hits already:</li>
-</ul>
+
+<li><p>In other news, I see that it&rsquo;s not even the end of the month yet and we have 3.6 million hits already:</p>
 
 <pre><code># zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
 3654911
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In other other news I see that DSpace has no statistics for years before 2019 currently, yet when I connect to Solr I see all the cores up</li>
+<li><p>In other other news I see that DSpace has no statistics for years before 2019 currently, yet when I connect to Solr I see all the cores up</p></li>
 </ul>
 
 <h2 id="2019-03-29">2019-03-29</h2>
@@ -1297,8 +1261,8 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 
 <ul>
 <li>It is frustrating to see that the load spikes for own own legitimate load on the server were <em>very</em> aggravated and drawn out by the contention for CPU on this host</li>
-<li>We had 4.2 million hits this month according to the web server logs:</li>
-</ul>
+
+<li><p>We had 4.2 million hits this month according to the web server logs:</p>
 
 <pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
 4218841
@@ -1306,11 +1270,9 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 real    0m26.609s
 user    0m31.657s
 sys     0m2.551s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Interestingly, now that the CPU steal is not an issue the REST API is ten seconds faster than it was in <a href="/cgspace-notes/2018-10/">2018-10</a>:</li>
-</ul>
+<li><p>Interestingly, now that the CPU steal is not an issue the REST API is ten seconds faster than it was in <a href="/cgspace-notes/2018-10/">2018-10</a>:</p>
 
 <pre><code>$ time http --print h 'https://cgspace.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
 ...
@@ -1318,10 +1280,9 @@ sys     0m2.551s
 0.27s user 0.04s system 1% cpu 16.643 total
 0.24s user 0.09s system 1% cpu 17.764 total
 0.25s user 0.06s system 1% cpu 15.947 total
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I did some research on dedicated servers to potentially replace Linode for CGSpace stuff and it seems Hetzner is pretty good
+<li><p>I did some research on dedicated servers to potentially replace Linode for CGSpace stuff and it seems Hetzner is pretty good</p>
 
 <ul>
 <li>This <a href="https://www.hetzner.com/dedicated-rootserver/px62-nvme">PX62-NVME system</a> looks great an is half the price of our current Linode instance</li>
@@ -1331,73 +1292,71 @@ sys     0m2.551s
 <li>Seeing as we have 56GB of Solr data it might be better to have more RAM in order to keep more of it in memory</li>
 <li>Also, I know that the Linode block storage is a major bottleneck for Solr indexing</li>
 </ul></li>
-<li>Looking at the weird issue with shitloads of downloads on the <a href="https://cgspace.cgiar.org/handle/10568/100289">CTA item</a> again</li>
-<li>The item was added on 2019-03-13 and these three IPs have attempted to download the item&rsquo;s bitstream 43,000 times since it was added eighteen days ago:</li>
-</ul>
+
+<li><p>Looking at the weird issue with shitloads of downloads on the <a href="https://cgspace.cgiar.org/handle/10568/100289">CTA item</a> again</p></li>
+
+<li><p>The item was added on 2019-03-13 and these three IPs have attempted to download the item&rsquo;s bitstream 43,000 times since it was added eighteen days ago:</p>
 
 <pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.{2..17}.gz | grep 'Spore-192-EN-web.pdf' | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 5
-     42 196.43.180.134
-    621 185.247.144.227
-   8102 18.194.46.84
-  14927 18.196.196.108
-  20265 18.195.78.144
-</code></pre>
+ 42 196.43.180.134
+621 185.247.144.227
+8102 18.194.46.84
+14927 18.196.196.108
+20265 18.195.78.144
+</code></pre></li>
+
+<li><p>I will send a mail to CTA to ask if they know these IPs</p></li>
+
+<li><p>I wonder if the Cocoon errors we had earlier this month were inadvertently related to the CPU steal issue&hellip; I see very low occurrences of the &ldquo;Can not load requested doc&rdquo; error in the Cocoon logs the past few days</p></li>
+
+<li><p>Helping Perttu debug some issues with the REST API on DSpace Test</p>
 
 <ul>
-<li>I will send a mail to CTA to ask if they know these IPs</li>
-<li>I wonder if the Cocoon errors we had earlier this month were inadvertently related to the CPU steal issue&hellip; I see very low occurrences of the &ldquo;Can not load requested doc&rdquo; error in the Cocoon logs the past few days</li>
-<li>Helping Perttu debug some issues with the REST API on DSpace Test
-
-<ul>
-<li>He was getting an HTTP 500 when working with a collection, and I see the following in the DSpace log:</li>
-</ul></li>
-</ul>
+<li><p>He was getting an HTTP 500 when working with a collection, and I see the following in the DSpace log:</p>
 
 <pre><code>2019-03-29 09:10:07,311 ERROR org.dspace.rest.Resource @ Could not delete collection(id=1451), AuthorizeException. Message: org.dspace.authorize.AuthorizeException: Authorization denied for action ADMIN on COLLECTION:1451 by user 9492
-</code></pre>
+</code></pre></li>
+</ul></li>
 
-<ul>
-<li>IWMI people emailed to ask why two items with the same DOI don&rsquo;t have the same Altmetric score:
+<li><p>IWMI people emailed to ask why two items with the same DOI don&rsquo;t have the same Altmetric score:</p>
 
 <ul>
 <li><a href="https://cgspace.cgiar.org/handle/10568/89846">https://cgspace.cgiar.org/handle/10568/89846</a> (Bioversity)</li>
 <li><a href="https://cgspace.cgiar.org/handle/10568/89975">https://cgspace.cgiar.org/handle/10568/89975</a> (CIAT)</li>
 </ul></li>
-<li>Only the second one has an Altmetric score (208)</li>
-<li>I tweeted handles for both of them to see if Altmetric will pick it up
+
+<li><p>Only the second one has an Altmetric score (208)</p></li>
+
+<li><p>I tweeted handles for both of them to see if Altmetric will pick it up</p>
 
 <ul>
 <li>About twenty minutes later the Altmetric score for the second one had increased from 208 to 209, but the first still had a score of zero</li>
-<li>Interestingly, if I look at the network requests during page load for the first item I see the following response payload for the Altmetric API request:</li>
+
+<li><p>Interestingly, if I look at the network requests during page load for the first item I see the following response payload for the Altmetric API request:</p>
+
+<pre><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
+</code></pre></li>
 </ul></li>
-</ul>
+
+<li><p>The response paylod for the second one is the same:</p>
 
 <pre><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The response paylod for the second one is the same:</li>
-</ul>
-
-<pre><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
-</code></pre>
-
-<ul>
-<li>Very interesting to see this in the response:</li>
-</ul>
+<li><p>Very interesting to see this in the response:</p>
 
 <pre><code>&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],
 &quot;handle&quot;:&quot;10568/89975&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>On further inspection I see that the Altmetric explorer pages for each of these Handles is actually doing the right thing:
+<li><p>On further inspection I see that the Altmetric explorer pages for each of these Handles is actually doing the right thing:</p>
 
 <ul>
 <li><a href="https://www.altmetric.com/explorer/highlights?identifier=10568%2F89846">https://www.altmetric.com/explorer/highlights?identifier=10568%2F89846</a></li>
 <li><a href="https://www.altmetric.com/explorer/highlights?identifier=10568%2F89975">https://www.altmetric.com/explorer/highlights?identifier=10568%2F89975</a></li>
 </ul></li>
-<li>So it&rsquo;s likely the DSpace Altmetric badge code that is deciding not to show the badge</li>
+
+<li><p>So it&rsquo;s likely the DSpace Altmetric badge code that is deciding not to show the badge</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->

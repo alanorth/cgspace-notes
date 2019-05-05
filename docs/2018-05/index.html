@@ -37,7 +37,7 @@ http://localhost:3000/solr/statistics/update?stream.body=%3Ccommit/%3E
 Then I reduced the JVM heap size from 6144 back to 5120m
 Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked the Ansible infrastructure scripts to support hosts choosing which distribution they want to use
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -164,72 +164,75 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 <ul>
 <li>It turns out that the IITA records that I was helping Sisay with in March were imported in 2018-04 without a final check by Abenet or I</li>
 <li>There are lots of errors on language, CRP, and even some encoding errors on abstract fields</li>
-<li>I export them and include the hidden metadata fields like <code>dc.date.accessioned</code> so I can filter the ones from 2018-04 and correct them in Open Refine:</li>
-</ul>
+
+<li><p>I export them and include the hidden metadata fields like <code>dc.date.accessioned</code> so I can filter the ones from 2018-04 and correct them in Open Refine:</p>
 
 <pre><code>$ dspace metadata-export -a -f /tmp/iita.csv -i 10568/68616
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Abenet sent a list of 46 ORCID identifiers for ILRI authors so I need to get their names using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script and merge them into our controlled vocabulary</li>
-<li>On the messed up IITA records from 2018-04 I see sixty DOIs in incorrect format (cg.identifier.doi)</li>
+<li><p>Abenet sent a list of 46 ORCID identifiers for ILRI authors so I need to get their names using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script and merge them into our controlled vocabulary</p></li>
+
+<li><p>On the messed up IITA records from 2018-04 I see sixty DOIs in incorrect format (cg.identifier.doi)</p></li>
 </ul>
 
 <h2 id="2018-05-06">2018-05-06</h2>
 
 <ul>
 <li>Fixing the IITA records from Sisay, sixty DOIs have completely invalid format like <code>http:dx.doi.org10.1016j.cropro.2008.07.003</code></li>
-<li>I corrected all the DOIs and then checked them for validity with a quick bash loop:</li>
-</ul>
+
+<li><p>I corrected all the DOIs and then checked them for validity with a quick bash loop:</p>
 
 <pre><code>$ for line in $(&lt; /tmp/links.txt); do echo $line; http --print h $line; done
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Most of the links are good, though one is duplicate and one seems to even be incorrect in the publisher&rsquo;s site so&hellip;</li>
-<li>Also, there are some duplicates:
+<li><p>Most of the links are good, though one is duplicate and one seems to even be incorrect in the publisher&rsquo;s site so&hellip;</p></li>
+
+<li><p>Also, there are some duplicates:</p>
 
 <ul>
 <li><code>10568/92241</code> and <code>10568/92230</code> (same DOI)</li>
 <li><code>10568/92151</code> and <code>10568/92150</code> (same ISBN)</li>
 <li><code>10568/92291</code> and <code>10568/92286</code> (same citation, title, authors, year)</li>
 </ul></li>
-<li>Messed up abstracts:
+
+<li><p>Messed up abstracts:</p>
 
 <ul>
 <li><code>10568/92309</code></li>
 </ul></li>
-<li>Fixed some issues in regions, countries, sponsors, ISSN, and cleaned whitespace errors from citation, abstract, author, and titles</li>
-<li>Fixed all issues with CRPs</li>
-<li>A few more interesting Unicode characters to look for in text fields like author, abstracts, and citations  might be: <code>’</code> (0x2019), <code>·</code> (0x00b7), and <code>€</code> (0x20ac)</li>
-<li>A custom text facit in OpenRefine with this GREL expression could be a good for finding invalid characters or encoding errors in authors, abstracts, etc:</li>
-</ul>
+
+<li><p>Fixed some issues in regions, countries, sponsors, ISSN, and cleaned whitespace errors from citation, abstract, author, and titles</p></li>
+
+<li><p>Fixed all issues with CRPs</p></li>
+
+<li><p>A few more interesting Unicode characters to look for in text fields like author, abstracts, and citations  might be: <code>’</code> (0x2019), <code>·</code> (0x00b7), and <code>€</code> (0x20ac)</p></li>
+
+<li><p>A custom text facit in OpenRefine with this GREL expression could be a good for finding invalid characters or encoding errors in authors, abstracts, etc:</p>
 
 <pre><code>or(
-  isNotNull(value.match(/.*[(|)].*/)),
-  isNotNull(value.match(/.*\uFFFD.*/)),
-  isNotNull(value.match(/.*\u00A0.*/)),
-  isNotNull(value.match(/.*\u200A.*/)),
-  isNotNull(value.match(/.*\u2019.*/)),
-  isNotNull(value.match(/.*\u00b7.*/)),
-  isNotNull(value.match(/.*\u20ac.*/))
+isNotNull(value.match(/.*[(|)].*/)),
+isNotNull(value.match(/.*\uFFFD.*/)),
+isNotNull(value.match(/.*\u00A0.*/)),
+isNotNull(value.match(/.*\u200A.*/)),
+isNotNull(value.match(/.*\u2019.*/)),
+isNotNull(value.match(/.*\u00b7.*/)),
+isNotNull(value.match(/.*\u20ac.*/))
 )
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I found some more IITA records that Sisay imported on 2018-03-23 that have invalid CRP names, so now I kinda want to check those ones!</li>
-<li>Combine the ORCID identifiers Abenet sent with our existing list and resolve their names using the <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
-</ul>
+<li><p>I found some more IITA records that Sisay imported on 2018-03-23 that have invalid CRP names, so now I kinda want to check those ones!</p></li>
+
+<li><p>Combine the ORCID identifiers Abenet sent with our existing list and resolve their names using the <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</p>
 
 <pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/ilri-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2018-05-06-combined.txt
 $ ./resolve-orcids.py -i /tmp/2018-05-06-combined.txt -o /tmp/2018-05-06-combined-names.txt -d
 # sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I made a pull request (<a href="https://github.com/ilri/DSpace/pull/373">#373</a>) for this that I&rsquo;ll merge some time next week (I&rsquo;m expecting Atmire to get back to us about DSpace 5.8 soon)</li>
-<li>After testing quickly I just decided to merge it, and I noticed that I don&rsquo;t even need to restart Tomcat for the changes to get loaded</li>
+<li><p>I made a pull request (<a href="https://github.com/ilri/DSpace/pull/373">#373</a>) for this that I&rsquo;ll merge some time next week (I&rsquo;m expecting Atmire to get back to us about DSpace 5.8 soon)</p></li>
+
+<li><p>After testing quickly I just decided to merge it, and I noticed that I don&rsquo;t even need to restart Tomcat for the changes to get loaded</p></li>
 </ul>
 
 <h2 id="2018-05-07">2018-05-07</h2>
@@ -249,16 +252,14 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 <li>I told him that there were still some TODO items for him on that data, for example to update the <code>dc.language.iso</code> field for the Spanish items</li>
 <li>I was trying to remember how I parsed the <code>input-forms.xml</code> using <code>xmllint</code> to extract subjects neatly</li>
 <li>I could use it with <a href="https://github.com/okfn/reconcile-csv">reconcile-csv</a> or to populate a Solr instance for reconciliation</li>
-<li>This XPath expression gets close, but outputs all items on one line:</li>
-</ul>
+
+<li><p>This XPath expression gets close, but outputs all items on one line:</p>
 
 <pre><code>$ xmllint --xpath '//value-pairs[@value-pairs-name=&quot;crpsubject&quot;]/pair/stored-value/node()' dspace/config/input-forms.xml        
 Agriculture for Nutrition and HealthBig DataClimate Change, Agriculture and Food SecurityExcellence in BreedingFishForests, Trees and AgroforestryGenebanksGrain Legumes and Dryland CerealsLivestockMaizePolicies, Institutions and MarketsRiceRoots, Tubers and BananasWater, Land and EcosystemsWheatAquatic Agricultural SystemsDryland CerealsDryland SystemsGrain LegumesIntegrated Systems for the Humid TropicsLivestock and Fish
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Maybe <code>xmlstarlet</code> is better:</li>
-</ul>
+<li><p>Maybe <code>xmlstarlet</code> is better:</p>
 
 <pre><code>$ xmlstarlet sel -t -v '//value-pairs[@value-pairs-name=&quot;crpsubject&quot;]/pair/stored-value/text()' dspace/config/input-forms.xml
 Agriculture for Nutrition and Health
@@ -282,20 +283,20 @@ Dryland Systems
 Grain Legumes
 Integrated Systems for the Humid Tropics
 Livestock and Fish
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Discuss Colombian BNARS harvesting the CIAT data from CGSpace</li>
-<li>They are using a system called Primo and the only options for data harvesting in that system are via FTP and OAI</li>
-<li>I told them to get all <a href="https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;set=com_10568_35697">CIAT records via OAI</a></li>
-<li>Just a note to myself, I figured out how to get reconcile-csv to run from source rather than running the old pre-compiled JAR file:</li>
-</ul>
+<li><p>Discuss Colombian BNARS harvesting the CIAT data from CGSpace</p></li>
+
+<li><p>They are using a system called Primo and the only options for data harvesting in that system are via FTP and OAI</p></li>
+
+<li><p>I told them to get all <a href="https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;set=com_10568_35697">CIAT records via OAI</a></p></li>
+
+<li><p>Just a note to myself, I figured out how to get reconcile-csv to run from source rather than running the old pre-compiled JAR file:</p>
 
 <pre><code>$ lein run /tmp/crps.csv name id
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I tried to reconcile against a CSV of our countries but reconcile-csv crashes</li>
+<li><p>I tried to reconcile against a CSV of our countries but reconcile-csv crashes</p></li>
 </ul>
 
 <h2 id="2018-05-13">2018-05-13</h2>
@@ -329,83 +330,85 @@ Livestock and Fish
 <ul>
 <li>Turns out I was doing the OpenRefine reconciliation wrong: I needed to copy the matched values to a new column!</li>
 <li>Also, I learned how to do something cool with Jython expressions in OpenRefine</li>
-<li>This will fetch a URL and return its HTTP response code:</li>
-</ul>
+
+<li><p>This will fetch a URL and return its HTTP response code:</p>
 
 <pre><code>import urllib2
 import re
 
 pattern = re.compile('.*10.1016.*')
 if pattern.match(value):
-  get = urllib2.urlopen(value)
-  return get.getcode()
+get = urllib2.urlopen(value)
+return get.getcode()
 
 return &quot;blank&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I used a regex to limit it to just some of the DOIs in this case because there were thousands of URLs</li>
-<li>Here the response code would be 200, 404, etc, or &ldquo;blank&rdquo; if there is no URL for that item</li>
-<li>You could use this in a facet or in a new column</li>
-<li>More information and good examples here: <a href="https://programminghistorian.org/lessons/fetch-and-parse-data-with-openrefine">https://programminghistorian.org/lessons/fetch-and-parse-data-with-openrefine</a></li>
-<li>Finish looking at the 2,640 CIFOR records on DSpace Test (<a href="https://dspacetest.cgiar.org/handle/10568/92904"><sup>10568</sup>&frasl;<sub>92904</sub></a>), cleaning up authors and adding collection mappings</li>
-<li>They can now be moved to CGSpace as far as I&rsquo;m concerned, but I don&rsquo;t know if Sisay will do it or me</li>
-<li>I was checking the CIFOR data for duplicates using Atmire&rsquo;s Metadata Quality Module (and found some duplicates actually), but then DSpace died&hellip;</li>
-<li>I didn&rsquo;t see anything in the Tomcat, DSpace, or Solr logs, but I saw this in <code>dmest -T</code>:</li>
-</ul>
+<li><p>I used a regex to limit it to just some of the DOIs in this case because there were thousands of URLs</p></li>
+
+<li><p>Here the response code would be 200, 404, etc, or &ldquo;blank&rdquo; if there is no URL for that item</p></li>
+
+<li><p>You could use this in a facet or in a new column</p></li>
+
+<li><p>More information and good examples here: <a href="https://programminghistorian.org/lessons/fetch-and-parse-data-with-openrefine">https://programminghistorian.org/lessons/fetch-and-parse-data-with-openrefine</a></p></li>
+
+<li><p>Finish looking at the 2,640 CIFOR records on DSpace Test (<a href="https://dspacetest.cgiar.org/handle/10568/92904"><sup>10568</sup>&frasl;<sub>92904</sub></a>), cleaning up authors and adding collection mappings</p></li>
+
+<li><p>They can now be moved to CGSpace as far as I&rsquo;m concerned, but I don&rsquo;t know if Sisay will do it or me</p></li>
+
+<li><p>I was checking the CIFOR data for duplicates using Atmire&rsquo;s Metadata Quality Module (and found some duplicates actually), but then DSpace died&hellip;</p></li>
+
+<li><p>I didn&rsquo;t see anything in the Tomcat, DSpace, or Solr logs, but I saw this in <code>dmest -T</code>:</p>
 
 <pre><code>[Tue May 15 12:10:01 2018] Out of memory: Kill process 3763 (java) score 706 or sacrifice child
 [Tue May 15 12:10:01 2018] Killed process 3763 (java) total-vm:14667688kB, anon-rss:5705268kB, file-rss:0kB, shmem-rss:0kB
 [Tue May 15 12:10:01 2018] oom_reaper: reaped process 3763 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So the Linux kernel killed Java&hellip;</li>
-<li>Maria from Bioversity mailed to say she got an error while submitting an item on CGSpace:</li>
-</ul>
+<li><p>So the Linux kernel killed Java&hellip;</p></li>
+
+<li><p>Maria from Bioversity mailed to say she got an error while submitting an item on CGSpace:</p>
 
 <pre><code>Unable to load Submission Information, since WorkspaceID (ID:S96060) is not a valid in-process submission
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Looking in the DSpace log I see something related:</li>
-</ul>
+<li><p>Looking in the DSpace log I see something related:</p>
 
 <pre><code>2018-05-15 12:35:30,858 INFO  org.dspace.submit.step.CompleteStep @ m.garruccio@cgiar.org:session_id=8AC4499945F38B45EF7A1226E3042DAE:submission_complete:Completed submission with id=96060
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So I&rsquo;m not sure&hellip;</li>
-<li>I finally figured out how to get OpenRefine to reconcile values from Solr via <a href="https://github.com/codeforkjeff/conciliator">conciliator</a>:</li>
-<li>The trick was to use a more appropriate Solr fieldType <code>text_en</code> instead of <code>text_general</code> so that more terms match, for example uppercase and lower case:</li>
-</ul>
+<li><p>So I&rsquo;m not sure&hellip;</p></li>
+
+<li><p>I finally figured out how to get OpenRefine to reconcile values from Solr via <a href="https://github.com/codeforkjeff/conciliator">conciliator</a>:</p></li>
+
+<li><p>The trick was to use a more appropriate Solr fieldType <code>text_en</code> instead of <code>text_general</code> so that more terms match, for example uppercase and lower case:</p>
 
 <pre><code>$ ./bin/solr start
 $ ./bin/solr create_core -c countries
 $ curl -X POST -H 'Content-type:application/json' --data-binary '{&quot;add-field&quot;: {&quot;name&quot;:&quot;country&quot;, &quot;type&quot;:&quot;text_en&quot;, &quot;multiValued&quot;:false, &quot;stored&quot;:true}}' http://localhost:8983/solr/countries/schema
 $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>It still doesn&rsquo;t catch simple mistakes like &ldquo;ALBANI&rdquo; or &ldquo;AL BANIA&rdquo; for &ldquo;ALBANIA&rdquo;, and it doesn&rsquo;t return scores, so I have to select matches manually:</li>
+<li><p>It still doesn&rsquo;t catch simple mistakes like &ldquo;ALBANI&rdquo; or &ldquo;AL BANIA&rdquo; for &ldquo;ALBANIA&rdquo;, and it doesn&rsquo;t return scores, so I have to select matches manually:</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2018/05/openrefine-solr-conciliator.png" alt="OpenRefine reconciling countries from local Solr" /></p>
 
 <ul>
-<li>I should probably make a general copy field and set it to be the default search field, like DSpace&rsquo;s search core does (see schema.xml):</li>
-</ul>
+<li><p>I should probably make a general copy field and set it to be the default search field, like DSpace&rsquo;s search core does (see schema.xml):</p>
 
 <pre><code>&lt;defaultSearchField&gt;search_text&lt;/defaultSearchField&gt;
 ...
 &lt;copyField source=&quot;*&quot; dest=&quot;search_text&quot;/&gt;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Actually, I wonder how much of their schema I could just copy&hellip;</li>
-<li>Apparently the default search field is the <code>df</code> parameter and you could technically just add it to the query string, so no need to bother with that in the schema now</li>
-<li>I copied over the DSpace <code>search_text</code> field type from the DSpace Solr config (had to remove some properties so Solr would start) but it doesn&rsquo;t seem to be any better at matching than the <code>text_en</code> type</li>
-<li>I think I need to focus on trying to return scores with conciliator</li>
+<li><p>Actually, I wonder how much of their schema I could just copy&hellip;</p></li>
+
+<li><p>Apparently the default search field is the <code>df</code> parameter and you could technically just add it to the query string, so no need to bother with that in the schema now</p></li>
+
+<li><p>I copied over the DSpace <code>search_text</code> field type from the DSpace Solr config (had to remove some properties so Solr would start) but it doesn&rsquo;t seem to be any better at matching than the <code>text_en</code> type</p></li>
+
+<li><p>I think I need to focus on trying to return scores with conciliator</p></li>
 </ul>
 
 <h2 id="2018-05-16">2018-05-16</h2>
@@ -422,18 +425,19 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 </ul></li>
 <li>Silvia asked if I could sort the records in her Listings and Report output and it turns out that the options are misconfigured in <code>dspace/config/modules/atmire-listings-and-reports.cfg</code></li>
 <li>I created and merged a pull request to fix the sorting issue in Listings and Reports (<a href="https://github.com/ilri/DSpace/pull/374">#374</a>)</li>
-<li>Regarding the IP Address Anonymization for GDPR, I ammended the Google Analytics snippet in <code>page-structure-alterations.xsl</code> to:</li>
-</ul>
+
+<li><p>Regarding the IP Address Anonymization for GDPR, I ammended the Google Analytics snippet in <code>page-structure-alterations.xsl</code> to:</p>
 
 <pre><code>ga('send', 'pageview', {
-  'anonymizeIp': true
+'anonymizeIp': true
 });
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I tested loading a certain page before and after adding this and afterwards I saw that the parameter <code>aip=1</code> was being sent with the analytics response to Google</li>
-<li>According to the <a href="https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#anonymizeIp">analytics.js protocol parameter documentation</a> this means that IPs are being anonymized</li>
-<li>After finding and fixing some duplicates in IITA&rsquo;s <code>IITA_April_27</code> test collection on DSpace Test (<sup>10568</sup>&frasl;<sub>92703</sub>) I told Sisay that he can move them to IITA&rsquo;s Journal Articles collection on CGSpace</li>
+<li><p>I tested loading a certain page before and after adding this and afterwards I saw that the parameter <code>aip=1</code> was being sent with the analytics response to Google</p></li>
+
+<li><p>According to the <a href="https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#anonymizeIp">analytics.js protocol parameter documentation</a> this means that IPs are being anonymized</p></li>
+
+<li><p>After finding and fixing some duplicates in IITA&rsquo;s <code>IITA_April_27</code> test collection on DSpace Test (<sup>10568</sup>&frasl;<sub>92703</sub>) I told Sisay that he can move them to IITA&rsquo;s Journal Articles collection on CGSpace</p></li>
 </ul>
 
 <h2 id="2018-05-17">2018-05-17</h2>
@@ -495,18 +499,20 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <h2 id="2018-05-23">2018-05-23</h2>
 
 <ul>
-<li>I&rsquo;m investigating how many non-CGIAR users we have registered on CGSpace:</li>
-</ul>
+<li><p>I&rsquo;m investigating how many non-CGIAR users we have registered on CGSpace:</p>
 
 <pre><code>dspace=# select email, netid from eperson where email not like '%cgiar.org%' and email like '%@%';
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>We might need to do something regarding these users for GDPR compliance because we have their names, emails, and potentially phone numbers</li>
-<li>I decided that I will just use the cookieconsent script as is, since it looks good and technically does set the cookie with &ldquo;allow&rdquo; or &ldquo;dismiss&rdquo;</li>
-<li>I wrote a quick conditional to check if the user has agreed or not before enabling Google Analytics</li>
-<li>I made a pull request for the GDPR compliance popup (<a href="https://github.com/ilri/DSpace/pull/377">#377</a>) and merged it to the <code>5_x-prod</code> branch</li>
-<li>I will deploy it to CGSpace tonight</li>
+<li><p>We might need to do something regarding these users for GDPR compliance because we have their names, emails, and potentially phone numbers</p></li>
+
+<li><p>I decided that I will just use the cookieconsent script as is, since it looks good and technically does set the cookie with &ldquo;allow&rdquo; or &ldquo;dismiss&rdquo;</p></li>
+
+<li><p>I wrote a quick conditional to check if the user has agreed or not before enabling Google Analytics</p></li>
+
+<li><p>I made a pull request for the GDPR compliance popup (<a href="https://github.com/ilri/DSpace/pull/377">#377</a>) and merged it to the <code>5_x-prod</code> branch</p></li>
+
+<li><p>I will deploy it to CGSpace tonight</p></li>
 </ul>
 
 <h2 id="2018-05-28">2018-05-28</h2>
@@ -523,54 +529,60 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <ul>
 <li>Talk to Samantha from Bioversity about something related to Google Analytics, I&rsquo;m still not sure what they want</li>
 <li>DSpace Test crashed last night, seems to be related to system memory (not JVM heap)</li>
-<li>I see this in <code>dmesg</code>:</li>
-</ul>
+
+<li><p>I see this in <code>dmesg</code>:</p>
 
 <pre><code>[Wed May 30 00:00:39 2018] Out of memory: Kill process 6082 (java) score 697 or sacrifice child
 [Wed May 30 00:00:39 2018] Killed process 6082 (java) total-vm:14876264kB, anon-rss:5683372kB, file-rss:0kB, shmem-rss:0kB
 [Wed May 30 00:00:40 2018] oom_reaper: reaped process 6082 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I need to check the Tomcat JVM heap size/usage, command line JVM heap size (for cron jobs), and PostgreSQL memory usage</li>
-<li>It might be possible to adjust some things, but eventually we&rsquo;ll need a larger VPS instance</li>
-<li>For some reason there are no JVM stats in Munin, ugh</li>
-<li>Run all system updates on DSpace Test and reboot it</li>
-<li>I generated a list of CIFOR duplicates from the <code>CIFOR_May_9</code> collection using the Atmire MQM module and then dumped the HTML source so I could process it for sending to Vika</li>
-<li>I used grep to filter all relevant handle lines from the HTML source then used sed to insert a newline before each &ldquo;Item1&rdquo; line (as the duplicates are grouped like Item1, Item2, Item3 for each set of duplicates):</li>
-</ul>
+<li><p>I need to check the Tomcat JVM heap size/usage, command line JVM heap size (for cron jobs), and PostgreSQL memory usage</p></li>
+
+<li><p>It might be possible to adjust some things, but eventually we&rsquo;ll need a larger VPS instance</p></li>
+
+<li><p>For some reason there are no JVM stats in Munin, ugh</p></li>
+
+<li><p>Run all system updates on DSpace Test and reboot it</p></li>
+
+<li><p>I generated a list of CIFOR duplicates from the <code>CIFOR_May_9</code> collection using the Atmire MQM module and then dumped the HTML source so I could process it for sending to Vika</p></li>
+
+<li><p>I used grep to filter all relevant handle lines from the HTML source then used sed to insert a newline before each &ldquo;Item1&rdquo; line (as the duplicates are grouped like Item1, Item2, Item3 for each set of duplicates):</p>
 
 <pre><code>$ grep -E 'aspect.duplicatechecker.DuplicateResults.field.del_handle_[0-9]{1,3}_Item' ~/Desktop/https\ _dspacetest.cgiar.org_atmire_metadata-quality_duplicate-checker.html &gt; ~/cifor-duplicates.txt
 $ sed 's/.*Item1.*/\n&amp;/g' ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cleaned.txt
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I told Vika to look through the list manually and indicate which ones are indeed duplicates that we should delete, and which ones to map to CIFOR&rsquo;s collection</li>
-<li>A few weeks ago Peter wanted a list of authors from the ILRI collections, so I need to find a way to get the handles of all those collections</li>
-<li>I can use the <code>/communities/{id}/collections</code> endpoint of the REST API but it only takes IDs (not handles) and doesn&rsquo;t seem to descend into sub communities</li>
-<li>Shit, so I need the IDs for the the top-level ILRI community and all its sub communities (and their sub communities)</li>
-<li>There has got to be a better way to do this than going to each community and getting their handles and IDs manually</li>
-<li>Oh shit, I literally already wrote a script to get all collections in a community hierarchy from the REST API: <a href="https://gist.github.com/alanorth/ddd7f555f0e487fe0e9d3eb4ff26ce50">rest-find-collections.py</a></li>
-<li>The output isn&rsquo;t great, but all the handles and IDs are printed in debug mode:</li>
-</ul>
+<li><p>I told Vika to look through the list manually and indicate which ones are indeed duplicates that we should delete, and which ones to map to CIFOR&rsquo;s collection</p></li>
+
+<li><p>A few weeks ago Peter wanted a list of authors from the ILRI collections, so I need to find a way to get the handles of all those collections</p></li>
+
+<li><p>I can use the <code>/communities/{id}/collections</code> endpoint of the REST API but it only takes IDs (not handles) and doesn&rsquo;t seem to descend into sub communities</p></li>
+
+<li><p>Shit, so I need the IDs for the the top-level ILRI community and all its sub communities (and their sub communities)</p></li>
+
+<li><p>There has got to be a better way to do this than going to each community and getting their handles and IDs manually</p></li>
+
+<li><p>Oh shit, I literally already wrote a script to get all collections in a community hierarchy from the REST API: <a href="https://gist.github.com/alanorth/ddd7f555f0e487fe0e9d3eb4ff26ce50">rest-find-collections.py</a></p></li>
+
+<li><p>The output isn&rsquo;t great, but all the handles and IDs are printed in debug mode:</p>
 
 <pre><code>$ ./rest-find-collections.py -u https://cgspace.cgiar.org/rest -d 10568/1 2&gt; /tmp/ilri-collections.txt
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then I format the list of handles and put it into this SQL query to export authors from items ONLY in those collections (too many to list here):</li>
-</ul>
+<li><p>Then I format the list of handles and put it into this SQL query to export authors from items ONLY in those collections (too many to list here):</p>
 
 <pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/67236','10568/67274',...))) group by text_value order by count desc) to /tmp/ilri-authors.csv with csv;
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2018-05-31">2018-05-31</h2>
 
 <ul>
 <li>Clarify CGSpace&rsquo;s usage of Google Analytics and personally identifiable information during user registration for Bioversity team who had been asking about GDPR compliance</li>
 <li>Testing running PostgreSQL in a Docker container on localhost because when I&rsquo;m on Arch Linux there isn&rsquo;t an easily installable package for particular PostgreSQL versions</li>
-<li>Now I can just use Docker:</li>
-</ul>
+
+<li><p>Now I can just use Docker:</p>
 
 <pre><code>$ docker pull postgres:9.5-alpine
 $ docker run --name dspacedb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.5-alpine
@@ -581,7 +593,8 @@ $ pg_restore -h localhost -O -U dspacetest -d dspacetest -W -h localhost ~/Downl
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
 $ psql -h localhost -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
 $ psql -h localhost -U postgres dspacetest
-</code></pre>
+</code></pre></li>
+</ul>
 
   
 

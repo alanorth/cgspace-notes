@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGIAR Library Migration"/>
 <meta name="twitter:description" content="Notes on the migration of the CGIAR Library to CGSpace"/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -25,7 +25,7 @@
   "@type": "BlogPosting",
   "headline": "CGIAR Library Migration",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/cgiar-library-migration\/",
-  "wordCount": "1278",
+  "wordCount": "1285",
   "datePublished": "2017-09-18T16:38:35\x2b03:00",
   "dateModified": "2018-03-09T22:10:33\x2b02:00",
   "author": {
@@ -121,8 +121,8 @@
 <li><code>SELECT * FROM pg_stat_activity;</code> seems to show ~6 extra connections used by the command line tools during import</li>
 </ul></label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Temporarily disable nightly <code>index-discovery</code> cron job because the import process will be taking place during some of this time and I don&rsquo;t want them to be competing to update the Solr index</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Copy HTTPS certificate key pair from CGIAR Library server&rsquo;s Tomcat keystore:</label></li>
-</ul>
+
+<li><p>[x] Copy HTTPS certificate key pair from CGIAR Library server&rsquo;s Tomcat keystore:</p>
 
 <pre><code>$ keytool -list -keystore tomcat.keystore
 $ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
@@ -130,7 +130,8 @@ $ openssl pkcs12 -in library.cgiar.org.p12 -nokeys -out library.cgiar.org.crt.pe
 $ openssl pkcs12 -in library.cgiar.org.p12 -nodes -nocerts -out library.cgiar.org.key.pem
 $ wget https://certs.godaddy.com/repository/gdroot-g2.crt https://certs.godaddy.com/repository/gdig2.crt.pem
 $ cat library.cgiar.org.crt.pem gdig2.crt.pem &gt; library.cgiar.org-chained.pem
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="migration-process">Migration Process</h2>
 
@@ -155,16 +156,14 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
 
 <ul class="task-list">
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Copy all exports from DSpace Test</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Add ingestion overrides to <code>dspace.cfg</code> before import:</label></li>
-</ul>
+
+<li><p>[x] Add ingestion overrides to <code>dspace.cfg</code> before import:</p>
 
 <pre><code>mets.dspaceAIP.ingest.crosswalk.METSRIGHTS = NIL
 mets.dspaceAIP.ingest.crosswalk.DSPACE-ROLES = NIL
-</code></pre>
+</code></pre></li>
 
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Import communities and collections, paying attention to options to skip missing parents and ignore handles:</label></li>
-</ul>
+<li><p>[x] Import communities and collections, paying attention to options to skip missing parents and ignore handles:</p>
 
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
 $ export PATH=$PATH:/home/cgspace.cgiar.org/bin
@@ -182,36 +181,37 @@ $ for item in 10947-2527/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aor
 $ dspace packager -s -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83389 10947-1/10947-1.zip
 $ for collection in 10947-1/COLLECTION@10947-*; do dspace packager -s -o ignoreHandle=false -t AIP -e aorth@mjanja.ch -p 10947/1 $collection; done
 $ for item in 10947-1/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre>
+</code></pre></li>
+</ul>
 
 <p>This submits AIP hierarchies recursively (-r) and suppresses errors when an item&rsquo;s parent collection hasn&rsquo;t been created yet—for example, if the item is mapped. The large historic archive (<sup>10947</sup>&frasl;<sub>1</sub>) is created in several steps because it requires a lot of memory and often crashes.</p>
 
 <p><strong>Create new subcommunities and collections for content we reorganized into new hierarchies from the original:</strong></p>
 
 <ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Create <em>CGIAR System Management Board</em> sub-community: <code>10568/83536</code>
+<li><p>[x] Create <em>CGIAR System Management Board</em> sub-community: <code>10568/83536</code></p>
 
 <ul class="task-list">
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Content from <em>CGIAR System Management Board documents</em> collection (<code>10947/4561</code>) goes here</label></li>
-<li>Import collection hierarchy first and then the items:</li>
-</ul></label></li>
-</ul>
+
+<li><p>Import collection hierarchy first and then the items:</p>
 
 <pre><code>$ dspace packager -r -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83536 10568-93760/COLLECTION@10947-4651.zip
 $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre>
+</code></pre></li>
+</ul></li>
 
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Create <em>CGIAR System Management Office</em> sub-community: <code>10568/83537</code>
+<li><p>[x] Create <em>CGIAR System Management Office</em> sub-community: <code>10568/83537</code></p>
 
 <ul class="task-list">
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Create <em>CGIAR System Management Office documents</em> collection: <code>10568/83538</code></label></li>
-<li>Import items to collection individually in replace mode (-r) while explicitly preserving handles and ignoring parents:</li>
-</ul></label></li>
-</ul>
+
+<li><p>Import items to collection individually in replace mode (-r) while explicitly preserving handles and ignoring parents:</p>
 
 <pre><code>$ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
-</code></pre>
+</code></pre></li>
+</ul></li>
+</ul>
 
 <p><strong>Get the handles for the last few items from CGIAR Library that were created since we did the migration to DSpace Test in May:</strong></p>
 
@@ -219,18 +219,16 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 </code></pre>
 
 <ul>
-<li>Export them from the CGIAR Library:</li>
-</ul>
+<li><p>Export them from the CGIAR Library:</p>
 
 <pre><code># for handle in 10947/4658 10947/4659 10947/4660 10947/4661 10947/4665 10947/4664 10947/4666 10947/4669; do /usr/local/dspace/bin/dspace packager -d -a -t AIP -e m.marus@cgiar.org -i $handle ${handle}.zip; done
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Import on CGSpace:</li>
-</ul>
+<li><p>Import on CGSpace:</p>
 
 <pre><code>$ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="post-migration">Post Migration</h2>
 
@@ -239,8 +237,8 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Remove ingestion overrides from <code>dspace.cfg</code></label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Reset PostgreSQL <code>max_connections</code> to 183</label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Enable nightly <code>index-discovery</code> cron job</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</label></li>
-</ul>
+
+<li><p>[x] Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</p>
 
 <pre><code>&quot;server_admins&quot; = (
 &quot;300:0.NA/10568&quot;
@@ -256,7 +254,8 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
 )
-</code></pre>
+</code></pre></li>
+</ul>
 
 <p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don&rsquo;t need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
 
@@ -269,13 +268,14 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Re-deploy DSpace from freshly built <code>5_x-prod</code> branch</label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Merge <code>cgiar-library</code> branch to <code>master</code> and re-run ansible nginx templates</label></li>
 <li><label><input type="checkbox" checked disabled class="task-list-item"> Run system updates and reboot server</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</label></li>
-</ul>
+
+<li><p>[x] Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</p>
 
 <pre><code>$ sudo systemctl stop nginx
 $ /opt/certbot-auto certonly --standalone -d library.cgiar.org
 $ sudo systemctl start nginx
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 

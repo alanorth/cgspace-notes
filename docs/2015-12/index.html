@@ -11,12 +11,12 @@
 
 Replace lzop with xz in log compression cron jobs on DSpace Test—it uses less space:
 
-
 # cd /home/dspacetest.cgiar.org/log
 # ls -lh dspace.log.2015-11-18*
 -rw-rw-r-- 1 tomcat7 tomcat7 2.0M Nov 18 23:59 dspace.log.2015-11-18
 -rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo
 -rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2015-12/" />
@@ -30,14 +30,14 @@ Replace lzop with xz in log compression cron jobs on DSpace Test—it uses less 
 
 Replace lzop with xz in log compression cron jobs on DSpace Test—it uses less space:
 
-
 # cd /home/dspacetest.cgiar.org/log
 # ls -lh dspace.log.2015-11-18*
 -rw-rw-r-- 1 tomcat7 tomcat7 2.0M Nov 18 23:59 dspace.log.2015-11-18
 -rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo
 -rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz
+
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -119,41 +119,38 @@ Replace lzop with xz in log compression cron jobs on DSpace Test—it uses less 
   <h2 id="2015-12-02">2015-12-02</h2>
 
 <ul>
-<li>Replace <code>lzop</code> with <code>xz</code> in log compression cron jobs on DSpace Test—it uses less space:</li>
-</ul>
+<li><p>Replace <code>lzop</code> with <code>xz</code> in log compression cron jobs on DSpace Test—it uses less space:</p>
 
 <pre><code># cd /home/dspacetest.cgiar.org/log
 # ls -lh dspace.log.2015-11-18*
 -rw-rw-r-- 1 tomcat7 tomcat7 2.0M Nov 18 23:59 dspace.log.2015-11-18
 -rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo
 -rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz
-</code></pre>
+</code></pre></li>
+</ul>
 
 <ul>
 <li>I had used lrzip once, but it needs more memory and is harder to use as it requires the lrztar wrapper</li>
 <li>Need to remember to go check if everything is ok in a few days and then change CGSpace</li>
 <li>CGSpace went down again (due to PostgreSQL idle connections of course)</li>
-<li>Current database settings for DSpace are <code>db.maxconnections = 30</code> and <code>db.maxidle = 8</code>, yet idle connections are exceeding this:</li>
-</ul>
+
+<li><p>Current database settings for DSpace are <code>db.maxconnections = 30</code> and <code>db.maxidle = 8</code>, yet idle connections are exceeding this:</p>
 
 <pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
 39
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I restarted PostgreSQL and Tomcat and it&rsquo;s back</li>
-<li>On a related note of why CGSpace is so slow, I decided to finally try the <code>pgtune</code> script to tune the postgres settings:</li>
-</ul>
+<li><p>I restarted PostgreSQL and Tomcat and it&rsquo;s back</p></li>
+
+<li><p>On a related note of why CGSpace is so slow, I decided to finally try the <code>pgtune</code> script to tune the postgres settings:</p>
 
 <pre><code># apt-get install pgtune
 # pgtune -i /etc/postgresql/9.3/main/postgresql.conf -o postgresql.conf-pgtune
 # mv /etc/postgresql/9.3/main/postgresql.conf /etc/postgresql/9.3/main/postgresql.conf.orig 
 # mv postgresql.conf-pgtune /etc/postgresql/9.3/main/postgresql.conf
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>It introduced the following new settings:</li>
-</ul>
+<li><p>It introduced the following new settings:</p>
 
 <pre><code>default_statistics_target = 50
 maintenance_work_mem = 480MB
@@ -165,12 +162,11 @@ wal_buffers = 8MB
 checkpoint_segments = 16
 shared_buffers = 1920MB
 max_connections = 80
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Now I need to go read PostgreSQL docs about these options, and watch memory settings in munin etc</li>
-<li>For what it&rsquo;s worth, now the REST API should be faster (because of these PostgreSQL tweaks):</li>
-</ul>
+<li><p>Now I need to go read PostgreSQL docs about these options, and watch memory settings in munin etc</p></li>
+
+<li><p>For what it&rsquo;s worth, now the REST API should be faster (because of these PostgreSQL tweaks):</p>
 
 <pre><code>$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 1.474
@@ -182,11 +178,11 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 1.995
 $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 1.786
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Last week it was an average of 8 seconds&hellip; now this is <sup>1</sup>&frasl;<sub>4</sub> of that</li>
-<li>CCAFS noticed that one of their items displays only the Atmire statlets: <a href="https://cgspace.cgiar.org/handle/10568/42445">https://cgspace.cgiar.org/handle/10568/42445</a></li>
+<li><p>Last week it was an average of 8 seconds&hellip; now this is <sup>1</sup>&frasl;<sub>4</sub> of that</p></li>
+
+<li><p>CCAFS noticed that one of their items displays only the Atmire statlets: <a href="https://cgspace.cgiar.org/handle/10568/42445">https://cgspace.cgiar.org/handle/10568/42445</a></p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2015/12/ccafs-item-no-metadata.png" alt="CCAFS item" /></p>
@@ -201,19 +197,20 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 
 <ul>
 <li>CGSpace very slow, and monitoring emailing me to say its down, even though I can load the page (very slowly)</li>
-<li>Idle postgres connections look like this (with no change in DSpace db settings lately):</li>
-</ul>
+
+<li><p>Idle postgres connections look like this (with no change in DSpace db settings lately):</p>
 
 <pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
 29
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I restarted Tomcat and postgres&hellip;</li>
-<li>Atmire commented that we should raise the JVM heap size by ~500M, so it is now <code>-Xms3584m -Xmx3584m</code></li>
-<li>We weren&rsquo;t out of heap yet, but it&rsquo;s probably fair enough that the DSpace 5 upgrade (and new Atmire modules) requires more memory so it&rsquo;s ok</li>
-<li>A possible side effect is that I see that the REST API is twice as fast for the request above now:</li>
-</ul>
+<li><p>I restarted Tomcat and postgres&hellip;</p></li>
+
+<li><p>Atmire commented that we should raise the JVM heap size by ~500M, so it is now <code>-Xms3584m -Xmx3584m</code></p></li>
+
+<li><p>We weren&rsquo;t out of heap yet, but it&rsquo;s probably fair enough that the DSpace 5 upgrade (and new Atmire modules) requires more memory so it&rsquo;s ok</p></li>
+
+<li><p>A possible side effect is that I see that the REST API is twice as fast for the request above now:</p>
 
 <pre><code>$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 1.368
@@ -227,22 +224,23 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 0.806
 $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 0.854
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2015-12-05">2015-12-05</h2>
 
 <ul>
 <li>CGSpace has been up and down all day and REST API is completely unresponsive</li>
-<li>PostgreSQL idle connections are currently:</li>
-</ul>
+
+<li><p>PostgreSQL idle connections are currently:</p>
 
 <pre><code>postgres@linode01:~$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
 28
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I have reverted all the pgtune tweaks from the other day, as they didn&rsquo;t fix the stability issues, so I&rsquo;d rather not have them introducing more variables into the equation</li>
-<li>The PostgreSQL stats from Munin all point to something database-related with the DSpace 5 upgrade around mid–late November</li>
+<li><p>I have reverted all the pgtune tweaks from the other day, as they didn&rsquo;t fix the stability issues, so I&rsquo;d rather not have them introducing more variables into the equation</p></li>
+
+<li><p>The PostgreSQL stats from Munin all point to something database-related with the DSpace 5 upgrade around mid–late November</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2015/12/postgres_bgwriter-year.png" alt="PostgreSQL bgwriter (year)" />
@@ -254,8 +252,8 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 
 <ul>
 <li>Atmire sent <a href="https://github.com/ilri/DSpace/pull/161">some fixes</a> to DSpace&rsquo;s REST API code that was leaving contexts open (causing the slow performance and database issues)</li>
-<li>After deploying the fix to CGSpace the REST API is consistently faster:</li>
-</ul>
+
+<li><p>After deploying the fix to CGSpace the REST API is consistently faster:</p>
 
 <pre><code>$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 0.675
@@ -267,7 +265,8 @@ $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle
 0.566
 $ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 0.497
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2015-12-08">2015-12-08</h2>
 

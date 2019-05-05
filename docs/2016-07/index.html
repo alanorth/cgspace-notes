@@ -10,16 +10,15 @@
 
 
 Add dc.description.sponsorship to Discovery sidebar facets and make investors clickable in item view (#232)
-I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:
 
+I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:
 
 dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^.&#43;?),$&#39;, &#39;\1&#39;) where metadata_field_id=3 and resource_type_id=2 and text_value ~ &#39;^.&#43;?,$&#39;;
 UPDATE 95
 dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ &#39;^.&#43;?,$&#39;;
- text_value
+text_value
 ------------
 (0 rows)
-
 
 
 In this case the select query was showing 95 results before the update
@@ -35,21 +34,20 @@ In this case the select query was showing 95 results before the update
 
 
 Add dc.description.sponsorship to Discovery sidebar facets and make investors clickable in item view (#232)
-I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:
 
+I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:
 
 dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^.&#43;?),$&#39;, &#39;\1&#39;) where metadata_field_id=3 and resource_type_id=2 and text_value ~ &#39;^.&#43;?,$&#39;;
 UPDATE 95
 dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ &#39;^.&#43;?,$&#39;;
- text_value
+text_value
 ------------
 (0 rows)
 
 
-
 In this case the select query was showing 95 results before the update
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -132,19 +130,18 @@ In this case the select query was showing 95 results before the update
 
 <ul>
 <li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
-<li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</li>
-</ul>
+
+<li><p>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</p>
 
 <pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
 UPDATE 95
 dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
- text_value
+text_value
 ------------
 (0 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In this case the select query was showing 95 results before the update</li>
+<li><p>In this case the select query was showing 95 results before the update</p></li>
 </ul>
 
 <h2 id="2016-07-02">2016-07-02</h2>
@@ -164,31 +161,31 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <ul>
 <li>Amend <code>backup-solr.sh</code> script so it backs up the entire Solr folder</li>
 <li>We <em>really</em> only need <code>statistics</code> and <code>authority</code> but meh</li>
-<li>Fix metadata for species on DSpace Test:</li>
-</ul>
+
+<li><p>Fix metadata for species on DSpace Test:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 94 -d dspacetest -u dspacetest -p 'fuuu'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Will run later on CGSpace</li>
-<li>A user is still having problems with Sherpa/Romeo causing crashes during the submission process when the journal is &ldquo;ungraded&rdquo;</li>
-<li>I tested the <a href="https://jira.duraspace.org/browse/DS-2740">patch for DS-2740</a> that I had found last month and it seems to work</li>
-<li>I will merge it to <code>5_x-prod</code></li>
+<li><p>Will run later on CGSpace</p></li>
+
+<li><p>A user is still having problems with Sherpa/Romeo causing crashes during the submission process when the journal is &ldquo;ungraded&rdquo;</p></li>
+
+<li><p>I tested the <a href="https://jira.duraspace.org/browse/DS-2740">patch for DS-2740</a> that I had found last month and it seems to work</p></li>
+
+<li><p>I will merge it to <code>5_x-prod</code></p></li>
 </ul>
 
 <h2 id="2016-07-06">2016-07-06</h2>
 
 <ul>
-<li>Delete 23 blank metadata values from CGSpace:</li>
-</ul>
+<li><p>Delete 23 blank metadata values from CGSpace:</p>
 
 <pre><code>cgspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 DELETE 23
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Complete phase three of metadata migration, for the following fields:
+<li><p>Complete phase three of metadata migration, for the following fields:</p>
 
 <ul>
 <li>dc.title.jtitle → dc.source</li>
@@ -202,27 +199,26 @@ DELETE 23
 <li>dc.identifier.googleurl → cg.identifier.googleurl</li>
 <li>dc.identifier.dataurl → cg.identifier.dataurl</li>
 </ul></li>
-<li>Also, run fixes and deletes for species and author affiliations (over 1000 corrections!)</li>
-</ul>
+
+<li><p>Also, run fixes and deletes for species and author affiliations (over 1000 corrections!)</p>
 
 <pre><code>$ ./fix-metadata-values.py -i Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 212 -d dspace -u dspace -p 'fuuu'
 $ ./fix-metadata-values.py -i Affiliations-Fix-1045-Peter-Abenet.csv -f dc.contributor.affiliation -t Correct -m 211 -d dspace -u dspace -p 'fuuu'
 $ ./delete-metadata-values.py -f dc.contributor.affiliation -i Affiliations-Delete-Peter-Abenet.csv -m 211 -u dspace -d dspace -p 'fuuu'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I then ran all server updates and rebooted the server</li>
+<li><p>I then ran all server updates and rebooted the server</p></li>
 </ul>
 
 <h2 id="2016-07-11">2016-07-11</h2>
 
 <ul>
-<li>Doing some author cleanups from Peter and Abenet:</li>
-</ul>
+<li><p>Doing some author cleanups from Peter and Abenet:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/Authors-Fix-205-UTF8.csv -f dc.contributor.author -t correct -m 3 -d dspacetest -u dspacetest -p fuuu
 $ ./delete-metadata-values.py -f dc.contributor.author -i /tmp/Authors-Delete-UTF8.csv -m 3 -u dspacetest -d dspacetest -p fuuu
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2016-07-13">2016-07-13</h2>
 
@@ -242,35 +238,32 @@ $ ./delete-metadata-values.py -f dc.contributor.author -i /tmp/Authors-Delete-UT
 <ul>
 <li>Adjust identifiers in XMLUI item display to be more prominent</li>
 <li>Add species and breed to the XMLUI item display</li>
-<li>CGSpace crashed late at night and the DSpace logs were showing:</li>
-</ul>
+
+<li><p>CGSpace crashed late at night and the DSpace logs were showing:</p>
 
 <pre><code>2016-07-18 20:26:30,941 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 ...
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I suspect it&rsquo;s someone hitting REST too much:</li>
-</ul>
+<li><p>I suspect it&rsquo;s someone hitting REST too much:</p>
 
 <pre><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
-    710 66.249.78.38
-   1781 181.118.144.29
-  24904 70.32.99.142
-</code></pre>
+710 66.249.78.38
+1781 181.118.144.29
+24904 70.32.99.142
+</code></pre></li>
 
-<ul>
-<li>I just blocked access to <code>/rest</code> for that last IP for now:</li>
+<li><p>I just blocked access to <code>/rest</code> for that last IP for now:</p>
+
+<pre><code> # log rest requests
+ location /rest {
+     access_log /var/log/nginx/rest.log;
+     proxy_pass http://127.0.0.1:8443;
+     deny 70.32.99.142;
+ }
+</code></pre></li>
 </ul>
-
-<pre><code>     # log rest requests
-     location /rest {
-         access_log /var/log/nginx/rest.log;
-         proxy_pass http://127.0.0.1:8443;
-         deny 70.32.99.142;
-     }
-</code></pre>
 
 <h2 id="2016-07-21">2016-07-21</h2>
 
@@ -287,84 +280,79 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>Altmetric reports having an issue with some of our authors being doubled&hellip;</li>
 <li>This is related to authority and confidence!</li>
 <li>We might need to use <code>index.authority.ignore-prefered=true</code> to tell the Discovery index to prefer the variation that exists in the metadatavalue rather than what it finds in the authority cache.</li>
-<li>Trying these on DSpace Test after a discussion by Daniel Scharon on the dspace-tech mailing list:</li>
-</ul>
+
+<li><p>Trying these on DSpace Test after a discussion by Daniel Scharon on the dspace-tech mailing list:</p>
 
 <pre><code>index.authority.ignore-prefered.dc.contributor.author=true
 index.authority.ignore-variants.dc.contributor.author=false
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>After reindexing I don&rsquo;t see any change in Discovery&rsquo;s display of authors, and still have entries like:</li>
-</ul>
+<li><p>After reindexing I don&rsquo;t see any change in Discovery&rsquo;s display of authors, and still have entries like:</p>
 
 <pre><code>Grace, D. (464)
 Grace, D. (62)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I asked for clarification of the following options on the DSpace mailing list:</li>
-</ul>
+<li><p>I asked for clarification of the following options on the DSpace mailing list:</p>
 
 <pre><code>index.authority.ignore
 index.authority.ignore-prefered
 index.authority.ignore-variants
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In the mean time, I will try these on DSpace Test (plus a reindex):</li>
-</ul>
+<li><p>In the mean time, I will try these on DSpace Test (plus a reindex):</p>
 
 <pre><code>index.authority.ignore=true
 index.authority.ignore-prefered=true
 index.authority.ignore-variants=true
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Enabled usage of <code>X-Forwarded-For</code> in DSpace admin control panel (<a href="https://github.com/ilri/DSpace/pull/255">#255</a></li>
-<li>It was misconfigured and disabled, but already working for some reason <em>sigh</em></li>
-<li>&hellip; no luck. Trying with just:</li>
-</ul>
+<li><p>Enabled usage of <code>X-Forwarded-For</code> in DSpace admin control panel (<a href="https://github.com/ilri/DSpace/pull/255">#255</a></p></li>
+
+<li><p>It was misconfigured and disabled, but already working for some reason <em>sigh</em></p></li>
+
+<li><p>&hellip; no luck. Trying with just:</p>
 
 <pre><code>index.authority.ignore=true
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>After re-indexing and clearing the XMLUI cache nothing has changed</li>
+<li><p>After re-indexing and clearing the XMLUI cache nothing has changed</p></li>
 </ul>
 
 <h2 id="2016-07-25">2016-07-25</h2>
 
 <ul>
-<li>Trying a few more settings (plus reindex) for Discovery on DSpace Test:</li>
-</ul>
+<li><p>Trying a few more settings (plus reindex) for Discovery on DSpace Test:</p>
 
 <pre><code>index.authority.ignore-prefered.dc.contributor.author=true
 index.authority.ignore-variants=true
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Run all OS updates and reboot DSpace Test server</li>
-<li>No changes to Discovery after reindexing&hellip; hmm.</li>
-<li>Integrate and massively clean up About page (<a href="https://github.com/ilri/DSpace/pull/256">#256</a>)</li>
+<li><p>Run all OS updates and reboot DSpace Test server</p></li>
+
+<li><p>No changes to Discovery after reindexing&hellip; hmm.</p></li>
+
+<li><p>Integrate and massively clean up About page (<a href="https://github.com/ilri/DSpace/pull/256">#256</a>)</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2016/07/cgspace-about-page.png" alt="About page" /></p>
 
 <ul>
-<li>The DSpace source code mentions the configuration key <code>discovery.index.authority.ignore-prefered.*</code> (with prefix of discovery, despite the docs saying otherwise), so I&rsquo;m trying the following on DSpace Test:</li>
-</ul>
+<li><p>The DSpace source code mentions the configuration key <code>discovery.index.authority.ignore-prefered.*</code> (with prefix of discovery, despite the docs saying otherwise), so I&rsquo;m trying the following on DSpace Test:</p>
 
 <pre><code>discovery.index.authority.ignore-prefered.dc.contributor.author=true
 discovery.index.authority.ignore-variants=true
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Still no change!</li>
-<li>Deploy species, breed, and identifier changes to CGSpace, as well as About page</li>
-<li>Run Linode RAM upgrade (8→12GB)</li>
-<li>Re-sync DSpace Test with CGSpace</li>
-<li>I noticed that our backup scripts don&rsquo;t send Solr cores to S3 so I amended the script</li>
+<li><p>Still no change!</p></li>
+
+<li><p>Deploy species, breed, and identifier changes to CGSpace, as well as About page</p></li>
+
+<li><p>Run Linode RAM upgrade (8→12GB)</p></li>
+
+<li><p>Re-sync DSpace Test with CGSpace</p></li>
+
+<li><p>I noticed that our backup scripts don&rsquo;t send Solr cores to S3 so I amended the script</p></li>
 </ul>
 
 <h2 id="2016-07-31">2016-07-31</h2>

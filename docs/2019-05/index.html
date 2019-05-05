@@ -16,12 +16,11 @@ A user on the dspace-tech mailing list offered some suggestions for troubleshoot
 Apparently if the item is in the workflowitem table it is submitted to a workflow
 And if it is in the workspaceitem table it is in the pre-submitted state
 
-The item seems to be in a pre-submitted state, so I tried to delete it from there:
 
+The item seems to be in a pre-submitted state, so I tried to delete it from there:
 
 dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 DELETE 1
-
 
 
 But after this I tried to delete the item from the XMLUI and it is still present&hellip;
@@ -29,7 +28,7 @@ But after this I tried to delete the item from the XMLUI and it is still present
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-05/" />
 <meta property="article:published_time" content="2019-05-01T07:37:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-05-03T10:29:01&#43;03:00"/>
+<meta property="article:modified_time" content="2019-05-03T16:33:34&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2019"/>
@@ -43,17 +42,16 @@ A user on the dspace-tech mailing list offered some suggestions for troubleshoot
 Apparently if the item is in the workflowitem table it is submitted to a workflow
 And if it is in the workspaceitem table it is in the pre-submitted state
 
-The item seems to be in a pre-submitted state, so I tried to delete it from there:
 
+The item seems to be in a pre-submitted state, so I tried to delete it from there:
 
 dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 DELETE 1
 
 
-
 But after this I tried to delete the item from the XMLUI and it is still present&hellip;
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -63,9 +61,9 @@ But after this I tried to delete the item from the XMLUI and it is still present
   "@type": "BlogPosting",
   "headline": "May, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-05\/",
-  "wordCount": "568",
+  "wordCount": "644",
   "datePublished": "2019-05-01T07:37:43\x2b03:00",
-  "dateModified": "2019-05-03T10:29:01\x2b03:00",
+  "dateModified": "2019-05-03T16:33:34\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -142,111 +140,121 @@ But after this I tried to delete the item from the XMLUI and it is still present
 <li>Apparently if the item is in the <code>workflowitem</code> table it is submitted to a workflow</li>
 <li>And if it is in the <code>workspaceitem</code> table it is in the pre-submitted state</li>
 </ul></li>
-<li>The item seems to be in a pre-submitted state, so I tried to delete it from there:</li>
-</ul>
+
+<li><p>The item seems to be in a pre-submitted state, so I tried to delete it from there:</p>
 
 <pre><code>dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 DELETE 1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>But after this I tried to delete the item from the XMLUI and it is <em>still</em> present&hellip;</li>
+<li><p>But after this I tried to delete the item from the XMLUI and it is <em>still</em> present&hellip;</p></li>
 </ul>
 
 <ul>
-<li>I managed to delete the problematic item from the database
+<li><p>I managed to delete the problematic item from the database</p>
 
 <ul>
 <li>First I deleted the item&rsquo;s bitstream in XMLUI and then ran <code>dspace cleanup -v</code> to remove it from the assetstore</li>
-<li>Then I ran the following SQL:</li>
-</ul></li>
-</ul>
+
+<li><p>Then I ran the following SQL:</p>
 
 <pre><code>dspace=# DELETE FROM metadatavalue WHERE resource_id=74648;
 dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 dspace=# DELETE FROM item WHERE item_id=74648;
-</code></pre>
-
-<ul>
-<li>Now the item is (hopefully) really gone and I can continue to troubleshoot the issue with REST API&rsquo;s <code>/items/find-by-metadata-value</code> endpoint
-
-<ul>
-<li>Of course I run into another HTTP 401 error when I continue trying the LandPortal search from last month:</li>
+</code></pre></li>
 </ul></li>
-</ul>
+
+<li><p>Now the item is (hopefully) really gone and I can continue to troubleshoot the issue with REST API&rsquo;s <code>/items/find-by-metadata-value</code> endpoint</p>
+
+<ul>
+<li><p>Of course I run into another HTTP 401 error when I continue trying the LandPortal search from last month:</p>
 
 <pre><code>$ curl -f -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
 curl: (22) The requested URL returned error: 401 Unauthorized
-</code></pre>
+</code></pre></li>
+</ul></li>
 
-<ul>
-<li>The DSpace log shows the item ID (because I modified the error text):</li>
-</ul>
+<li><p>The DSpace log shows the item ID (because I modified the error text):</p>
 
 <pre><code>2019-05-01 11:41:11,069 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item(id=77708)!
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>If I delete that one I get another, making the list of item IDs so far:
+<li><p>If I delete that one I get another, making the list of item IDs so far:</p>
 
 <ul>
 <li>74648</li>
 <li>77708</li>
 <li>85079</li>
 </ul></li>
-<li>Some are in the <code>workspaceitem</code> table (pre-submission), others are in the <code>workflowitem</code> table (submitted), and others are actually approved, but withdrawn&hellip;
+
+<li><p>Some are in the <code>workspaceitem</code> table (pre-submission), others are in the <code>workflowitem</code> table (submitted), and others are actually approved, but withdrawn&hellip;</p>
 
 <ul>
 <li>This is actually a worthless exercise because the real issue is that the <code>/items/find-by-metadata-value</code> endpoint is simply designed flawed and shouldn&rsquo;t be fatally erroring when the search returns items the user doesn&rsquo;t have permission to access</li>
 <li>It would take way too much time to try to fix the fucked up items that are in limbo by deleting them in SQL, but also, it doesn&rsquo;t actually fix the problem because some items are <em>submitted</em> but <em>withdrawn</em>, so they actually have handles and everything</li>
 <li>I think the solution is to recommend people don&rsquo;t use the <code>/items/find-by-metadata-value</code> endpoint</li>
 </ul></li>
-<li>CIP is asking about embedding PDF thumbnail images in their RSS feeds again
+
+<li><p>CIP is asking about embedding PDF thumbnail images in their RSS feeds again</p>
 
 <ul>
 <li>They asked in 2018-09 as well and I told them it wasn&rsquo;t possible</li>
 <li>To make sure, I looked at <a href="https://wiki.duraspace.org/display/DSPACE/Enable+Media+RSS+Feeds">the documentation for RSS media feeds</a> and tried it, but couldn&rsquo;t get it to work</li>
 <li>It seems to be geared towards iTunes and Podcasts&hellip; I dunno</li>
 </ul></li>
-<li>CIP also asked for a way to get an XML file of all their RTB journal articles on CGSpace
+
+<li><p>CIP also asked for a way to get an XML file of all their RTB journal articles on CGSpace</p>
 
 <ul>
-<li>I told them to use the REST API like (where <code>1179</code> is the id of the RTB journal articles collection):</li>
-</ul></li>
-</ul>
+<li><p>I told them to use the REST API like (where <code>1179</code> is the id of the RTB journal articles collection):</p>
 
 <pre><code>https://cgspace.cgiar.org/rest/collections/1179/items?limit=812&amp;expand=metadata
-</code></pre>
+</code></pre></li>
+</ul></li>
+</ul>
 
 <h2 id="2019-05-03">2019-05-03</h2>
 
 <ul>
-<li>A user from CIAT emailed to say that CGSpace submission emails have not been working the last few weeks
+<li><p>A user from CIAT emailed to say that CGSpace submission emails have not been working the last few weeks</p>
 
 <ul>
-<li>I checked the <code>dspace test-email</code> script on CGSpace and they are indeed failing:</li>
-</ul></li>
-</ul>
+<li><p>I checked the <code>dspace test-email</code> script on CGSpace and they are indeed failing:</p>
 
 <pre><code>$ dspace test-email
 
 About to send test email:
- - To: woohoo@cgiar.org
- - Subject: DSpace test email
- - Server: smtp.office365.com
+- To: woohoo@cgiar.org
+- Subject: DSpace test email
+- Server: smtp.office365.com
 
 Error sending email:
- - Error: javax.mail.AuthenticationFailedException
+- Error: javax.mail.AuthenticationFailedException
 
 Please see the DSpace documentation for assistance.
-</code></pre>
+</code></pre></li>
+</ul></li>
 
-<ul>
-<li>I will ask ILRI ICT to reset the password
+<li><p>I will ask ILRI ICT to reset the password</p>
 
 <ul>
 <li>They reset the password and I tested it on CGSpace</li>
 </ul></li>
+</ul>
+
+<h2 id="2019-05-05">2019-05-05</h2>
+
+<ul>
+<li>Run all system updates on DSpace Test (linode19) and reboot it</li>
+<li>Merge changes into the <code>5_x-prod</code> branch of CGSpace:
+
+<ul>
+<li>Updates to remove deprecated social media websites (Google+ and Delicious), update Twitter share intent, and add item title to Twitter and email links (<a href="https://github.com/ilri/DSpace/pull/421">#421</a>)</li>
+<li>Add new CCAFS Phase II project tags (<a href="https://github.com/ilri/DSpace/pull/420">#420</a>)</li>
+<li>Add item ID to REST API error logging (<a href="https://github.com/ilri/DSpace/pull/422">#422</a>)</li>
+</ul></li>
+<li>Re-deploy CGSpace from <code>5_x-prod</code> branch</li>
+<li>Run all system updates on CGSpace (linode18) and reboot it</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->

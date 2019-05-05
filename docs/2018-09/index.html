@@ -29,7 +29,7 @@ I&rsquo;ll update the DSpace role in our Ansible infrastructure playbooks and ru
 Also, I&rsquo;ll re-run the postgresql tasks because the custom PostgreSQL variables are dynamic according to the system&rsquo;s RAM, and we never re-ran them after migrating to larger Linodes last month
 I&rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I&rsquo;m getting those autowire errors in Tomcat 8.5.30 again:
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -181,62 +181,59 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 
 <ul>
 <li>Playing with <a href="https://github.com/eykhagen/strest">strest</a> to test the DSpace REST API programatically</li>
-<li>For example, given this <code>test.yaml</code>:</li>
-</ul>
+
+<li><p>For example, given this <code>test.yaml</code>:</p>
 
 <pre><code>version: 1
 
 requests:
-  test:
-    method: GET
-    url: https://dspacetest.cgiar.org/rest/test
-    validate:
-      raw: &quot;REST api is running.&quot;
+test:
+method: GET
+url: https://dspacetest.cgiar.org/rest/test
+validate:
+  raw: &quot;REST api is running.&quot;
 
-  login:
-    url: https://dspacetest.cgiar.org/rest/login
-    method: POST
-    data:
-      json: {&quot;email&quot;:&quot;test@dspace&quot;,&quot;password&quot;:&quot;thepass&quot;}
+login:
+url: https://dspacetest.cgiar.org/rest/login
+method: POST
+data:
+  json: {&quot;email&quot;:&quot;test@dspace&quot;,&quot;password&quot;:&quot;thepass&quot;}
 
-  status:
-    url: https://dspacetest.cgiar.org/rest/status
-    method: GET
-    headers:
-      rest-dspace-token: Value(login)
+status:
+url: https://dspacetest.cgiar.org/rest/status
+method: GET
+headers:
+  rest-dspace-token: Value(login)
 
-  logout:
-    url: https://dspacetest.cgiar.org/rest/logout
-    method: POST
-    headers:
-      rest-dspace-token: Value(login)
+logout:
+url: https://dspacetest.cgiar.org/rest/logout
+method: POST
+headers:
+  rest-dspace-token: Value(login)
 
 # vim: set sw=2 ts=2:
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Works pretty well, though the DSpace <code>logout</code> always returns an HTTP 415 error for some reason</li>
-<li>We could eventually use this to test sanity of the API for creating collections etc</li>
-<li>A user is getting an error in her workflow:</li>
-</ul>
+<li><p>Works pretty well, though the DSpace <code>logout</code> always returns an HTTP 415 error for some reason</p></li>
+
+<li><p>We could eventually use this to test sanity of the API for creating collections etc</p></li>
+
+<li><p>A user is getting an error in her workflow:</p>
 
 <pre><code>2018-09-10 07:26:35,551 ERROR org.dspace.submit.step.CompleteStep @ Caught exception in submission step: 
 org.dspace.authorize.AuthorizeException: Authorization denied for action WORKFLOW_STEP_1 on COLLECTION:2 by user 3819
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Seems to be during submit step, because it&rsquo;s workflow step 1&hellip;?</li>
-<li>Move some top-level CRP communities to be below the new <a href="https://cgspace.cgiar.org/handle/10568/97114">CGIAR Research Programs and Platforms</a> community:</li>
-</ul>
+<li><p>Seems to be during submit step, because it&rsquo;s workflow step 1&hellip;?</p></li>
+
+<li><p>Move some top-level CRP communities to be below the new <a href="https://cgspace.cgiar.org/handle/10568/97114">CGIAR Research Programs and Platforms</a> community:</p>
 
 <pre><code>$ dspace community-filiator --set -p 10568/97114 -c 10568/51670
 $ dspace community-filiator --set -p 10568/97114 -c 10568/35409
 $ dspace community-filiator --set -p 10568/97114 -c 10568/3112
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Valerio contacted me to point out some issues with metadata on CGSpace, which I corrected in PostgreSQL:</li>
-</ul>
+<li><p>Valerio contacted me to point out some issues with metadata on CGSpace, which I corrected in PostgreSQL:</p>
 
 <pre><code>update metadatavalue set text_value='ISI Journal' where resource_type_id=2 and metadata_field_id=226 and text_value='ISI Juornal';
 UPDATE 1
@@ -248,48 +245,45 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id=226 and
 DELETE 17
 update metadatavalue set text_value='ISI Journal' where resource_type_id=2 and metadata_field_id=226 and text_value='ISI';
 UPDATE 15
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Start working on adding metadata for access and usage rights that we started earlier in 2018 (and also in 2017)</li>
-<li>The current <code>cg.identifier.status</code> field will become &ldquo;Access rights&rdquo; and <code>dc.rights</code> will become &ldquo;Usage rights&rdquo;</li>
-<li>I have some work in progress on the <a href="https://github.com/alanorth/DSpace/tree/5_x-rights"><code>5_x-rights</code> branch</a></li>
-<li>Linode said that CGSpace (linode18) had a high CPU load earlier today</li>
-<li>When I looked, I see it&rsquo;s the same Russian IP that I noticed last month:</li>
-</ul>
+<li><p>Start working on adding metadata for access and usage rights that we started earlier in 2018 (and also in 2017)</p></li>
+
+<li><p>The current <code>cg.identifier.status</code> field will become &ldquo;Access rights&rdquo; and <code>dc.rights</code> will become &ldquo;Usage rights&rdquo;</p></li>
+
+<li><p>I have some work in progress on the <a href="https://github.com/alanorth/DSpace/tree/5_x-rights"><code>5_x-rights</code> branch</a></p></li>
+
+<li><p>Linode said that CGSpace (linode18) had a high CPU load earlier today</p></li>
+
+<li><p>When I looked, I see it&rsquo;s the same Russian IP that I noticed last month:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Sep/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-   1459 157.55.39.202
-   1579 95.108.181.88
-   1615 157.55.39.147
-   1714 66.249.64.91
-   1924 50.116.102.77
-   3696 157.55.39.106
-   3763 157.55.39.148
-   4470 70.32.83.92
-   4724 35.237.175.180
-  14132 5.9.6.51
-</code></pre>
+1459 157.55.39.202
+1579 95.108.181.88
+1615 157.55.39.147
+1714 66.249.64.91
+1924 50.116.102.77
+3696 157.55.39.106
+3763 157.55.39.148
+4470 70.32.83.92
+4724 35.237.175.180
+14132 5.9.6.51
+</code></pre></li>
 
-<ul>
-<li>And this bot is still creating more Tomcat sessions than Nginx requests (WTF?):</li>
-</ul>
+<li><p>And this bot is still creating more Tomcat sessions than Nginx requests (WTF?):</p>
 
 <pre><code># grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2018-09-10 
 14133
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The user agent is still the same:</li>
-</ul>
+<li><p>The user agent is still the same:</p>
 
 <pre><code>Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I added <code>.*crawl.*</code> to the Tomcat Session Crawler Manager Valve, so I&rsquo;m not sure why the bot is creating so many sessions&hellip;</li>
-<li>I just tested that user agent on CGSpace and it <em>does not</em> create a new session:</li>
-</ul>
+<li><p>I added <code>.*crawl.*</code> to the Tomcat Session Crawler Manager Valve, so I&rsquo;m not sure why the bot is creating so many sessions&hellip;</p></li>
+
+<li><p>I just tested that user agent on CGSpace and it <em>does not</em> create a new session:</p>
 
 <pre><code>$ http --print Hh https://cgspace.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)'
 GET / HTTP/1.1
@@ -313,29 +307,31 @@ X-Cocoon-Version: 2.2.0
 X-Content-Type-Options: nosniff
 X-Frame-Options: SAMEORIGIN
 X-XSS-Protection: 1; mode=block
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will have to keep an eye on it and perhaps add it to the list of &ldquo;bad bots&rdquo; that get rate limited</li>
+<li><p>I will have to keep an eye on it and perhaps add it to the list of &ldquo;bad bots&rdquo; that get rate limited</p></li>
 </ul>
 
 <h2 id="2018-09-12">2018-09-12</h2>
 
 <ul>
 <li>Merge AReS explorer changes to nginx config and deploy on CGSpace so CodeObia can start testing more</li>
-<li>Re-create my local Docker container for PostgreSQL data, but using a volume for the database data:</li>
-</ul>
+
+<li><p>Re-create my local Docker container for PostgreSQL data, but using a volume for the database data:</p>
 
 <pre><code>$ sudo docker volume create --name dspacetest_data
 $ sudo docker run --name dspacedb -v dspacetest_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Sisay is still having problems with the controlled vocabulary for top authors</li>
-<li>I took a look at the submission template and Firefox complains that the XML file is missing a root element</li>
-<li>I guess it&rsquo;s because Firefox is receiving an empty XML file</li>
-<li>I told Sisay to run the XML file through tidy</li>
-<li>More testing of the access and usage rights changes</li>
+<li><p>Sisay is still having problems with the controlled vocabulary for top authors</p></li>
+
+<li><p>I took a look at the submission template and Firefox complains that the XML file is missing a root element</p></li>
+
+<li><p>I guess it&rsquo;s because Firefox is receiving an empty XML file</p></li>
+
+<li><p>I told Sisay to run the XML file through tidy</p></li>
+
+<li><p>More testing of the access and usage rights changes</p></li>
 </ul>
 
 <h2 id="2018-09-13">2018-09-13</h2>
@@ -347,53 +343,60 @@ $ sudo docker run --name dspacedb -v dspacetest_data:/var/lib/postgresql/data -e
 <li>The <code>dateStamp</code> is most probably only updated when the item&rsquo;s metadata changes, not its mappings, so if Altmetric is relying on that we&rsquo;re in a tricky spot</li>
 <li>We need to make sure that our OAI isn&rsquo;t publicizing stale data&hellip; I was going to post something on the dspace-tech mailing list, but never did</li>
 <li>Linode says that CGSpace (linode18) has had high CPU for the past two hours</li>
-<li>The top IP addresses today are:</li>
-</ul>
+
+<li><p>The top IP addresses today are:</p>
 
 <pre><code># zcat --force /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;13/Sep/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10                                                                                                
-     32 46.229.161.131
-     38 104.198.9.108
-     39 66.249.64.91
-     56 157.55.39.224
-     57 207.46.13.49
-     58 40.77.167.120
-     78 169.255.105.46
-    702 54.214.112.202
-   1840 50.116.102.77
-   4469 70.32.83.92
-</code></pre>
+ 32 46.229.161.131
+ 38 104.198.9.108
+ 39 66.249.64.91
+ 56 157.55.39.224
+ 57 207.46.13.49
+ 58 40.77.167.120
+ 78 169.255.105.46
+702 54.214.112.202
+1840 50.116.102.77
+4469 70.32.83.92
+</code></pre></li>
 
-<ul>
-<li>And the top two addresses seem to be re-using their Tomcat sessions properly:</li>
-</ul>
+<li><p>And the top two addresses seem to be re-using their Tomcat sessions properly:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=70.32.83.92' dspace.log.2018-09-13 | sort | uniq
 7
 $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-13 | sort | uniq
 2
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So I&rsquo;m not sure what&rsquo;s going on</li>
-<li>Valerio asked me if there&rsquo;s a way to get the page views and downloads from CGSpace</li>
-<li>I said no, but that we might be able to piggyback on the Atmire statlet REST API</li>
-<li>For example, when you expand the &ldquo;statlet&rdquo; at the bottom of an item like <a href="https://cgspace.cgiar.org/handle/10568/97103"><sup>10568</sup>&frasl;<sub>97103</sub></a> you can see the following request in the browser console:</li>
-</ul>
+<li><p>So I&rsquo;m not sure what&rsquo;s going on</p></li>
+
+<li><p>Valerio asked me if there&rsquo;s a way to get the page views and downloads from CGSpace</p></li>
+
+<li><p>I said no, but that we might be able to piggyback on the Atmire statlet REST API</p></li>
+
+<li><p>For example, when you expand the &ldquo;statlet&rdquo; at the bottom of an item like <a href="https://cgspace.cgiar.org/handle/10568/97103"><sup>10568</sup>&frasl;<sub>97103</sub></a> you can see the following request in the browser console:</p>
 
 <pre><code>https://cgspace.cgiar.org/rest/statlets?handle=10568/97103
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>That JSON file has the total page views and item downloads for the item&hellip;</li>
-<li>Abenet forwarded a request by CIP that item thumbnails be included in RSS feeds</li>
-<li>I had a quick look at the DSpace 5.x manual and it doesn&rsquo;t not seem that this is possible (you can only add metadata)</li>
-<li>Testing the new LDAP server the CGNET says will be replacing the old one, it doesn&rsquo;t seem that they are using the global catalog on port 3269 anymore, now only 636 is open</li>
-<li>I did a clean deploy of DSpace 5.8 on Ubuntu 18.04 with some stripped down Tomcat 8 configuration and actually managed to get it up and running without the autowire errors that I had previously experienced</li>
-<li>I realized that it always works on my local machine with Tomcat 8.5.x, but not when I do the deployment from Ansible in Ubuntu 18.04</li>
-<li>So there must be something in my Tomcat 8 <code>server.xml</code> template</li>
-<li>Now I re-deployed it with the normal server template and it&rsquo;s working, WTF?</li>
-<li>Must have been something like an old DSpace 5.5 file in the spring folder&hellip; weird</li>
-<li>But yay, this means we can update DSpace Test to Ubuntu 18.04, Tomcat 8, PostgreSQL 9.6, etc&hellip;</li>
+<li><p>That JSON file has the total page views and item downloads for the item&hellip;</p></li>
+
+<li><p>Abenet forwarded a request by CIP that item thumbnails be included in RSS feeds</p></li>
+
+<li><p>I had a quick look at the DSpace 5.x manual and it doesn&rsquo;t not seem that this is possible (you can only add metadata)</p></li>
+
+<li><p>Testing the new LDAP server the CGNET says will be replacing the old one, it doesn&rsquo;t seem that they are using the global catalog on port 3269 anymore, now only 636 is open</p></li>
+
+<li><p>I did a clean deploy of DSpace 5.8 on Ubuntu 18.04 with some stripped down Tomcat 8 configuration and actually managed to get it up and running without the autowire errors that I had previously experienced</p></li>
+
+<li><p>I realized that it always works on my local machine with Tomcat 8.5.x, but not when I do the deployment from Ansible in Ubuntu 18.04</p></li>
+
+<li><p>So there must be something in my Tomcat 8 <code>server.xml</code> template</p></li>
+
+<li><p>Now I re-deployed it with the normal server template and it&rsquo;s working, WTF?</p></li>
+
+<li><p>Must have been something like an old DSpace 5.5 file in the spring folder&hellip; weird</p></li>
+
+<li><p>But yay, this means we can update DSpace Test to Ubuntu 18.04, Tomcat 8, PostgreSQL 9.6, etc&hellip;</p></li>
 </ul>
 
 <h2 id="2018-09-14">2018-09-14</h2>
@@ -440,51 +443,46 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-
 <li>I want to explore creating a thin API to make the item view and download stats available from Solr so CodeObia can use them in the AReS explorer</li>
 <li>Currently CodeObia is exploring using the Atmire statlets internal API, but I don&rsquo;t really like that&hellip;</li>
 <li>There are some example queries on the <a href="https://wiki.duraspace.org/display/DSPACE/Solr">DSpace Solr wiki</a></li>
-<li>For example, this query returns 1655 rows for item <a href="https://cgspace.cgiar.org/handle/10568/10630"><sup>10568</sup>&frasl;<sub>10630</sub></a>:</li>
-</ul>
+
+<li><p>For example, this query returns 1655 rows for item <a href="https://cgspace.cgiar.org/handle/10568/10630"><sup>10568</sup>&frasl;<sub>10630</sub></a>:</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:0+owningItem:11576&amp;fq=isBot:false'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The id in the Solr query is the item&rsquo;s database id (get it from the REST API or something)</li>
-<li>Next, I adopted a query to get the downloads and it shows 889, which is similar to the number Atmire&rsquo;s statlet shows, though the query logic here is confusing:</li>
-</ul>
+<li><p>The id in the Solr query is the item&rsquo;s database id (get it from the REST API or something)</p></li>
+
+<li><p>Next, I adopted a query to get the downloads and it shows 889, which is similar to the number Atmire&rsquo;s statlet shows, though the query logic here is confusing:</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:0+owningItem:11576&amp;fq=isBot:false&amp;fq=-(bundleName:[*+TO+*]-bundleName:ORIGINAL)&amp;fq=-(statistics_type:[*+TO+*]+-statistics_type:view)'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>According to the <a href="https://wiki.apache.org/solr/SolrQuerySyntax">SolrQuerySyntax</a> page on the Apache wiki, the <code>[* TO *]</code> syntax just selects a range (in this case all values for a field)</li>
-<li>So it seems to be:
+<li><p>According to the <a href="https://wiki.apache.org/solr/SolrQuerySyntax">SolrQuerySyntax</a> page on the Apache wiki, the <code>[* TO *]</code> syntax just selects a range (in this case all values for a field)</p></li>
+
+<li><p>So it seems to be:</p>
 
 <ul>
 <li><code>type:0</code> is for bitstreams according to the DSpace Solr documentation</li>
 <li><code>-(bundleName:[*+TO+*]-bundleName:ORIGINAL)</code> seems to be a <a href="https://wiki.apache.org/solr/NegativeQueryProblems">negative query starting with all documents</a>, subtracting those with <code>bundleName:ORIGINAL</code>, and then negating the whole thing&hellip; meaning only documents from <code>bundleName:ORIGINAL</code>?</li>
 </ul></li>
-<li>What the shit, I think I&rsquo;m right: the simplified logic in <em>this</em> query returns the same 889:</li>
-</ul>
+
+<li><p>What the shit, I think I&rsquo;m right: the simplified logic in <em>this</em> query returns the same 889:</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:0+owningItem:11576&amp;fq=isBot:false&amp;fq=bundleName:ORIGINAL&amp;fq=-(statistics_type:[*+TO+*]+-statistics_type:view)'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And if I simplify the <code>statistics_type</code> logic the same way, it still returns the same 889!</li>
-</ul>
+<li><p>And if I simplify the <code>statistics_type</code> logic the same way, it still returns the same 889!</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:0+owningItem:11576&amp;fq=isBot:false&amp;fq=bundleName:ORIGINAL&amp;fq=statistics_type:view'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>As for item views, I suppose that&rsquo;s just the same query, minus the <code>bundleName:ORIGINAL</code>:</li>
-</ul>
+<li><p>As for item views, I suppose that&rsquo;s just the same query, minus the <code>bundleName:ORIGINAL</code>:</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:0+owningItem:11576&amp;fq=isBot:false&amp;fq=-bundleName:ORIGINAL&amp;fq=statistics_type:view'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>That one returns 766, which is exactly 1655 minus 889&hellip;</li>
-<li>Also, Solr&rsquo;s <code>fq</code> is similar to the regular <code>q</code> query parameter, but it is considered for the Solr query cache so it should be faster for multiple queries</li>
+<li><p>That one returns 766, which is exactly 1655 minus 889&hellip;</p></li>
+
+<li><p>Also, Solr&rsquo;s <code>fq</code> is similar to the regular <code>q</code> query parameter, but it is considered for the Solr query cache so it should be faster for multiple queries</p></li>
 </ul>
 
 <h2 id="2018-09-18">2018-09-18</h2>
@@ -492,28 +490,27 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-
 <ul>
 <li>I managed to create a simple proof of concept REST API to expose item view and download statistics: <a href="https://github.com/alanorth/cgspace-statistics-api">cgspace-statistics-api</a></li>
 <li>It uses the Python-based <a href="https://falcon.readthedocs.io">Falcon</a> web framework and talks to Solr directly using the <a href="https://github.com/moonlitesolutions/SolrClient">SolrClient</a> library (which seems to have issues in Python 3.7 currently)</li>
-<li>After deploying on DSpace Test I can then get the stats for an item using its ID:</li>
-</ul>
+
+<li><p>After deploying on DSpace Test I can then get the stats for an item using its ID:</p>
 
 <pre><code>$ http -b 'https://dspacetest.cgiar.org/rest/statistics/item?id=110988'
 {
-    &quot;downloads&quot;: 2,
-    &quot;id&quot;: 110988,
-    &quot;views&quot;: 15
+&quot;downloads&quot;: 2,
+&quot;id&quot;: 110988,
+&quot;views&quot;: 15
 }
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The numbers are different than those that come from Atmire&rsquo;s statlets for some reason, but as I&rsquo;m querying Solr directly, I have no idea where their numbers come from!</li>
-<li>Moayad from CodeObia asked if I could make the API be able to paginate over all items, for example: /statistics?limit=100&amp;page=1</li>
-<li>Getting all the item IDs from PostgreSQL is certainly easy:</li>
-</ul>
+<li><p>The numbers are different than those that come from Atmire&rsquo;s statlets for some reason, but as I&rsquo;m querying Solr directly, I have no idea where their numbers come from!</p></li>
+
+<li><p>Moayad from CodeObia asked if I could make the API be able to paginate over all items, for example: /statistics?limit=100&amp;page=1</p></li>
+
+<li><p>Getting all the item IDs from PostgreSQL is certainly easy:</p>
 
 <pre><code>dspace=# select item_id from item where in_archive is True and withdrawn is False and discoverable is True;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The rest of the Falcon tooling will be more difficult&hellip;</li>
+<li><p>The rest of the Falcon tooling will be more difficult&hellip;</p></li>
 </ul>
 
 <h2 id="2018-09-19">2018-09-19</h2>
@@ -527,24 +524,24 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-
 
 <ul>
 <li>Contact Atmire to ask how we can buy more credits for future development</li>
-<li>I researched the Solr <code>filterCache</code> size and I found out that the formula for calculating the potential memory use of <strong>each entry</strong> in the cache is:</li>
-</ul>
+
+<li><p>I researched the Solr <code>filterCache</code> size and I found out that the formula for calculating the potential memory use of <strong>each entry</strong> in the cache is:</p>
 
 <pre><code>((maxDoc/8) + 128) * (size_defined_in_solrconfig.xml)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Which means that, for our statistics core with <em>149 million</em> documents, each entry in our <code>filterCache</code> would use 8.9 GB!</li>
-</ul>
+<li><p>Which means that, for our statistics core with <em>149 million</em> documents, each entry in our <code>filterCache</code> would use 8.9 GB!</p>
 
 <pre><code>((149374568/8) + 128) * 512 = 9560037888 bytes (8.9 GB)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So I think we can forget about tuning this for now!</li>
-<li><a href="http://lucene.472066.n3.nabble.com/Calculating-filterCache-size-td4142526.html">Discussion on the mailing list about <code>filterCache</code> size</a></li>
-<li><a href="https://docs.google.com/document/d/1vl-nmlprSULvNZKQNrqp65eLnLhG9s_ydXQtg9iML10/edit">Article discussing testing methodology for different <code>filterCache</code> sizes</a></li>
-<li>Discuss Handle links on Twitter with IWMI</li>
+<li><p>So I think we can forget about tuning this for now!</p></li>
+
+<li><p><a href="http://lucene.472066.n3.nabble.com/Calculating-filterCache-size-td4142526.html">Discussion on the mailing list about <code>filterCache</code> size</a></p></li>
+
+<li><p><a href="https://docs.google.com/document/d/1vl-nmlprSULvNZKQNrqp65eLnLhG9s_ydXQtg9iML10/edit">Article discussing testing methodology for different <code>filterCache</code> sizes</a></p></li>
+
+<li><p>Discuss Handle links on Twitter with IWMI</p></li>
 </ul>
 
 <h2 id="2018-09-21">2018-09-21</h2>
@@ -577,8 +574,8 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=50.116.102.77' dspace.log.2018-09-
 
 <ul>
 <li>Trying to figure out how to get item views and downloads from SQLite in a join</li>
-<li>It appears SQLite doesn&rsquo;t support <code>FULL OUTER JOIN</code> so some people on StackOverflow have emulated it with <code>LEFT JOIN</code> and <code>UNION</code>:</li>
-</ul>
+
+<li><p>It appears SQLite doesn&rsquo;t support <code>FULL OUTER JOIN</code> so some people on StackOverflow have emulated it with <code>LEFT JOIN</code> and <code>UNION</code>:</p>
 
 <pre><code>&gt; SELECT views.views, views.id, downloads.downloads, downloads.id FROM itemviews views
 LEFT JOIN itemdownloads downloads USING(id)
@@ -586,12 +583,11 @@ UNION ALL
 SELECT views.views, views.id, downloads.downloads, downloads.id FROM itemdownloads downloads
 LEFT JOIN itemviews views USING(id)
 WHERE views.id IS NULL;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This &ldquo;works&rdquo; but the resulting rows are kinda messy so I&rsquo;d have to do extra logic in Python</li>
-<li>Maybe we can use one &ldquo;items&rdquo; table with defaults values and UPSERT (aka insert&hellip; on conflict &hellip; do update):</li>
-</ul>
+<li><p>This &ldquo;works&rdquo; but the resulting rows are kinda messy so I&rsquo;d have to do extra logic in Python</p></li>
+
+<li><p>Maybe we can use one &ldquo;items&rdquo; table with defaults values and UPSERT (aka insert&hellip; on conflict &hellip; do update):</p>
 
 <pre><code>sqlite&gt; CREATE TABLE items(id INT PRIMARY KEY, views INT DEFAULT 0, downloads INT DEFAULT 0);
 sqlite&gt; INSERT INTO items(id, views) VALUES(0, 52);
@@ -600,29 +596,31 @@ sqlite&gt; INSERT INTO items(id, downloads) VALUES(1, 176) ON CONFLICT(id) DO UP
 sqlite&gt; INSERT INTO items(id, views) VALUES(0, 78) ON CONFLICT(id) DO UPDATE SET views=78;
 sqlite&gt; INSERT INTO items(id, views) VALUES(0, 3) ON CONFLICT(id) DO UPDATE SET downloads=3;
 sqlite&gt; INSERT INTO items(id, views) VALUES(0, 7) ON CONFLICT(id) DO UPDATE SET downloads=excluded.views;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This totally works!</li>
-<li>Note the special <code>excluded.views</code> form! See <a href="https://www.sqlite.org/lang_UPSERT.html">SQLite&rsquo;s lang_UPSERT documentation</a></li>
-<li>Oh nice, I finally finished the Falcon API route to page through all the results using SQLite&rsquo;s amazing <code>LIMIT</code> and <code>OFFSET</code> support</li>
-<li>But when I deployed it on my Ubuntu 16.04 environment I realized Ubuntu&rsquo;s SQLite is old and doesn&rsquo;t support <code>UPSERT</code>, so my indexing doesn&rsquo;t work&hellip;</li>
-<li>Apparently <code>UPSERT</code> came in SQLite 3.24.0 (2018-06-04), and Ubuntu 16.04 has 3.11.0</li>
-<li>Ok this is hilarious, I manually downloaded the <a href="https://packages.ubuntu.com/cosmic/libsqlite3-0">libsqlite3 3.24.0 deb from Ubuntu 18.10 &ldquo;cosmic&rdquo;</a> and installed it in Ubnutu 16.04 and now the Python <code>indexer.py</code> works</li>
-<li>This is definitely a dirty hack, but the list of packages we use that depend on <code>libsqlite3-0</code> in Ubuntu 16.04 are actually pretty few:</li>
-</ul>
+<li><p>This totally works!</p></li>
+
+<li><p>Note the special <code>excluded.views</code> form! See <a href="https://www.sqlite.org/lang_UPSERT.html">SQLite&rsquo;s lang_UPSERT documentation</a></p></li>
+
+<li><p>Oh nice, I finally finished the Falcon API route to page through all the results using SQLite&rsquo;s amazing <code>LIMIT</code> and <code>OFFSET</code> support</p></li>
+
+<li><p>But when I deployed it on my Ubuntu 16.04 environment I realized Ubuntu&rsquo;s SQLite is old and doesn&rsquo;t support <code>UPSERT</code>, so my indexing doesn&rsquo;t work&hellip;</p></li>
+
+<li><p>Apparently <code>UPSERT</code> came in SQLite 3.24.0 (2018-06-04), and Ubuntu 16.04 has 3.11.0</p></li>
+
+<li><p>Ok this is hilarious, I manually downloaded the <a href="https://packages.ubuntu.com/cosmic/libsqlite3-0">libsqlite3 3.24.0 deb from Ubuntu 18.10 &ldquo;cosmic&rdquo;</a> and installed it in Ubnutu 16.04 and now the Python <code>indexer.py</code> works</p></li>
+
+<li><p>This is definitely a dirty hack, but the list of packages we use that depend on <code>libsqlite3-0</code> in Ubuntu 16.04 are actually pretty few:</p>
 
 <pre><code># apt-cache rdepends --installed libsqlite3-0 | sort | uniq
-  gnupg2
-  libkrb5-26-heimdal
-  libnss3
-  libpython2.7-stdlib
-  libpython3.5-stdlib
-</code></pre>
+gnupg2
+libkrb5-26-heimdal
+libnss3
+libpython2.7-stdlib
+libpython3.5-stdlib
+</code></pre></li>
 
-<ul>
-<li>I wonder if I could work around this by detecting the SQLite library version, for example on Ubuntu 16.04 after I replaced the library:</li>
-</ul>
+<li><p>I wonder if I could work around this by detecting the SQLite library version, for example on Ubuntu 16.04 after I replaced the library:</p>
 
 <pre><code># python3
 Python 3.5.2 (default, Nov 23 2017, 16:37:01) 
@@ -631,20 +629,21 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
 &gt;&gt;&gt; import sqlite3
 &gt;&gt;&gt; print(sqlite3.sqlite_version)
 3.24.0
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Or maybe I should just bite the bullet and migrate this to PostgreSQL, as it <a href="https://wiki.postgresql.org/wiki/UPSERT">supports <code>UPSERT</code> since version 9.5</a> and also seems to have my new favorite <code>LIMIT</code> and <code>OFFSET</code></li>
-<li>I changed the syntax of the SQLite stuff and PostgreSQL is working flawlessly with psycopg2&hellip; hmmm.</li>
-<li>For reference, creating a PostgreSQL database for testing this locally (though <code>indexer.py</code> will create the table):</li>
-</ul>
+<li><p>Or maybe I should just bite the bullet and migrate this to PostgreSQL, as it <a href="https://wiki.postgresql.org/wiki/UPSERT">supports <code>UPSERT</code> since version 9.5</a> and also seems to have my new favorite <code>LIMIT</code> and <code>OFFSET</code></p></li>
+
+<li><p>I changed the syntax of the SQLite stuff and PostgreSQL is working flawlessly with psycopg2&hellip; hmmm.</p></li>
+
+<li><p>For reference, creating a PostgreSQL database for testing this locally (though <code>indexer.py</code> will create the table):</p>
 
 <pre><code>$ createdb -h localhost -U postgres -O dspacestatistics --encoding=UNICODE dspacestatistics
 $ createuser -h localhost -U postgres --pwprompt dspacestatistics
 $ psql -h localhost -U postgres dspacestatistics
 dspacestatistics=&gt; CREATE TABLE IF NOT EXISTS items
 dspacestatistics-&gt; (id INT PRIMARY KEY, views INT DEFAULT 0, downloads INT DEFAULT 0)
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2018-09-25">2018-09-25</h2>
 
@@ -656,55 +655,66 @@ dspacestatistics-&gt; (id INT PRIMARY KEY, views INT DEFAULT 0, downloads INT DE
 <li>I want to purge the bot hits from the Solr statistics core, as I am now realizing that I don&rsquo;t give a shit about tens of millions of hits by Google and Bing indexing my shit every day (at least not in Solr!)</li>
 <li>CGSpace&rsquo;s Solr core has 150,000,000 documents in it&hellip; and it&rsquo;s still pretty fast to query, but it&rsquo;s really a maintenance and backup burden</li>
 <li>DSpace Test currently has about 2,000,000 documents with <code>isBot:true</code> in its Solr statistics core, and the size on disk is 2GB (it&rsquo;s not much, but I have to test this somewhere!)</li>
-<li>According to the <a href="https://wiki.duraspace.org/display/DSDOC5x/SOLR+Statistics+Maintenance">DSpace 5.x Solr documentation</a> I can use <code>dspace stats-util -f</code>, so let&rsquo;s try it:</li>
-</ul>
+
+<li><p>According to the <a href="https://wiki.duraspace.org/display/DSDOC5x/SOLR+Statistics+Maintenance">DSpace 5.x Solr documentation</a> I can use <code>dspace stats-util -f</code>, so let&rsquo;s try it:</p>
 
 <pre><code>$ dspace stats-util -f
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The command comes back after a few seconds and I still see 2,000,000 documents in the statistics core with <code>isBot:true</code></li>
-<li>I was just writing a message to the dspace-tech mailing list and then I decided to check the number of bot view events on DSpace Test again, and now it&rsquo;s 201 instead of 2,000,000, and statistics core is only 30MB now!</li>
-<li>I will set the <code>logBots = false</code> property in <code>dspace/config/modules/usage-statistics.cfg</code> on DSpace Test and check if the number of <code>isBot:true</code> events goes up any more&hellip;</li>
-<li>I restarted the server with <code>logBots = false</code> and after it came back up I see 266 events with <code>isBots:true</code> (maybe they were buffered)&hellip; I will check again tomorrow</li>
-<li>After a few hours I see there are still only 266 view events with <code>isBot:true</code> on DSpace Test&rsquo;s Solr statistics core, so I&rsquo;m definitely going to deploy this on CGSpace soon</li>
-<li>Also, CGSpace currently has 60,089,394 view events with <code>isBot:true</code> in it&rsquo;s Solr statistics core and it is 124GB!</li>
-<li>Amazing! After running <code>dspace stats-util -f</code> on CGSpace the Solr statistics core went from 124GB to 60GB, and now there are only 700 events with <code>isBot:true</code> so I should really disable logging of bot events!</li>
-<li>I&rsquo;m super curious to see how the JVM heap usage changes&hellip;</li>
-<li>I made (and merged) a pull request to disable bot logging on the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/387">#387</a>)</li>
-<li>Now I&rsquo;m wondering if there are other bot requests that aren&rsquo;t classified as bots because the IP lists or user agents are outdated</li>
-<li>DSpace ships a list of spider IPs, for example: <code>config/spiders/iplists.com-google.txt</code></li>
-<li>I checked the list against all the IPs we&rsquo;ve seen using the &ldquo;Googlebot&rdquo; useragent on CGSpace&rsquo;s nginx access logs</li>
-<li>The first thing I learned is that shit tons of IPs in Russia, Ukraine, Ireland, Brazil, Portugal, the US, Canada, etc are pretending to be &ldquo;Googlebot&rdquo;&hellip;</li>
-<li>According to the <a href="https://support.google.com/webmasters/answer/80553">Googlebot FAQ</a> the domain name in the reverse DNS lookup should contain either <code>googlebot.com</code> or <code>google.com</code></li>
-<li>In Solr this appears to be an appropriate query that I can maybe use later (returns 81,000 documents):</li>
-</ul>
+<li><p>The command comes back after a few seconds and I still see 2,000,000 documents in the statistics core with <code>isBot:true</code></p></li>
+
+<li><p>I was just writing a message to the dspace-tech mailing list and then I decided to check the number of bot view events on DSpace Test again, and now it&rsquo;s 201 instead of 2,000,000, and statistics core is only 30MB now!</p></li>
+
+<li><p>I will set the <code>logBots = false</code> property in <code>dspace/config/modules/usage-statistics.cfg</code> on DSpace Test and check if the number of <code>isBot:true</code> events goes up any more&hellip;</p></li>
+
+<li><p>I restarted the server with <code>logBots = false</code> and after it came back up I see 266 events with <code>isBots:true</code> (maybe they were buffered)&hellip; I will check again tomorrow</p></li>
+
+<li><p>After a few hours I see there are still only 266 view events with <code>isBot:true</code> on DSpace Test&rsquo;s Solr statistics core, so I&rsquo;m definitely going to deploy this on CGSpace soon</p></li>
+
+<li><p>Also, CGSpace currently has 60,089,394 view events with <code>isBot:true</code> in it&rsquo;s Solr statistics core and it is 124GB!</p></li>
+
+<li><p>Amazing! After running <code>dspace stats-util -f</code> on CGSpace the Solr statistics core went from 124GB to 60GB, and now there are only 700 events with <code>isBot:true</code> so I should really disable logging of bot events!</p></li>
+
+<li><p>I&rsquo;m super curious to see how the JVM heap usage changes&hellip;</p></li>
+
+<li><p>I made (and merged) a pull request to disable bot logging on the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/387">#387</a>)</p></li>
+
+<li><p>Now I&rsquo;m wondering if there are other bot requests that aren&rsquo;t classified as bots because the IP lists or user agents are outdated</p></li>
+
+<li><p>DSpace ships a list of spider IPs, for example: <code>config/spiders/iplists.com-google.txt</code></p></li>
+
+<li><p>I checked the list against all the IPs we&rsquo;ve seen using the &ldquo;Googlebot&rdquo; useragent on CGSpace&rsquo;s nginx access logs</p></li>
+
+<li><p>The first thing I learned is that shit tons of IPs in Russia, Ukraine, Ireland, Brazil, Portugal, the US, Canada, etc are pretending to be &ldquo;Googlebot&rdquo;&hellip;</p></li>
+
+<li><p>According to the <a href="https://support.google.com/webmasters/answer/80553">Googlebot FAQ</a> the domain name in the reverse DNS lookup should contain either <code>googlebot.com</code> or <code>google.com</code></p></li>
+
+<li><p>In Solr this appears to be an appropriate query that I can maybe use later (returns 81,000 documents):</p>
 
 <pre><code>*:* AND (dns:*googlebot.com. OR dns:*google.com.) AND isBot:false
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I translate that into a delete command using the <code>/update</code> handler:</li>
-</ul>
+<li><p>I translate that into a delete command using the <code>/update</code> handler:</p>
 
 <pre><code>http://localhost:8081/solr/statistics/update?commit=true&amp;stream.body=&lt;delete&gt;&lt;query&gt;*:*+AND+(dns:*googlebot.com.+OR+dns:*google.com.)+AND+isBot:false&lt;/query&gt;&lt;/delete&gt;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And magically all those 81,000 documents are gone!</li>
-<li>After a few hours the Solr statistics core is down to 44GB on CGSpace!</li>
-<li>I did a <em>major</em> refactor and logic fix in the DSpace Statistics API&rsquo;s <code>indexer.py</code></li>
-<li>Basically, it turns out that using <code>facet.mincount=1</code> is really beneficial for me because it reduces the size of the Solr result set, reduces the amount of data we need to ingest into PostgreSQL, and the API returns HTTP 404 Not Found for items without views or downloads anyways</li>
-<li>I deployed the new version on CGSpace and now it looks pretty good!</li>
-</ul>
+<li><p>And magically all those 81,000 documents are gone!</p></li>
+
+<li><p>After a few hours the Solr statistics core is down to 44GB on CGSpace!</p></li>
+
+<li><p>I did a <em>major</em> refactor and logic fix in the DSpace Statistics API&rsquo;s <code>indexer.py</code></p></li>
+
+<li><p>Basically, it turns out that using <code>facet.mincount=1</code> is really beneficial for me because it reduces the size of the Solr result set, reduces the amount of data we need to ingest into PostgreSQL, and the API returns HTTP 404 Not Found for items without views or downloads anyways</p></li>
+
+<li><p>I deployed the new version on CGSpace and now it looks pretty good!</p>
 
 <pre><code>Indexing item views (page 28 of 753)
 ...
 Indexing item downloads (page 260 of 260)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And now it&rsquo;s fast as hell due to the muuuuch smaller Solr statistics core</li>
+<li><p>And now it&rsquo;s fast as hell due to the muuuuch smaller Solr statistics core</p></li>
 </ul>
 
 <h2 id="2018-09-26">2018-09-26</h2>
@@ -720,68 +730,71 @@ Indexing item downloads (page 260 of 260)
 
 <ul>
 <li>I will have to keep an eye on that over the next few weeks to see if things stay as they are</li>
-<li>I did a batch replacement of the access rights with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script on DSpace Test:</li>
-</ul>
+
+<li><p>I did a batch replacement of the access rights with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script on DSpace Test:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/fix-access-status.csv -db dspace -u dspace -p 'fuuu' -f cg.identifier.status -t correct -m 206
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This changes &ldquo;Open Access&rdquo; to &ldquo;Unrestricted Access&rdquo; and &ldquo;Limited Access&rdquo; to &ldquo;Restricted Access&rdquo;</li>
-<li>After that I did a full Discovery reindex:</li>
-</ul>
+<li><p>This changes &ldquo;Open Access&rdquo; to &ldquo;Unrestricted Access&rdquo; and &ldquo;Limited Access&rdquo; to &ldquo;Restricted Access&rdquo;</p></li>
+
+<li><p>After that I did a full Discovery reindex:</p>
 
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    77m3.755s
 user    7m39.785s
 sys     2m18.485s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I told Peter it&rsquo;s better to do the access rights before the usage rights because the git branches are conflicting with each other and it&rsquo;s actually a pain in the ass to keep changing the values as we discuss, rebase, merge, fix conflicts&hellip;</li>
-<li>Udana and Mia from WLE were asking some questions about their <a href="https://feeds.feedburner.com/WLEcgspace">WLE Feedburner feed</a></li>
-<li>It&rsquo;s pretty confusing, because until recently they were entering issue dates as only YYYY (like 2018) and their feeds were all showing items in the wrong order</li>
-<li>I&rsquo;m not exactly sure what their problem now is, though (confusing)</li>
-<li>I updated the dspace-statistiscs-api to use psycopg2&rsquo;s <code>execute_values()</code> to insert batches of 100 values into PostgreSQL instead of doing every insert individually</li>
-<li>On CGSpace this reduces the total run time of <code>indexer.py</code> from 432 seconds to 400 seconds (most of the time is actually spent in getting the data from Solr though)</li>
+<li><p>I told Peter it&rsquo;s better to do the access rights before the usage rights because the git branches are conflicting with each other and it&rsquo;s actually a pain in the ass to keep changing the values as we discuss, rebase, merge, fix conflicts&hellip;</p></li>
+
+<li><p>Udana and Mia from WLE were asking some questions about their <a href="https://feeds.feedburner.com/WLEcgspace">WLE Feedburner feed</a></p></li>
+
+<li><p>It&rsquo;s pretty confusing, because until recently they were entering issue dates as only YYYY (like 2018) and their feeds were all showing items in the wrong order</p></li>
+
+<li><p>I&rsquo;m not exactly sure what their problem now is, though (confusing)</p></li>
+
+<li><p>I updated the dspace-statistiscs-api to use psycopg2&rsquo;s <code>execute_values()</code> to insert batches of 100 values into PostgreSQL instead of doing every insert individually</p></li>
+
+<li><p>On CGSpace this reduces the total run time of <code>indexer.py</code> from 432 seconds to 400 seconds (most of the time is actually spent in getting the data from Solr though)</p></li>
 </ul>
 
 <h2 id="2018-09-27">2018-09-27</h2>
 
 <ul>
 <li>Linode emailed to say that CGSpace&rsquo;s (linode19) CPU load was high for a few hours last night</li>
-<li>Looking in the nginx logs around that time I see some new IPs that look like they are harvesting things:</li>
-</ul>
+
+<li><p>Looking in the nginx logs around that time I see some new IPs that look like they are harvesting things:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;26/Sep/2018:(19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    295 34.218.226.147
-    296 66.249.64.95
-    350 157.55.39.185
-    359 207.46.13.28
-    371 157.55.39.85
-    388 40.77.167.148
-    444 66.249.64.93
-    544 68.6.87.12
-    834 66.249.64.91
-    902 35.237.175.180
-</code></pre>
+295 34.218.226.147
+296 66.249.64.95
+350 157.55.39.185
+359 207.46.13.28
+371 157.55.39.85
+388 40.77.167.148
+444 66.249.64.93
+544 68.6.87.12
+834 66.249.64.91
+902 35.237.175.180
+</code></pre></li>
 
-<ul>
-<li><code>35.237.175.180</code> is on Google Cloud</li>
-<li><code>68.6.87.12</code> is on Cox Communications in the US (?)</li>
-<li>These hosts are not using proper user agents and are not re-using their Tomcat sessions:</li>
-</ul>
+<li><p><code>35.237.175.180</code> is on Google Cloud</p></li>
+
+<li><p><code>68.6.87.12</code> is on Cox Communications in the US (?)</p></li>
+
+<li><p>These hosts are not using proper user agents and are not re-using their Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=35.237.175.180' dspace.log.2018-09-26 | sort | uniq
 5423
 $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=68.6.87.12' dspace.log.2018-09-26 | sort | uniq
 758
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will add their IPs to the list of bad bots in nginx so we can add a &ldquo;bot&rdquo; user agent to them and let Tomcat&rsquo;s Crawler Session Manager Valve handle them</li>
-<li>I asked Atmire to prepare an invoice for 125 credits</li>
+<li><p>I will add their IPs to the list of bad bots in nginx so we can add a &ldquo;bot&rdquo; user agent to them and let Tomcat&rsquo;s Crawler Session Manager Valve handle them</p></li>
+
+<li><p>I asked Atmire to prepare an invoice for 125 credits</p></li>
 </ul>
 
 <h2 id="2018-09-29">2018-09-29</h2>
@@ -789,90 +802,80 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=68.6.87.12' dspace.log.2018-09-26 
 <ul>
 <li>I merged some changes to author affiliations from Sisay as well as some corrections to organizational names using smart quotes like <code>Université d’Abomey Calavi</code> (<a href="https://github.com/ilri/DSpace/pull/388">#388</a>)</li>
 <li>Peter sent me a list of 43 author names to fix, but it had some encoding errors like <code>BelalcÃ¡zar, John</code> like usual (I will tell him to stop trying to export as UTF-8 because it never seems to work)</li>
-<li>I did batch replaces for both on CGSpace with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script:</li>
-</ul>
+
+<li><p>I did batch replaces for both on CGSpace with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i 2018-09-29-fix-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
 $ ./fix-metadata-values.py -i 2018-09-29-fix-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Afterwards I started a full Discovery re-index:</li>
-</ul>
+<li><p>Afterwards I started a full Discovery re-index:</p>
 
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Linode sent an alert that both CGSpace and DSpace Test were using high CPU for the last two hours</li>
-<li>It seems to be Moayad trying to do the AReS explorer indexing</li>
-<li>He was sending too many (5 or 10) concurrent requests to the server, but still&hellip; why is this shit so slow?!</li>
+<li><p>Linode sent an alert that both CGSpace and DSpace Test were using high CPU for the last two hours</p></li>
+
+<li><p>It seems to be Moayad trying to do the AReS explorer indexing</p></li>
+
+<li><p>He was sending too many (5 or 10) concurrent requests to the server, but still&hellip; why is this shit so slow?!</p></li>
 </ul>
 
 <h2 id="2018-09-30">2018-09-30</h2>
 
 <ul>
 <li>Valerio keeps sending items on CGSpace that have weird or incorrect languages, authors, etc</li>
-<li>I think I should just batch export and update all languages&hellip;</li>
-</ul>
+
+<li><p>I think I should just batch export and update all languages&hellip;</p>
 
 <pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2018-09-30-languages.csv with csv;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then I can simply delete the &ldquo;Other&rdquo; and &ldquo;other&rdquo; ones because that&rsquo;s not useful at all:</li>
-</ul>
+<li><p>Then I can simply delete the &ldquo;Other&rdquo; and &ldquo;other&rdquo; ones because that&rsquo;s not useful at all:</p>
 
 <pre><code>dspace=# DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='Other';
 DELETE 6
 dspace=# DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='other';
 DELETE 79
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Looking through the list I see some weird language codes like <code>gh</code>, so I checked out those items:</li>
-</ul>
+<li><p>Looking through the list I see some weird language codes like <code>gh</code>, so I checked out those items:</p>
 
 <pre><code>dspace=# SELECT resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='gh';
- resource_id
+resource_id
 -------------
-       94530
-       94529
+   94530
+   94529
 dspace=# SELECT handle,item_id FROM item, handle WHERE handle.resource_type_id=2 AND handle.resource_id = item.item_id AND handle.resource_id in (94530, 94529);
-   handle    | item_id
+handle    | item_id
 -------------+---------
- 10568/91386 |   94529
- 10568/91387 |   94530
-</code></pre>
+10568/91386 |   94529
+10568/91387 |   94530
+</code></pre></li>
 
-<ul>
-<li>Those items are from Ghana, so the submitter apparently thought <code>gh</code> was a language&hellip; I can safely delete them:</li>
-</ul>
+<li><p>Those items are from Ghana, so the submitter apparently thought <code>gh</code> was a language&hellip; I can safely delete them:</p>
 
 <pre><code>dspace=# DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='gh';
 DELETE 2
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The next issue would be <code>jn</code>:</li>
-</ul>
+<li><p>The next issue would be <code>jn</code>:</p>
 
 <pre><code>dspace=# SELECT resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='jn';
- resource_id
+resource_id
 -------------
-       94001
-       94003
+   94001
+   94003
 dspace=# SELECT handle,item_id FROM item, handle WHERE handle.resource_type_id=2 AND handle.resource_id = item.item_id AND handle.resource_id in (94001, 94003);
-   handle    | item_id
+handle    | item_id
 -------------+---------
- 10568/90868 |   94001
- 10568/90870 |   94003
-</code></pre>
+10568/90868 |   94001
+10568/90870 |   94003
+</code></pre></li>
 
-<ul>
-<li>Those items are about Japan, so I will update them to be <code>ja</code></li>
-<li>Other replacements:</li>
-</ul>
+<li><p>Those items are about Japan, so I will update them to be <code>ja</code></p></li>
+
+<li><p>Other replacements:</p>
 
 <pre><code>DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='gh';
 UPDATE metadatavalue SET text_value='fr' WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='fn';
@@ -880,10 +883,9 @@ UPDATE metadatavalue SET text_value='hi' WHERE resource_type_id=2 AND metadata_f
 UPDATE metadatavalue SET text_value='ja' WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='Ja';
 UPDATE metadatavalue SET text_value='ja' WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='jn';
 UPDATE metadatavalue SET text_value='ja' WHERE resource_type_id=2 AND metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'language' and qualifier = 'iso') AND text_value='jp';
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then there are 12 items with <code>en|hi</code>, but they were all in one collection so I just exported it as a CSV and then re-imported the corrected metadata</li>
+<li><p>Then there are 12 items with <code>en|hi</code>, but they were all in one collection so I just exported it as a CSV and then re-imported the corrected metadata</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->

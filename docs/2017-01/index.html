@@ -27,7 +27,7 @@ I checked to see if the Solr sharding task that is supposed to run on January 1s
 I tested on DSpace Test as well and it doesn&rsquo;t work there either
 I asked on the dspace-tech mailing list because it seems to be broken, and actually now I&rsquo;m not sure if we&rsquo;ve ever had the sharding task run successfully over all these years
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -117,69 +117,65 @@ I asked on the dspace-tech mailing list because it seems to be broken, and actua
 <h2 id="2017-01-04">2017-01-04</h2>
 
 <ul>
-<li>I tried to shard my local dev instance and it fails the same way:</li>
-</ul>
+<li><p>I tried to shard my local dev instance and it fails the same way:</p>
 
 <pre><code>$ JAVA_OPTS=&quot;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dspace stats-util -s
 Moving: 9318 into core statistics-2016
 Exception: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
 org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:566)
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
-        at org.dspace.statistics.SolrLogger.shardSolrIndex(SourceFile:2291)
-        at org.dspace.statistics.util.StatisticsClient.main(StatisticsClient.java:106)
-        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.lang.reflect.Method.invoke(Method.java:498)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:566)
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+    at org.dspace.statistics.SolrLogger.shardSolrIndex(SourceFile:2291)
+    at org.dspace.statistics.util.StatisticsClient.main(StatisticsClient.java:106)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:498)
+    at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+    at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
 Caused by: org.apache.http.client.ClientProtocolException
-        at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:867)
-        at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
-        at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:106)
-        at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:57)
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:448)
-        ... 10 more
+    at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:867)
+    at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+    at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:106)
+    at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:57)
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:448)
+    ... 10 more
 Caused by: org.apache.http.client.NonRepeatableRequestException: Cannot retry request with a non-repeatable request entity.  The cause lists the reason the original request failed.
-        at org.apache.http.impl.client.DefaultRequestDirector.tryExecute(DefaultRequestDirector.java:659)
-        at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:487)
-        at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:863)
-        ... 14 more
+    at org.apache.http.impl.client.DefaultRequestDirector.tryExecute(DefaultRequestDirector.java:659)
+    at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:487)
+    at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:863)
+    ... 14 more
 Caused by: java.net.SocketException: Broken pipe (Write failed)
-        at java.net.SocketOutputStream.socketWrite0(Native Method)
-        at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:109)
-        at java.net.SocketOutputStream.write(SocketOutputStream.java:153)
-        at org.apache.http.impl.io.AbstractSessionOutputBuffer.write(AbstractSessionOutputBuffer.java:181)
-        at org.apache.http.impl.io.ChunkedOutputStream.flushCacheWithAppend(ChunkedOutputStream.java:124)
-        at org.apache.http.impl.io.ChunkedOutputStream.write(ChunkedOutputStream.java:181)
-        at org.apache.http.entity.InputStreamEntity.writeTo(InputStreamEntity.java:132)
-        at org.apache.http.entity.HttpEntityWrapper.writeTo(HttpEntityWrapper.java:89)
-        at org.apache.http.impl.client.EntityEnclosingRequestWrapper$EntityWrapper.writeTo(EntityEnclosingRequestWrapper.java:108)
-        at org.apache.http.impl.entity.EntitySerializer.serialize(EntitySerializer.java:117)
-        at org.apache.http.impl.AbstractHttpClientConnection.sendRequestEntity(AbstractHttpClientConnection.java:265)
-        at org.apache.http.impl.conn.ManagedClientConnectionImpl.sendRequestEntity(ManagedClientConnectionImpl.java:203)
-        at org.apache.http.protocol.HttpRequestExecutor.doSendRequest(HttpRequestExecutor.java:236)
-        at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:121)
-        at org.apache.http.impl.client.DefaultRequestDirector.tryExecute(DefaultRequestDirector.java:685)
-        ... 16 more
-</code></pre>
+    at java.net.SocketOutputStream.socketWrite0(Native Method)
+    at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:109)
+    at java.net.SocketOutputStream.write(SocketOutputStream.java:153)
+    at org.apache.http.impl.io.AbstractSessionOutputBuffer.write(AbstractSessionOutputBuffer.java:181)
+    at org.apache.http.impl.io.ChunkedOutputStream.flushCacheWithAppend(ChunkedOutputStream.java:124)
+    at org.apache.http.impl.io.ChunkedOutputStream.write(ChunkedOutputStream.java:181)
+    at org.apache.http.entity.InputStreamEntity.writeTo(InputStreamEntity.java:132)
+    at org.apache.http.entity.HttpEntityWrapper.writeTo(HttpEntityWrapper.java:89)
+    at org.apache.http.impl.client.EntityEnclosingRequestWrapper$EntityWrapper.writeTo(EntityEnclosingRequestWrapper.java:108)
+    at org.apache.http.impl.entity.EntitySerializer.serialize(EntitySerializer.java:117)
+    at org.apache.http.impl.AbstractHttpClientConnection.sendRequestEntity(AbstractHttpClientConnection.java:265)
+    at org.apache.http.impl.conn.ManagedClientConnectionImpl.sendRequestEntity(ManagedClientConnectionImpl.java:203)
+    at org.apache.http.protocol.HttpRequestExecutor.doSendRequest(HttpRequestExecutor.java:236)
+    at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:121)
+    at org.apache.http.impl.client.DefaultRequestDirector.tryExecute(DefaultRequestDirector.java:685)
+    ... 16 more
+</code></pre></li>
 
-<ul>
-<li>And the DSpace log shows:</li>
-</ul>
+<li><p>And the DSpace log shows:</p>
 
 <pre><code>2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2016
 2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Moving: 9318 records into core statistics-2016
 2017-01-04 22:39:07,310 INFO  org.apache.http.impl.client.SystemDefaultHttpClient @ I/O exception (java.net.SocketException) caught when processing request to {}-&gt;http://localhost:8081: Broken pipe (Write failed)
 2017-01-04 22:39:07,310 INFO  org.apache.http.impl.client.SystemDefaultHttpClient @ Retrying request to {}-&gt;http://localhost:8081
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Despite failing instantly, a <code>statistics-2016</code> directory was created, but it only has a data dir (no conf)</li>
-<li>The Tomcat access logs show more:</li>
-</ul>
+<li><p>Despite failing instantly, a <code>statistics-2016</code> directory was created, but it only has a data dir (no conf)</p></li>
+
+<li><p>The Tomcat access logs show more:</p>
 
 <pre><code>127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 107
 127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=*%3A*&amp;rows=0&amp;facet=true&amp;facet.range=time&amp;facet.range.start=NOW%2FYEAR-17YEARS&amp;facet.range.end=NOW%2FYEAR%2B0YEARS&amp;facet.range.gap=%2B1YEAR&amp;facet.mincount=1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 423
@@ -190,10 +186,9 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &quot;POST /solr//statistics-2016/update/csv?commit=true&amp;softCommit=false&amp;waitSearcher=true&amp;f.previousWorkflowStep.split=true&amp;f.previousWorkflowStep.separator=%7C&amp;f.previousWorkflowStep.encapsulator=%22&amp;f.actingGroupId.split=true&amp;f.actingGroupId.separator=%7C&amp;f.actingGroupId.encapsulator=%22&amp;f.containerCommunity.split=true&amp;f.containerCommunity.separator=%7C&amp;f.containerCommunity.encapsulator=%22&amp;f.range.split=true&amp;f.range.separator=%7C&amp;f.range.encapsulator=%22&amp;f.containerItem.split=true&amp;f.containerItem.separator=%7C&amp;f.containerItem.encapsulator=%22&amp;f.p_communities_map.split=true&amp;f.p_communities_map.separator=%7C&amp;f.p_communities_map.encapsulator=%22&amp;f.ngram_query_search.split=true&amp;f.ngram_query_search.separator=%7C&amp;f.ngram_query_search.encapsulator=%22&amp;f.containerBitstream.split=true&amp;f.containerBitstream.separator=%7C&amp;f.containerBitstream.encapsulator=%22&amp;f.owningItem.split=true&amp;f.owningItem.separator=%7C&amp;f.owningItem.encapsulator=%22&amp;f.actingGroupParentId.split=true&amp;f.actingGroupParentId.separator=%7C&amp;f.actingGroupParentId.encapsulator=%22&amp;f.text.split=true&amp;f.text.separator=%7C&amp;f.text.encapsulator=%22&amp;f.simple_query_search.split=true&amp;f.simple_query_search.separator=%7C&amp;f.simple_query_search.encapsulator=%22&amp;f.owningComm.split=true&amp;f.owningComm.separator=%7C&amp;f.owningComm.encapsulator=%22&amp;f.owner.split=true&amp;f.owner.separator=%7C&amp;f.owner.encapsulator=%22&amp;f.filterquery.split=true&amp;f.filterquery.separator=%7C&amp;f.filterquery.encapsulator=%22&amp;f.p_group_map.split=true&amp;f.p_group_map.separator=%7C&amp;f.p_group_map.encapsulator=%22&amp;f.actorMemberGroupId.split=true&amp;f.actorMemberGroupId.separator=%7C&amp;f.actorMemberGroupId.encapsulator=%22&amp;f.bitstreamId.split=true&amp;f.bitstreamId.separator=%7C&amp;f.bitstreamId.encapsulator=%22&amp;f.group_name.split=true&amp;f.group_name.separator=%7C&amp;f.group_name.encapsulator=%22&amp;f.p_communities_name.split=true&amp;f.p_communities_name.separator=%7C&amp;f.p_communities_name.encapsulator=%22&amp;f.query.split=true&amp;f.query.separator=%7C&amp;f.query.encapsulator=%22&amp;f.workflowStep.split=true&amp;f.workflowStep.separator=%7C&amp;f.workflowStep.encapsulator=%22&amp;f.containerCollection.split=true&amp;f.containerCollection.separator=%7C&amp;f.containerCollection.encapsulator=%22&amp;f.complete_query_search.split=true&amp;f.complete_query_search.separator=%7C&amp;f.complete_query_search.encapsulator=%22&amp;f.p_communities_id.split=true&amp;f.p_communities_id.separator=%7C&amp;f.p_communities_id.encapsulator=%22&amp;f.rangeDescription.split=true&amp;f.rangeDescription.separator=%7C&amp;f.rangeDescription.encapsulator=%22&amp;f.group_id.split=true&amp;f.group_id.separator=%7C&amp;f.group_id.encapsulator=%22&amp;f.bundleName.split=true&amp;f.bundleName.separator=%7C&amp;f.bundleName.encapsulator=%22&amp;f.ngram_simplequery_search.split=true&amp;f.ngram_simplequery_search.separator=%7C&amp;f.ngram_simplequery_search.encapsulator=%22&amp;f.group_map.split=true&amp;f.group_map.separator=%7C&amp;f.group_map.encapsulator=%22&amp;f.owningColl.split=true&amp;f.owningColl.separator=%7C&amp;f.owningColl.encapsulator=%22&amp;f.p_group_id.split=true&amp;f.p_group_id.separator=%7C&amp;f.p_group_id.encapsulator=%22&amp;f.p_group_name.split=true&amp;f.p_group_name.separator=%7C&amp;f.p_group_name.encapsulator=%22&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 409 156
 127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &quot;POST /solr/datatables/update?wt=javabin&amp;version=2 HTTP/1.1&quot; 200 41
 127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &quot;POST /solr/datatables/update HTTP/1.1&quot; 200 40
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Very interesting&hellip; it creates the core and then fails somehow</li>
+<li><p>Very interesting&hellip; it creates the core and then fails somehow</p></li>
 </ul>
 
 <h2 id="2017-01-08">2017-01-08</h2>
@@ -217,65 +212,61 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>I tried to clean up the duplicate mappings by exporting the item&rsquo;s metadata to CSV, editing, and re-importing, but DSpace said &ldquo;no changes were detected&rdquo;</li>
 <li>I&rsquo;ve asked on the dspace-tech mailing list to see if anyone can help</li>
 <li>I found an old post on the mailing list discussing a similar issue, and listing some SQL commands that might help</li>
-<li>For example, this shows 186 mappings for the item, the first three of which are real:</li>
-</ul>
+
+<li><p>For example, this shows 186 mappings for the item, the first three of which are real:</p>
 
 <pre><code>dspace=#  select * from collection2item where item_id = '80596';
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then I deleted the others:</li>
-</ul>
+<li><p>Then I deleted the others:</p>
 
 <pre><code>dspace=# delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And in the item view it now shows the correct mappings</li>
-<li>I will have to ask the DSpace people if this is a valid approach</li>
-<li>Finish looking at the Journal Title corrections of the top 500 Journal Titles so we can make a controlled vocabulary from it</li>
+<li><p>And in the item view it now shows the correct mappings</p></li>
+
+<li><p>I will have to ask the DSpace people if this is a valid approach</p></li>
+
+<li><p>Finish looking at the Journal Title corrections of the top 500 Journal Titles so we can make a controlled vocabulary from it</p></li>
 </ul>
 
 <h2 id="2017-01-11">2017-01-11</h2>
 
 <ul>
 <li>Maria found another item with duplicate mappings: <a href="https://cgspace.cgiar.org/handle/10568/78658">https://cgspace.cgiar.org/handle/10568/78658</a></li>
-<li>Error in <code>fix-metadata-values.py</code> when it tries to print the value for Entwicklung &amp; Ländlicher Raum:</li>
-</ul>
+
+<li><p>Error in <code>fix-metadata-values.py</code> when it tries to print the value for Entwicklung &amp; Ländlicher Raum:</p>
 
 <pre><code>Traceback (most recent call last):
-  File &quot;./fix-metadata-values.py&quot;, line 80, in &lt;module&gt;
-    print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0]))
+File &quot;./fix-metadata-values.py&quot;, line 80, in &lt;module&gt;
+print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0]))
 UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15: ordinal not in range(128)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Seems we need to encode as UTF-8 before printing to screen, ie:</li>
-</ul>
+<li><p>Seems we need to encode as UTF-8 before printing to screen, ie:</p>
 
 <pre><code>print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0].encode('utf-8')))
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>See: <a href="http://stackoverflow.com/a/36427358/487333">http://stackoverflow.com/a/36427358/487333</a></li>
-<li>I&rsquo;m actually not sure if we need to encode() the strings to UTF-8 before writing them to the database&hellip; I&rsquo;ve never had this issue before</li>
-<li>Now back to cleaning up some journal titles so we can make the controlled vocabulary:</li>
-</ul>
+<li><p>See: <a href="http://stackoverflow.com/a/36427358/487333">http://stackoverflow.com/a/36427358/487333</a></p></li>
+
+<li><p>I&rsquo;m actually not sure if we need to encode() the strings to UTF-8 before writing them to the database&hellip; I&rsquo;ve never had this issue before</p></li>
+
+<li><p>Now back to cleaning up some journal titles so we can make the controlled vocabulary:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'fuuu'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Now get the top 500 journal titles:</li>
-</ul>
+<li><p>Now get the top 500 journal titles:</p>
 
 <pre><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The values are a bit dirty and outdated, since the file I had given to Abenet and Peter was from November</li>
-<li>I will have to go through these and fix some more before making the controlled vocabulary</li>
-<li>Added 30 more corrections or so, now there are 49 total and I&rsquo;ll have to get the top 500 after applying them</li>
+<li><p>The values are a bit dirty and outdated, since the file I had given to Abenet and Peter was from November</p></li>
+
+<li><p>I will have to go through these and fix some more before making the controlled vocabulary</p></li>
+
+<li><p>Added 30 more corrections or so, now there are 49 total and I&rsquo;ll have to get the top 500 after applying them</p></li>
 </ul>
 
 <h2 id="2017-01-13">2017-01-13</h2>
@@ -287,14 +278,14 @@ UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15:
 <h2 id="2017-01-16">2017-01-16</h2>
 
 <ul>
-<li>Fix the two items Maria found with duplicate mappings with this script:</li>
-</ul>
+<li><p>Fix the two items Maria found with duplicate mappings with this script:</p>
 
 <pre><code>/* 184 in correct mappings: https://cgspace.cgiar.org/handle/10568/78596 */
 delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
 /* 1 incorrect mapping: https://cgspace.cgiar.org/handle/10568/78658 */
 delete from collection2item where id = '91082';
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-01-17">2017-01-17</h2>
 
@@ -303,48 +294,43 @@ delete from collection2item where id = '91082';
 <li>There are about 30 files with <code>%20</code> (space) and Spanish accents in the file name</li>
 <li>At first I thought we should fix these, but actually it is <a href="https://www.w3.org/TR/html4/appendix/notes.html#h-B.2.1">prescribed by the W3 working group to convert these to UTF8 and URL encode them</a>!</li>
 <li>And the file names don&rsquo;t really matter either, as long as the SAF Builder tool can read them—after that DSpace renames them with a hash in the assetstore</li>
-<li>Seems like the only ones I should replace are the <code>'</code> apostrophe characters, as <code>%27</code>:</li>
-</ul>
+
+<li><p>Seems like the only ones I should replace are the <code>'</code> apostrophe characters, as <code>%27</code>:</p>
 
 <pre><code>value.replace(&quot;'&quot;,'%27')
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Add the item&rsquo;s Type to the filename column as a hint to SAF Builder so it can set a more useful description field:</li>
-</ul>
+<li><p>Add the item&rsquo;s Type to the filename column as a hint to SAF Builder so it can set a more useful description field:</p>
 
 <pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Test importing of the new CIAT records (actually there are 232, not 234):</li>
-</ul>
+<li><p>Test importing of the new CIAT records (actually there are 232, not 234):</p>
 
 <pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Many of the PDFs are 20, 30, 40, 50+ MB, which makes a total of 4GB</li>
-<li>These are scanned from paper and likely have no compression, so we should try to test if these compression techniques help without comprimising the quality too much:</li>
-</ul>
+<li><p>Many of the PDFs are 20, 30, 40, 50+ MB, which makes a total of 4GB</p></li>
+
+<li><p>These are scanned from paper and likely have no compression, so we should try to test if these compression techniques help without comprimising the quality too much:</p>
 
 <pre><code>$ convert -compress Zip -density 150x150 input.pdf output.pdf
 $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Somewhere on the Internet suggested using a DPI of 144</li>
+<li><p>Somewhere on the Internet suggested using a DPI of 144</p></li>
 </ul>
 
 <h2 id="2017-01-19">2017-01-19</h2>
 
 <ul>
 <li>In testing a random sample of CIAT&rsquo;s PDFs for compressability, it looks like all of these methods generally increase the file size so we will just import them as they are</li>
-<li>Import 232 CIAT records into CGSpace:</li>
-</ul>
+
+<li><p>Import 232 CIAT records into CGSpace:</p>
 
 <pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/68704 --source /home/aorth/CIAT_232/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-01-22">2017-01-22</h2>
 
@@ -357,40 +343,37 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 
 <ul>
 <li>I merged Atmire&rsquo;s pull request into the development branch so they can deploy it on DSpace Test</li>
-<li>Move some old ILRI Program communities to a new subcommunity for former programs (<sup>10568</sup>&frasl;<sub>79164</sub>):</li>
-</ul>
+
+<li><p>Move some old ILRI Program communities to a new subcommunity for former programs (<sup>10568</sup>&frasl;<sub>79164</sub>):</p>
 
 <pre><code>$ for community in 10568/171 10568/27868 10568/231 10568/27869 10568/150 10568/230 10568/32724 10568/172; do /home/cgspace.cgiar.org/bin/dspace community-filiator --remove --parent=10568/27866 --child=&quot;$community&quot; &amp;&amp; /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/79164 --child=&quot;$community&quot;; done
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Move some collections with <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515"><code>move-collections.sh</code></a> using the following config:</li>
-</ul>
+<li><p>Move some collections with <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515"><code>move-collections.sh</code></a> using the following config:</p>
 
 <pre><code>10568/42161 10568/171 10568/79341
 10568/41914 10568/171 10568/79340
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-01-24">2017-01-24</h2>
 
 <ul>
 <li>Run all updates on DSpace Test and reboot the server</li>
-<li>Run fixes for Journal titles on CGSpace:</li>
-</ul>
+
+<li><p>Run fixes for Journal titles on CGSpace:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/fix-49-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'password'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Create a new list of the top 500 journal titles from the database:</li>
-</ul>
+<li><p>Create a new list of the top 500 journal titles from the database:</p>
 
 <pre><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then sort them in OpenRefine and create a controlled vocabulary by manually adding the XML markup, pull request (<a href="https://github.com/ilri/DSpace/pull/298">#298</a>)</li>
-<li>This would be the last issue remaining to close the meta issue about switching to controlled vocabularies (<a href="https://github.com/ilri/DSpace/pull/69">#69</a>)</li>
+<li><p>Then sort them in OpenRefine and create a controlled vocabulary by manually adding the XML markup, pull request (<a href="https://github.com/ilri/DSpace/pull/298">#298</a>)</p></li>
+
+<li><p>This would be the last issue remaining to close the meta issue about switching to controlled vocabularies (<a href="https://github.com/ilri/DSpace/pull/69">#69</a>)</p></li>
 </ul>
 
 <h2 id="2017-01-25">2017-01-25</h2>

@@ -23,11 +23,12 @@ Need to send Peter and Michael some notes about this in a few days
 Also, need to consider talking to Atmire about hiring them to bring ORCiD metadata to REST / OAI
 Filed an issue on DSpace issue tracker for the filter-media bug that causes it to process JPGs even when limiting to the PDF thumbnail plugin: DS-3516
 Discovered that the ImageMagic filter-media plugin creates JPG thumbnails with the CMYK colorspace when the source PDF is using CMYK
-Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see 10568&frasl;51999):
 
+Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see 10568&frasl;51999):
 
 $ identify ~/Desktop/alc_contrastes_desafios.jpg
 /Users/aorth/Desktop/alc_contrastes_desafios.jpg JPEG 464x600 464x600&#43;0&#43;0 8-bit CMYK 168KB 0.000u 0:00.000
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-03/" />
@@ -53,13 +54,14 @@ Need to send Peter and Michael some notes about this in a few days
 Also, need to consider talking to Atmire about hiring them to bring ORCiD metadata to REST / OAI
 Filed an issue on DSpace issue tracker for the filter-media bug that causes it to process JPGs even when limiting to the PDF thumbnail plugin: DS-3516
 Discovered that the ImageMagic filter-media plugin creates JPG thumbnails with the CMYK colorspace when the source PDF is using CMYK
-Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see 10568&frasl;51999):
 
+Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see 10568&frasl;51999):
 
 $ identify ~/Desktop/alc_contrastes_desafios.jpg
 /Users/aorth/Desktop/alc_contrastes_desafios.jpg JPEG 464x600 464x600&#43;0&#43;0 8-bit CMYK 168KB 0.000u 0:00.000
+
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -155,12 +157,13 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 <li>Also, need to consider talking to Atmire about hiring them to bring ORCiD metadata to REST / OAI</li>
 <li>Filed an issue on DSpace issue tracker for the <code>filter-media</code> bug that causes it to process JPGs even when limiting to the PDF thumbnail plugin: <a href="https://jira.duraspace.org/browse/DS-3516">DS-3516</a></li>
 <li>Discovered that the ImageMagic <code>filter-media</code> plugin creates JPG thumbnails with the CMYK colorspace when the source PDF is using CMYK</li>
-<li>Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see <a href="https://cgspace.cgiar.org/handle/10568/51999"><sup>10568</sup>&frasl;<sub>51999</sub></a>):</li>
-</ul>
+
+<li><p>Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see <a href="https://cgspace.cgiar.org/handle/10568/51999"><sup>10568</sup>&frasl;<sub>51999</sub></a>):</p>
 
 <pre><code>$ identify ~/Desktop/alc_contrastes_desafios.jpg
 /Users/aorth/Desktop/alc_contrastes_desafios.jpg JPEG 464x600 464x600+0+0 8-bit CMYK 168KB 0.000u 0:00.000
-</code></pre>
+</code></pre></li>
+</ul>
 
 <ul>
 <li>This results in discolored thumbnails when compared to the original PDF, for example sRGB and CMYK:</li>
@@ -178,26 +181,30 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 
 <ul>
 <li>I created a patch for DS-3517 and made a pull request against upstream <code>dspace-5_x</code>: <a href="https://github.com/DSpace/DSpace/pull/1669">https://github.com/DSpace/DSpace/pull/1669</a></li>
-<li>Looks like <code>-colorspace sRGB</code> alone isn&rsquo;t enough, we need to use profiles:</li>
-</ul>
+
+<li><p>Looks like <code>-colorspace sRGB</code> alone isn&rsquo;t enough, we need to use profiles:</p>
 
 <pre><code>$ convert alc_contrastes_desafios.pdf\[0\] -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf.jpg
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This reads the input file, applies the CMYK profile, applies the RGB profile, then writes the file</li>
-<li>Note that you should set the first profile immediately after the input file</li>
-<li>Also, it is better to use profiles than setting <code>-colorspace</code></li>
-<li>This is a great resource describing the color stuff: <a href="http://www.imagemagick.org/Usage/formats/#profiles">http://www.imagemagick.org/Usage/formats/#profiles</a></li>
-<li>Somehow we need to detect the color system being used by the input file and handle each case differently (with profiles)</li>
-<li>This is trivial with <code>identify</code> (even by the <a href="http://im4java.sourceforge.net/api/org/im4java/core/IMOps.html#identify">Java ImageMagick API</a>):</li>
-</ul>
+<li><p>This reads the input file, applies the CMYK profile, applies the RGB profile, then writes the file</p></li>
+
+<li><p>Note that you should set the first profile immediately after the input file</p></li>
+
+<li><p>Also, it is better to use profiles than setting <code>-colorspace</code></p></li>
+
+<li><p>This is a great resource describing the color stuff: <a href="http://www.imagemagick.org/Usage/formats/#profiles">http://www.imagemagick.org/Usage/formats/#profiles</a></p></li>
+
+<li><p>Somehow we need to detect the color system being used by the input file and handle each case differently (with profiles)</p></li>
+
+<li><p>This is trivial with <code>identify</code> (even by the <a href="http://im4java.sourceforge.net/api/org/im4java/core/IMOps.html#identify">Java ImageMagick API</a>):</p>
 
 <pre><code>$ identify -format '%r\n' alc_contrastes_desafios.pdf\[0\]
 DirectClass CMYK
 $ identify -format '%r\n' Africa\ group\ of\ negotiators.pdf\[0\]
 DirectClass sRGB Alpha
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-03-04">2017-03-04</h2>
 
@@ -212,60 +219,57 @@ DirectClass sRGB Alpha
 <ul>
 <li>Look into helping developers from landportal.info with a query for items related to LAND on the REST API</li>
 <li>They want something like the items that are returned by the general &ldquo;LAND&rdquo; query in the search interface, but we cannot do that</li>
-<li>We can only return specific results for metadata fields, like:</li>
-</ul>
+
+<li><p>We can only return specific results for metadata fields, like:</p>
 
 <pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;LAND REFORM&quot;, &quot;language&quot;: null}' | json_pp
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>But there are hundreds of combinations of fields and values (like <code>dc.subject</code> and all the center subjects), and we can&rsquo;t use wildcards in REST!</li>
-<li>Reading about enabling multiple handle prefixes in DSpace</li>
-<li>There is a mailing list thread from 2011 about it: <a href="http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html">http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html</a></li>
-<li>And a comment from Atmire&rsquo;s Bram about it on the DSpace wiki: <a href="https://wiki.duraspace.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296">https://wiki.duraspace.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296</a></li>
-<li>Bram mentions an undocumented configuration option <code>handle.plugin.checknameauthority</code>, but I noticed another one in <code>dspace.cfg</code>:</li>
-</ul>
+<li><p>But there are hundreds of combinations of fields and values (like <code>dc.subject</code> and all the center subjects), and we can&rsquo;t use wildcards in REST!</p></li>
+
+<li><p>Reading about enabling multiple handle prefixes in DSpace</p></li>
+
+<li><p>There is a mailing list thread from 2011 about it: <a href="http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html">http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html</a></p></li>
+
+<li><p>And a comment from Atmire&rsquo;s Bram about it on the DSpace wiki: <a href="https://wiki.duraspace.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296">https://wiki.duraspace.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296</a></p></li>
+
+<li><p>Bram mentions an undocumented configuration option <code>handle.plugin.checknameauthority</code>, but I noticed another one in <code>dspace.cfg</code>:</p>
 
 <pre><code># List any additional prefixes that need to be managed by this handle server
 # (as for examle handle prefix coming from old dspace repository merged in
 # that repository)
 # handle.additional.prefixes = prefix1[, prefix2]
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Because of this I noticed that our Handle server&rsquo;s <code>config.dct</code> was potentially misconfigured!</li>
-<li>We had some default values still present:</li>
-</ul>
+<li><p>Because of this I noticed that our Handle server&rsquo;s <code>config.dct</code> was potentially misconfigured!</p></li>
+
+<li><p>We had some default values still present:</p>
 
 <pre><code>&quot;300:0.NA/YOUR_NAMING_AUTHORITY&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;ve changed them to the following and restarted the handle server:</li>
-</ul>
+<li><p>I&rsquo;ve changed them to the following and restarted the handle server:</p>
 
 <pre><code>&quot;300:0.NA/10568&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In looking at all the configs I just noticed that we are not providing a DOI in the Google-specific metadata crosswalk</li>
-<li>From <code>dspace/config/crosswalks/google-metadata.properties</code>:</li>
-</ul>
+<li><p>In looking at all the configs I just noticed that we are not providing a DOI in the Google-specific metadata crosswalk</p></li>
+
+<li><p>From <code>dspace/config/crosswalks/google-metadata.properties</code>:</p>
 
 <pre><code>google.citation_doi = cg.identifier.doi
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This works, and makes DSpace output the following metadata on the item view page:</li>
-</ul>
+<li><p>This works, and makes DSpace output the following metadata on the item view page:</p>
 
 <pre><code>&lt;meta content=&quot;https://dx.doi.org/10.1186/s13059-017-1153-y&quot; name=&quot;citation_doi&quot;&gt;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Submitted and merged pull request for this: <a href="https://github.com/ilri/DSpace/pull/305">https://github.com/ilri/DSpace/pull/305</a></li>
-<li>Submit pull request to set the author separator for XMLUI item lists to a semicolon instead of &ldquo;,&rdquo;: <a href="https://github.com/ilri/DSpace/pull/306">https://github.com/ilri/DSpace/pull/306</a></li>
-<li>I want to show it briefly to Abenet and Peter to get feedback</li>
+<li><p>Submitted and merged pull request for this: <a href="https://github.com/ilri/DSpace/pull/305">https://github.com/ilri/DSpace/pull/305</a></p></li>
+
+<li><p>Submit pull request to set the author separator for XMLUI item lists to a semicolon instead of &ldquo;,&rdquo;: <a href="https://github.com/ilri/DSpace/pull/306">https://github.com/ilri/DSpace/pull/306</a></p></li>
+
+<li><p>I want to show it briefly to Abenet and Peter to get feedback</p></li>
 </ul>
 
 <h2 id="2017-03-06">2017-03-06</h2>
@@ -302,35 +306,34 @@ DirectClass sRGB Alpha
 <h2 id="2017-03-09">2017-03-09</h2>
 
 <ul>
-<li>Export list of sponsors so Peter can clean it up:</li>
-</ul>
+<li><p>Export list of sponsors so Peter can clean it up:</p>
 
 <pre><code>dspace=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'description' and qualifier = 'sponsorship') group by text_value order by count desc) to /tmp/sponsorship.csv with csv;
 COPY 285
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-03-12">2017-03-12</h2>
 
 <ul>
-<li>Test the sponsorship fixes and deletes from Peter:</li>
-</ul>
+<li><p>Test the sponsorship fixes and deletes from Peter:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i Investors-Fix-51.csv -f dc.description.sponsorship -t Action -m 29 -d dspace -u dspace -p fuuuu
 $ ./delete-metadata-values.py -i Investors-Delete-121.csv -f dc.description.sponsorship -m 29 -d dspace -u dspace -p fuuu
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Generate a new list of unique sponsors so we can update the controlled vocabulary:</li>
-</ul>
+<li><p>Generate a new list of unique sponsors so we can update the controlled vocabulary:</p>
 
 <pre><code>dspace=# \copy (select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'description' and qualifier = 'sponsorship')) to /tmp/sponsorship.csv with csv;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Pull request for controlled vocabulary if Peter approves: <a href="https://github.com/ilri/DSpace/pull/308">https://github.com/ilri/DSpace/pull/308</a></li>
-<li>Review Sisay&rsquo;s roots, tubers, and bananas (RTB) theme, which still needs some fixes to work properly: <a href="https://github.com/ilri/DSpace/pull/307">https://github.com/ilri/DSpace/pull/307</a></li>
-<li>Created an issue to track the progress on the Livestock CRP theme: <a href="https://github.com/ilri/DSpace/issues/309">https://github.com/ilri/DSpace/issues/309</a></li>
-<li>Created a basic theme for the Livestock CRP community</li>
+<li><p>Pull request for controlled vocabulary if Peter approves: <a href="https://github.com/ilri/DSpace/pull/308">https://github.com/ilri/DSpace/pull/308</a></p></li>
+
+<li><p>Review Sisay&rsquo;s roots, tubers, and bananas (RTB) theme, which still needs some fixes to work properly: <a href="https://github.com/ilri/DSpace/pull/307">https://github.com/ilri/DSpace/pull/307</a></p></li>
+
+<li><p>Created an issue to track the progress on the Livestock CRP theme: <a href="https://github.com/ilri/DSpace/issues/309">https://github.com/ilri/DSpace/issues/309</a></p></li>
+
+<li><p>Created a basic theme for the Livestock CRP community</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2017/03/livestock-theme.png" alt="Livestock CRP theme" /></p>
@@ -374,40 +377,36 @@ $ ./delete-metadata-values.py -i Investors-Delete-121.csv -f dc.description.spon
 <h2 id="2017-03-28">2017-03-28</h2>
 
 <ul>
-<li>CCAFS said they are ready for the flagship updates for Phase II to be run (<code>cg.subject.ccafs</code>), so I ran them on CGSpace:</li>
-</ul>
+<li><p>CCAFS said they are ready for the flagship updates for Phase II to be run (<code>cg.subject.ccafs</code>), so I ran them on CGSpace:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i ccafs-flagships-feb7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>We&rsquo;ve been waiting since February to run these</li>
-<li>Also, I generated a list of all CCAFS flagships because there are a dozen or so more than there should be:</li>
-</ul>
+<li><p>We&rsquo;ve been waiting since February to run these</p></li>
+
+<li><p>Also, I generated a list of all CCAFS flagships because there are a dozen or so more than there should be:</p>
 
 <pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=210 group by text_value order by count desc) to /tmp/ccafs.csv with csv;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I sent a list to CCAFS people so they can tell me if some should be deleted or moved, etc</li>
-<li>Test, squash, and merge Sisay&rsquo;s RTB theme into <code>5_x-prod</code>: <a href="https://github.com/ilri/DSpace/pull/316">https://github.com/ilri/DSpace/pull/316</a></li>
+<li><p>I sent a list to CCAFS people so they can tell me if some should be deleted or moved, etc</p></li>
+
+<li><p>Test, squash, and merge Sisay&rsquo;s RTB theme into <code>5_x-prod</code>: <a href="https://github.com/ilri/DSpace/pull/316">https://github.com/ilri/DSpace/pull/316</a></p></li>
 </ul>
 
 <h2 id="2017-03-29">2017-03-29</h2>
 
 <ul>
-<li>Dump a list of fields in the DC and CG schemas to compare with CG Core:</li>
-</ul>
+<li><p>Dump a list of fields in the DC and CG schemas to compare with CG Core:</p>
 
 <pre><code>dspace=# select case when metadata_schema_id=1 then 'dc' else 'cg' end as schema, element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id in (1, 2);
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Ooh, a better one!</li>
-</ul>
+<li><p>Ooh, a better one!</p>
 
 <pre><code>dspace=# select coalesce(case when metadata_schema_id=1 then 'dc.' else 'cg.' end) || concat_ws('.', element, qualifier) as field, scope_note from metadatafieldregistry where metadata_schema_id in (1, 2);
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-03-30">2017-03-30</h2>
 

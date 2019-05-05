@@ -25,7 +25,7 @@ Catalina logs at least show some memory errors yesterday:
 I tried to test something on DSpace Test but noticed that it&rsquo;s down since god knows when
 Catalina logs at least show some memory errors yesterday:
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -130,16 +130,14 @@ Exception in thread &quot;ContainerBackgroundProcessor[StandardEngine[Catalina]]
 
 <ul>
 <li>Peter noticed that there were still some old CRP names on CGSpace, because I hadn&rsquo;t forced the Discovery index to be updated after I fixed the others last week</li>
-<li>For completeness I re-ran the CRP corrections on CGSpace:</li>
-</ul>
+
+<li><p>For completeness I re-ran the CRP corrections on CGSpace:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db dspace -u dspace -p 'fuuu'
 Fixed 1 occurences of: AGRICULTURE FOR NUTRITION AND HEALTH
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then started a full Discovery index:</li>
-</ul>
+<li><p>Then started a full Discovery index:</p>
 
 <pre><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx1024m'
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
@@ -147,18 +145,16 @@ $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 real    76m13.841s
 user    8m22.960s
 sys     2m2.498s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Elizabeth from CIAT emailed to ask if I could help her by adding ORCID identifiers to all of Joseph Tohme&rsquo;s items</li>
-<li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
-</ul>
+<li><p>Elizabeth from CIAT emailed to ask if I could help her by adding ORCID identifiers to all of Joseph Tohme&rsquo;s items</p></li>
+
+<li><p>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</p>
 
 <pre><code>$ ./add-orcid-identifiers-csv.py -i /tmp/jtohme-2018-04-04.csv -db dspace -u dspace -p 'fuuu'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The CSV format of <code>jtohme-2018-04-04.csv</code> was:</li>
+<li><p>The CSV format of <code>jtohme-2018-04-04.csv</code> was:</p></li>
 </ul>
 
 <pre><code class="language-csv">dc.contributor.author,cg.creator.id
@@ -168,16 +164,15 @@ sys     2m2.498s
 <ul>
 <li>There was a quoting error in my CRP CSV and the replacements for <code>Forests, Trees and Agroforestry</code> got messed up</li>
 <li>So I fixed them and had to re-index again!</li>
-<li>I started preparing the git branch for the the DSpace 5.5→5.8 upgrade:</li>
-</ul>
+
+<li><p>I started preparing the git branch for the the DSpace 5.5→5.8 upgrade:</p>
 
 <pre><code>$ git checkout -b 5_x-dspace-5.8 5_x-prod
 $ git reset --hard ilri/5_x-prod
 $ git rebase -i dspace-5.8
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I was prepared to skip some commits that I had cherry picked from the upstream <code>dspace-5_x</code> branch when we did the DSpace 5.5 upgrade (see notes on 2016-10-19 and 2017-12-17):
+<li><p>I was prepared to skip some commits that I had cherry picked from the upstream <code>dspace-5_x</code> branch when we did the DSpace 5.5 upgrade (see notes on 2016-10-19 and 2017-12-17):</p>
 
 <ul>
 <li>[DS-3246] Improve cleanup in recyclable components (upstream commit on dspace-5_x: 9f0f5940e7921765c6a22e85337331656b18a403)</li>
@@ -185,93 +180,95 @@ $ git rebase -i dspace-5.8
 <li>bump up to latest minor pdfbox version (upstream commit on dspace-5_x: b5330b78153b2052ed3dc2fd65917ccdbfcc0439)</li>
 <li>DS-3583 Usage of correct Collection Array (#1731) (upstream commit on dspace-5_x: c8f62e6f496fa86846bfa6bcf2d16811087d9761)</li>
 </ul></li>
-<li>&hellip; but somehow git knew, and didn&rsquo;t include them in my interactive rebase!</li>
-<li>I need to send this branch to Atmire and also arrange payment (see <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">ticket #560</a> in their tracker)</li>
-<li>Fix Sisay&rsquo;s SSH access to the new DSpace Test server (linode19)</li>
+
+<li><p>&hellip; but somehow git knew, and didn&rsquo;t include them in my interactive rebase!</p></li>
+
+<li><p>I need to send this branch to Atmire and also arrange payment (see <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">ticket #560</a> in their tracker)</p></li>
+
+<li><p>Fix Sisay&rsquo;s SSH access to the new DSpace Test server (linode19)</p></li>
 </ul>
 
 <h2 id="2018-04-05">2018-04-05</h2>
 
 <ul>
 <li>Fix Sisay&rsquo;s sudo access on the new DSpace Test server (linode19)</li>
-<li>The reindexing process on DSpace Test took <em>forever</em> yesterday:</li>
-</ul>
+
+<li><p>The reindexing process on DSpace Test took <em>forever</em> yesterday:</p>
 
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    599m32.961s
 user    9m3.947s
 sys     2m52.585s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So we really should not use this Linode block storage for Solr</li>
-<li>Assetstore might be fine but would complicate things with configuration and deployment (ughhh)</li>
-<li>Better to use Linode block storage only for backup</li>
-<li>Help Peter with the GDPR compliance / reporting form for CGSpace</li>
-<li>DSpace Test crashed due to memory issues again:</li>
-</ul>
+<li><p>So we really should not use this Linode block storage for Solr</p></li>
+
+<li><p>Assetstore might be fine but would complicate things with configuration and deployment (ughhh)</p></li>
+
+<li><p>Better to use Linode block storage only for backup</p></li>
+
+<li><p>Help Peter with the GDPR compliance / reporting form for CGSpace</p></li>
+
+<li><p>DSpace Test crashed due to memory issues again:</p>
 
 <pre><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
 16
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I ran all system updates on DSpace Test and rebooted it</li>
-<li>Proof some records on DSpace Test for Udana from IWMI</li>
-<li>He has done better with the small syntax and consistency issues but then there are larger concerns with not linking to DOIs, copying titles incorrectly, etc</li>
+<li><p>I ran all system updates on DSpace Test and rebooted it</p></li>
+
+<li><p>Proof some records on DSpace Test for Udana from IWMI</p></li>
+
+<li><p>He has done better with the small syntax and consistency issues but then there are larger concerns with not linking to DOIs, copying titles incorrectly, etc</p></li>
 </ul>
 
 <h2 id="2018-04-10">2018-04-10</h2>
 
 <ul>
 <li>I got a notice that CGSpace CPU usage was very high this morning</li>
-<li>Looking at the nginx logs, here are the top users today so far:</li>
-</ul>
+
+<li><p>Looking at the nginx logs, here are the top users today so far:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Apr/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10                                                                                                   
-    282 207.46.13.112
-    286 54.175.208.220
-    287 207.46.13.113
-    298 66.249.66.153
-    322 207.46.13.114
-    780 104.196.152.243
-   3994 178.154.200.38
-   4295 70.32.83.92
-   4388 95.108.181.88
-   7653 45.5.186.2
-</code></pre>
+282 207.46.13.112
+286 54.175.208.220
+287 207.46.13.113
+298 66.249.66.153
+322 207.46.13.114
+780 104.196.152.243
+3994 178.154.200.38
+4295 70.32.83.92
+4388 95.108.181.88
+7653 45.5.186.2
+</code></pre></li>
 
-<ul>
-<li>45.5.186.2 is of course CIAT</li>
-<li>95.108.181.88 appears to be Yandex:</li>
-</ul>
+<li><p>45.5.186.2 is of course CIAT</p></li>
+
+<li><p>95.108.181.88 appears to be Yandex:</p>
 
 <pre><code>95.108.181.88 - - [09/Apr/2018:06:34:16 +0000] &quot;GET /bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg HTTP/1.1&quot; 200 2638 &quot;-&quot; &quot;Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And for some reason Yandex created a lot of Tomcat sessions today:</li>
-</ul>
+<li><p>And for some reason Yandex created a lot of Tomcat sessions today:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2018-04-10
 4363
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>70.32.83.92 appears to be some harvester we&rsquo;ve seen before, but on a new IP</li>
-<li>They are not creating new Tomcat sessions so there is no problem there</li>
-<li>178.154.200.38 also appears to be Yandex, and is also creating many Tomcat sessions:</li>
-</ul>
+<li><p>70.32.83.92 appears to be some harvester we&rsquo;ve seen before, but on a new IP</p></li>
+
+<li><p>They are not creating new Tomcat sessions so there is no problem there</p></li>
+
+<li><p>178.154.200.38 also appears to be Yandex, and is also creating many Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=178.154.200.38' dspace.log.2018-04-10
 3982
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;m not sure why Yandex creates so many Tomcat sessions, as its user agent should match the Crawler Session Manager valve</li>
-<li>Let&rsquo;s try a manual request with and without their user agent:</li>
-</ul>
+<li><p>I&rsquo;m not sure why Yandex creates so many Tomcat sessions, as its user agent should match the Crawler Session Manager valve</p></li>
+
+<li><p>Let&rsquo;s try a manual request with and without their user agent:</p>
 
 <pre><code>$ http --print Hh https://cgspace.cgiar.org/bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg 'User-Agent:Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'
 GET /bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg HTTP/1.1
@@ -321,19 +318,19 @@ X-Cocoon-Version: 2.2.0
 X-Content-Type-Options: nosniff
 X-Frame-Options: SAMEORIGIN
 X-XSS-Protection: 1; mode=block
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So it definitely looks like Yandex requests are getting assigned a session from the Crawler Session Manager valve</li>
-<li>And if I look at the DSpace log I see its IP sharing a session with other crawlers like Google (66.249.66.153)</li>
-<li>Indeed the number of Tomcat sessions appears to be normal:</li>
+<li><p>So it definitely looks like Yandex requests are getting assigned a session from the Crawler Session Manager valve</p></li>
+
+<li><p>And if I look at the DSpace log I see its IP sharing a session with other crawlers like Google (66.249.66.153)</p></li>
+
+<li><p>Indeed the number of Tomcat sessions appears to be normal:</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2018/04/jmx_dspace_sessions-week.png" alt="Tomcat sessions week" /></p>
 
 <ul>
-<li>In other news, it looks like the number of total requests processed by nginx in March went down from the previous months:</li>
-</ul>
+<li><p>In other news, it looks like the number of total requests processed by nginx in March went down from the previous months:</p>
 
 <pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2018&quot;
 2266594
@@ -341,85 +338,84 @@ X-XSS-Protection: 1; mode=block
 real    0m13.658s
 user    0m16.533s
 sys     0m1.087s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In other other news, the database cleanup script has an issue again:</li>
-</ul>
+<li><p>In other other news, the database cleanup script has an issue again:</p>
 
 <pre><code>$ dspace cleanup -v
 ...
 Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(151626) is still referenced from table &quot;bundle&quot;.
-</code></pre>
+Detail: Key (bitstream_id)=(151626) is still referenced from table &quot;bundle&quot;.
+</code></pre></li>
 
-<ul>
-<li>The solution is, as always:</li>
-</ul>
+<li><p>The solution is, as always:</p>
 
 <pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (151626);'
 UPDATE 1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Looking at abandoned connections in Tomcat:</li>
-</ul>
+<li><p>Looking at abandoned connections in Tomcat:</p>
 
 <pre><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon'
 2115
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Apparently from these stacktraces we should be able to see which code is not closing connections properly</li>
-<li>Here&rsquo;s a pretty good overview of days where we had database issues recently:</li>
-</ul>
+<li><p>Apparently from these stacktraces we should be able to see which code is not closing connections properly</p></li>
+
+<li><p>Here&rsquo;s a pretty good overview of days where we had database issues recently:</p>
 
 <pre><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' | awk '{print $1,$2, $3}' | sort | uniq -c | sort -n
-      1 Feb 18, 2018
-      1 Feb 19, 2018
-      1 Feb 20, 2018
-      1 Feb 24, 2018
-      2 Feb 13, 2018
-      3 Feb 17, 2018
-      5 Feb 16, 2018
-      5 Feb 23, 2018
-      5 Feb 27, 2018
-      6 Feb 25, 2018
-     40 Feb 14, 2018
-     63 Feb 28, 2018
-    154 Mar 19, 2018
-    202 Feb 21, 2018
-    264 Feb 26, 2018
-    268 Mar 21, 2018
-    524 Feb 22, 2018
-    570 Feb 15, 2018
-</code></pre>
+  1 Feb 18, 2018
+  1 Feb 19, 2018
+  1 Feb 20, 2018
+  1 Feb 24, 2018
+  2 Feb 13, 2018
+  3 Feb 17, 2018
+  5 Feb 16, 2018
+  5 Feb 23, 2018
+  5 Feb 27, 2018
+  6 Feb 25, 2018
+ 40 Feb 14, 2018
+ 63 Feb 28, 2018
+154 Mar 19, 2018
+202 Feb 21, 2018
+264 Feb 26, 2018
+268 Mar 21, 2018
+524 Feb 22, 2018
+570 Feb 15, 2018
+</code></pre></li>
 
-<ul>
-<li>In Tomcat 8.5 the <code>removeAbandoned</code> property has been split into two: <code>removeAbandonedOnBorrow</code> and <code>removeAbandonedOnMaintenance</code></li>
-<li>See: <a href="https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#Database_Connection_Pool_(DBCP_2)_Configurations">https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#Database_Connection_Pool_(DBCP_2)_Configurations</a></li>
-<li>I assume we want <code>removeAbandonedOnBorrow</code> and make updates to the Tomcat 8 templates in Ansible</li>
-<li>After reading more documentation I see that Tomcat 8.5&rsquo;s default DBCP seems to now be Commons DBCP2 instead of Tomcat DBCP</li>
-<li>It can be overridden in Tomcat&rsquo;s <em>server.xml</em> by setting <code>factory=&quot;org.apache.tomcat.jdbc.pool.DataSourceFactory&quot;</code> in the <code>&lt;Resource&gt;</code></li>
-<li>I think we should use this default, so we&rsquo;ll need to remove some other settings that are specific to Tomcat&rsquo;s DBCP like <code>jdbcInterceptors</code> and <code>abandonWhenPercentageFull</code></li>
-<li>Merge the changes adding ORCID identifier to advanced search and Atmire Listings and Reports (<a href="https://github.com/ilri/DSpace/pull/371">#371</a>)</li>
-<li>Fix one more issue of missing XMLUI strings (for CRP subject when clicking &ldquo;view more&rdquo; in the Discovery sidebar)</li>
-<li>I told Udana to fix the citation and abstract of the one item, and to correct the <code>dc.language.iso</code> for the five Spanish items in his Book Chapters collection</li>
-<li>Then we can import the records to CGSpace</li>
+<li><p>In Tomcat 8.5 the <code>removeAbandoned</code> property has been split into two: <code>removeAbandonedOnBorrow</code> and <code>removeAbandonedOnMaintenance</code></p></li>
+
+<li><p>See: <a href="https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#Database_Connection_Pool_(DBCP_2)_Configurations">https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#Database_Connection_Pool_(DBCP_2)_Configurations</a></p></li>
+
+<li><p>I assume we want <code>removeAbandonedOnBorrow</code> and make updates to the Tomcat 8 templates in Ansible</p></li>
+
+<li><p>After reading more documentation I see that Tomcat 8.5&rsquo;s default DBCP seems to now be Commons DBCP2 instead of Tomcat DBCP</p></li>
+
+<li><p>It can be overridden in Tomcat&rsquo;s <em>server.xml</em> by setting <code>factory=&quot;org.apache.tomcat.jdbc.pool.DataSourceFactory&quot;</code> in the <code>&lt;Resource&gt;</code></p></li>
+
+<li><p>I think we should use this default, so we&rsquo;ll need to remove some other settings that are specific to Tomcat&rsquo;s DBCP like <code>jdbcInterceptors</code> and <code>abandonWhenPercentageFull</code></p></li>
+
+<li><p>Merge the changes adding ORCID identifier to advanced search and Atmire Listings and Reports (<a href="https://github.com/ilri/DSpace/pull/371">#371</a>)</p></li>
+
+<li><p>Fix one more issue of missing XMLUI strings (for CRP subject when clicking &ldquo;view more&rdquo; in the Discovery sidebar)</p></li>
+
+<li><p>I told Udana to fix the citation and abstract of the one item, and to correct the <code>dc.language.iso</code> for the five Spanish items in his Book Chapters collection</p></li>
+
+<li><p>Then we can import the records to CGSpace</p></li>
 </ul>
 
 <h2 id="2018-04-11">2018-04-11</h2>
 
 <ul>
-<li>DSpace Test (linode19) crashed again some time since yesterday:</li>
-</ul>
+<li><p>DSpace Test (linode19) crashed again some time since yesterday:</p>
 
 <pre><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
 168
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I ran all system updates and rebooted the server</li>
+<li><p>I ran all system updates and rebooted the server</p></li>
 </ul>
 
 <h2 id="2018-04-12">2018-04-12</h2>
@@ -438,35 +434,34 @@ UPDATE 1
 <h2 id="2018-04-15">2018-04-15</h2>
 
 <ul>
-<li>While testing an XMLUI patch for <a href="https://jira.duraspace.org/browse/DS-3883">DS-3883</a> I noticed that there is still some remaining Authority / Solr configuration left that we need to remove:</li>
-</ul>
+<li><p>While testing an XMLUI patch for <a href="https://jira.duraspace.org/browse/DS-3883">DS-3883</a> I noticed that there is still some remaining Authority / Solr configuration left that we need to remove:</p>
 
 <pre><code>2018-04-14 18:55:25,841 ERROR org.dspace.authority.AuthoritySolrServiceImpl @ Authority solr is not correctly configured, check &quot;solr.authority.server&quot; property in the dspace.cfg
 java.lang.NullPointerException
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I assume we need to remove <code>authority</code> from the consumers in <code>dspace/config/dspace.cfg</code>:</li>
-</ul>
+<li><p>I assume we need to remove <code>authority</code> from the consumers in <code>dspace/config/dspace.cfg</code>:</p>
 
 <pre><code>event.dispatcher.default.consumers = authority, versioning, discovery, eperson, harvester, statistics,batchedit, versioningmqm
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I see the same error on DSpace Test so this is definitely a problem</li>
-<li>After disabling the authority consumer I no longer see the error</li>
-<li>I merged a pull request to the <code>5_x-prod</code> branch to clean that up (<a href="https://github.com/ilri/DSpace/pull/372">#372</a>)</li>
-<li>File a ticket on DSpace&rsquo;s Jira for the <code>target=&quot;_blank&quot;</code> security and performance issue (<a href="https://jira.duraspace.org/browse/DS-3891">DS-3891</a>)</li>
-<li>I re-deployed DSpace Test (linode19) and was surprised by how long it took the ant update to complete:</li>
-</ul>
+<li><p>I see the same error on DSpace Test so this is definitely a problem</p></li>
+
+<li><p>After disabling the authority consumer I no longer see the error</p></li>
+
+<li><p>I merged a pull request to the <code>5_x-prod</code> branch to clean that up (<a href="https://github.com/ilri/DSpace/pull/372">#372</a>)</p></li>
+
+<li><p>File a ticket on DSpace&rsquo;s Jira for the <code>target=&quot;_blank&quot;</code> security and performance issue (<a href="https://jira.duraspace.org/browse/DS-3891">DS-3891</a>)</p></li>
+
+<li><p>I re-deployed DSpace Test (linode19) and was surprised by how long it took the ant update to complete:</p>
 
 <pre><code>BUILD SUCCESSFUL
 Total time: 4 minutes 12 seconds
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The Linode block storage is much slower than the instance storage</li>
-<li>I ran all system updates and rebooted DSpace Test (linode19)</li>
+<li><p>The Linode block storage is much slower than the instance storage</p></li>
+
+<li><p>I ran all system updates and rebooted DSpace Test (linode19)</p></li>
 </ul>
 
 <h2 id="2018-04-16">2018-04-16</h2>
@@ -481,69 +476,79 @@ Total time: 4 minutes 12 seconds
 <li>IWMI people are asking about building a search query that outputs RSS for their reports</li>
 <li>They want the same results as this Discovery query: <a href="https://cgspace.cgiar.org/discover?filtertype_1=dateAccessioned&amp;filter_relational_operator_1=contains&amp;filter_1=2018&amp;submit_apply_filter=&amp;query=&amp;scope=10568%2F16814&amp;rpp=100&amp;sort_by=dc.date.issued_dt&amp;order=desc">https://cgspace.cgiar.org/discover?filtertype_1=dateAccessioned&amp;filter_relational_operator_1=contains&amp;filter_1=2018&amp;submit_apply_filter=&amp;query=&amp;scope=10568%2F16814&amp;rpp=100&amp;sort_by=dc.date.issued_dt&amp;order=desc</a></li>
 <li>They will need to use OpenSearch, but I can&rsquo;t remember all the parameters</li>
-<li>Apparently search sort options for OpenSearch are in <code>dspace.cfg</code>:</li>
-</ul>
+
+<li><p>Apparently search sort options for OpenSearch are in <code>dspace.cfg</code>:</p>
 
 <pre><code>webui.itemlist.sort-option.1 = title:dc.title:title
 webui.itemlist.sort-option.2 = dateissued:dc.date.issued:date
 webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
 webui.itemlist.sort-option.4 = type:dc.type:text
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>They want items by issue date, so we need to use sort option 2</li>
-<li>According to the DSpace Manual there are only the following parameters to OpenSearch: format, scope, rpp, start, and sort_by</li>
-<li>The OpenSearch <code>query</code> parameter expects a Discovery search filter that is defined in <code>dspace/config/spring/api/discovery.xml</code></li>
-<li>So for IWMI they should be able to use something like this: <a href="https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;format=rss">https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;format=rss</a></li>
-<li>There are also <code>rpp</code> (results per page) and <code>start</code> parameters but in my testing now on DSpace 5.5 they behave very strangely</li>
-<li>For example, set <code>rpp=1</code> and then check the results for <code>start</code> values of 0, 1, and 2 and they are all the same!</li>
-<li>If I have time I will check if this behavior persists on DSpace 6.x on the official DSpace demo and file a bug</li>
-<li>Also, the DSpace Manual as of 5.x has very poor documentation for OpenSearch</li>
-<li>They don&rsquo;t tell you to use Discovery search filters in the <code>query</code> (with format <code>query=dateIssued:2018</code>)</li>
-<li>They don&rsquo;t tell you that the sort options are actually defined in <code>dspace.cfg</code> (ie, you need to use <code>2</code> instead of <code>dc.date.issued_dt</code>)</li>
-<li>They are missing the <code>order</code> parameter (ASC vs DESC)</li>
-<li>I notice that DSpace Test has crashed again, due to memory:</li>
-</ul>
+<li><p>They want items by issue date, so we need to use sort option 2</p></li>
+
+<li><p>According to the DSpace Manual there are only the following parameters to OpenSearch: format, scope, rpp, start, and sort_by</p></li>
+
+<li><p>The OpenSearch <code>query</code> parameter expects a Discovery search filter that is defined in <code>dspace/config/spring/api/discovery.xml</code></p></li>
+
+<li><p>So for IWMI they should be able to use something like this: <a href="https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;format=rss">https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;format=rss</a></p></li>
+
+<li><p>There are also <code>rpp</code> (results per page) and <code>start</code> parameters but in my testing now on DSpace 5.5 they behave very strangely</p></li>
+
+<li><p>For example, set <code>rpp=1</code> and then check the results for <code>start</code> values of 0, 1, and 2 and they are all the same!</p></li>
+
+<li><p>If I have time I will check if this behavior persists on DSpace 6.x on the official DSpace demo and file a bug</p></li>
+
+<li><p>Also, the DSpace Manual as of 5.x has very poor documentation for OpenSearch</p></li>
+
+<li><p>They don&rsquo;t tell you to use Discovery search filters in the <code>query</code> (with format <code>query=dateIssued:2018</code>)</p></li>
+
+<li><p>They don&rsquo;t tell you that the sort options are actually defined in <code>dspace.cfg</code> (ie, you need to use <code>2</code> instead of <code>dc.date.issued_dt</code>)</p></li>
+
+<li><p>They are missing the <code>order</code> parameter (ASC vs DESC)</p></li>
+
+<li><p>I notice that DSpace Test has crashed again, due to memory:</p>
 
 <pre><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
 178
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will increase the JVM heap size from 5120M to 6144M, though we don&rsquo;t have much room left to grow as DSpace Test (linode19) is using a smaller instance size than CGSpace</li>
-<li>Gabriela from CIP asked if I could send her a list of all CIP authors so she can do some replacements on the name formats</li>
-<li>I got a list of all the CIP collections manually and use the same query that I used in <a href="/cgspace-notes/2017-08">August, 2017</a>:</li>
-</ul>
+<li><p>I will increase the JVM heap size from 5120M to 6144M, though we don&rsquo;t have much room left to grow as DSpace Test (linode19) is using a smaller instance size than CGSpace</p></li>
+
+<li><p>Gabriela from CIP asked if I could send her a list of all CIP authors so she can do some replacements on the name formats</p></li>
+
+<li><p>I got a list of all the CIP collections manually and use the same query that I used in <a href="/cgspace-notes/2017-08">August, 2017</a>:</p>
 
 <pre><code>dspace#= \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/89347', '10568/88229', '10568/53086', '10568/53085', '10568/69069', '10568/53087', '10568/53088', '10568/53089', '10568/53090', '10568/53091', '10568/53092', '10568/70150', '10568/53093', '10568/64874', '10568/53094'))) group by text_value order by count desc) to /tmp/cip-authors.csv with csv;
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2018-04-19">2018-04-19</h2>
 
 <ul>
 <li>Run updates on DSpace Test (linode19) and reboot the server</li>
-<li>Also try deploying updated GeoLite database during ant update while re-deploying code:</li>
-</ul>
+
+<li><p>Also try deploying updated GeoLite database during ant update while re-deploying code:</p>
 
 <pre><code>$ ant update update_geolite clean_backups
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I also re-deployed CGSpace (linode18) to make the ORCID search, authority cleanup, CCAFS project tag <code>PII-LAM_CSAGender</code> live</li>
-<li>When re-deploying I also updated the GeoLite databases so I hope the country stats become more accurate&hellip;</li>
-<li>After re-deployment I ran all system updates on the server and rebooted it</li>
-<li>After the reboot I forced a reïndexing of the Discovery to populate the new ORCID index:</li>
-</ul>
+<li><p>I also re-deployed CGSpace (linode18) to make the ORCID search, authority cleanup, CCAFS project tag <code>PII-LAM_CSAGender</code> live</p></li>
+
+<li><p>When re-deploying I also updated the GeoLite databases so I hope the country stats become more accurate&hellip;</p></li>
+
+<li><p>After re-deployment I ran all system updates on the server and rebooted it</p></li>
+
+<li><p>After the reboot I forced a reïndexing of the Discovery to populate the new ORCID index:</p>
 
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    73m42.635s
 user    8m15.885s
 sys     2m2.687s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This time is with about 70,000 items in the repository</li>
+<li><p>This time is with about 70,000 items in the repository</p></li>
 </ul>
 
 <h2 id="2018-04-20">2018-04-20</h2>
@@ -551,48 +556,40 @@ sys     2m2.687s
 <ul>
 <li>Gabriela from CIP emailed to say that CGSpace was returning a white page, but I haven&rsquo;t seen any emails from UptimeRobot</li>
 <li>I confirm that it&rsquo;s just giving a white page around 4:16</li>
-<li>The DSpace logs show that there are no database connections:</li>
-</ul>
+
+<li><p>The DSpace logs show that there are no database connections:</p>
 
 <pre><code>org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-715] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:250; busy:18; idle:0; lastwait:5000].
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And there have been shit tons of errors in the last (starting only 20 minutes ago luckily):</li>
-</ul>
+<li><p>And there have been shit tons of errors in the last (starting only 20 minutes ago luckily):</p>
 
 <pre><code># grep -c 'org.apache.tomcat.jdbc.pool.PoolExhaustedException' /home/cgspace.cgiar.org/log/dspace.log.2018-04-20
 32147
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I can&rsquo;t even log into PostgreSQL as the <code>postgres</code> user, WTF?</li>
-</ul>
+<li><p>I can&rsquo;t even log into PostgreSQL as the <code>postgres</code> user, WTF?</p>
 
 <pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c 
 ^C
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Here are the most active IPs today:</li>
-</ul>
+<li><p>Here are the most active IPs today:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Apr/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    917 207.46.13.182
-    935 213.55.99.121
-    970 40.77.167.134
-    978 207.46.13.80
-   1422 66.249.64.155
-   1577 50.116.102.77
-   2456 95.108.181.88
-   3216 104.196.152.243
-   4325 70.32.83.92
-  10718 45.5.184.2
-</code></pre>
+917 207.46.13.182
+935 213.55.99.121
+970 40.77.167.134
+978 207.46.13.80
+1422 66.249.64.155
+1577 50.116.102.77
+2456 95.108.181.88
+3216 104.196.152.243
+4325 70.32.83.92
+10718 45.5.184.2
+</code></pre></li>
 
-<ul>
-<li>It doesn&rsquo;t even seem like there is a lot of traffic compared to the previous days:</li>
-</ul>
+<li><p>It doesn&rsquo;t even seem like there is a lot of traffic compared to the previous days:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Apr/2018&quot; | wc -l
 74931
@@ -600,43 +597,46 @@ sys     2m2.687s
 91073
 # zcat --force /var/log/nginx/*.log.2.gz /var/log/nginx/*.log.3.gz| grep -E &quot;18/Apr/2018&quot; | wc -l
 93459
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I tried to restart Tomcat but <code>systemctl</code> hangs</li>
-<li>I tried to reboot the server from the command line but after a few minutes it didn&rsquo;t come back up</li>
-<li>Looking at the Linode console I see that it is stuck trying to shut down</li>
-<li>Even &ldquo;Reboot&rdquo; via Linode console doesn&rsquo;t work!</li>
-<li>After shutting it down a few times via the Linode console it finally rebooted</li>
-<li>Everything is back but I have no idea what caused this—I suspect something with the hosting provider</li>
-<li>Also super weird, the last entry in the DSpace log file is from <code>2018-04-20 16:35:09</code>, and then immediately it goes to <code>2018-04-20 19:15:04</code> (three hours later!):</li>
-</ul>
+<li><p>I tried to restart Tomcat but <code>systemctl</code> hangs</p></li>
+
+<li><p>I tried to reboot the server from the command line but after a few minutes it didn&rsquo;t come back up</p></li>
+
+<li><p>Looking at the Linode console I see that it is stuck trying to shut down</p></li>
+
+<li><p>Even &ldquo;Reboot&rdquo; via Linode console doesn&rsquo;t work!</p></li>
+
+<li><p>After shutting it down a few times via the Linode console it finally rebooted</p></li>
+
+<li><p>Everything is back but I have no idea what caused this—I suspect something with the hosting provider</p></li>
+
+<li><p>Also super weird, the last entry in the DSpace log file is from <code>2018-04-20 16:35:09</code>, and then immediately it goes to <code>2018-04-20 19:15:04</code> (three hours later!):</p>
 
 <pre><code>2018-04-20 16:35:09,144 ERROR org.dspace.app.util.AbstractDSpaceWebapp @ Failed to record shutdown in Webapp table.
 org.apache.tomcat.jdbc.pool.PoolExhaustedException: [localhost-startStop-2] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:250; busy:18; idle
 :0; lastwait:5000].
-        at org.apache.tomcat.jdbc.pool.ConnectionPool.borrowConnection(ConnectionPool.java:685)
-        at org.apache.tomcat.jdbc.pool.ConnectionPool.getConnection(ConnectionPool.java:187)
-        at org.apache.tomcat.jdbc.pool.DataSourceProxy.getConnection(DataSourceProxy.java:128)
-        at org.dspace.storage.rdbms.DatabaseManager.getConnection(DatabaseManager.java:632)
-        at org.dspace.core.Context.init(Context.java:121)
-        at org.dspace.core.Context.&lt;init&gt;(Context.java:95)
-        at org.dspace.app.util.AbstractDSpaceWebapp.deregister(AbstractDSpaceWebapp.java:97)
-        at org.dspace.app.util.DSpaceContextListener.contextDestroyed(DSpaceContextListener.java:146)
-        at org.apache.catalina.core.StandardContext.listenerStop(StandardContext.java:5115)
-        at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:5779)
-        at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:224)
-        at org.apache.catalina.core.ContainerBase$StopChild.call(ContainerBase.java:1588)
-        at org.apache.catalina.core.ContainerBase$StopChild.call(ContainerBase.java:1577)
-        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
-        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-        at java.lang.Thread.run(Thread.java:748)
+    at org.apache.tomcat.jdbc.pool.ConnectionPool.borrowConnection(ConnectionPool.java:685)
+    at org.apache.tomcat.jdbc.pool.ConnectionPool.getConnection(ConnectionPool.java:187)
+    at org.apache.tomcat.jdbc.pool.DataSourceProxy.getConnection(DataSourceProxy.java:128)
+    at org.dspace.storage.rdbms.DatabaseManager.getConnection(DatabaseManager.java:632)
+    at org.dspace.core.Context.init(Context.java:121)
+    at org.dspace.core.Context.&lt;init&gt;(Context.java:95)
+    at org.dspace.app.util.AbstractDSpaceWebapp.deregister(AbstractDSpaceWebapp.java:97)
+    at org.dspace.app.util.DSpaceContextListener.contextDestroyed(DSpaceContextListener.java:146)
+    at org.apache.catalina.core.StandardContext.listenerStop(StandardContext.java:5115)
+    at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:5779)
+    at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:224)
+    at org.apache.catalina.core.ContainerBase$StopChild.call(ContainerBase.java:1588)
+    at org.apache.catalina.core.ContainerBase$StopChild.call(ContainerBase.java:1577)
+    at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    at java.lang.Thread.run(Thread.java:748)
 2018-04-20 19:15:04,006 INFO  org.dspace.core.ConfigurationManager @ Loading from classloader: file:/home/cgspace.cgiar.org/config/dspace.cfg
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Very suspect!</li>
+<li><p>Very suspect!</p></li>
 </ul>
 
 <h2 id="2018-04-24">2018-04-24</h2>
@@ -660,34 +660,32 @@ org.apache.tomcat.jdbc.pool.PoolExhaustedException: [localhost-startStop-2] Time
 <ul>
 <li>Still testing the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a> for Ubuntu 18.04, Tomcat 8.5, and PostgreSQL 9.6</li>
 <li>One other new thing I notice is that PostgreSQL 9.6 no longer uses <code>createuser</code> and <code>nocreateuser</code>, as those have actually meant <code>superuser</code> and <code>nosuperuser</code> and have been deprecated for <em>ten years</em></li>
-<li>So for my notes, when I&rsquo;m importing a CGSpace database dump I need to amend my notes to give super user permission to a user, rather than create user:</li>
-</ul>
+
+<li><p>So for my notes, when I&rsquo;m importing a CGSpace database dump I need to amend my notes to give super user permission to a user, rather than create user:</p>
 
 <pre><code>$ psql dspacetest -c 'alter user dspacetest superuser;'
 $ pg_restore -O -U dspacetest -d dspacetest -W -h localhost /tmp/dspace_2018-04-18.backup
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>There&rsquo;s another issue with Tomcat in Ubuntu 18.04:</li>
-</ul>
+<li><p>There&rsquo;s another issue with Tomcat in Ubuntu 18.04:</p>
 
 <pre><code>25-Apr-2018 13:26:21.493 SEVERE [http-nio-127.0.0.1-8443-exec-1] org.apache.coyote.AbstractProtocol$ConnectionHandler.process Error reading request, ignored
- java.lang.NoSuchMethodError: java.nio.ByteBuffer.position(I)Ljava/nio/ByteBuffer;
-        at org.apache.coyote.http11.Http11InputBuffer.init(Http11InputBuffer.java:688)
-        at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:672)
-        at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
-        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
-        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
-        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-        at java.lang.Thread.run(Thread.java:748)
-</code></pre>
+java.lang.NoSuchMethodError: java.nio.ByteBuffer.position(I)Ljava/nio/ByteBuffer;
+    at org.apache.coyote.http11.Http11InputBuffer.init(Http11InputBuffer.java:688)
+    at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:672)
+    at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+    at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+    at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+    at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+    at java.lang.Thread.run(Thread.java:748)
+</code></pre></li>
 
-<ul>
-<li>There&rsquo;s a <a href="https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=895866">Debian bug about this from a few weeks ago</a></li>
-<li>Apparently Tomcat was compiled with Java 9, so doesn&rsquo;t work with Java 8</li>
+<li><p>There&rsquo;s a <a href="https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=895866">Debian bug about this from a few weeks ago</a></p></li>
+
+<li><p>Apparently Tomcat was compiled with Java 9, so doesn&rsquo;t work with Java 8</p></li>
 </ul>
 
 <h2 id="2018-04-29">2018-04-29</h2>

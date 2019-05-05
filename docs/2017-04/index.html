@@ -17,10 +17,11 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 
 
 Remove redundant/duplicate text in the DSpace submission license
+
 Testing the CMYK patch on a collection with 650 items:
 
-
 $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-04/" />
@@ -40,12 +41,13 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 
 
 Remove redundant/duplicate text in the DSpace submission license
+
 Testing the CMYK patch on a collection with 650 items:
 
-
 $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -135,95 +137,88 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 <ul>
 <li>Remove redundant/duplicate text in the DSpace submission license</li>
-<li>Testing the CMYK patch on a collection with 650 items:</li>
-</ul>
+
+<li><p>Testing the CMYK patch on a collection with 650 items:</p>
 
 <pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-03">2017-04-03</h2>
 
 <ul>
-<li>Continue testing the CMYK patch on more communities:</li>
-</ul>
+<li><p>Continue testing the CMYK patch on more communities:</p>
 
 <pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/1 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&gt; /tmp/filter-media-cmyk.txt 2&gt;&amp;1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So far there are almost 500:</li>
-</ul>
+<li><p>So far there are almost 500:</p>
 
 <pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
 484
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Looking at the CG Core document again, I&rsquo;ll send some feedback to Peter and Abenet:
+<li><p>Looking at the CG Core document again, I&rsquo;ll send some feedback to Peter and Abenet:</p>
 
 <ul>
 <li>We use cg.contributor.crp to indicate the CRP(s) affiliated with the item</li>
 <li>DSpace has dc.date.available, but this field isn&rsquo;t particularly meaningful other than as an automatic timestamp at the time of item accession (and is identical to dc.date.accessioned)</li>
 <li>dc.relation exists in CGSpace, but isn&rsquo;t used—rather dc.relation.ispartofseries, which is used ~5,000 times to Series name and number within that series</li>
 </ul></li>
-<li>Also, I&rsquo;m noticing some weird outliers in <code>cg.coverage.region</code>, need to remember to go correct these later:</li>
-</ul>
+
+<li><p>Also, I&rsquo;m noticing some weird outliers in <code>cg.coverage.region</code>, need to remember to go correct these later:</p>
 
 <pre><code>dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=227;
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-04">2017-04-04</h2>
 
 <ul>
-<li>The <code>filter-media</code> script has been running on more large communities and now there are many more CMYK PDFs that have been fixed:</li>
-</ul>
+<li><p>The <code>filter-media</code> script has been running on more large communities and now there are many more CMYK PDFs that have been fixed:</p>
 
 <pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
 1584
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Trying to find a way to get the number of items submitted by a certain user in 2016</li>
-<li>It&rsquo;s not possible in the DSpace search / module interfaces, but might be able to be derived from <code>dc.description.provenance</code>, as that field contains the name and email of the submitter/approver, ie:</li>
-</ul>
+<li><p>Trying to find a way to get the number of items submitted by a certain user in 2016</p></li>
+
+<li><p>It&rsquo;s not possible in the DSpace search / module interfaces, but might be able to be derived from <code>dc.description.provenance</code>, as that field contains the name and email of the submitter/approver, ie:</p>
 
 <pre><code>Submitted by Francesca Giampieri (fgiampieri) on 2016-01-19T13:56:43Z^M
 No. of bitstreams: 1^M
 ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 (MD5)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This SQL query returns fields that were submitted or approved by giampieri in 2016 and contain a &ldquo;checksum&rdquo; (ie, there was a bitstream in the submission):</li>
-</ul>
+<li><p>This SQL query returns fields that were submitted or approved by giampieri in 2016 and contain a &ldquo;checksum&rdquo; (ie, there was a bitstream in the submission):</p>
 
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then this one does the same, but for fields that don&rsquo;t contain checksums (ie, there was no bitstream in the submission):</li>
-</ul>
+<li><p>Then this one does the same, but for fields that don&rsquo;t contain checksums (ie, there was no bitstream in the submission):</p>
 
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*' and text_value !~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>For some reason there seem to be way too many fields, for example there are 498 + 13 here, which is 511 items for just this one user.</li>
-<li>It looks like there can be a scenario where the user submitted AND approved it, so some records might be doubled&hellip;</li>
-<li>In that case it might just be better to see how many the user submitted (both <em>with</em> and <em>without</em> bitstreams):</li>
-</ul>
+<li><p>For some reason there seem to be way too many fields, for example there are 498 + 13 here, which is 511 items for just this one user.</p></li>
+
+<li><p>It looks like there can be a scenario where the user submitted AND approved it, so some records might be doubled&hellip;</p></li>
+
+<li><p>In that case it might just be better to see how many the user submitted (both <em>with</em> and <em>without</em> bitstreams):</p>
 
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^Submitted.*giampieri.*2016-.*';
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-05">2017-04-05</h2>
 
 <ul>
-<li>After doing a few more large communities it seems this is the final count of CMYK PDFs:</li>
-</ul>
+<li><p>After doing a few more large communities it seems this is the final count of CMYK PDFs:</p>
 
 <pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
 2505
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-06">2017-04-06</h2>
 
@@ -301,8 +296,8 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 </ul></li>
 <li>I don&rsquo;t see these fields anywhere in our source code or the database&rsquo;s metadata registry, so maybe it&rsquo;s just a cache issue</li>
 <li>I will have to check the OAI cron scripts on DSpace Test, and then run them on CGSpace</li>
-<li>Running <code>dspace oai import</code> and <code>dspace oai clean-cache</code> have zero effect, but this seems to rebuild the cache from scratch:</li>
-</ul>
+
+<li><p>Running <code>dspace oai import</code> and <code>dspace oai clean-cache</code> have zero effect, but this seems to rebuild the cache from scratch:</p>
 
 <pre><code>$ /home/dspacetest.cgiar.org/bin/dspace oai import -c
 ...
@@ -311,14 +306,15 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 Total: 64056 items
 Purging cached OAI responses.
 OAI 2.0 manager action ended. It took 829 seconds.
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>After reading some threads on the DSpace mailing list, I see that <code>clean-cache</code> is actually only for caching <em>responses</em>, ie to client requests in the OAI web application</li>
-<li>These are stored in <code>[dspace]/var/oai/requests/</code></li>
-<li>The import command should theoretically catch situations like this where an item&rsquo;s metadata was updated, but in this case we changed the metadata schema and it doesn&rsquo;t seem to catch it (could be a bug!)</li>
-<li>Attempting a full rebuild of OAI on CGSpace:</li>
-</ul>
+<li><p>After reading some threads on the DSpace mailing list, I see that <code>clean-cache</code> is actually only for caching <em>responses</em>, ie to client requests in the OAI web application</p></li>
+
+<li><p>These are stored in <code>[dspace]/var/oai/requests/</code></p></li>
+
+<li><p>The import command should theoretically catch situations like this where an item&rsquo;s metadata was updated, but in this case we changed the metadata schema and it doesn&rsquo;t seem to catch it (could be a bug!)</p></li>
+
+<li><p>Attempting a full rebuild of OAI on CGSpace:</p>
 
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace oai import -c
@@ -331,12 +327,13 @@ OAI 2.0 manager action ended. It took 1032 seconds.
 real    17m20.156s
 user    4m35.293s
 sys     1m29.310s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Now the data for <sup>10568</sup>&frasl;<sub>6</sub> is correct in OAI: <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6">https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6</a></li>
-<li>Perhaps I need to file a bug for this, or at least ask on the DSpace Test mailing list?</li>
-<li>I wonder if we could use a crosswalk to convert to a format that CG Core wants, like <code>&lt;date Type=&quot;Available&quot;&gt;</code></li>
+<li><p>Now the data for <sup>10568</sup>&frasl;<sub>6</sub> is correct in OAI: <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6">https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6</a></p></li>
+
+<li><p>Perhaps I need to file a bug for this, or at least ask on the DSpace Test mailing list?</p></li>
+
+<li><p>I wonder if we could use a crosswalk to convert to a format that CG Core wants, like <code>&lt;date Type=&quot;Available&quot;&gt;</code></p></li>
 </ul>
 
 <h2 id="2017-04-13">2017-04-13</h2>
@@ -381,19 +378,20 @@ sys     1m29.310s
 <li>CIFOR has now implemented a new &ldquo;cgiar&rdquo; context in their OAI that exposes CG fields, so I am re-harvesting that to see how it looks in the Discovery sidebars and searches</li>
 <li>See: <a href="https://data.cifor.org/dspace/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:data.cifor.org:11463/947">https://data.cifor.org/dspace/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:data.cifor.org:11463/947</a></li>
 <li>One thing we need to remember if we start using OAI is to enable the autostart of the harvester process (see <code>harvester.autoStart</code> in <code>dspace/config/modules/oai.cfg</code>)</li>
-<li>Error when running DSpace cleanup task on DSpace Test and CGSpace (on the same item), I need to look this up:</li>
-</ul>
+
+<li><p>Error when running DSpace cleanup task on DSpace Test and CGSpace (on the same item), I need to look this up:</p>
 
 <pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(435) is still referenced from table &quot;bundle&quot;.
-</code></pre>
+Detail: Key (bitstream_id)=(435) is still referenced from table &quot;bundle&quot;.
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-18">2017-04-18</h2>
 
 <ul>
 <li>Helping Tsega test his new <a href="https://github.com/ilri/ckm-cgspace-rest-api">CGSpace REST API Rails app</a> on DSpace Test</li>
-<li>Setup and run with:</li>
-</ul>
+
+<li><p>Setup and run with:</p>
 
 <pre><code>$ git clone https://github.com/ilri/ckm-cgspace-rest-api.git
 $ cd ckm-cgspace-rest-api/app
@@ -401,22 +399,20 @@ $ gem install bundler
 $ bundle
 $ cd ..
 $ rails -s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I used Ansible to create a PostgreSQL user that only has <code>SELECT</code> privileges on the tables it needs:</li>
-</ul>
+<li><p>I used Ansible to create a PostgreSQL user that only has <code>SELECT</code> privileges on the tables it needs:</p>
 
 <pre><code>$ ansible linode02 -u aorth -b --become-user=postgres -K -m postgresql_user -a 'db=database name=username password=password priv=CONNECT/item:SELECT/metadatavalue:SELECT/metadatafieldregistry:SELECT/metadataschemaregistry:SELECT/collection:SELECT/handle:SELECT/bundle2bitstream:SELECT/bitstream:SELECT/bundle:SELECT/item2bundle:SELECT state=present
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Need to look into <a href="https://github.com/puma/puma/blob/master/docs/systemd.md">running this via systemd</a></li>
-<li>This is interesting for creating runnable commands from <code>bundle</code>:</li>
-</ul>
+<li><p>Need to look into <a href="https://github.com/puma/puma/blob/master/docs/systemd.md">running this via systemd</a></p></li>
+
+<li><p>This is interesting for creating runnable commands from <code>bundle</code>:</p>
 
 <pre><code>$ bundle binstubs puma --path ./sbin
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-19">2017-04-19</h2>
 
@@ -429,30 +425,27 @@ $ rails -s
 <li>Abenet noticed that the &ldquo;Workflow Statistics&rdquo; option is missing now, but we have screenshots from a presentation in 2016 when it was there</li>
 <li>I filed a ticket with Atmire</li>
 <li>Looking at 933 CIAT records from Sisay, he&rsquo;s having problems creating a SAF bundle to import to DSpace Test</li>
-<li>I started by looking at his CSV in OpenRefine, and I see there a <em>bunch</em> of fields with whitespace issues that I cleaned up:</li>
-</ul>
+
+<li><p>I started by looking at his CSV in OpenRefine, and I see there a <em>bunch</em> of fields with whitespace issues that I cleaned up:</p>
 
 <pre><code>value.replace(&quot; ||&quot;,&quot;||&quot;).replace(&quot;|| &quot;,&quot;||&quot;).replace(&quot; || &quot;,&quot;||&quot;)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Also, all the filenames have spaces and URL encoded characters in them, so I decoded them from URL encoding:</li>
-</ul>
+<li><p>Also, all the filenames have spaces and URL encoded characters in them, so I decoded them from URL encoding:</p>
 
 <pre><code>unescape(value,&quot;url&quot;)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then create the filename column using the following transform from URL:</li>
-</ul>
+<li><p>Then create the filename column using the following transform from URL:</p>
 
 <pre><code>value.split('/')[-1].replace(/#.*$/,&quot;&quot;)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The <code>replace</code> part is because some URLs have an anchor like <code>#page=14</code> which we obviously don&rsquo;t want on the filename</li>
-<li>Also, we need to only use the PDF on the item corresponding with page 1, so we don&rsquo;t end up with literally hundreds of duplicate PDFs</li>
-<li>Alternatively, I could export each page to a standalone PDF&hellip;</li>
+<li><p>The <code>replace</code> part is because some URLs have an anchor like <code>#page=14</code> which we obviously don&rsquo;t want on the filename</p></li>
+
+<li><p>Also, we need to only use the PDF on the item corresponding with page 1, so we don&rsquo;t end up with literally hundreds of duplicate PDFs</p></li>
+
+<li><p>Alternatively, I could export each page to a standalone PDF&hellip;</p></li>
 </ul>
 
 <h2 id="2017-04-20">2017-04-20</h2>
@@ -461,99 +454,97 @@ $ rails -s
 <li>Atmire responded about the Workflow Statistics, saying that it had been disabled because many environments needed customization to be useful</li>
 <li>I re-enabled it with a hidden config key <code>workflow.stats.enabled = true</code> on DSpace Test and will evaluate adding it on CGSpace</li>
 <li>Looking at the CIAT data again, a bunch of items have metadata values ending in <code>||</code>, which might cause blank fields to be added at import time</li>
-<li>Cleaning them up with OpenRefine:</li>
-</ul>
+
+<li><p>Cleaning them up with OpenRefine:</p>
 
 <pre><code>value.replace(/\|\|$/,&quot;&quot;)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Working with the CIAT data in OpenRefine to remove the filename column from all but the first item which requires a particular PDF, as there are many items pointing to the same PDF, which would cause hundreds of duplicates to be added if we included them in the SAF bundle</li>
-<li>I did some massaging in OpenRefine, flagging duplicates with stars and flags, then filtering and removing the filenames of those items</li>
+<li><p>Working with the CIAT data in OpenRefine to remove the filename column from all but the first item which requires a particular PDF, as there are many items pointing to the same PDF, which would cause hundreds of duplicates to be added if we included them in the SAF bundle</p></li>
+
+<li><p>I did some massaging in OpenRefine, flagging duplicates with stars and flags, then filtering and removing the filenames of those items</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2017/04/openrefine-flagging-duplicates.png" alt="Flagging and filtering duplicates in OpenRefine" /></p>
 
 <ul>
 <li>Also there are loads of whitespace errors in almost every field, so I trimmed leading/trailing whitespace</li>
-<li>Unbelievable, there are also metadata values like:</li>
-</ul>
+
+<li><p>Unbelievable, there are also metadata values like:</p>
 
 <pre><code>COLLETOTRICHUM LINDEMUTHIANUM||                  FUSARIUM||GERMPLASM
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Add a description to the file names using:</li>
-</ul>
+<li><p>Add a description to the file names using:</p>
 
 <pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Test import of 933 records:</li>
-</ul>
+<li><p>Test import of 933 records:</p>
 
 <pre><code>$ [dspace]/bin/dspace import -a -e aorth@mjanja.ch -c 10568/87193 -s /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ -m /tmp/ciat
 $ wc -l /tmp/ciat
 933 /tmp/ciat
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Run system updates on CGSpace and reboot server</li>
-<li>This includes switching nginx to using upstream with keepalive instead of direct <code>proxy_pass</code></li>
-<li>Re-deploy CGSpace to latest <code>5_x-prod</code>, including the PABRA and RTB XMLUI themes, as well as the PDF processing and CMYK changes</li>
-<li>More work on Ansible infrastructure stuff for Tsega&rsquo;s CKM DSpace REST API</li>
-<li>I&rsquo;m going to start re-processing all the PDF thumbnails on CGSpace, one community at a time:</li>
-</ul>
+<li><p>Run system updates on CGSpace and reboot server</p></li>
+
+<li><p>This includes switching nginx to using upstream with keepalive instead of direct <code>proxy_pass</code></p></li>
+
+<li><p>Re-deploy CGSpace to latest <code>5_x-prod</code>, including the PABRA and RTB XMLUI themes, as well as the PDF processing and CMYK changes</p></li>
+
+<li><p>More work on Ansible infrastructure stuff for Tsega&rsquo;s CKM DSpace REST API</p></li>
+
+<li><p>I&rsquo;m going to start re-processing all the PDF thumbnails on CGSpace, one community at a time:</p>
 
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace filter-media -f -v -i 10568/71249 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-22">2017-04-22</h2>
 
 <ul>
 <li>Someone on the dspace-tech mailing list responded with a suggestion about the foreign key violation in the <code>cleanup</code> task</li>
 <li>The solution is to remove the ID (ie set to NULL) from the <code>primary_bitstream_id</code> column in the <code>bundle</code> table</li>
-<li>After doing that and running the <code>cleanup</code> task again I find more bitstreams that are affected and end up with a long list of IDs that need to be fixed:</li>
-</ul>
+
+<li><p>After doing that and running the <code>cleanup</code> task again I find more bitstreams that are affected and end up with a long list of IDs that need to be fixed:</p>
 
 <pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (435, 1136, 1132, 1220, 1236, 3002, 3255, 5322);
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-04-24">2017-04-24</h2>
 
 <ul>
 <li>Two users mentioned some items they recently approved not showing up in the search / XMLUI</li>
-<li>I looked at the logs from yesterday and it seems the Discovery indexing has been crashing:</li>
-</ul>
+
+<li><p>I looked at the logs from yesterday and it seems the Discovery indexing has been crashing:</p>
 
 <pre><code>2017-04-24 00:00:15,578 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (55 of 58853): 70590
 2017-04-24 00:00:15,586 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (56 of 58853): 74507
 2017-04-24 00:00:15,614 ERROR com.atmire.dspace.discovery.AtmireSolrService @ this IndexWriter is closed
 org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: this IndexWriter is closed
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
-        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
-        at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
-        at org.apache.solr.client.solrj.SolrServer.deleteByQuery(SolrServer.java:285)
-        at org.apache.solr.client.solrj.SolrServer.deleteByQuery(SolrServer.java:271)
-        at org.dspace.discovery.SolrServiceImpl.unIndexContent(SolrServiceImpl.java:331)
-        at org.dspace.discovery.SolrServiceImpl.unIndexContent(SolrServiceImpl.java:315)
-        at com.atmire.dspace.discovery.AtmireSolrService.indexContent(AtmireSolrService.java:803)
-        at com.atmire.dspace.discovery.AtmireSolrService.updateIndex(AtmireSolrService.java:876)
-        at org.dspace.discovery.IndexClient.main(IndexClient.java:127)
-        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.lang.reflect.Method.invoke(Method.java:498)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
-</code></pre>
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+    at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+    at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
+    at org.apache.solr.client.solrj.SolrServer.deleteByQuery(SolrServer.java:285)
+    at org.apache.solr.client.solrj.SolrServer.deleteByQuery(SolrServer.java:271)
+    at org.dspace.discovery.SolrServiceImpl.unIndexContent(SolrServiceImpl.java:331)
+    at org.dspace.discovery.SolrServiceImpl.unIndexContent(SolrServiceImpl.java:315)
+    at com.atmire.dspace.discovery.AtmireSolrService.indexContent(AtmireSolrService.java:803)
+    at com.atmire.dspace.discovery.AtmireSolrService.updateIndex(AtmireSolrService.java:876)
+    at org.dspace.discovery.IndexClient.main(IndexClient.java:127)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:498)
+    at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+    at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+</code></pre></li>
 
-<ul>
-<li>Looking at the past few days of logs, it looks like the indexing process started crashing on 2017-04-20:</li>
-</ul>
+<li><p>Looking at the past few days of logs, it looks like the indexing process started crashing on 2017-04-20:</p>
 
 <pre><code># grep -c 'IndexWriter is closed' [dspace]/log/dspace.log.2017-04-*
 [dspace]/log/dspace.log.2017-04-01:0
@@ -580,41 +571,35 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: this Index
 [dspace]/log/dspace.log.2017-04-22:13278
 [dspace]/log/dspace.log.2017-04-23:22720
 [dspace]/log/dspace.log.2017-04-24:21422
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I restarted Tomcat and re-ran the discovery process manually:</li>
-</ul>
+<li><p>I restarted Tomcat and re-ran the discovery process manually:</p>
 
 <pre><code>[dspace]/bin/dspace index-discovery
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Now everything is ok</li>
-<li>Finally finished manually running the cleanup task over and over and null&rsquo;ing the conflicting IDs:</li>
-</ul>
+<li><p>Now everything is ok</p></li>
+
+<li><p>Finally finished manually running the cleanup task over and over and null&rsquo;ing the conflicting IDs:</p>
 
 <pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (435, 1132, 1136, 1220, 1236, 3002, 3255, 5322, 5098, 5982, 5897, 6245, 6184, 4927, 6070, 4925, 6888, 7368, 7136, 7294, 7698, 7864, 10799, 10839, 11765, 13241, 13634, 13642, 14127, 14146, 15582, 16116, 16254, 17136, 17486, 17824, 18098, 22091, 22149, 22206, 22449, 22548, 22559, 22454, 22253, 22553, 22897, 22941, 30262, 33657, 39796, 46943, 56561, 58237, 58739, 58734, 62020, 62535, 64149, 64672, 66988, 66919, 76005, 79780, 78545, 81078, 83620, 84492, 92513, 93915);
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Now running the cleanup script on DSpace Test and already seeing 11GB freed from the assetstore—it&rsquo;s likely we haven&rsquo;t had a cleanup task complete successfully in years&hellip;</li>
+<li><p>Now running the cleanup script on DSpace Test and already seeing 11GB freed from the assetstore—it&rsquo;s likely we haven&rsquo;t had a cleanup task complete successfully in years&hellip;</p></li>
 </ul>
 
 <h2 id="2017-04-25">2017-04-25</h2>
 
 <ul>
 <li>Finally finished running the PDF thumbnail re-processing on CGSpace, the final count of CMYK PDFs is about 2751</li>
-<li>Preparing to run the cleanup task on CGSpace, I want to see how many files are in the assetstore:</li>
-</ul>
+
+<li><p>Preparing to run the cleanup task on CGSpace, I want to see how many files are in the assetstore:</p>
 
 <pre><code># find [dspace]/assetstore/ -type f | wc -l
 113104
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Troubleshooting the Atmire Solr update process that runs at 3:00 AM every morning, after finishing at 100% it has this error:</li>
-</ul>
+<li><p>Troubleshooting the Atmire Solr update process that runs at 3:00 AM every morning, after finishing at 100% it has this error:</p>
 
 <pre><code>[=================================================&gt; ]99% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:12
 [=================================================&gt; ]99% time remaining: 0 seconds. timestamp: 2017-04-25 09:07:12
@@ -666,33 +651,36 @@ Caused by: java.lang.ClassNotFoundException: org.dspace.statistics.content.DSpac
 	at java.lang.Class.forName(Class.java:264)
 	at com.atmire.statistics.statlet.XmlParser.parsedatasetGenerator(SourceFile:299)
 	at com.atmire.statistics.display.StatisticsGraph.parseDatasetGenerators(SourceFile:250)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Run system updates on DSpace Test and reboot the server (new Java 8 131)</li>
-<li>Run the SQL cleanups on the bundle table on CGSpace and run the <code>[dspace]/bin/dspace cleanup</code> task</li>
-<li>I will be interested to see the file count in the assetstore as well as the database size after the next backup (last backup size is 111M)</li>
-<li>Final file count after the cleanup task finished: 77843</li>
-<li>So that is 30,000 files, and about 7GB</li>
-<li>Add logging to the cleanup cron task</li>
+<li><p>Run system updates on DSpace Test and reboot the server (new Java 8 131)</p></li>
+
+<li><p>Run the SQL cleanups on the bundle table on CGSpace and run the <code>[dspace]/bin/dspace cleanup</code> task</p></li>
+
+<li><p>I will be interested to see the file count in the assetstore as well as the database size after the next backup (last backup size is 111M)</p></li>
+
+<li><p>Final file count after the cleanup task finished: 77843</p></li>
+
+<li><p>So that is 30,000 files, and about 7GB</p></li>
+
+<li><p>Add logging to the cleanup cron task</p></li>
 </ul>
 
 <h2 id="2017-04-26">2017-04-26</h2>
 
 <ul>
 <li>The size of the CGSpace database dump went from 111MB to 96MB, not sure about actual database size though</li>
-<li>Update RVM&rsquo;s Ruby from 2.3.0 to 2.4.0 on DSpace Test:</li>
-</ul>
+
+<li><p>Update RVM&rsquo;s Ruby from 2.3.0 to 2.4.0 on DSpace Test:</p>
 
 <pre><code>$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 $ \curl -sSL https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer | bash -s stable --ruby
 ... reload shell to get new Ruby
 $ gem install sass -v 3.3.14
 $ gem install compass -v 1.0.3
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Help Tsega re-deploy the ckm-cgspace-rest-api on DSpace Test</li>
+<li><p>Help Tsega re-deploy the ckm-cgspace-rest-api on DSpace Test</p></li>
 </ul>
 
   

@@ -11,12 +11,11 @@
 
 Peter emailed to point out that many items in the ILRI archive collection have multiple handles:
 
-
 http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
 
 
-
 There appears to be a pattern but I&rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine
+
 Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections
 " />
 <meta property="og:type" content="article" />
@@ -31,15 +30,14 @@ Add Katherine Lutz to the groups for content submission and edit steps of the CG
 
 Peter emailed to point out that many items in the ILRI archive collection have multiple handles:
 
-
 http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
 
 
-
 There appears to be a pattern but I&rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine
+
 Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -121,40 +119,38 @@ Add Katherine Lutz to the groups for content submission and edit steps of the CG
   <h2 id="2017-10-01">2017-10-01</h2>
 
 <ul>
-<li>Peter emailed to point out that many items in the <a href="https://cgspace.cgiar.org/handle/10568/2703">ILRI archive collection</a> have multiple handles:</li>
-</ul>
+<li><p>Peter emailed to point out that many items in the <a href="https://cgspace.cgiar.org/handle/10568/2703">ILRI archive collection</a> have multiple handles:</p>
 
 <pre><code>http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>There appears to be a pattern but I&rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine</li>
-<li>Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections</li>
+<li><p>There appears to be a pattern but I&rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine</p></li>
+
+<li><p>Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections</p></li>
 </ul>
 
 <h2 id="2017-10-02">2017-10-02</h2>
 
 <ul>
 <li>Peter Ballantyne said he was having problems logging into CGSpace with &ldquo;both&rdquo; of his accounts (CGIAR LDAP and personal, apparently)</li>
-<li>I looked in the logs and saw some LDAP lookup failures due to timeout but also strangely a &ldquo;no DN found&rdquo; error:</li>
-</ul>
+
+<li><p>I looked in the logs and saw some LDAP lookup failures due to timeout but also strangely a &ldquo;no DN found&rdquo; error:</p>
 
 <pre><code>2017-10-01 20:24:57,928 WARN  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=CA0AA5FEAEA8805645489404CDCE9594:ip_addr=41.204.190.40:ldap_attribute_lookup:type=failed_search javax.naming.CommunicationException\colon; svcgroot2.cgiarad.org\colon;3269 [Root exception is java.net.ConnectException\colon; Connection timed out (Connection timed out)]
 2017-10-01 20:22:37,982 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=CA0AA5FEAEA8805645489404CDCE9594:ip_addr=41.204.190.40:failed_login:no DN found for user pballantyne
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I thought maybe his account had expired (seeing as it&rsquo;s was the first of the month) but he says he was finally able to log in today</li>
-<li>The logs for yesterday show fourteen errors related to LDAP auth failures:</li>
-</ul>
+<li><p>I thought maybe his account had expired (seeing as it&rsquo;s was the first of the month) but he says he was finally able to log in today</p></li>
+
+<li><p>The logs for yesterday show fourteen errors related to LDAP auth failures:</p>
 
 <pre><code>$ grep -c &quot;ldap_authentication:type=failed_auth&quot; dspace.log.2017-10-01
 14
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>For what it&rsquo;s worth, there are no errors on any other recent days, so it must have been some network issue on Linode or CGNET&rsquo;s LDAP server</li>
-<li>Linode emailed to say that linode578611 (DSpace Test) needs to migrate to a new host for a security update so I initiated the migration immediately rather than waiting for the scheduled time in two weeks</li>
+<li><p>For what it&rsquo;s worth, there are no errors on any other recent days, so it must have been some network issue on Linode or CGNET&rsquo;s LDAP server</p></li>
+
+<li><p>Linode emailed to say that linode578611 (DSpace Test) needs to migrate to a new host for a security update so I initiated the migration immediately rather than waiting for the scheduled time in two weeks</p></li>
 </ul>
 
 <h2 id="2017-10-04">2017-10-04</h2>
@@ -162,59 +158,67 @@ Add Katherine Lutz to the groups for content submission and edit steps of the CG
 <ul>
 <li>Twice in the last twenty-four hours Linode has alerted about high CPU usage on CGSpace (linode2533629)</li>
 <li>Communicate with Sam from the CGIAR System Organization about some broken links coming from their CGIAR Library domain to CGSpace</li>
-<li>The first is a link to a browse page that should be handled better in nginx:</li>
-</ul>
+
+<li><p>The first is a link to a browse page that should be handled better in nginx:</p>
 
 <pre><code>http://library.cgiar.org/browse?value=Intellectual%20Assets%20Reports&amp;type=subject → https://cgspace.cgiar.org/browse?value=Intellectual%20Assets%20Reports&amp;type=subject
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>We&rsquo;ll need to check for browse links and handle them properly, including swapping the <code>subject</code> parameter for <code>systemsubject</code> (which doesn&rsquo;t exist in Discovery yet, but we&rsquo;ll need to add it) as we have moved their poorly curated subjects from <code>dc.subject</code> to <code>cg.subject.system</code></li>
-<li>The second link was a direct link to a bitstream which has broken due to the sequence being updated, so I told him he should link to the handle of the item instead</li>
-<li>Help Sisay proof sixty-two IITA records on DSpace Test</li>
-<li>Lots of inconsistencies and errors in subjects, dc.format.extent, regions, countries</li>
-<li>Merge the Discovery search changes for ISI Journal (<a href="https://github.com/ilri/DSpace/pull/341">#341</a>)</li>
+<li><p>We&rsquo;ll need to check for browse links and handle them properly, including swapping the <code>subject</code> parameter for <code>systemsubject</code> (which doesn&rsquo;t exist in Discovery yet, but we&rsquo;ll need to add it) as we have moved their poorly curated subjects from <code>dc.subject</code> to <code>cg.subject.system</code></p></li>
+
+<li><p>The second link was a direct link to a bitstream which has broken due to the sequence being updated, so I told him he should link to the handle of the item instead</p></li>
+
+<li><p>Help Sisay proof sixty-two IITA records on DSpace Test</p></li>
+
+<li><p>Lots of inconsistencies and errors in subjects, dc.format.extent, regions, countries</p></li>
+
+<li><p>Merge the Discovery search changes for ISI Journal (<a href="https://github.com/ilri/DSpace/pull/341">#341</a>)</p></li>
 </ul>
 
 <h2 id="2017-10-05">2017-10-05</h2>
 
 <ul>
 <li>Twice in the past twenty-four hours Linode has warned that CGSpace&rsquo;s outbound traffic rate was exceeding the notification threshold</li>
-<li>I had a look at yesterday&rsquo;s OAI and REST logs in <code>/var/log/nginx</code> but didn&rsquo;t see anything unusual:</li>
-</ul>
+
+<li><p>I had a look at yesterday&rsquo;s OAI and REST logs in <code>/var/log/nginx</code> but didn&rsquo;t see anything unusual:</p>
 
 <pre><code># awk '{print $1}' /var/log/nginx/rest.log.1 | sort -n | uniq -c | sort -h | tail -n 10
-    141 157.55.39.240
-    145 40.77.167.85
-    162 66.249.66.92
-    181 66.249.66.95
-    211 66.249.66.91
-    312 66.249.66.94
-    384 66.249.66.90
-   1495 50.116.102.77
-   3904 70.32.83.92
-   9904 45.5.184.196
+141 157.55.39.240
+145 40.77.167.85
+162 66.249.66.92
+181 66.249.66.95
+211 66.249.66.91
+312 66.249.66.94
+384 66.249.66.90
+1495 50.116.102.77
+3904 70.32.83.92
+9904 45.5.184.196
 # awk '{print $1}' /var/log/nginx/oai.log.1 | sort -n | uniq -c | sort -h | tail -n 10
-      5 66.249.66.71
-      6 66.249.66.67
-      6 68.180.229.31
-      8 41.84.227.85
-      8 66.249.66.92
-     17 66.249.66.65
-     24 66.249.66.91
-     38 66.249.66.95
-     69 66.249.66.90
-    148 66.249.66.94
-</code></pre>
+  5 66.249.66.71
+  6 66.249.66.67
+  6 68.180.229.31
+  8 41.84.227.85
+  8 66.249.66.92
+ 17 66.249.66.65
+ 24 66.249.66.91
+ 38 66.249.66.95
+ 69 66.249.66.90
+148 66.249.66.94
+</code></pre></li>
 
-<ul>
-<li>Working on the nginx redirects for CGIAR Library</li>
-<li>We should start using 301 redirects and also allow for <code>/sitemap</code> to work on the library.cgiar.org domain so the CGIAR System Organization people can update their Google Search Console and allow Google to find their content in a structured way</li>
-<li>Remove eleven occurrences of <code>ACP</code> in IITA&rsquo;s <code>cg.coverage.region</code> using the Atmire batch edit module from Discovery</li>
-<li>Need to investigate how we can verify the library.cgiar.org using the HTML or DNS methods</li>
-<li>Run corrections on 143 ILRI Archive items that had two <code>dc.identifier.uri</code> values (Handle) that Peter had pointed out earlier this week</li>
-<li>I used OpenRefine to isolate them and then fixed and re-imported them into CGSpace</li>
-<li>I manually checked a dozen of them and it appeared that the correct handle was always the second one, so I just deleted the first one</li>
+<li><p>Working on the nginx redirects for CGIAR Library</p></li>
+
+<li><p>We should start using 301 redirects and also allow for <code>/sitemap</code> to work on the library.cgiar.org domain so the CGIAR System Organization people can update their Google Search Console and allow Google to find their content in a structured way</p></li>
+
+<li><p>Remove eleven occurrences of <code>ACP</code> in IITA&rsquo;s <code>cg.coverage.region</code> using the Atmire batch edit module from Discovery</p></li>
+
+<li><p>Need to investigate how we can verify the library.cgiar.org using the HTML or DNS methods</p></li>
+
+<li><p>Run corrections on 143 ILRI Archive items that had two <code>dc.identifier.uri</code> values (Handle) that Peter had pointed out earlier this week</p></li>
+
+<li><p>I used OpenRefine to isolate them and then fixed and re-imported them into CGSpace</p></li>
+
+<li><p>I manually checked a dozen of them and it appeared that the correct handle was always the second one, so I just deleted the first one</p></li>
 </ul>
 
 <h2 id="2017-10-06">2017-10-06</h2>
@@ -251,19 +255,19 @@ Add Katherine Lutz to the groups for content submission and edit steps of the CG
 <li>I tried to submit a &ldquo;Change of Address&rdquo; request in the Google Search Console but I need to be an owner on CGSpace&rsquo;s console (currently I&rsquo;m just a user) in order to do that</li>
 <li>Manually clean up some communities and collections that Peter had requested a few weeks ago</li>
 <li>Delete Community <sup>10568</sup>&frasl;<sub>102</sub> (ILRI Research and Development Issues)</li>
-<li>Move five collections to <sup>10568</sup>&frasl;<sub>27629</sub> (ILRI Projects) using <code>move-collections.sh</code> with the following configuration:</li>
-</ul>
+
+<li><p>Move five collections to <sup>10568</sup>&frasl;<sub>27629</sub> (ILRI Projects) using <code>move-collections.sh</code> with the following configuration:</p>
 
 <pre><code>10568/1637 10568/174 10568/27629
 10568/1642 10568/174 10568/27629
 10568/1614 10568/174 10568/27629
 10568/75561 10568/150 10568/27629
 10568/183 10568/230 10568/27629
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Delete community <sup>10568</sup>&frasl;<sub>174</sub> (Sustainable livestock futures)</li>
-<li>Delete collections in <sup>10568</sup>&frasl;<sub>27629</sub> that have zero items (33 of them!)</li>
+<li><p>Delete community <sup>10568</sup>&frasl;<sub>174</sub> (Sustainable livestock futures)</p></li>
+
+<li><p>Delete collections in <sup>10568</sup>&frasl;<sub>27629</sub> that have zero items (33 of them!)</p></li>
 </ul>
 
 <h2 id="2017-10-11">2017-10-11</h2>
@@ -311,31 +315,34 @@ Add Katherine Lutz to the groups for content submission and edit steps of the CG
 <li>In other news, I was trying to look at a question about stats raised by Magdalena and then CGSpace went down due to SQL connection pool</li>
 <li>Looking at the PostgreSQL activity I see there are 93 connections, but after a minute or two they went down and CGSpace came back up</li>
 <li>Annnd I reloaded the Atmire Usage Stats module and the connections shot back up and CGSpace went down again</li>
-<li>Still not sure where the load is coming from right now, but it&rsquo;s clear why there were so many alerts yesterday on the 25th!</li>
-</ul>
+
+<li><p>Still not sure where the load is coming from right now, but it&rsquo;s clear why there were so many alerts yesterday on the 25th!</p>
 
 <pre><code># grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2017-10-25 | sort -n | uniq | wc -l
 18022
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Compared to other days there were two or three times the number of requests yesterday!</li>
-</ul>
+<li><p>Compared to other days there were two or three times the number of requests yesterday!</p>
 
 <pre><code># grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2017-10-23 | sort -n | uniq | wc -l
 3141
 # grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2017-10-26 | sort -n | uniq | wc -l
 7851
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I still have no idea what was causing the load to go up today</li>
-<li>I finally investigated Magdalena&rsquo;s issue with the item download stats and now I can&rsquo;t reproduce it: I get the same number of downloads reported in the stats widget on the item page, the &ldquo;Most Popular Items&rdquo; page, and in Usage Stats</li>
-<li>I think it might have been an issue with the statistics not being fresh</li>
-<li>I added the admin group for the systems organization to the admin role of the top-level community of CGSpace because I guess Sisay had forgotten</li>
-<li>Magdalena asked if there was a way to reuse data in item submissions where items have a lot of similar data</li>
-<li>I told her about the possibility to use per-collection item templates, and asked if her items in question were all from a single collection</li>
-<li>We&rsquo;ve never used it but it could be worth looking at</li>
+<li><p>I still have no idea what was causing the load to go up today</p></li>
+
+<li><p>I finally investigated Magdalena&rsquo;s issue with the item download stats and now I can&rsquo;t reproduce it: I get the same number of downloads reported in the stats widget on the item page, the &ldquo;Most Popular Items&rdquo; page, and in Usage Stats</p></li>
+
+<li><p>I think it might have been an issue with the statistics not being fresh</p></li>
+
+<li><p>I added the admin group for the systems organization to the admin role of the top-level community of CGSpace because I guess Sisay had forgotten</p></li>
+
+<li><p>Magdalena asked if there was a way to reuse data in item submissions where items have a lot of similar data</p></li>
+
+<li><p>I told her about the possibility to use per-collection item templates, and asked if her items in question were all from a single collection</p></li>
+
+<li><p>We&rsquo;ve never used it but it could be worth looking at</p></li>
 </ul>
 
 <h2 id="2017-10-27">2017-10-27</h2>
@@ -355,133 +362,126 @@ Add Katherine Lutz to the groups for content submission and edit steps of the CG
 <ul>
 <li>Linode alerted about high CPU usage again on CGSpace around 2AM and 4AM</li>
 <li>I&rsquo;m still not sure why this started causing alerts so repeatadely the past week</li>
-<li>I don&rsquo;t see any tell tale signs in the REST or OAI logs, so trying to do rudimentary analysis in DSpace logs:</li>
-</ul>
+
+<li><p>I don&rsquo;t see any tell tale signs in the REST or OAI logs, so trying to do rudimentary analysis in DSpace logs:</p>
 
 <pre><code># grep '2017-10-29 02:' dspace.log.2017-10-29 | grep -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 2049
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So there were 2049 unique sessions during the hour of 2AM</li>
-<li>Looking at my notes, the number of unique sessions was about the same during the same hour on other days when there were no alerts</li>
-<li>I think I&rsquo;ll need to enable access logging in nginx to figure out what&rsquo;s going on</li>
-<li>After enabling logging on requests to XMLUI on <code>/</code> I see some new bot I&rsquo;ve never seen before:</li>
-</ul>
+<li><p>So there were 2049 unique sessions during the hour of 2AM</p></li>
+
+<li><p>Looking at my notes, the number of unique sessions was about the same during the same hour on other days when there were no alerts</p></li>
+
+<li><p>I think I&rsquo;ll need to enable access logging in nginx to figure out what&rsquo;s going on</p></li>
+
+<li><p>After enabling logging on requests to XMLUI on <code>/</code> I see some new bot I&rsquo;ve never seen before:</p>
 
 <pre><code>137.108.70.6 - - [29/Oct/2017:07:39:49 +0000] &quot;GET /discover?filtertype_0=type&amp;filter_relational_operator_0=equals&amp;filter_0=Internal+Document&amp;filtertype=author&amp;filter_relational_operator=equals&amp;filter=CGIAR+Secretariat HTTP/1.1&quot; 200 7776 &quot;-&quot; &quot;Mozilla/5.0 (compatible; CORE/0.6; +http://core.ac.uk; http://core.ac.uk/intro/contact)&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>CORE seems to be some bot that is &ldquo;Aggregating the world’s open access research papers&rdquo;</li>
-<li>The contact address listed in their bot&rsquo;s user agent is incorrect, correct page is simply: <a href="https://core.ac.uk/contact">https://core.ac.uk/contact</a></li>
-<li>I will check the logs in a few days to see if they are harvesting us regularly, then add their bot&rsquo;s user agent to the Tomcat Crawler Session Valve</li>
-<li>After browsing the CORE site it seems that the CGIAR Library is somehow a member of CORE, so they have probably only been harvesting CGSpace since we did the migration, as library.cgiar.org directs to us now</li>
-<li>For now I will just contact them to have them update their contact info in the bot&rsquo;s user agent, but eventually I think I&rsquo;ll tell them to swap out the CGIAR Library entry for CGSpace</li>
+<li><p>CORE seems to be some bot that is &ldquo;Aggregating the world’s open access research papers&rdquo;</p></li>
+
+<li><p>The contact address listed in their bot&rsquo;s user agent is incorrect, correct page is simply: <a href="https://core.ac.uk/contact">https://core.ac.uk/contact</a></p></li>
+
+<li><p>I will check the logs in a few days to see if they are harvesting us regularly, then add their bot&rsquo;s user agent to the Tomcat Crawler Session Valve</p></li>
+
+<li><p>After browsing the CORE site it seems that the CGIAR Library is somehow a member of CORE, so they have probably only been harvesting CGSpace since we did the migration, as library.cgiar.org directs to us now</p></li>
+
+<li><p>For now I will just contact them to have them update their contact info in the bot&rsquo;s user agent, but eventually I think I&rsquo;ll tell them to swap out the CGIAR Library entry for CGSpace</p></li>
 </ul>
 
 <h2 id="2017-10-30">2017-10-30</h2>
 
 <ul>
 <li>Like clock work, Linode alerted about high CPU usage on CGSpace again this morning (this time at 8:13 AM)</li>
-<li>Uptime Robot noticed that CGSpace went down around 10:15 AM, and I saw that there were 93 PostgreSQL connections:</li>
-</ul>
+
+<li><p>Uptime Robot noticed that CGSpace went down around 10:15 AM, and I saw that there were 93 PostgreSQL connections:</p>
 
 <pre><code>dspace=# SELECT * FROM pg_stat_activity;
 ...
 (93 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Surprise surprise, the CORE bot is likely responsible for the recent load issues, making hundreds of thousands of requests yesterday and today:</li>
-</ul>
+<li><p>Surprise surprise, the CORE bot is likely responsible for the recent load issues, making hundreds of thousands of requests yesterday and today:</p>
 
 <pre><code># grep -c &quot;CORE/0.6&quot; /var/log/nginx/access.log 
 26475
 # grep -c &quot;CORE/0.6&quot; /var/log/nginx/access.log.1
 135083
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>IP addresses for this bot currently seem to be:</li>
-</ul>
+<li><p>IP addresses for this bot currently seem to be:</p>
 
 <pre><code># grep &quot;CORE/0.6&quot; /var/log/nginx/access.log | awk '{print $1}' | sort -n | uniq
 137.108.70.6
 137.108.70.7
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will add their user agent to the Tomcat Session Crawler Valve but it won&rsquo;t help much because they are only using two sessions:</li>
-</ul>
+<li><p>I will add their user agent to the Tomcat Session Crawler Valve but it won&rsquo;t help much because they are only using two sessions:</p>
 
 <pre><code># grep 137.108.70 dspace.log.2017-10-30 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq
 session_id=5771742CABA3D0780860B8DA81E0551B
 session_id=6C30F10B4351A4ED83EC6ED50AFD6B6A
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>&hellip; and most of their requests are for dynamic discover pages:</li>
-</ul>
+<li><p>&hellip; and most of their requests are for dynamic discover pages:</p>
 
 <pre><code># grep -c 137.108.70 /var/log/nginx/access.log
 26622
 # grep 137.108.70 /var/log/nginx/access.log | grep -c &quot;GET /discover&quot;
 24055
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Just because I&rsquo;m curious who the top IPs are:</li>
-</ul>
+<li><p>Just because I&rsquo;m curious who the top IPs are:</p>
 
 <pre><code># awk '{print $1}' /var/log/nginx/access.log | sort -n | uniq -c | sort -h | tail
-    496 62.210.247.93
-    571 46.4.94.226
-    651 40.77.167.39
-    763 157.55.39.231
-    782 207.46.13.90
-    998 66.249.66.90
-   1948 104.196.152.243
-   4247 190.19.92.5
-  31602 137.108.70.6
-  31636 137.108.70.7
-</code></pre>
+496 62.210.247.93
+571 46.4.94.226
+651 40.77.167.39
+763 157.55.39.231
+782 207.46.13.90
+998 66.249.66.90
+1948 104.196.152.243
+4247 190.19.92.5
+31602 137.108.70.6
+31636 137.108.70.7
+</code></pre></li>
 
-<ul>
-<li>At least we know the top two are CORE, but who are the others?</li>
-<li>190.19.92.5 is apparently in Argentina, and 104.196.152.243 is from Google Cloud Engine</li>
-<li>Actually, these two scrapers might be more responsible for the heavy load than the CORE bot, because they don&rsquo;t reuse their session variable, creating thousands of new sessions!</li>
-</ul>
+<li><p>At least we know the top two are CORE, but who are the others?</p></li>
+
+<li><p>190.19.92.5 is apparently in Argentina, and 104.196.152.243 is from Google Cloud Engine</p></li>
+
+<li><p>Actually, these two scrapers might be more responsible for the heavy load than the CORE bot, because they don&rsquo;t reuse their session variable, creating thousands of new sessions!</p>
 
 <pre><code># grep 190.19.92.5 dspace.log.2017-10-30 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 1419
 # grep 104.196.152.243 dspace.log.2017-10-30 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 2811
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>From looking at the requests, it appears these are from CIAT and CCAFS</li>
-<li>I wonder if I could somehow instruct them to use a user agent so that we could apply a crawler session manager valve to them</li>
-<li>Actually, according to the Tomcat docs, we could use an IP with <code>crawlerIps</code>: <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve">https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve</a></li>
-<li>Ah, wait, it looks like <code>crawlerIps</code> only came in 2017-06, so probably isn&rsquo;t in Ubuntu 16.04&rsquo;s 7.0.68 build!</li>
-<li>That would explain the errors I was getting when trying to set it:</li>
-</ul>
+<li><p>From looking at the requests, it appears these are from CIAT and CCAFS</p></li>
+
+<li><p>I wonder if I could somehow instruct them to use a user agent so that we could apply a crawler session manager valve to them</p></li>
+
+<li><p>Actually, according to the Tomcat docs, we could use an IP with <code>crawlerIps</code>: <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve">https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve</a></p></li>
+
+<li><p>Ah, wait, it looks like <code>crawlerIps</code> only came in 2017-06, so probably isn&rsquo;t in Ubuntu 16.04&rsquo;s 7.0.68 build!</p></li>
+
+<li><p>That would explain the errors I was getting when trying to set it:</p>
 
 <pre><code>WARNING: [SetPropertiesRule]{Server/Service/Engine/Host/Valve} Setting property 'crawlerIps' to '190\.19\.92\.5|104\.196\.152\.243' did not find a matching property.
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>As for now, it actually seems the CORE bot coming from 137.108.70.6 and 137.108.70.7 is only using a few sessions per day, which is good:</li>
-</ul>
+<li><p>As for now, it actually seems the CORE bot coming from 137.108.70.6 and 137.108.70.7 is only using a few sessions per day, which is good:</p>
 
 <pre><code># grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=137.108.70.(6|7)' dspace.log.2017-10-30 | sort -n | uniq -c | sort -h
-    410 session_id=74F0C3A133DBF1132E7EC30A7E7E0D60:ip_addr=137.108.70.7
-    574 session_id=5771742CABA3D0780860B8DA81E0551B:ip_addr=137.108.70.7
-   1012 session_id=6C30F10B4351A4ED83EC6ED50AFD6B6A:ip_addr=137.108.70.6
-</code></pre>
+410 session_id=74F0C3A133DBF1132E7EC30A7E7E0D60:ip_addr=137.108.70.7
+574 session_id=5771742CABA3D0780860B8DA81E0551B:ip_addr=137.108.70.7
+1012 session_id=6C30F10B4351A4ED83EC6ED50AFD6B6A:ip_addr=137.108.70.6
+</code></pre></li>
 
-<ul>
-<li>I will check again tomorrow</li>
+<li><p>I will check again tomorrow</p></li>
 </ul>
 
 <h2 id="2017-10-31">2017-10-31</h2>
@@ -489,40 +489,43 @@ session_id=6C30F10B4351A4ED83EC6ED50AFD6B6A
 <ul>
 <li>Very nice, Linode alerted that CGSpace had high CPU usage at 2AM again</li>
 <li>Ask on the dspace-tech mailing list if it&rsquo;s possible to use an existing item as a template for a new item</li>
-<li>To follow up on the CORE bot traffic, there were almost 300,000 request yesterday:</li>
-</ul>
+
+<li><p>To follow up on the CORE bot traffic, there were almost 300,000 request yesterday:</p>
 
 <pre><code># grep &quot;CORE/0.6&quot; /var/log/nginx/access.log.1 | awk '{print $1}' | sort -n | uniq -c | sort -h
- 139109 137.108.70.6
- 139253 137.108.70.7
-</code></pre>
+139109 137.108.70.6
+139253 137.108.70.7
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;ve emailed the CORE people to ask if they can update the repository information from CGIAR Library to CGSpace</li>
-<li>Also, I asked if they could perhaps use the <code>sitemap.xml</code>, OAI-PMH, or REST APIs to index us more efficiently, because they mostly seem to be crawling the nearly endless Discovery facets</li>
-<li>I added <a href="https://goaccess.io/">GoAccess</a> to the list of package to install in the DSpace role of the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a></li>
-<li>It makes it very easy to analyze nginx logs from the command line, to see where traffic is coming from:</li>
-</ul>
+<li><p>I&rsquo;ve emailed the CORE people to ask if they can update the repository information from CGIAR Library to CGSpace</p></li>
+
+<li><p>Also, I asked if they could perhaps use the <code>sitemap.xml</code>, OAI-PMH, or REST APIs to index us more efficiently, because they mostly seem to be crawling the nearly endless Discovery facets</p></li>
+
+<li><p>I added <a href="https://goaccess.io/">GoAccess</a> to the list of package to install in the DSpace role of the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a></p></li>
+
+<li><p>It makes it very easy to analyze nginx logs from the command line, to see where traffic is coming from:</p>
 
 <pre><code># goaccess /var/log/nginx/access.log --log-format=COMBINED
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>According to Uptime Robot CGSpace went down and up a few times</li>
-<li>I had a look at goaccess and I saw that CORE was actively indexing</li>
-<li>Also, PostgreSQL connections were at 91 (with the max being 60 per web app, hmmm)</li>
-<li>I&rsquo;m really starting to get annoyed with these guys, and thinking about blocking their IP address for a few days to see if CGSpace becomes more stable</li>
-<li>Actually, come to think of it, they aren&rsquo;t even obeying <code>robots.txt</code>, because we actually disallow <code>/discover</code> and <code>/search-filter</code> URLs but they are hitting those massively:</li>
-</ul>
+<li><p>According to Uptime Robot CGSpace went down and up a few times</p></li>
+
+<li><p>I had a look at goaccess and I saw that CORE was actively indexing</p></li>
+
+<li><p>Also, PostgreSQL connections were at 91 (with the max being 60 per web app, hmmm)</p></li>
+
+<li><p>I&rsquo;m really starting to get annoyed with these guys, and thinking about blocking their IP address for a few days to see if CGSpace becomes more stable</p></li>
+
+<li><p>Actually, come to think of it, they aren&rsquo;t even obeying <code>robots.txt</code>, because we actually disallow <code>/discover</code> and <code>/search-filter</code> URLs but they are hitting those massively:</p>
 
 <pre><code># grep &quot;CORE/0.6&quot; /var/log/nginx/access.log | grep -o -E &quot;GET /(discover|search-filter)&quot; | sort -n | uniq -c | sort -rn 
- 158058 GET /discover
-  14260 GET /search-filter
-</code></pre>
+158058 GET /discover
+14260 GET /search-filter
+</code></pre></li>
 
-<ul>
-<li>I tested a URL of pattern <code>/discover</code> in Google&rsquo;s webmaster tools and it was indeed identified as blocked</li>
-<li>I will send feedback to the CORE bot team</li>
+<li><p>I tested a URL of pattern <code>/discover</code> in Google&rsquo;s webmaster tools and it was indeed identified as blocked</p></li>
+
+<li><p>I will send feedback to the CORE bot team</p></li>
 </ul>
 
   

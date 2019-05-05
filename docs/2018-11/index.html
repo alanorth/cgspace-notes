@@ -39,7 +39,7 @@ Send a note about my dspace-statistics-api to the dspace-tech mailing list
 Linode has been sending mails a few times a day recently that CGSpace (linode18) has had high CPU usage
 Today these are the top 10 IPs:
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -148,109 +148,105 @@ Today these are the top 10 IPs:
 <ul>
 <li>The <code>66.249.64.x</code> are definitely Google</li>
 <li><code>70.32.83.92</code> is well known, probably CCAFS or something, as it&rsquo;s only a few thousand requests and always to REST API</li>
-<li><code>84.38.130.177</code> is some new IP in Latvia that is only hitting the XMLUI, using the following user agent:</li>
-</ul>
+
+<li><p><code>84.38.130.177</code> is some new IP in Latvia that is only hitting the XMLUI, using the following user agent:</p>
 
 <pre><code>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.792.0 Safari/535.1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>They at least seem to be re-using their Tomcat sessions:</li>
-</ul>
+<li><p>They at least seem to be re-using their Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=84.38.130.177' dspace.log.2018-11-03
 342
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li><code>50.116.102.77</code> is also a regular REST API user</li>
-<li><code>40.77.167.175</code> and <code>207.46.13.156</code> seem to be Bing</li>
-<li><code>138.201.52.218</code> seems to be on Hetzner in Germany, but is using this user agent:</li>
-</ul>
+<li><p><code>50.116.102.77</code> is also a regular REST API user</p></li>
+
+<li><p><code>40.77.167.175</code> and <code>207.46.13.156</code> seem to be Bing</p></li>
+
+<li><p><code>138.201.52.218</code> seems to be on Hetzner in Germany, but is using this user agent:</p>
 
 <pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And it doesn&rsquo;t seem they are re-using their Tomcat sessions:</li>
-</ul>
+<li><p>And it doesn&rsquo;t seem they are re-using their Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=138.201.52.218' dspace.log.2018-11-03
 1243
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Ah, we&rsquo;ve apparently seen this server exactly a year ago in 2017-11, making 40,000 requests in one day&hellip;</li>
-<li>I wonder if it&rsquo;s worth adding them to the list of bots in the nginx config?</li>
-<li>Linode sent a mail that CGSpace (linode18) is using high outgoing bandwidth</li>
-<li>Looking at the nginx logs again I see the following top ten IPs:</li>
-</ul>
+<li><p>Ah, we&rsquo;ve apparently seen this server exactly a year ago in 2017-11, making 40,000 requests in one day&hellip;</p></li>
+
+<li><p>I wonder if it&rsquo;s worth adding them to the list of bots in the nginx config?</p></li>
+
+<li><p>Linode sent a mail that CGSpace (linode18) is using high outgoing bandwidth</p></li>
+
+<li><p>Looking at the nginx logs again I see the following top ten IPs:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Nov/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-   1979 50.116.102.77
-   1980 35.237.175.180
-   2186 207.46.13.156
-   2208 40.77.167.175
-   2843 66.249.64.63
-   4220 84.38.130.177
-   4537 70.32.83.92
-   5593 66.249.64.61
-  12557 78.46.89.18
-  32152 66.249.64.59
-</code></pre>
+1979 50.116.102.77
+1980 35.237.175.180
+2186 207.46.13.156
+2208 40.77.167.175
+2843 66.249.64.63
+4220 84.38.130.177
+4537 70.32.83.92
+5593 66.249.64.61
+12557 78.46.89.18
+32152 66.249.64.59
+</code></pre></li>
 
-<ul>
-<li><code>78.46.89.18</code> is new since I last checked a few hours ago, and it&rsquo;s from Hetzner with the following user agent:</li>
-</ul>
+<li><p><code>78.46.89.18</code> is new since I last checked a few hours ago, and it&rsquo;s from Hetzner with the following user agent:</p>
 
 <pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>It&rsquo;s making lots of requests, though actually it does seem to be re-using its Tomcat sessions:</li>
-</ul>
+<li><p>It&rsquo;s making lots of requests, though actually it does seem to be re-using its Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.89.18' dspace.log.2018-11-03
 8449
 $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.89.18' dspace.log.2018-11-03 | sort | uniq | wc -l
 1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li><em>Updated on 2018-12-04 to correct the grep command above, as it was inaccurate and it seems the bot was actually already re-using its Tomcat sessions</em></li>
-<li>I could add this IP to the list of bot IPs in nginx, but it seems like a futile effort when some new IP could come along and do the same thing</li>
-<li>Perhaps I should think about adding rate limits to dynamic pages like <code>/discover</code> and <code>/browse</code></li>
-<li>I think it&rsquo;s reasonable for a human to click one of those links five or ten times a minute&hellip;</li>
-<li>To contrast, <code>78.46.89.18</code> made about 300 requests per minute for a few hours today:</li>
-</ul>
+<li><p><em>Updated on 2018-12-04 to correct the grep command above, as it was inaccurate and it seems the bot was actually already re-using its Tomcat sessions</em></p></li>
+
+<li><p>I could add this IP to the list of bot IPs in nginx, but it seems like a futile effort when some new IP could come along and do the same thing</p></li>
+
+<li><p>Perhaps I should think about adding rate limits to dynamic pages like <code>/discover</code> and <code>/browse</code></p></li>
+
+<li><p>I think it&rsquo;s reasonable for a human to click one of those links five or ten times a minute&hellip;</p></li>
+
+<li><p>To contrast, <code>78.46.89.18</code> made about 300 requests per minute for a few hours today:</p>
 
 <pre><code># grep 78.46.89.18 /var/log/nginx/access.log | grep -o -E '03/Nov/2018:[0-9][0-9]:[0-9][0-9]' | sort | uniq -c | sort -n | tail -n 20
-    286 03/Nov/2018:18:02
-    287 03/Nov/2018:18:21
-    289 03/Nov/2018:18:23
-    291 03/Nov/2018:18:27
-    293 03/Nov/2018:18:34
-    300 03/Nov/2018:17:58
-    300 03/Nov/2018:18:22
-    300 03/Nov/2018:18:32
-    304 03/Nov/2018:18:12
-    305 03/Nov/2018:18:13
-    305 03/Nov/2018:18:24
-    312 03/Nov/2018:18:39
-    322 03/Nov/2018:18:17
-    326 03/Nov/2018:18:38
-    327 03/Nov/2018:18:16
-    330 03/Nov/2018:17:57
-    332 03/Nov/2018:18:19
-    336 03/Nov/2018:17:56
-    340 03/Nov/2018:18:14
-    341 03/Nov/2018:18:18
-</code></pre>
+286 03/Nov/2018:18:02
+287 03/Nov/2018:18:21
+289 03/Nov/2018:18:23
+291 03/Nov/2018:18:27
+293 03/Nov/2018:18:34
+300 03/Nov/2018:17:58
+300 03/Nov/2018:18:22
+300 03/Nov/2018:18:32
+304 03/Nov/2018:18:12
+305 03/Nov/2018:18:13
+305 03/Nov/2018:18:24
+312 03/Nov/2018:18:39
+322 03/Nov/2018:18:17
+326 03/Nov/2018:18:38
+327 03/Nov/2018:18:16
+330 03/Nov/2018:17:57
+332 03/Nov/2018:18:19
+336 03/Nov/2018:17:56
+340 03/Nov/2018:18:14
+341 03/Nov/2018:18:18
+</code></pre></li>
 
-<ul>
-<li>If they want to download all our metadata and PDFs they should use an API rather than scraping the XMLUI</li>
-<li>I will add them to the list of bot IPs in nginx for now and think about enforcing rate limits in XMLUI later</li>
-<li>Also, this is the third (?) time a mysterious IP on Hetzner has done this&hellip; who is this?</li>
+<li><p>If they want to download all our metadata and PDFs they should use an API rather than scraping the XMLUI</p></li>
+
+<li><p>I will add them to the list of bot IPs in nginx for now and think about enforcing rate limits in XMLUI later</p></li>
+
+<li><p>Also, this is the third (?) time a mysterious IP on Hetzner has done this&hellip; who is this?</p></li>
 </ul>
 
 <h2 id="2018-11-04">2018-11-04</h2>
@@ -258,137 +254,127 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.89.18' dspace.log.2018-11-03
 <ul>
 <li>Forward Peter&rsquo;s information about CGSpace financials to Modi from ICRISAT</li>
 <li>Linode emailed about the CPU load and outgoing bandwidth on CGSpace (linode18) again</li>
-<li>Here are the top ten IPs active so far this morning:</li>
-</ul>
+
+<li><p>Here are the top ten IPs active so far this morning:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;04/Nov/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-   1083 2a03:2880:11ff:2::face:b00c
-   1105 2a03:2880:11ff:d::face:b00c
-   1111 2a03:2880:11ff:f::face:b00c
-   1134 84.38.130.177
-   1893 50.116.102.77
-   2040 66.249.64.63
-   4210 66.249.64.61
-   4534 70.32.83.92
-  13036 78.46.89.18
-  20407 66.249.64.59
-</code></pre>
+1083 2a03:2880:11ff:2::face:b00c
+1105 2a03:2880:11ff:d::face:b00c
+1111 2a03:2880:11ff:f::face:b00c
+1134 84.38.130.177
+1893 50.116.102.77
+2040 66.249.64.63
+4210 66.249.64.61
+4534 70.32.83.92
+13036 78.46.89.18
+20407 66.249.64.59
+</code></pre></li>
 
-<ul>
-<li><code>78.46.89.18</code> is back&hellip; and it is still actually re-using its Tomcat sessions:</li>
-</ul>
+<li><p><code>78.46.89.18</code> is back&hellip; and it is still actually re-using its Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.89.18' dspace.log.2018-11-04
 8765
 $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=78.46.89.18' dspace.log.2018-11-04 | sort | uniq | wc -l
 1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li><em>Updated on 2018-12-04 to correct the grep command and point out that the bot was actually re-using its Tomcat sessions properly</em></li>
-<li>Also, now we have a ton of Facebook crawlers:</li>
-</ul>
+<li><p><em>Updated on 2018-12-04 to correct the grep command and point out that the bot was actually re-using its Tomcat sessions properly</em></p></li>
+
+<li><p>Also, now we have a ton of Facebook crawlers:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;04/Nov/2018&quot; | grep &quot;2a03:2880:11ff:&quot; | awk '{print $1}' | sort | uniq -c | sort -n
-    905 2a03:2880:11ff:b::face:b00c
-    955 2a03:2880:11ff:5::face:b00c
-    965 2a03:2880:11ff:e::face:b00c
-    984 2a03:2880:11ff:8::face:b00c
-    993 2a03:2880:11ff:3::face:b00c
-    994 2a03:2880:11ff:7::face:b00c
-   1006 2a03:2880:11ff:10::face:b00c
-   1011 2a03:2880:11ff:4::face:b00c
-   1023 2a03:2880:11ff:6::face:b00c
-   1026 2a03:2880:11ff:9::face:b00c
-   1039 2a03:2880:11ff:1::face:b00c
-   1043 2a03:2880:11ff:c::face:b00c
-   1070 2a03:2880:11ff::face:b00c
-   1075 2a03:2880:11ff:a::face:b00c
-   1093 2a03:2880:11ff:2::face:b00c
-   1107 2a03:2880:11ff:d::face:b00c
-   1116 2a03:2880:11ff:f::face:b00c
-</code></pre>
+905 2a03:2880:11ff:b::face:b00c
+955 2a03:2880:11ff:5::face:b00c
+965 2a03:2880:11ff:e::face:b00c
+984 2a03:2880:11ff:8::face:b00c
+993 2a03:2880:11ff:3::face:b00c
+994 2a03:2880:11ff:7::face:b00c
+1006 2a03:2880:11ff:10::face:b00c
+1011 2a03:2880:11ff:4::face:b00c
+1023 2a03:2880:11ff:6::face:b00c
+1026 2a03:2880:11ff:9::face:b00c
+1039 2a03:2880:11ff:1::face:b00c
+1043 2a03:2880:11ff:c::face:b00c
+1070 2a03:2880:11ff::face:b00c
+1075 2a03:2880:11ff:a::face:b00c
+1093 2a03:2880:11ff:2::face:b00c
+1107 2a03:2880:11ff:d::face:b00c
+1116 2a03:2880:11ff:f::face:b00c
+</code></pre></li>
 
-<ul>
-<li>They are really making shit tons of requests:</li>
-</ul>
+<li><p>They are really making shit tons of requests:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11-04
 37721
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li><em>Updated on 2018-12-04 to correct the grep command to accurately show the number of requests</em></li>
-<li>Their user agent is:</li>
-</ul>
+<li><p><em>Updated on 2018-12-04 to correct the grep command to accurately show the number of requests</em></p></li>
+
+<li><p>Their user agent is:</p>
 
 <pre><code>facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I will add it to the Tomcat Crawler Session Manager valve</li>
-<li>Later in the evening&hellip; ok, this Facebook bot is getting super annoying:</li>
-</ul>
+<li><p>I will add it to the Tomcat Crawler Session Manager valve</p></li>
+
+<li><p>Later in the evening&hellip; ok, this Facebook bot is getting super annoying:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;04/Nov/2018&quot; | grep &quot;2a03:2880:11ff:&quot; | awk '{print $1}' | sort | uniq -c | sort -n
-   1871 2a03:2880:11ff:3::face:b00c
-   1885 2a03:2880:11ff:b::face:b00c
-   1941 2a03:2880:11ff:8::face:b00c
-   1942 2a03:2880:11ff:e::face:b00c
-   1987 2a03:2880:11ff:1::face:b00c
-   2023 2a03:2880:11ff:2::face:b00c
-   2027 2a03:2880:11ff:4::face:b00c
-   2032 2a03:2880:11ff:9::face:b00c
-   2034 2a03:2880:11ff:10::face:b00c
-   2050 2a03:2880:11ff:5::face:b00c
-   2061 2a03:2880:11ff:c::face:b00c
-   2076 2a03:2880:11ff:6::face:b00c
-   2093 2a03:2880:11ff:7::face:b00c
-   2107 2a03:2880:11ff::face:b00c
-   2118 2a03:2880:11ff:d::face:b00c
-   2164 2a03:2880:11ff:a::face:b00c
-   2178 2a03:2880:11ff:f::face:b00c
-</code></pre>
+1871 2a03:2880:11ff:3::face:b00c
+1885 2a03:2880:11ff:b::face:b00c
+1941 2a03:2880:11ff:8::face:b00c
+1942 2a03:2880:11ff:e::face:b00c
+1987 2a03:2880:11ff:1::face:b00c
+2023 2a03:2880:11ff:2::face:b00c
+2027 2a03:2880:11ff:4::face:b00c
+2032 2a03:2880:11ff:9::face:b00c
+2034 2a03:2880:11ff:10::face:b00c
+2050 2a03:2880:11ff:5::face:b00c
+2061 2a03:2880:11ff:c::face:b00c
+2076 2a03:2880:11ff:6::face:b00c
+2093 2a03:2880:11ff:7::face:b00c
+2107 2a03:2880:11ff::face:b00c
+2118 2a03:2880:11ff:d::face:b00c
+2164 2a03:2880:11ff:a::face:b00c
+2178 2a03:2880:11ff:f::face:b00c
+</code></pre></li>
 
-<ul>
-<li>Now at least the Tomcat Crawler Session Manager Valve seems to be forcing it to re-use some Tomcat sessions:</li>
-</ul>
+<li><p>Now at least the Tomcat Crawler Session Manager Valve seems to be forcing it to re-use some Tomcat sessions:</p>
 
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11-04
 37721
 $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11-04 | sort | uniq | wc -l
 15206
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I think we still need to limit more of the dynamic pages, like the &ldquo;most popular&rdquo; country, item, and author pages</li>
-<li>It seems these are popular too, and there is no fucking way Facebook needs that information, yet they are requesting thousands of them!</li>
-</ul>
+<li><p>I think we still need to limit more of the dynamic pages, like the &ldquo;most popular&rdquo; country, item, and author pages</p></li>
+
+<li><p>It seems these are popular too, and there is no fucking way Facebook needs that information, yet they are requesting thousands of them!</p>
 
 <pre><code># grep 'face:b00c' /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -c 'most-popular/'
 7033
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I added the &ldquo;most-popular&rdquo; pages to the list that return <code>X-Robots-Tag: none</code> to try to inform bots not to index or follow those pages</li>
-<li>Also, I implemented an nginx rate limit of twelve requests per minute on all dynamic pages&hellip; I figure a human user might legitimately request one every five seconds</li>
+<li><p>I added the &ldquo;most-popular&rdquo; pages to the list that return <code>X-Robots-Tag: none</code> to try to inform bots not to index or follow those pages</p></li>
+
+<li><p>Also, I implemented an nginx rate limit of twelve requests per minute on all dynamic pages&hellip; I figure a human user might legitimately request one every five seconds</p></li>
 </ul>
 
 <h2 id="2018-11-05">2018-11-05</h2>
 
 <ul>
-<li>I wrote a small Python script <a href="https://gist.github.com/alanorth/4ff81d5f65613814a66cb6f84fdf1fc5">add-dc-rights.py</a> to add usage rights (<code>dc.rights</code>) to CGSpace items based on the CSV Hector gave me from MARLO:</li>
-</ul>
+<li><p>I wrote a small Python script <a href="https://gist.github.com/alanorth/4ff81d5f65613814a66cb6f84fdf1fc5">add-dc-rights.py</a> to add usage rights (<code>dc.rights</code>) to CGSpace items based on the CSV Hector gave me from MARLO:</p>
 
 <pre><code>$ ./add-dc-rights.py -i /tmp/marlo.csv -db dspace -u dspace -p 'fuuu'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The file <code>marlo.csv</code> was cleaned up and formatted in Open Refine</li>
-<li>165 of the items in their 2017 data are from CGSpace!</li>
-<li>I will add the data to CGSpace this week (done!)</li>
-<li>Jesus, is Facebook <em>trying</em> to be annoying? At least the Tomcat Crawler Session Manager Valve is working to force the bot to re-use its Tomcat sessions:</li>
-</ul>
+<li><p>The file <code>marlo.csv</code> was cleaned up and formatted in Open Refine</p></li>
+
+<li><p>165 of the items in their 2017 data are from CGSpace!</p></li>
+
+<li><p>I will add the data to CGSpace this week (done!)</p></li>
+
+<li><p>Jesus, is Facebook <em>trying</em> to be annoying? At least the Tomcat Crawler Session Manager Valve is working to force the bot to re-use its Tomcat sessions:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;05/Nov/2018&quot; | grep -c &quot;2a03:2880:11ff:&quot;
 29889
@@ -398,11 +384,11 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11
 1057
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;05/Nov/2018&quot; | grep &quot;2a03:2880:11ff:&quot; | grep -c -E &quot;(handle|bitstream)&quot;
 29896
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>29,000 requests from Facebook and none of the requests are to the dynamic pages I rate limited yesterday!</li>
-<li>At least the Tomcat Crawler Session Manager Valve is working now&hellip;</li>
+<li><p>29,000 requests from Facebook and none of the requests are to the dynamic pages I rate limited yesterday!</p></li>
+
+<li><p>At least the Tomcat Crawler Session Manager Valve is working now&hellip;</p></li>
 </ul>
 
 <h2 id="2018-11-06">2018-11-06</h2>
@@ -410,14 +396,13 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11
 <ul>
 <li>I updated all the <a href="https://github.com/ilri/DSpace/wiki/Scripts">DSpace helper Python scripts</a> to validate against PEP 8 using Flake8</li>
 <li>While I was updating the <a href="https://gist.github.com/alanorth/ddd7f555f0e487fe0e9d3eb4ff26ce50">rest-find-collections.py</a> script I noticed it was using <code>expand=all</code> to get the collection and community IDs</li>
-<li>I realized I actually only need <code>expand=collections,subCommunities</code>, and I wanted to see how much overhead the extra expands created so I did three runs of each:</li>
-</ul>
+
+<li><p>I realized I actually only need <code>expand=collections,subCommunities</code>, and I wanted to see how much overhead the extra expands created so I did three runs of each:</p>
 
 <pre><code>$ time ./rest-find-collections.py 10568/27629 --rest-url https://dspacetest.cgiar.org/rest
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Average time with all expands was 14.3 seconds, and 12.8 seconds with <code>collections,subCommunities</code>, so <strong>1.5 seconds difference</strong>!</li>
+<li><p>Average time with all expands was 14.3 seconds, and 12.8 seconds with <code>collections,subCommunities</code>, so <strong>1.5 seconds difference</strong>!</p></li>
 </ul>
 
 <h2 id="2018-11-07">2018-11-07</h2>
@@ -482,55 +467,51 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=2a03:2880:11ff' dspace.log.2018-11
 <h2 id="2018-11-19">2018-11-19</h2>
 
 <ul>
-<li>Testing corrections and deletions for AGROVOC (<code>dc.subject</code>) that Sisay and Peter were working on earlier this month:</li>
-</ul>
+<li><p>Testing corrections and deletions for AGROVOC (<code>dc.subject</code>) that Sisay and Peter were working on earlier this month:</p>
 
 <pre><code>$ ./fix-metadata-values.py -i 2018-11-19-correct-agrovoc.csv -f dc.subject -t correct -m 57 -db dspace -u dspace -p 'fuu' -d
 $ ./delete-metadata-values.py -i 2018-11-19-delete-agrovoc.csv -f dc.subject -m 57 -db dspace -u dspace -p 'fuu' -d
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Then I ran them on both CGSpace and DSpace Test, and started a full Discovery re-index on CGSpace:</li>
-</ul>
+<li><p>Then I ran them on both CGSpace and DSpace Test, and started a full Discovery re-index on CGSpace:</p>
 
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Generate a new list of the top 1500 AGROVOC subjects on CGSpace to send to Peter and Sisay:</li>
-</ul>
+<li><p>Generate a new list of the top 1500 AGROVOC subjects on CGSpace to send to Peter and Sisay:</p>
 
 <pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2018-11-19-top-1500-subject.csv WITH CSV HEADER;
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2018-11-20">2018-11-20</h2>
 
 <ul>
 <li>The Discovery re-indexing on CGSpace never finished yesterday&hellip; the command died after six minutes</li>
-<li>The <code>dspace.log.2018-11-19</code> shows this at the time:</li>
-</ul>
+
+<li><p>The <code>dspace.log.2018-11-19</code> shows this at the time:</p>
 
 <pre><code>2018-11-19 15:23:04,221 ERROR com.atmire.dspace.discovery.AtmireSolrService @ DSpace kernel cannot be null
 java.lang.IllegalStateException: DSpace kernel cannot be null
-        at org.dspace.utils.DSpace.getServiceManager(DSpace.java:63)
-        at org.dspace.utils.DSpace.getSingletonService(DSpace.java:87)
-        at com.atmire.dspace.discovery.AtmireSolrService.buildDocument(AtmireSolrService.java:102)
-        at com.atmire.dspace.discovery.AtmireSolrService.indexContent(AtmireSolrService.java:815)
-        at com.atmire.dspace.discovery.AtmireSolrService.updateIndex(AtmireSolrService.java:884)
-        at org.dspace.discovery.SolrServiceImpl.createIndex(SolrServiceImpl.java:370)
-        at org.dspace.discovery.IndexClient.main(IndexClient.java:117)
-        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.lang.reflect.Method.invoke(Method.java:498)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+    at org.dspace.utils.DSpace.getServiceManager(DSpace.java:63)
+    at org.dspace.utils.DSpace.getSingletonService(DSpace.java:87)
+    at com.atmire.dspace.discovery.AtmireSolrService.buildDocument(AtmireSolrService.java:102)
+    at com.atmire.dspace.discovery.AtmireSolrService.indexContent(AtmireSolrService.java:815)
+    at com.atmire.dspace.discovery.AtmireSolrService.updateIndex(AtmireSolrService.java:884)
+    at org.dspace.discovery.SolrServiceImpl.createIndex(SolrServiceImpl.java:370)
+    at org.dspace.discovery.IndexClient.main(IndexClient.java:117)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:498)
+    at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+    at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
 2018-11-19 15:23:04,223 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (4629 of 76007): 72731
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I looked in the Solr log around that time and I don&rsquo;t see anything&hellip;</li>
-<li>Working on Udana&rsquo;s WLE records from last month, first the sixteen records in <a href="https://dspacetest.cgiar.org/handle/10568/108254">2018-11-20 RDL Temp</a>
+<li><p>I looked in the Solr log around that time and I don&rsquo;t see anything&hellip;</p></li>
+
+<li><p>Working on Udana&rsquo;s WLE records from last month, first the sixteen records in <a href="https://dspacetest.cgiar.org/handle/10568/108254">2018-11-20 RDL Temp</a></p>
 
 <ul>
 <li>these items will go to the <a href="https://dspacetest.cgiar.org/handle/10568/81592">Restoring Degraded Landscapes collection</a></li>
@@ -543,7 +524,8 @@ java.lang.IllegalStateException: DSpace kernel cannot be null
 <li>remove some weird Unicode characters (0xfffd) from abstracts, citations, and titles using Open Refine: <code>value.replace('�','')</code></li>
 <li>add dc.rights to some fields that I noticed while checking DOIs</li>
 </ul></li>
-<li>Then the 24 records in <a href="https://dspacetest.cgiar.org/handle/10568/108271">2018-11-20 VRC Temp</a>
+
+<li><p>Then the 24 records in <a href="https://dspacetest.cgiar.org/handle/10568/108271">2018-11-20 VRC Temp</a></p>
 
 <ul>
 <li>these items will go to the <a href="https://dspacetest.cgiar.org/handle/10568/81589">Variability, Risks and Competing Uses collection</a></li>
@@ -575,61 +557,61 @@ java.lang.IllegalStateException: DSpace kernel cannot be null
 
 <ul>
 <li><a href="https://cgspace.cgiar.org/handle/10568/97709">This WLE item</a> is issued on 2018-10 and accessioned on 2018-10-22 but does not show up in the <a href="https://cgspace.cgiar.org/handle/10568/41888">WLE R4D Learning Series</a> collection on CGSpace for some reason, and therefore does not show up on the WLE publication website</li>
-<li>I tried to remove that collection from Discovery and do a simple re-index:</li>
-</ul>
+
+<li><p>I tried to remove that collection from Discovery and do a simple re-index:</p>
 
 <pre><code>$ dspace index-discovery -r 10568/41888
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>&hellip; but the item still doesn&rsquo;t appear in the collection</li>
-<li>Now I will try a full Discovery re-index:</li>
-</ul>
+<li><p>&hellip; but the item still doesn&rsquo;t appear in the collection</p></li>
+
+<li><p>Now I will try a full Discovery re-index:</p>
 
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Ah, Marianne had set the item as private when she uploaded it, so it was still private</li>
-<li>I made it public and now it shows up in the collection list</li>
-<li>More work on the AReS terms of reference for CodeObia</li>
-<li>Erica from AgriKnowledge emailed me to say that they have implemented the changes in their item page UI so that they include the permanent identifier on items harvested from CGSpace, for example: <a href="https://www.agriknowledge.org/concern/generics/wd375w33s">https://www.agriknowledge.org/concern/generics/wd375w33s</a></li>
+<li><p>Ah, Marianne had set the item as private when she uploaded it, so it was still private</p></li>
+
+<li><p>I made it public and now it shows up in the collection list</p></li>
+
+<li><p>More work on the AReS terms of reference for CodeObia</p></li>
+
+<li><p>Erica from AgriKnowledge emailed me to say that they have implemented the changes in their item page UI so that they include the permanent identifier on items harvested from CGSpace, for example: <a href="https://www.agriknowledge.org/concern/generics/wd375w33s">https://www.agriknowledge.org/concern/generics/wd375w33s</a></p></li>
 </ul>
 
 <h2 id="2018-11-27">2018-11-27</h2>
 
 <ul>
 <li>Linode alerted me that the outbound traffic rate on CGSpace (linode19) was very high</li>
-<li>The top users this morning are:</li>
-</ul>
+
+<li><p>The top users this morning are:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;27/Nov/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    229 46.101.86.248
-    261 66.249.64.61
-    447 66.249.64.59
-    541 207.46.13.77
-    548 40.77.167.97
-    564 35.237.175.180
-    595 40.77.167.135
-    611 157.55.39.91
-   4564 205.186.128.185
-   4564 70.32.83.92
-</code></pre>
+229 46.101.86.248
+261 66.249.64.61
+447 66.249.64.59
+541 207.46.13.77
+548 40.77.167.97
+564 35.237.175.180
+595 40.77.167.135
+611 157.55.39.91
+4564 205.186.128.185
+4564 70.32.83.92
+</code></pre></li>
 
-<ul>
-<li>We know 70.32.83.92 is CCAFS harvester on MediaTemple, but 205.186.128.185 is new appears to be a new CCAFS harvester</li>
-<li>I think we might want to prune some old accounts from CGSpace, perhaps users who haven&rsquo;t logged in in the last two years would be a conservative bunch:</li>
-</ul>
+<li><p>We know 70.32.83.92 is CCAFS harvester on MediaTemple, but 205.186.128.185 is new appears to be a new CCAFS harvester</p></li>
+
+<li><p>I think we might want to prune some old accounts from CGSpace, perhaps users who haven&rsquo;t logged in in the last two years would be a conservative bunch:</p>
 
 <pre><code>$ dspace dsrun org.dspace.eperson.Groomer -a -b 11/27/2016 | wc -l
 409
 $ dspace dsrun org.dspace.eperson.Groomer -a -b 11/27/2016 -d
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This deleted about 380 users, skipping those who have submissions in the repository</li>
-<li>Judy Kimani was having problems taking tasks in the <a href="https://cgspace.cgiar.org/handle/10568/78">ILRI project reports, papers and documents</a> collection again
+<li><p>This deleted about 380 users, skipping those who have submissions in the repository</p></li>
+
+<li><p>Judy Kimani was having problems taking tasks in the <a href="https://cgspace.cgiar.org/handle/10568/78">ILRI project reports, papers and documents</a> collection again</p>
 
 <ul>
 <li>The workflow step 1 (accept/reject) is now undefined for some reason</li>
@@ -637,7 +619,8 @@ $ dspace dsrun org.dspace.eperson.Groomer -a -b 11/27/2016 -d
 <li>Since then it looks like the group was deleted, so now she didn&rsquo;t have permission to take or leave the tasks in her pool</li>
 <li>We added her back to the group, then she was able to take the tasks, and then we removed the group again, as we generally don&rsquo;t use this step in CGSpace</li>
 </ul></li>
-<li>Help Marianne troubleshoot some issue with items in their WLE collections and the WLE publicatons website</li>
+
+<li><p>Help Marianne troubleshoot some issue with items in their WLE collections and the WLE publicatons website</p></li>
 </ul>
 
 <h2 id="2018-11-28">2018-11-28</h2>

@@ -35,7 +35,7 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
 
 Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account is both in the approvers step as well as the group
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -129,26 +129,33 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
 <h2 id="2017-09-10">2017-09-10</h2>
 
 <ul>
-<li>Delete 58 blank metadata values from the CGSpace database:</li>
-</ul>
+<li><p>Delete 58 blank metadata values from the CGSpace database:</p>
 
 <pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 DELETE 58
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I also ran it on DSpace Test because we&rsquo;ll be migrating the CGIAR Library soon and it would be good to catch these before we migrate</li>
-<li>Run system updates and restart DSpace Test</li>
-<li>We only have 7.7GB of free space on DSpace Test so I need to copy some data off of it before doing the CGIAR Library migration (requires lots of exporting and creating temp files)</li>
-<li>I still have the original data from the CGIAR Library so I&rsquo;ve zipped it up and sent it off to linode18 for now</li>
-<li>sha256sum of <code>original-cgiar-library-6.6GB.tar.gz</code> is: bcfabb52f51cbdf164b61b7e9b3a0e498479e4c1ed1d547d32d11f44c0d5eb8a</li>
-<li>Start doing a test run of the CGIAR Library migration locally</li>
-<li>Notes and todo checklist here for now: <a href="https://gist.github.com/alanorth/3579b74e116ab13418d187ed379abd9c">https://gist.github.com/alanorth/3579b74e116ab13418d187ed379abd9c</a></li>
-<li>Create pull request for Phase I and II changes to CCAFS Project Tags: <a href="https://github.com/ilri/DSpace/pull/336">#336</a></li>
-<li>We&rsquo;ve been discussing with Macaroni Bros and CCAFS for the past month or so and the list of tags was recently finalized</li>
-<li>There will need to be some metadata updates — though if I recall correctly it is only about seven records — for that as well, I had made some notes about it in <a href="/cgspace-notes/2017-07">2017-07</a>, but I&rsquo;ve asked for more clarification from Lili just in case</li>
-<li>Looking at the DSpace logs to see if we&rsquo;ve had a change in the &ldquo;Cannot get a connection&rdquo; errors since last month when we adjusted the <code>db.maxconnections</code> parameter on CGSpace:</li>
-</ul>
+<li><p>I also ran it on DSpace Test because we&rsquo;ll be migrating the CGIAR Library soon and it would be good to catch these before we migrate</p></li>
+
+<li><p>Run system updates and restart DSpace Test</p></li>
+
+<li><p>We only have 7.7GB of free space on DSpace Test so I need to copy some data off of it before doing the CGIAR Library migration (requires lots of exporting and creating temp files)</p></li>
+
+<li><p>I still have the original data from the CGIAR Library so I&rsquo;ve zipped it up and sent it off to linode18 for now</p></li>
+
+<li><p>sha256sum of <code>original-cgiar-library-6.6GB.tar.gz</code> is: bcfabb52f51cbdf164b61b7e9b3a0e498479e4c1ed1d547d32d11f44c0d5eb8a</p></li>
+
+<li><p>Start doing a test run of the CGIAR Library migration locally</p></li>
+
+<li><p>Notes and todo checklist here for now: <a href="https://gist.github.com/alanorth/3579b74e116ab13418d187ed379abd9c">https://gist.github.com/alanorth/3579b74e116ab13418d187ed379abd9c</a></p></li>
+
+<li><p>Create pull request for Phase I and II changes to CCAFS Project Tags: <a href="https://github.com/ilri/DSpace/pull/336">#336</a></p></li>
+
+<li><p>We&rsquo;ve been discussing with Macaroni Bros and CCAFS for the past month or so and the list of tags was recently finalized</p></li>
+
+<li><p>There will need to be some metadata updates — though if I recall correctly it is only about seven records — for that as well, I had made some notes about it in <a href="/cgspace-notes/2017-07">2017-07</a>, but I&rsquo;ve asked for more clarification from Lili just in case</p></li>
+
+<li><p>Looking at the DSpace logs to see if we&rsquo;ve had a change in the &ldquo;Cannot get a connection&rdquo; errors since last month when we adjusted the <code>db.maxconnections</code> parameter on CGSpace:</p>
 
 <pre><code># grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-09-*
 dspace.log.2017-09-01:0
@@ -161,14 +168,17 @@ dspace.log.2017-09-07:0
 dspace.log.2017-09-08:10
 dspace.log.2017-09-09:0
 dspace.log.2017-09-10:0
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Also, since last month (2017-08) Macaroni Bros no longer runs their REST API scraper every hour, so I&rsquo;m sure that helped</li>
-<li>There are still some errors, though, so maybe I should bump the connection limit up a bit</li>
-<li>I remember seeing that Munin shows that the average number of connections is 50 (which is probably mostly from the XMLUI) and we&rsquo;re currently allowing 40 connections per app, so maybe it would be good to bump that value up to 50 or 60 along with the system&rsquo;s PostgreSQL <code>max_connections</code> (formula should be: webapps * 60 + 3, or 3 * 60 + 3 = 183 in our case)</li>
-<li>I updated both CGSpace and DSpace Test to use these new settings (60 connections per web app and 183 for system PostgreSQL limit)</li>
-<li>I&rsquo;m expecting to see 0 connection errors for the next few months</li>
+<li><p>Also, since last month (2017-08) Macaroni Bros no longer runs their REST API scraper every hour, so I&rsquo;m sure that helped</p></li>
+
+<li><p>There are still some errors, though, so maybe I should bump the connection limit up a bit</p></li>
+
+<li><p>I remember seeing that Munin shows that the average number of connections is 50 (which is probably mostly from the XMLUI) and we&rsquo;re currently allowing 40 connections per app, so maybe it would be good to bump that value up to 50 or 60 along with the system&rsquo;s PostgreSQL <code>max_connections</code> (formula should be: webapps * 60 + 3, or 3 * 60 + 3 = 183 in our case)</p></li>
+
+<li><p>I updated both CGSpace and DSpace Test to use these new settings (60 connections per web app and 183 for system PostgreSQL limit)</p></li>
+
+<li><p>I&rsquo;m expecting to see 0 connection errors for the next few months</p></li>
 </ul>
 
 <h2 id="2017-09-11">2017-09-11</h2>
@@ -183,27 +193,30 @@ dspace.log.2017-09-10:0
 <ul>
 <li>I was testing the <a href="https://wiki.duraspace.org/display/DSDOC5x/AIP+Backup+and+Restore#AIPBackupandRestore-AIPConfigurationsToImproveIngestionSpeedwhileValidating">METS XSD caching during AIP ingest</a> but it doesn&rsquo;t seem to help actually</li>
 <li>The import process takes the same amount of time with and without the caching</li>
-<li>Also, I captured TCP packets destined for port 80 and both imports only captured ONE packet (an update check from some component in Java):</li>
-</ul>
+
+<li><p>Also, I captured TCP packets destined for port 80 and both imports only captured ONE packet (an update check from some component in Java):</p>
 
 <pre><code>$ sudo tcpdump -i en0 -w without-cached-xsd.dump dst port 80 and 'tcp[32:4] = 0x47455420'
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Great TCP dump guide here: <a href="https://danielmiessler.com/study/tcpdump">https://danielmiessler.com/study/tcpdump</a></li>
-<li>The last part of that command filters for HTTP GET requests, of which there should have been many to fetch all the XSD files for validation</li>
-<li>I sent a message to the mailing list to see if anyone knows more about this</li>
-<li>In looking at the tcpdump results I notice that there is an update check to the ehcache server on <em>every</em> iteration of the ingest loop, for example:</li>
-</ul>
+<li><p>Great TCP dump guide here: <a href="https://danielmiessler.com/study/tcpdump">https://danielmiessler.com/study/tcpdump</a></p></li>
+
+<li><p>The last part of that command filters for HTTP GET requests, of which there should have been many to fetch all the XSD files for validation</p></li>
+
+<li><p>I sent a message to the mailing list to see if anyone knows more about this</p></li>
+
+<li><p>In looking at the tcpdump results I notice that there is an update check to the ehcache server on <em>every</em> iteration of the ingest loop, for example:</p>
 
 <pre><code>09:39:36.008956 IP 192.168.8.124.50515 &gt; 157.189.192.67.http: Flags [P.], seq 1736833672:1736834103, ack 147469926, win 4120, options [nop,nop,TS val 1175113331 ecr 550028064], length 431: HTTP: GET /kit/reflector?kitID=ehcache.default&amp;pageID=update.properties&amp;id=2130706433&amp;os-name=Mac+OS+X&amp;jvm-name=Java+HotSpot%28TM%29+64-Bit+Server+VM&amp;jvm-version=1.8.0_144&amp;platform=x86_64&amp;tc-version=UNKNOWN&amp;tc-product=Ehcache+Core+1.7.2&amp;source=Ehcache+Core&amp;uptime-secs=0&amp;patch=UNKNOWN HTTP/1.1
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Turns out this is a known issue and Ehcache has refused to make it opt-in: <a href="https://jira.terracotta.org/jira/browse/EHC-461">https://jira.terracotta.org/jira/browse/EHC-461</a></li>
-<li>But we can disable it by adding an <code>updateCheck=&quot;false&quot;</code> attribute to the main <code>&lt;ehcache &gt;</code> tag in <code>dspace-services/src/main/resources/caching/ehcache-config.xml</code></li>
-<li>After re-compiling and re-deploying DSpace I no longer see those update checks during item submission</li>
-<li>I had a Skype call with Bram Luyten from Atmire to discuss various issues related to ORCID in DSpace
+<li><p>Turns out this is a known issue and Ehcache has refused to make it opt-in: <a href="https://jira.terracotta.org/jira/browse/EHC-461">https://jira.terracotta.org/jira/browse/EHC-461</a></p></li>
+
+<li><p>But we can disable it by adding an <code>updateCheck=&quot;false&quot;</code> attribute to the main <code>&lt;ehcache &gt;</code> tag in <code>dspace-services/src/main/resources/caching/ehcache-config.xml</code></p></li>
+
+<li><p>After re-compiling and re-deploying DSpace I no longer see those update checks during item submission</p></li>
+
+<li><p>I had a Skype call with Bram Luyten from Atmire to discuss various issues related to ORCID in DSpace</p>
 
 <ul>
 <li>First, ORCID is deprecating their version 1 API (which DSpace uses) and in version 2 API they have removed the ability to search for users by name</li>
@@ -221,35 +234,32 @@ dspace.log.2017-09-10:0
 <ul>
 <li>Last night Linode sent an alert about CGSpace (linode18) that it has exceeded the outbound traffic rate threshold of 10Mb/s for the last two hours</li>
 <li>I wonder what was going on, and looking into the nginx logs I think maybe it&rsquo;s OAI&hellip;</li>
-<li>Here is yesterday&rsquo;s top ten IP addresses making requests to <code>/oai</code>:</li>
-</ul>
+
+<li><p>Here is yesterday&rsquo;s top ten IP addresses making requests to <code>/oai</code>:</p>
 
 <pre><code># awk '{print $1}' /var/log/nginx/oai.log | sort -n | uniq -c | sort -h | tail -n 10
-      1 213.136.89.78
-      1 66.249.66.90
-      1 66.249.66.92
-      3 68.180.229.31
-      4 35.187.22.255
-  13745 54.70.175.86
-  15814 34.211.17.113
-  15825 35.161.215.53
-  16704 54.70.51.7
-</code></pre>
+  1 213.136.89.78
+  1 66.249.66.90
+  1 66.249.66.92
+  3 68.180.229.31
+  4 35.187.22.255
+13745 54.70.175.86
+15814 34.211.17.113
+15825 35.161.215.53
+16704 54.70.51.7
+</code></pre></li>
 
-<ul>
-<li>Compared to the previous day&rsquo;s logs it looks VERY high:</li>
-</ul>
+<li><p>Compared to the previous day&rsquo;s logs it looks VERY high:</p>
 
 <pre><code># awk '{print $1}' /var/log/nginx/oai.log.1 | sort -n | uniq -c | sort -h | tail -n 10
-      1 207.46.13.39
-      1 66.249.66.93
-      2 66.249.66.91
-      4 216.244.66.194
-     14 66.249.66.90
-</code></pre>
+  1 207.46.13.39
+  1 66.249.66.93
+  2 66.249.66.91
+  4 216.244.66.194
+ 14 66.249.66.90
+</code></pre></li>
 
-<ul>
-<li>The user agents for those top IPs are:
+<li><p>The user agents for those top IPs are:</p>
 
 <ul>
 <li>54.70.175.86: API scraper</li>
@@ -257,8 +267,8 @@ dspace.log.2017-09-10:0
 <li>35.161.215.53: API scraper</li>
 <li>54.70.51.7: API scraper</li>
 </ul></li>
-<li>And this user agent has never been seen before today (or at least recently!):</li>
-</ul>
+
+<li><p>And this user agent has never been seen before today (or at least recently!):</p>
 
 <pre><code># grep -c &quot;API scraper&quot; /var/log/nginx/oai.log
 62088
@@ -292,185 +302,179 @@ dspace.log.2017-09-10:0
 /var/log/nginx/oai.log.7.gz:0
 /var/log/nginx/oai.log.8.gz:0
 /var/log/nginx/oai.log.9.gz:0
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Some of these heavy users are also using XMLUI, and their user agent isn&rsquo;t matched by the <a href="https://github.com/ilri/rmg-ansible-public/blob/master/roles/dspace/templates/tomcat/server-tomcat7.xml.j2#L158">Tomcat Session Crawler valve</a>, so each request uses a different session</li>
-<li>Yesterday alone the IP addresses using the <code>API scraper</code> user agent were responsible for 16,000 sessions in XMLUI:</li>
-</ul>
+<li><p>Some of these heavy users are also using XMLUI, and their user agent isn&rsquo;t matched by the <a href="https://github.com/ilri/rmg-ansible-public/blob/master/roles/dspace/templates/tomcat/server-tomcat7.xml.j2#L158">Tomcat Session Crawler valve</a>, so each request uses a different session</p></li>
+
+<li><p>Yesterday alone the IP addresses using the <code>API scraper</code> user agent were responsible for 16,000 sessions in XMLUI:</p>
 
 <pre><code># grep -a -E &quot;(54.70.51.7|35.161.215.53|34.211.17.113|54.70.175.86)&quot; /home/cgspace.cgiar.org/log/dspace.log.2017-09-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 15924
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>If this continues I will definitely need to figure out who is responsible for this scraper and add their user agent to the session crawler valve regex</li>
-<li>A search for &ldquo;API scraper&rdquo; user agent on Google returns a <code>robots.txt</code> with a comment that this is the Yewno bot: <a href="http://www.escholarship.org/robots.txt">http://www.escholarship.org/robots.txt</a></li>
-<li>Also, in looking at the DSpace logs I noticed a warning from OAI that I should look into:</li>
-</ul>
+<li><p>If this continues I will definitely need to figure out who is responsible for this scraper and add their user agent to the session crawler valve regex</p></li>
+
+<li><p>A search for &ldquo;API scraper&rdquo; user agent on Google returns a <code>robots.txt</code> with a comment that this is the Yewno bot: <a href="http://www.escholarship.org/robots.txt">http://www.escholarship.org/robots.txt</a></p></li>
+
+<li><p>Also, in looking at the DSpace logs I noticed a warning from OAI that I should look into:</p>
 
 <pre><code>WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Looking at the spreadsheet with deletions and corrections that CCAFS sent last week</li>
-<li>It appears they want to delete a lot of metadata, which I&rsquo;m not sure they realize the implications of:</li>
-</ul>
+<li><p>Looking at the spreadsheet with deletions and corrections that CCAFS sent last week</p></li>
+
+<li><p>It appears they want to delete a lot of metadata, which I&rsquo;m not sure they realize the implications of:</p>
 
 <pre><code>dspace=# select text_value, count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange') group by text_value;                                                                                                                                                                                                                  
-        text_value        | count                              
+    text_value        | count                              
 --------------------------+-------                             
- FP4_ClimateModels        |     6                              
- FP1_CSAEvidence          |     7                              
- SEA_UpscalingInnovation  |     7                              
- FP4_Baseline             |    69                              
- WA_Partnership           |     1                              
- WA_SciencePolicyExchange |     6                              
- SA_GHGMeasurement        |     2                              
- SA_CSV                   |     7                              
- EA_PAR                   |    18                              
- FP4_Livestock            |     7                              
- FP4_GenderPolicy         |     4                              
- FP2_CRMWestAfrica        |    12                              
- FP4_ClimateData          |    24                              
- FP4_CCPAG                |     2                              
- SEA_mitigationSAMPLES    |     2                              
- SA_Biodiversity          |     1                              
- FP4_PolicyEngagement     |    20                              
- FP3_Gender               |     9                              
- FP4_GenderToolbox        |     3                              
+FP4_ClimateModels        |     6                              
+FP1_CSAEvidence          |     7                              
+SEA_UpscalingInnovation  |     7                              
+FP4_Baseline             |    69                              
+WA_Partnership           |     1                              
+WA_SciencePolicyExchange |     6                              
+SA_GHGMeasurement        |     2                              
+SA_CSV                   |     7                              
+EA_PAR                   |    18                              
+FP4_Livestock            |     7                              
+FP4_GenderPolicy         |     4                              
+FP2_CRMWestAfrica        |    12                              
+FP4_ClimateData          |    24                              
+FP4_CCPAG                |     2                              
+SEA_mitigationSAMPLES    |     2                              
+SA_Biodiversity          |     1                              
+FP4_PolicyEngagement     |    20                              
+FP3_Gender               |     9                              
+FP4_GenderToolbox        |     3                              
 (19 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I sent CCAFS people an email to ask if they really want to remove these 200+ tags</li>
-<li>She responded yes, so I&rsquo;ll at least need to do these deletes in PostgreSQL:</li>
-</ul>
+<li><p>I sent CCAFS people an email to ask if they really want to remove these 200+ tags</p></li>
+
+<li><p>She responded yes, so I&rsquo;ll at least need to do these deletes in PostgreSQL:</p>
 
 <pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange','FP_GII');
 DELETE 207
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>When we discussed this in late July there were some other renames they had requested, but I don&rsquo;t see them in the current spreadsheet so I will have to follow that up</li>
-<li>I talked to Macaroni Bros and they said to just go ahead with the other corrections as well as their spreadsheet was evolved organically rather than systematically!</li>
-<li>The final list of corrections and deletes should therefore be:</li>
-</ul>
+<li><p>When we discussed this in late July there were some other renames they had requested, but I don&rsquo;t see them in the current spreadsheet so I will have to follow that up</p></li>
+
+<li><p>I talked to Macaroni Bros and they said to just go ahead with the other corrections as well as their spreadsheet was evolved organically rather than systematically!</p></li>
+
+<li><p>The final list of corrections and deletes should therefore be:</p>
 
 <pre><code>delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-FP4_CRMWestAfrica';
 update metadatavalue set text_value='FP3_VietnamLED' where resource_type_id=2 and metadata_field_id=134 and text_value='FP3_VeitnamLED';
 update metadatavalue set text_value='PII-FP1_PIRCCA' where resource_type_id=2 and metadata_field_id=235 and text_value='PII-SEA_PIRCCA';
 delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-WA_IntegratedInterventions';
 delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange','FP_GII');
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Create and merge pull request to shut up the Ehcache update check (<a href="https://github.com/ilri/DSpace/pull/337">#337</a>)</li>
-<li>Although it looks like there was a previous attempt to disable these update checks that was merged in DSpace 4.0 (although it only affects XMLUI): <a href="https://jira.duraspace.org/browse/DS-1492">https://jira.duraspace.org/browse/DS-1492</a></li>
-<li>I commented there suggesting that we disable it globally</li>
-<li>I merged the changes to the CCAFS project tags (<a href="https://github.com/ilri/DSpace/pull/336">#336</a>) but still need to finalize the metadata deletions/renames</li>
-<li>I merged the CGIAR Library theme changes (<a href="https://github.com/ilri/DSpace/pull/338">#338</a>) to the <code>5_x-prod</code> branch in preparation for next week&rsquo;s migration</li>
-<li>I emailed the Handle administrators (hdladmin@cnri.reston.va.us) to ask them what the process for changing their prefix to be resolved by our resolver</li>
-<li>They responded and said that they need email confirmation from the contact of record of the other prefix, so I should have the CGIAR System Organization people email them before I send the new <code>sitebndl.zip</code></li>
-<li>Testing to see how we end up with all these new authorities after we keep cleaning and merging them in the database</li>
-<li>Here are all my distinct authority combinations in the database before:</li>
-</ul>
+<li><p>Create and merge pull request to shut up the Ehcache update check (<a href="https://github.com/ilri/DSpace/pull/337">#337</a>)</p></li>
+
+<li><p>Although it looks like there was a previous attempt to disable these update checks that was merged in DSpace 4.0 (although it only affects XMLUI): <a href="https://jira.duraspace.org/browse/DS-1492">https://jira.duraspace.org/browse/DS-1492</a></p></li>
+
+<li><p>I commented there suggesting that we disable it globally</p></li>
+
+<li><p>I merged the changes to the CCAFS project tags (<a href="https://github.com/ilri/DSpace/pull/336">#336</a>) but still need to finalize the metadata deletions/renames</p></li>
+
+<li><p>I merged the CGIAR Library theme changes (<a href="https://github.com/ilri/DSpace/pull/338">#338</a>) to the <code>5_x-prod</code> branch in preparation for next week&rsquo;s migration</p></li>
+
+<li><p>I emailed the Handle administrators (hdladmin@cnri.reston.va.us) to ask them what the process for changing their prefix to be resolved by our resolver</p></li>
+
+<li><p>They responded and said that they need email confirmation from the contact of record of the other prefix, so I should have the CGIAR System Organization people email them before I send the new <code>sitebndl.zip</code></p></li>
+
+<li><p>Testing to see how we end up with all these new authorities after we keep cleaning and merging them in the database</p></li>
+
+<li><p>Here are all my distinct authority combinations in the database before:</p>
 
 <pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
- text_value |              authority               | confidence 
+text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
- Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
- Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
- Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
+Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
+Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
+Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
 (8 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>And then after adding a new item and selecting an existing &ldquo;Orth, Alan&rdquo; with an ORCID in the author lookup:</li>
-</ul>
+<li><p>And then after adding a new item and selecting an existing &ldquo;Orth, Alan&rdquo; with an ORCID in the author lookup:</p>
 
 <pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
- text_value |              authority               | confidence 
+text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
- Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
- Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
- Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
- Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
+Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
+Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
+Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
+Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
 (9 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>It created a new authority&hellip; let&rsquo;s try to add another item and select the same existing author and see what happens in the database:</li>
-</ul>
+<li><p>It created a new authority&hellip; let&rsquo;s try to add another item and select the same existing author and see what happens in the database:</p>
 
 <pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
- text_value |              authority               | confidence 
+text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
- Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
- Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
- Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
- Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
+Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
+Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
+Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
+Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
 (9 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>No new one&hellip; so now let me try to add another item and select the italicized result from the ORCID lookup and see what happens in the database:</li>
-</ul>
+<li><p>No new one&hellip; so now let me try to add another item and select the italicized result from the ORCID lookup and see what happens in the database:</p>
 
 <pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
- text_value |              authority               | confidence 
+text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | d85a8a5b-9b82-4aaf-8033-d7e0c7d9cb8f |        600
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
- Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
- Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
- Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
- Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | d85a8a5b-9b82-4aaf-8033-d7e0c7d9cb8f |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
+Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
+Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
+Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
+Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
 (10 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Shit, it created another authority! Let&rsquo;s try it again!</li>
-</ul>
+<li><p>Shit, it created another authority! Let&rsquo;s try it again!</p>
 
 <pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';                                                                                             
- text_value |              authority               | confidence
+text_value |              authority               | confidence
 ------------+--------------------------------------+------------
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | d85a8a5b-9b82-4aaf-8033-d7e0c7d9cb8f |        600
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
- Orth, Alan | 9aed566a-a248-4878-9577-0caedada43db |        600
- Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
- Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
- Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
- Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
- Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
- Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | d85a8a5b-9b82-4aaf-8033-d7e0c7d9cb8f |        600
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |        600
+Orth, Alan | 9aed566a-a248-4878-9577-0caedada43db |        600
+Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
+Orth, Alan | 1a1943a0-3f87-402f-9afe-e52fb46a513e |         -1
+Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |          0
+Orth, Alan | cb3aa5ae-906f-4902-97b1-2667cf148dde |        600
+Orth, Alan | 0d575fa3-8ac4-4763-a90a-1248d4791793 |         -1
+Orth, Alan | 67a9588f-d86a-4155-81a2-af457e9d13f9 |        600
 (11 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>It added <em>another</em> authority&hellip; surely this is not the desired behavior, or maybe we are not using this as intented?</li>
+<li><p>It added <em>another</em> authority&hellip; surely this is not the desired behavior, or maybe we are not using this as intented?</p></li>
 </ul>
 
 <h2 id="2017-09-14">2017-09-14</h2>
@@ -487,8 +491,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 <h2 id="2017-09-15">2017-09-15</h2>
 
 <ul>
-<li>Apply CCAFS project tag corrections on CGSpace:</li>
-</ul>
+<li><p>Apply CCAFS project tag corrections on CGSpace:</p>
 
 <pre><code>dspace=# \i /tmp/ccafs-projects.sql 
 DELETE 5
@@ -496,15 +499,16 @@ UPDATE 4
 UPDATE 1
 DELETE 1
 DELETE 207
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2017-09-17">2017-09-17</h2>
 
 <ul>
 <li>Create pull request for CGSpace to be able to resolve multiple handles (<a href="https://github.com/ilri/DSpace/pull/339">#339</a>)</li>
 <li>We still need to do the changes to <code>config.dct</code> and regenerate the <code>sitebndl.zip</code> to send to the Handle.net admins</li>
-<li>According to this <a href="http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html">dspace-tech mailing list entry from 2011</a>, we need to add the extra handle prefixes to <code>config.dct</code> like this:</li>
-</ul>
+
+<li><p>According to this <a href="http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html">dspace-tech mailing list entry from 2011</a>, we need to add the extra handle prefixes to <code>config.dct</code> like this:</p>
 
 <pre><code>&quot;server_admins&quot; = (
 &quot;300:0.NA/10568&quot;
@@ -520,21 +524,22 @@ DELETE 207
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
 )
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>More work on the CGIAR Library migration test run locally, as I was having problem with importing the last fourteen items from the CGIAR System Management Office community</li>
-<li>The problem was that we remapped the items to new collections after the initial import, so the items were using the 10947 prefix but the community and collection was using 10568</li>
-<li>I ended up having to read the <a href="https://wiki.duraspace.org/display/DSDOC5x/AIP+Backup+and+Restore#AIPBackupandRestore-ForceReplaceMode">AIP Backup and Restore</a> closely a few times and then explicitly preserve handles and ignore parents:</li>
-</ul>
+<li><p>More work on the CGIAR Library migration test run locally, as I was having problem with importing the last fourteen items from the CGIAR System Management Office community</p></li>
+
+<li><p>The problem was that we remapped the items to new collections after the initial import, so the items were using the 10947 prefix but the community and collection was using 10568</p></li>
+
+<li><p>I ended up having to read the <a href="https://wiki.duraspace.org/display/DSDOC5x/AIP+Backup+and+Restore#AIPBackupandRestore-ForceReplaceMode">AIP Backup and Restore</a> closely a few times and then explicitly preserve handles and ignore parents:</p>
 
 <pre><code>$ for item in 10568-93759/ITEM@10947-46*; do ~/dspace/bin/dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/87738 $item; done
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Also, this was in replace mode (-r) rather than submit mode (-s), because submit mode always generated a new handle even if I told it not to!</li>
-<li>I decided to start the import process in the evening rather than waiting for the morning, and right as the first community was finished importing I started seeing <code>Timeout waiting for idle object</code> errors</li>
-<li>I had to cancel the import, clean up a bunch of database entries, increase the PostgreSQL <code>max_connections</code> as a precaution, restart PostgreSQL and Tomcat, and then finally completed the import</li>
+<li><p>Also, this was in replace mode (-r) rather than submit mode (-s), because submit mode always generated a new handle even if I told it not to!</p></li>
+
+<li><p>I decided to start the import process in the evening rather than waiting for the morning, and right as the first community was finished importing I started seeing <code>Timeout waiting for idle object</code> errors</p></li>
+
+<li><p>I had to cancel the import, clean up a bunch of database entries, increase the PostgreSQL <code>max_connections</code> as a precaution, restart PostgreSQL and Tomcat, and then finally completed the import</p></li>
 </ul>
 
 <h2 id="2017-09-18">2017-09-18</h2>
@@ -555,35 +560,37 @@ DELETE 207
 <h2 id="2017-09-19">2017-09-19</h2>
 
 <ul>
-<li>Nightly Solr indexing is working again, and it appears to be pretty quick actually:</li>
-</ul>
+<li><p>Nightly Solr indexing is working again, and it appears to be pretty quick actually:</p>
 
 <pre><code>2017-09-19 00:00:14,953 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (0 of 65808): 17607
 ...
 2017-09-19 00:04:18,017 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (65807 of 65808): 83753
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Sisay asked if he could import 50 items for IITA that have already been checked by Bosede and Bizuwork</li>
-<li>I had a look at the collection and noticed a bunch of issues with item types and donors, so I asked him to fix those and import it to DSpace Test again first</li>
-<li>Abenet wants to be able to filter by ISI Journal in advanced search on queries like this: <a href="https://cgspace.cgiar.org/discover?filtertype_0=dateIssued&amp;filtertype_1=dateIssued&amp;filter_relational_operator_1=equals&amp;filter_relational_operator_0=equals&amp;filter_1=%5B2010+TO+2017%5D&amp;filter_0=2017&amp;filtertype=type&amp;filter_relational_operator=equals&amp;filter=Journal+Article">https://cgspace.cgiar.org/discover?filtertype_0=dateIssued&amp;filtertype_1=dateIssued&amp;filter_relational_operator_1=equals&amp;filter_relational_operator_0=equals&amp;filter_1=%5B2010+TO+2017%5D&amp;filter_0=2017&amp;filtertype=type&amp;filter_relational_operator=equals&amp;filter=Journal+Article</a></li>
-<li>I opened an issue to track this (<a href="https://github.com/ilri/DSpace/issues/340">#340</a>) and will test it on DSpace Test soon</li>
-<li>Marianne Gadeberg from WLE asked if I would add an account for Adam Hunt on CGSpace and give him permissions to approve all WLE publications</li>
-<li>I told him to register first, as he&rsquo;s a CGIAR user and needs an account to be created before I can add him to the groups</li>
+<li><p>Sisay asked if he could import 50 items for IITA that have already been checked by Bosede and Bizuwork</p></li>
+
+<li><p>I had a look at the collection and noticed a bunch of issues with item types and donors, so I asked him to fix those and import it to DSpace Test again first</p></li>
+
+<li><p>Abenet wants to be able to filter by ISI Journal in advanced search on queries like this: <a href="https://cgspace.cgiar.org/discover?filtertype_0=dateIssued&amp;filtertype_1=dateIssued&amp;filter_relational_operator_1=equals&amp;filter_relational_operator_0=equals&amp;filter_1=%5B2010+TO+2017%5D&amp;filter_0=2017&amp;filtertype=type&amp;filter_relational_operator=equals&amp;filter=Journal+Article">https://cgspace.cgiar.org/discover?filtertype_0=dateIssued&amp;filtertype_1=dateIssued&amp;filter_relational_operator_1=equals&amp;filter_relational_operator_0=equals&amp;filter_1=%5B2010+TO+2017%5D&amp;filter_0=2017&amp;filtertype=type&amp;filter_relational_operator=equals&amp;filter=Journal+Article</a></p></li>
+
+<li><p>I opened an issue to track this (<a href="https://github.com/ilri/DSpace/issues/340">#340</a>) and will test it on DSpace Test soon</p></li>
+
+<li><p>Marianne Gadeberg from WLE asked if I would add an account for Adam Hunt on CGSpace and give him permissions to approve all WLE publications</p></li>
+
+<li><p>I told him to register first, as he&rsquo;s a CGIAR user and needs an account to be created before I can add him to the groups</p></li>
 </ul>
 
 <h2 id="2017-09-20">2017-09-20</h2>
 
 <ul>
 <li>Abenet and I noticed that hdl.handle.net is blocked by ETC at ILRI Addis so I asked Biruk Debebe to route it over the satellite</li>
-<li>Force thumbnail regeneration for the CGIAR System Organization&rsquo;s Historic Archive community (2000 items):</li>
-</ul>
+
+<li><p>Force thumbnail regeneration for the CGIAR System Organization&rsquo;s Historic Archive community (2000 items):</p>
 
 <pre><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 dspace filter-media -f -i 10947/1 -p &quot;ImageMagick PDF Thumbnail&quot;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;m still waiting (over 1 day later) to hear back from the CGIAR System Organization about updating the DNS for library.cgiar.org</li>
+<li><p>I&rsquo;m still waiting (over 1 day later) to hear back from the CGIAR System Organization about updating the DNS for library.cgiar.org</p></li>
 </ul>
 
 <h2 id="2017-09-21">2017-09-21</h2>
@@ -633,16 +640,17 @@ DELETE 207
 <li>It is easy to do via CSV using OpenRefine but I noticed that on CGSpace ~1,000 of the expected 2,500 are already mapped, while on DSpace Test they were not</li>
 <li>I&rsquo;ve asked Peter if he knows what&rsquo;s going on (or who mapped them)</li>
 <li>Turns out he had already mapped some, but requested that I finish the rest</li>
-<li>With this GREL in OpenRefine I can find items that are mapped, ie they have <code>10568/3||</code> or <code>10568/3$</code> in their <code>collection</code> field:</li>
-</ul>
+
+<li><p>With this GREL in OpenRefine I can find items that are mapped, ie they have <code>10568/3||</code> or <code>10568/3$</code> in their <code>collection</code> field:</p>
 
 <pre><code>isNotNull(value.match(/.+?10568\/3(\|\|.+|$)/))
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Peter also made a lot of changes to the data in the Archives collections while I was attempting to import the changes, so we were essentially competing for PostgreSQL and Solr connections</li>
-<li>I ended up having to kill the import and wait until he was done</li>
-<li>I exported a clean CSV and applied the changes from that one, which was a hundred or two less than I thought there should be (at least compared to the current state of DSpace Test, which is a few months old)</li>
+<li><p>Peter also made a lot of changes to the data in the Archives collections while I was attempting to import the changes, so we were essentially competing for PostgreSQL and Solr connections</p></li>
+
+<li><p>I ended up having to kill the import and wait until he was done</p></li>
+
+<li><p>I exported a clean CSV and applied the changes from that one, which was a hundred or two less than I thought there should be (at least compared to the current state of DSpace Test, which is a few months old)</p></li>
 </ul>
 
 <h2 id="2017-09-25">2017-09-25</h2>
@@ -650,30 +658,27 @@ DELETE 207
 <ul>
 <li>Email Rosemary Kande from ICT to ask about the administrative / finance procedure for moving DSpace Test from EU to US region on Linode</li>
 <li>Communicate (finally) with Tania and Tunji from the CGIAR System Organization office to tell them to request CGNET make the DNS updates for library.cgiar.org</li>
-<li>Peter wants me to clean up the text values for Delia Grace&rsquo;s metadata, as the authorities are all messed up again since we cleaned them up in <a href="/cgspace-notes/2016-12">2016-12</a>:</li>
-</ul>
+
+<li><p>Peter wants me to clean up the text values for Delia Grace&rsquo;s metadata, as the authorities are all messed up again since we cleaned them up in <a href="/cgspace-notes/2016-12">2016-12</a>:</p>
 
 <pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';                                  
-  text_value  |              authority               | confidence              
+text_value  |              authority               | confidence              
 --------------+--------------------------------------+------------             
- Grace, Delia |                                      |        600              
- Grace, Delia | bfa61d7c-7583-4175-991c-2e7315000f0c |        600              
- Grace, Delia | bfa61d7c-7583-4175-991c-2e7315000f0c |         -1              
- Grace, D.    | 6a8ddca3-33c1-45f9-aa00-6fa9fc91e3fc |         -1
-</code></pre>
+Grace, Delia |                                      |        600              
+Grace, Delia | bfa61d7c-7583-4175-991c-2e7315000f0c |        600              
+Grace, Delia | bfa61d7c-7583-4175-991c-2e7315000f0c |         -1              
+Grace, D.    | 6a8ddca3-33c1-45f9-aa00-6fa9fc91e3fc |         -1
+</code></pre></li>
 
-<ul>
-<li>Strangely, none of her authority entries have ORCIDs anymore&hellip;</li>
-<li>I&rsquo;ll just fix the text values and forget about it for now:</li>
-</ul>
+<li><p>Strangely, none of her authority entries have ORCIDs anymore&hellip;</p></li>
+
+<li><p>I&rsquo;ll just fix the text values and forget about it for now:</p>
 
 <pre><code>dspace=# update metadatavalue set text_value='Grace, Delia', authority='bfa61d7c-7583-4175-991c-2e7315000f0c', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';
 UPDATE 610
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>After this we have to reindex the Discovery and Authority cores (as <code>tomcat7</code> user):</li>
-</ul>
+<li><p>After this we have to reindex the Discovery and Authority cores (as <code>tomcat7</code> user):</p>
 
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b
@@ -686,41 +691,39 @@ Retrieving all data
 Initialize org.dspace.authority.indexer.DSpaceAuthorityIndexer
 Exception: null
 java.lang.NullPointerException
-        at org.dspace.authority.AuthorityValueGenerator.generateRaw(AuthorityValueGenerator.java:82)
-        at org.dspace.authority.AuthorityValueGenerator.generate(AuthorityValueGenerator.java:39)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.prepareNextValue(DSpaceAuthorityIndexer.java:201)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:132)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:159)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
-        at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
-        at org.dspace.authority.indexer.AuthorityIndexClient.main(AuthorityIndexClient.java:61)
-        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.lang.reflect.Method.invoke(Method.java:498)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+    at org.dspace.authority.AuthorityValueGenerator.generateRaw(AuthorityValueGenerator.java:82)
+    at org.dspace.authority.AuthorityValueGenerator.generate(AuthorityValueGenerator.java:39)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.prepareNextValue(DSpaceAuthorityIndexer.java:201)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:132)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:159)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+    at org.dspace.authority.indexer.DSpaceAuthorityIndexer.hasMore(DSpaceAuthorityIndexer.java:144)
+    at org.dspace.authority.indexer.AuthorityIndexClient.main(AuthorityIndexClient.java:61)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:498)
+    at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+    at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
 
 real    6m6.447s
 user    1m34.010s
 sys     0m12.113s
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The <code>index-authority</code> script always seems to fail, I think it&rsquo;s the same old bug</li>
-<li>Something interesting for my notes about JNDI database pool—since I couldn&rsquo;t determine if it was working or not when I tried it locally the other day—is this error message that I just saw in the DSpace logs today:</li>
-</ul>
+<li><p>The <code>index-authority</code> script always seems to fail, I think it&rsquo;s the same old bug</p></li>
+
+<li><p>Something interesting for my notes about JNDI database pool—since I couldn&rsquo;t determine if it was working or not when I tried it locally the other day—is this error message that I just saw in the DSpace logs today:</p>
 
 <pre><code>ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspaceLocal
 ...
 INFO  org.dspace.storage.rdbms.DatabaseManager @ Unable to locate JNDI dataSource: jdbc/dspaceLocal
 INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Database pool
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So it&rsquo;s good to know that <em>something</em> gets printed when it fails because I didn&rsquo;t see <em>any</em> mention of JNDI before when I was testing!</li>
+<li><p>So it&rsquo;s good to know that <em>something</em> gets printed when it fails because I didn&rsquo;t see <em>any</em> mention of JNDI before when I was testing!</p></li>
 </ul>
 
 <h2 id="2017-09-26">2017-09-26</h2>
@@ -741,24 +744,23 @@ INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Da
 <ul>
 <li>Tunji from the System Organization finally sent the DNS request for library.cgiar.org to CGNET</li>
 <li>Now the redirects work</li>
-<li>I quickly registered a Let&rsquo;s Encrypt certificate for the domain:</li>
-</ul>
+
+<li><p>I quickly registered a Let&rsquo;s Encrypt certificate for the domain:</p>
 
 <pre><code># systemctl stop nginx
 # /opt/certbot-auto certonly --standalone --email aorth@mjanja.ch -d library.cgiar.org
 # systemctl start nginx
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I modified the nginx configuration of the ansible playbooks to use this new certificate and now the certificate is enabled and OCSP stapling is working:</li>
-</ul>
+<li><p>I modified the nginx configuration of the ansible playbooks to use this new certificate and now the certificate is enabled and OCSP stapling is working:</p>
 
 <pre><code>$ openssl s_client -connect cgspace.cgiar.org:443 -servername library.cgiar.org  -tls1_2 -tlsextdebug -status
 ...
 OCSP Response Data:
 ...
 Cert Status: good
-</code></pre>
+</code></pre></li>
+</ul>
 
   
 

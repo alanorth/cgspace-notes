@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -117,11 +117,12 @@
 <li>ORCIDs only</li>
 <li>ORCIDs plus normal authors</li>
 </ul></li>
-<li>I exported a random item&rsquo;s metadata as CSV, deleted <em>all columns</em> except id and collection, and made a new coloum called <code>ORCID:dc.contributor.author</code> with the following random ORCIDs from the ORCID registry:</li>
-</ul>
+
+<li><p>I exported a random item&rsquo;s metadata as CSV, deleted <em>all columns</em> except id and collection, and made a new coloum called <code>ORCID:dc.contributor.author</code> with the following random ORCIDs from the ORCID registry:</p>
 
 <pre><code>0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
-</code></pre>
+</code></pre></li>
+</ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-10/'>Read more →</a>
 </article> 
 
@@ -145,11 +146,12 @@
 <li>Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors</li>
 <li>Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace</li>
 <li>We had been using <code>DC=ILRI</code> to determine whether a user was ILRI or not</li>
-<li>It looks like we might be able to use OUs now, instead of DCs:</li>
-</ul>
+
+<li><p>It looks like we might be able to use OUs now, instead of DCs:</p>
 
 <pre><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
-</code></pre>
+</code></pre></li>
+</ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-09/'>Read more →</a>
 </article> 
 
@@ -175,13 +177,14 @@
 <li>Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more</li>
 <li>bower stuff is a dead end, waste of time, too many issues</li>
 <li>Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of <code>fonts</code>)</li>
-<li>Start working on DSpace 5.1 → 5.5 port:</li>
-</ul>
+
+<li><p>Start working on DSpace 5.1 → 5.5 port:</p>
 
 <pre><code>$ git checkout -b 55new 5_x-prod
 $ git reset --hard ilri/5_x-prod
 $ git rebase -i dspace-5.5
-</code></pre>
+</code></pre></li>
+</ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-08/'>Read more →</a>
 </article> 
 
@@ -203,19 +206,18 @@ $ git rebase -i dspace-5.5
 
 <ul>
 <li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
-<li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</li>
-</ul>
+
+<li><p>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</p>
 
 <pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
 UPDATE 95
 dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
- text_value
+text_value
 ------------
 (0 rows)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In this case the select query was showing 95 results before the update</li>
+<li><p>In this case the select query was showing 95 results before the update</p></li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-07/'>Read more →</a>
 </article> 
@@ -266,12 +268,13 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <ul>
 <li>Since yesterday there have been 10,000 REST errors and the site has been unstable again</li>
 <li>I have blocked access to the API now</li>
-<li>There are 3,000 IPs accessing the REST API in a 24-hour period!</li>
-</ul>
+
+<li><p>There are 3,000 IPs accessing the REST API in a 24-hour period!</p>
 
 <pre><code># awk '{print $1}' /var/log/nginx/rest.log  | uniq | wc -l
 3168
-</code></pre>
+</code></pre></li>
+</ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-05/'>Read more →</a>
 </article> 
 

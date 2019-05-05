@@ -10,20 +10,21 @@
 
 
 Linode alerted that CGSpace (linode18) had a higher outbound traffic rate than normal early this morning
+
 I don&rsquo;t see anything interesting in the web server logs around that time though:
 
-
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
-     92 40.77.167.4
-     99 210.7.29.100
-    120 38.126.157.45
-    177 35.237.175.180
-    177 40.77.167.32
-    216 66.249.75.219
-    225 18.203.76.93
-    261 46.101.86.248
-    357 207.46.13.1
-    903 54.70.40.11
+ 92 40.77.167.4
+ 99 210.7.29.100
+120 38.126.157.45
+177 35.237.175.180
+177 40.77.167.32
+216 66.249.75.219
+225 18.203.76.93
+261 46.101.86.248
+357 207.46.13.1
+903 54.70.40.11
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-01/" />
@@ -36,22 +37,23 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 
 
 Linode alerted that CGSpace (linode18) had a higher outbound traffic rate than normal early this morning
+
 I don&rsquo;t see anything interesting in the web server logs around that time though:
 
-
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
-     92 40.77.167.4
-     99 210.7.29.100
-    120 38.126.157.45
-    177 35.237.175.180
-    177 40.77.167.32
-    216 66.249.75.219
-    225 18.203.76.93
-    261 46.101.86.248
-    357 207.46.13.1
-    903 54.70.40.11
+ 92 40.77.167.4
+ 99 210.7.29.100
+120 38.126.157.45
+177 35.237.175.180
+177 40.77.167.32
+216 66.249.75.219
+225 18.203.76.93
+261 46.101.86.248
+357 207.46.13.1
+903 54.70.40.11
+
 "/>
-<meta name="generator" content="Hugo 0.55.3" />
+<meta name="generator" content="Hugo 0.55.5" />
 
 
     
@@ -134,41 +136,40 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 
 <ul>
 <li>Linode alerted that CGSpace (linode18) had a higher outbound traffic rate than normal early this morning</li>
-<li>I don&rsquo;t see anything interesting in the web server logs around that time though:</li>
-</ul>
+
+<li><p>I don&rsquo;t see anything interesting in the web server logs around that time though:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-     92 40.77.167.4
-     99 210.7.29.100
-    120 38.126.157.45
-    177 35.237.175.180
-    177 40.77.167.32
-    216 66.249.75.219
-    225 18.203.76.93
-    261 46.101.86.248
-    357 207.46.13.1
-    903 54.70.40.11
-</code></pre>
+ 92 40.77.167.4
+ 99 210.7.29.100
+120 38.126.157.45
+177 35.237.175.180
+177 40.77.167.32
+216 66.249.75.219
+225 18.203.76.93
+261 46.101.86.248
+357 207.46.13.1
+903 54.70.40.11
+</code></pre></li>
+</ul>
 
 <ul>
-<li>Analyzing the types of requests made by the top few IPs during that time:</li>
-</ul>
+<li><p>Analyzing the types of requests made by the top few IPs during that time:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | grep 54.70.40.11 | grep -o -E &quot;(bitstream|discover|handle)&quot; | sort | uniq -c
-     30 bitstream
-    534 discover
-    352 handle
+ 30 bitstream
+534 discover
+352 handle
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | grep 207.46.13.1 | grep -o -E &quot;(bitstream|discover|handle)&quot; | sort | uniq -c
-    194 bitstream
-    345 handle
+194 bitstream
+345 handle
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | grep 46.101.86.248 | grep -o -E &quot;(bitstream|discover|handle)&quot; | sort | uniq -c
-    261 handle
-</code></pre>
+261 handle
+</code></pre></li>
 
-<ul>
-<li>It&rsquo;s not clear to me what was causing the outbound traffic spike</li>
-<li>Oh nice! The once-per-year cron job for rotating the Solr statistics actually worked now (for the first time ever!):</li>
-</ul>
+<li><p>It&rsquo;s not clear to me what was causing the outbound traffic spike</p></li>
+
+<li><p>Oh nice! The once-per-year cron job for rotating the Solr statistics actually worked now (for the first time ever!):</p>
 
 <pre><code>Moving: 81742 into core statistics-2010
 Moving: 1837285 into core statistics-2011
@@ -179,33 +180,31 @@ Moving: 2941736 into core statistics-2015
 Moving: 5926070 into core statistics-2016
 Moving: 10562554 into core statistics-2017
 Moving: 18497180 into core statistics-2018
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>This could by why the outbound traffic rate was high, due to the S3 backup that run at 3:30AM&hellip;</li>
-<li>Run all system updates on DSpace Test (linode19) and reboot the server</li>
+<li><p>This could by why the outbound traffic rate was high, due to the S3 backup that run at 3:30AM&hellip;</p></li>
+
+<li><p>Run all system updates on DSpace Test (linode19) and reboot the server</p></li>
 </ul>
 
 <h2 id="2019-01-03">2019-01-03</h2>
 
 <ul>
-<li>Update local Docker image for DSpace PostgreSQL, re-using the existing data volume:</li>
-</ul>
+<li><p>Update local Docker image for DSpace PostgreSQL, re-using the existing data volume:</p>
 
 <pre><code>$ sudo docker pull postgres:9.6-alpine
 $ sudo docker rm dspacedb
 $ sudo docker run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Testing DSpace 5.9 with Tomcat 8.5.37 on my local machine and I see that Atmire&rsquo;s Listings and Reports still doesn&rsquo;t work
+<li><p>Testing DSpace 5.9 with Tomcat 8.5.37 on my local machine and I see that Atmire&rsquo;s Listings and Reports still doesn&rsquo;t work</p>
 
 <ul>
 <li>After logging in via XMLUI and clicking the Listings and Reports link from the sidebar it redirects me to a JSPUI login page</li>
 <li>If I log in again there the Listings and Reports work&hellip; hmm.</li>
 </ul></li>
-<li>The JSPUI application—which Listings and Reports depends upon—also does not load, though the error is perhaps unrelated:</li>
-</ul>
+
+<li><p>The JSPUI application—which Listings and Reports depends upon—also does not load, though the error is perhaps unrelated:</p>
 
 <pre><code>2019-01-03 14:45:21,727 INFO  org.dspace.browse.BrowseEngine @ anonymous:session_id=9471D72242DAA05BCC87734FE3C66EA6:ip_addr=127.0.0.1:browse_mini:
 2019-01-03 14:45:21,971 INFO  org.dspace.app.webui.discovery.DiscoverUtility @ facets for scope, null: 23
@@ -214,107 +213,106 @@ $ sudo docker run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/d
 -- Parameters were:
 
 org.apache.jasper.JasperException: /home.jsp (line: [214], column: [1]) /discovery/static-tagcloud-facet.jsp (line: [57], column: [8]) No tag [tagcloud] defined in tag library imported with prefix [dspace]
-    at org.apache.jasper.compiler.DefaultErrorHandler.jspError(DefaultErrorHandler.java:41)
-    at org.apache.jasper.compiler.ErrorDispatcher.dispatch(ErrorDispatcher.java:291)
-    at org.apache.jasper.compiler.ErrorDispatcher.jspError(ErrorDispatcher.java:97)
-    at org.apache.jasper.compiler.Parser.processIncludeDirective(Parser.java:347)
-    at org.apache.jasper.compiler.Parser.parseIncludeDirective(Parser.java:380)
-    at org.apache.jasper.compiler.Parser.parseDirective(Parser.java:481)
-    at org.apache.jasper.compiler.Parser.parseElements(Parser.java:1445)
-    at org.apache.jasper.compiler.Parser.parseBody(Parser.java:1683)
-    at org.apache.jasper.compiler.Parser.parseOptionalBody(Parser.java:1016)
-    at org.apache.jasper.compiler.Parser.parseCustomTag(Parser.java:1291)
-    at org.apache.jasper.compiler.Parser.parseElements(Parser.java:1470)
-    at org.apache.jasper.compiler.Parser.parse(Parser.java:144)
-    at org.apache.jasper.compiler.ParserController.doParse(ParserController.java:244)
-    at org.apache.jasper.compiler.ParserController.parse(ParserController.java:105)
-    at org.apache.jasper.compiler.Compiler.generateJava(Compiler.java:202)
-    at org.apache.jasper.compiler.Compiler.compile(Compiler.java:373)
-    at org.apache.jasper.compiler.Compiler.compile(Compiler.java:350)
-    at org.apache.jasper.compiler.Compiler.compile(Compiler.java:334)
-    at org.apache.jasper.JspCompilationContext.compile(JspCompilationContext.java:595)
-    at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:399)
-    at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
-    at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
-    at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-    at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-    at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:728)
-    at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:470)
-    at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:395)
-    at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:316)
-    at org.dspace.app.webui.util.JSPManager.showJSP(JSPManager.java:60)
-    at org.apache.jsp.index_jsp._jspService(index_jsp.java:191)
-    at org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:70)
-    at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
-    at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:476)
-    at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
-    at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
-    at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-    at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-    at org.dspace.utils.servlet.DSpaceWebappServletFilter.doFilter(DSpaceWebappServletFilter.java:78)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-    at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:198)
-    at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
-    at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:493)
-    at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
-    at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
-    at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:234)
-    at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:650)
-    at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
-    at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
-    at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:800)
-    at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
-    at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:806)
-    at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1498)
-    at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-    at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-    at java.lang.Thread.run(Thread.java:748)
-</code></pre>
+at org.apache.jasper.compiler.DefaultErrorHandler.jspError(DefaultErrorHandler.java:41)
+at org.apache.jasper.compiler.ErrorDispatcher.dispatch(ErrorDispatcher.java:291)
+at org.apache.jasper.compiler.ErrorDispatcher.jspError(ErrorDispatcher.java:97)
+at org.apache.jasper.compiler.Parser.processIncludeDirective(Parser.java:347)
+at org.apache.jasper.compiler.Parser.parseIncludeDirective(Parser.java:380)
+at org.apache.jasper.compiler.Parser.parseDirective(Parser.java:481)
+at org.apache.jasper.compiler.Parser.parseElements(Parser.java:1445)
+at org.apache.jasper.compiler.Parser.parseBody(Parser.java:1683)
+at org.apache.jasper.compiler.Parser.parseOptionalBody(Parser.java:1016)
+at org.apache.jasper.compiler.Parser.parseCustomTag(Parser.java:1291)
+at org.apache.jasper.compiler.Parser.parseElements(Parser.java:1470)
+at org.apache.jasper.compiler.Parser.parse(Parser.java:144)
+at org.apache.jasper.compiler.ParserController.doParse(ParserController.java:244)
+at org.apache.jasper.compiler.ParserController.parse(ParserController.java:105)
+at org.apache.jasper.compiler.Compiler.generateJava(Compiler.java:202)
+at org.apache.jasper.compiler.Compiler.compile(Compiler.java:373)
+at org.apache.jasper.compiler.Compiler.compile(Compiler.java:350)
+at org.apache.jasper.compiler.Compiler.compile(Compiler.java:334)
+at org.apache.jasper.JspCompilationContext.compile(JspCompilationContext.java:595)
+at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:399)
+at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
+at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
+at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:728)
+at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:470)
+at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:395)
+at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:316)
+at org.dspace.app.webui.util.JSPManager.showJSP(JSPManager.java:60)
+at org.apache.jsp.index_jsp._jspService(index_jsp.java:191)
+at org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:70)
+at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
+at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:476)
+at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
+at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
+at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+at org.dspace.utils.servlet.DSpaceWebappServletFilter.doFilter(DSpaceWebappServletFilter.java:78)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:198)
+at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:493)
+at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:234)
+at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:650)
+at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:800)
+at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:806)
+at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1498)
+at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+at java.lang.Thread.run(Thread.java:748)
+</code></pre></li>
 
-<ul>
-<li>I notice that I get different JSESSIONID cookies for <code>/</code> (XMLUI) and <code>/jspui</code> (JSPUI) on Tomcat 8.5.37, I wonder if it&rsquo;s the same on Tomcat 7.0.92&hellip; yes I do.</li>
-<li>Hmm, on Tomcat 7.0.92 I see that I get a <code>dspace.current.user.id</code> session cookie after logging into XMLUI, and then when I browse to JSPUI I am still logged in&hellip;
+<li><p>I notice that I get different JSESSIONID cookies for <code>/</code> (XMLUI) and <code>/jspui</code> (JSPUI) on Tomcat 8.5.37, I wonder if it&rsquo;s the same on Tomcat 7.0.92&hellip; yes I do.</p></li>
+
+<li><p>Hmm, on Tomcat 7.0.92 I see that I get a <code>dspace.current.user.id</code> session cookie after logging into XMLUI, and then when I browse to JSPUI I am still logged in&hellip;</p>
 
 <ul>
 <li>I didn&rsquo;t see that cookie being set on Tomcat 8.5.37</li>
 </ul></li>
-<li>I sent a message to the dspace-tech mailing list to ask</li>
+
+<li><p>I sent a message to the dspace-tech mailing list to ask</p></li>
 </ul>
 
 <h2 id="2019-01-04">2019-01-04</h2>
 
 <ul>
-<li>Linode sent a message last night that CGSpace (linode18) had high CPU usage, but I don&rsquo;t see anything around that time in the web server logs:</li>
-</ul>
+<li><p>Linode sent a message last night that CGSpace (linode18) had high CPU usage, but I don&rsquo;t see anything around that time in the web server logs:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Jan/2019:1(7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    189 207.46.13.192
-    217 31.6.77.23
-    340 66.249.70.29
-    349 40.77.167.86
-    417 34.218.226.147
-    630 207.46.13.173
-    710 35.237.175.180
-    790 40.77.167.87
-   1776 66.249.70.27
-   2099 54.70.40.11
-</code></pre>
+189 207.46.13.192
+217 31.6.77.23
+340 66.249.70.29
+349 40.77.167.86
+417 34.218.226.147
+630 207.46.13.173
+710 35.237.175.180
+790 40.77.167.87
+1776 66.249.70.27
+2099 54.70.40.11
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;m thinking about trying to validate our <code>dc.subject</code> terms against <a href="http://aims.fao.org/agrovoc/webservices">AGROVOC webservices</a></li>
-<li>There seem to be a few APIs and the documentation is kinda confusing, but I found this REST endpoint that does work well, for example searching for <code>SOIL</code>:</li>
-</ul>
+<li><p>I&rsquo;m thinking about trying to validate our <code>dc.subject</code> terms against <a href="http://aims.fao.org/agrovoc/webservices">AGROVOC webservices</a></p></li>
+
+<li><p>There seem to be a few APIs and the documentation is kinda confusing, but I found this REST endpoint that does work well, for example searching for <code>SOIL</code>:</p>
 
 <pre><code>$ http http://agrovoc.uniroma2.it/agrovoc/rest/v1/search?query=SOIL&amp;lang=en
 HTTP/1.1 200 OK
@@ -331,40 +329,39 @@ X-Content-Type-Options: nosniff
 X-Frame-Options: ALLOW-FROM http://aims.fao.org
 
 {
-    &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;en&quot;,
-        &quot;altLabel&quot;: &quot;skos:altLabel&quot;,
-        &quot;hiddenLabel&quot;: &quot;skos:hiddenLabel&quot;,
-        &quot;isothes&quot;: &quot;http://purl.org/iso25964/skos-thes#&quot;,
-        &quot;onki&quot;: &quot;http://schema.onki.fi/onki#&quot;,
-        &quot;prefLabel&quot;: &quot;skos:prefLabel&quot;,
-        &quot;results&quot;: {
-            &quot;@container&quot;: &quot;@list&quot;,
-            &quot;@id&quot;: &quot;onki:results&quot;
-        },
-        &quot;skos&quot;: &quot;http://www.w3.org/2004/02/skos/core#&quot;,
-        &quot;type&quot;: &quot;@type&quot;,
-        &quot;uri&quot;: &quot;@id&quot;
+&quot;@context&quot;: {
+    &quot;@language&quot;: &quot;en&quot;,
+    &quot;altLabel&quot;: &quot;skos:altLabel&quot;,
+    &quot;hiddenLabel&quot;: &quot;skos:hiddenLabel&quot;,
+    &quot;isothes&quot;: &quot;http://purl.org/iso25964/skos-thes#&quot;,
+    &quot;onki&quot;: &quot;http://schema.onki.fi/onki#&quot;,
+    &quot;prefLabel&quot;: &quot;skos:prefLabel&quot;,
+    &quot;results&quot;: {
+        &quot;@container&quot;: &quot;@list&quot;,
+        &quot;@id&quot;: &quot;onki:results&quot;
     },
-    &quot;results&quot;: [
-        {
-            &quot;lang&quot;: &quot;en&quot;,
-            &quot;prefLabel&quot;: &quot;soil&quot;,
-            &quot;type&quot;: [
-                &quot;skos:Concept&quot;
-            ],
-            &quot;uri&quot;: &quot;http://aims.fao.org/aos/agrovoc/c_7156&quot;,
-            &quot;vocab&quot;: &quot;agrovoc&quot;
-        }
-    ],
-    &quot;uri&quot;: &quot;&quot;
+    &quot;skos&quot;: &quot;http://www.w3.org/2004/02/skos/core#&quot;,
+    &quot;type&quot;: &quot;@type&quot;,
+    &quot;uri&quot;: &quot;@id&quot;
+},
+&quot;results&quot;: [
+    {
+        &quot;lang&quot;: &quot;en&quot;,
+        &quot;prefLabel&quot;: &quot;soil&quot;,
+        &quot;type&quot;: [
+            &quot;skos:Concept&quot;
+        ],
+        &quot;uri&quot;: &quot;http://aims.fao.org/aos/agrovoc/c_7156&quot;,
+        &quot;vocab&quot;: &quot;agrovoc&quot;
+    }
+],
+&quot;uri&quot;: &quot;&quot;
 }
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The API does not appear to be case sensitive (searches for <code>SOIL</code> and <code>soil</code> return the same thing)</li>
-<li>I&rsquo;m a bit confused that there&rsquo;s no obvious return code or status when a term is not found, for example <code>SOILS</code>:</li>
-</ul>
+<li><p>The API does not appear to be case sensitive (searches for <code>SOIL</code> and <code>soil</code> return the same thing)</p></li>
+
+<li><p>I&rsquo;m a bit confused that there&rsquo;s no obvious return code or status when a term is not found, for example <code>SOILS</code>:</p>
 
 <pre><code>HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *
@@ -380,30 +377,29 @@ X-Content-Type-Options: nosniff
 X-Frame-Options: ALLOW-FROM http://aims.fao.org
 
 {
-    &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;en&quot;,
-        &quot;altLabel&quot;: &quot;skos:altLabel&quot;,
-        &quot;hiddenLabel&quot;: &quot;skos:hiddenLabel&quot;,
-        &quot;isothes&quot;: &quot;http://purl.org/iso25964/skos-thes#&quot;,
-        &quot;onki&quot;: &quot;http://schema.onki.fi/onki#&quot;,
-        &quot;prefLabel&quot;: &quot;skos:prefLabel&quot;,
-        &quot;results&quot;: {
-            &quot;@container&quot;: &quot;@list&quot;,
-            &quot;@id&quot;: &quot;onki:results&quot;
-        },
-        &quot;skos&quot;: &quot;http://www.w3.org/2004/02/skos/core#&quot;,
-        &quot;type&quot;: &quot;@type&quot;,
-        &quot;uri&quot;: &quot;@id&quot;
+&quot;@context&quot;: {
+    &quot;@language&quot;: &quot;en&quot;,
+    &quot;altLabel&quot;: &quot;skos:altLabel&quot;,
+    &quot;hiddenLabel&quot;: &quot;skos:hiddenLabel&quot;,
+    &quot;isothes&quot;: &quot;http://purl.org/iso25964/skos-thes#&quot;,
+    &quot;onki&quot;: &quot;http://schema.onki.fi/onki#&quot;,
+    &quot;prefLabel&quot;: &quot;skos:prefLabel&quot;,
+    &quot;results&quot;: {
+        &quot;@container&quot;: &quot;@list&quot;,
+        &quot;@id&quot;: &quot;onki:results&quot;
     },
-    &quot;results&quot;: [],
-    &quot;uri&quot;: &quot;&quot;
+    &quot;skos&quot;: &quot;http://www.w3.org/2004/02/skos/core#&quot;,
+    &quot;type&quot;: &quot;@type&quot;,
+    &quot;uri&quot;: &quot;@id&quot;
+},
+&quot;results&quot;: [],
+&quot;uri&quot;: &quot;&quot;
 }
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I guess the <code>results</code> object will just be empty&hellip;</li>
-<li>Another way would be to try with SPARQL, perhaps using the Python 2.7 <a href="https://pypi.org/project/sparql-client/">sparql-client</a>:</li>
-</ul>
+<li><p>I guess the <code>results</code> object will just be empty&hellip;</p></li>
+
+<li><p>Another way would be to try with SPARQL, perhaps using the Python 2.7 <a href="https://pypi.org/project/sparql-client/">sparql-client</a>:</p>
 
 <pre><code>$ python2.7 -m virtualenv /tmp/sparql
 $ . /tmp/sparql/bin/activate
@@ -412,16 +408,16 @@ $ ipython
 In [10]: import sparql
 In [11]: s = sparql.Service(&quot;http://agrovoc.uniroma2.it:3030/agrovoc/sparql&quot;, &quot;utf-8&quot;, &quot;GET&quot;)
 In [12]: statement=('PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt; '
-    ...: 'SELECT '
-    ...: '?label '
-    ...: 'WHERE { '
-    ...: '{  ?concept  skos:altLabel ?label . } UNION {  ?concept  skos:prefLabel ?label . } '
-    ...: 'FILTER regex(str(?label), &quot;^fish&quot;, &quot;i&quot;) . '
-    ...: '} LIMIT 10')
+...: 'SELECT '
+...: '?label '
+...: 'WHERE { '
+...: '{  ?concept  skos:altLabel ?label . } UNION {  ?concept  skos:prefLabel ?label . } '
+...: 'FILTER regex(str(?label), &quot;^fish&quot;, &quot;i&quot;) . '
+...: '} LIMIT 10')
 In [13]: result = s.query(statement)
 In [14]: for row in result.fetchone():
-   ...:     print(row)
-   ...:
+...:     print(row)
+...:
 (&lt;Literal &quot;fish catching&quot;@en&gt;,)
 (&lt;Literal &quot;fish harvesting&quot;@en&gt;,)
 (&lt;Literal &quot;fish meat&quot;@en&gt;,)
@@ -432,10 +428,9 @@ In [14]: for row in result.fetchone():
 (&lt;Literal &quot;fishflies&quot;@en&gt;,)
 (&lt;Literal &quot;fishery biology&quot;@en&gt;,)
 (&lt;Literal &quot;fish production&quot;@en&gt;,)
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>The SPARQL query comes from my notes in <a href="/cgspace-notes/2017-08/">2017-08</a></li>
+<li><p>The SPARQL query comes from my notes in <a href="/cgspace-notes/2017-08/">2017-08</a></p></li>
 </ul>
 
 <h2 id="2019-01-06">2019-01-06</h2>
@@ -502,32 +497,31 @@ In [14]: for row in result.fetchone():
 <li>We agreed to try to stick to pure Dublin Core where possible, then use fields that exist in standard DSpace, and use &ldquo;cg&rdquo; namespace for everything else</li>
 <li>Major changes are to move <code>dc.contributor.author</code> to <code>dc.creator</code> (which MELSpace and WorldFish are already using in their DSpace repositories)</li>
 </ul></li>
-<li>I am testing the speed of the WorldFish DSpace repository&rsquo;s REST API and it&rsquo;s five to ten times faster than CGSpace as I tested in <a href="/cgspace-notes/2018-10/">2018-10</a>:</li>
-</ul>
+
+<li><p>I am testing the speed of the WorldFish DSpace repository&rsquo;s REST API and it&rsquo;s five to ten times faster than CGSpace as I tested in <a href="/cgspace-notes/2018-10/">2018-10</a>:</p>
 
 <pre><code>$ time http --print h 'https://digitalarchive.worldfishcenter.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
 
 0.16s user 0.03s system 3% cpu 5.185 total
 0.17s user 0.02s system 2% cpu 7.123 total
 0.18s user 0.02s system 6% cpu 3.047 total
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>In other news, Linode sent a mail last night that the CPU load on CGSpace (linode18) was high, here are the top IPs in the logs around those few hours:</li>
-</ul>
+<li><p>In other news, Linode sent a mail last night that the CPU load on CGSpace (linode18) was high, here are the top IPs in the logs around those few hours:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;14/Jan/2019:(17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    157 31.6.77.23
-    192 54.70.40.11
-    202 66.249.64.157
-    207 40.77.167.204
-    220 157.55.39.140
-    326 197.156.105.116
-    385 207.46.13.158
-   1211 35.237.175.180
-   1830 66.249.64.155
-   2482 45.5.186.2
-</code></pre>
+157 31.6.77.23
+192 54.70.40.11
+202 66.249.64.157
+207 40.77.167.204
+220 157.55.39.140
+326 197.156.105.116
+385 207.46.13.158
+1211 35.237.175.180
+1830 66.249.64.155
+2482 45.5.186.2
+</code></pre></li>
+</ul>
 
 <h2 id="2019-01-16">2019-01-16</h2>
 
@@ -638,122 +632,119 @@ In [14]: for row in result.fetchone():
 <p><img src="/cgspace-notes/2019/01/solr-stats-incorrect.png" alt="Solr stats fucked up" /></p>
 
 <ul>
-<li>In the Solr admin UI I see the following error:</li>
-</ul>
+<li><p>In the Solr admin UI I see the following error:</p>
 
 <pre><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Looking in the Solr log I see this:</li>
-</ul>
+<li><p>Looking in the Solr log I see this:</p>
 
 <pre><code>2019-01-16 13:37:55,395 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2018]: Error opening new searcher
 org.apache.solr.common.SolrException: Error opening new searcher
-    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:873)
-    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:646)
-    at org.apache.solr.core.CoreContainer.create(CoreContainer.java:491)
-    at org.apache.solr.core.CoreContainer.create(CoreContainer.java:466)
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleCreateAction(CoreAdminHandler.java:575)
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestInternal(CoreAdminHandler.java:199)
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestBody(CoreAdminHandler.java:188)
-    at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
-    at org.apache.solr.servlet.SolrDispatchFilter.handleAdminRequest(SolrDispatchFilter.java:729)
-    at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:258)
-    at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:207)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-    at org.dspace.solr.filters.LocalHostRestrictionFilter.doFilter(LocalHostRestrictionFilter.java:50)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-    at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:221)
-    at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
-    at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)
-    at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
-    at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
-    at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:180)
-    at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:956)
-    at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
-    at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)
-    at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)
-    at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)
-    at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-    at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-    at java.lang.Thread.run(Thread.java:748)
+at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:873)
+at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:646)
+at org.apache.solr.core.CoreContainer.create(CoreContainer.java:491)
+at org.apache.solr.core.CoreContainer.create(CoreContainer.java:466)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleCreateAction(CoreAdminHandler.java:575)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestInternal(CoreAdminHandler.java:199)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestBody(CoreAdminHandler.java:188)
+at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+at org.apache.solr.servlet.SolrDispatchFilter.handleAdminRequest(SolrDispatchFilter.java:729)
+at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:258)
+at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:207)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+at org.dspace.solr.filters.LocalHostRestrictionFilter.doFilter(LocalHostRestrictionFilter.java:50)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:221)
+at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)
+at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
+at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:180)
+at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:956)
+at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)
+at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)
+at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)
+at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+at java.lang.Thread.run(Thread.java:748)
 Caused by: org.apache.solr.common.SolrException: Error opening new searcher
-    at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
-    at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
-    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
-    ... 31 more
+at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
+at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
+at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
+... 31 more
 Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
-    at org.apache.lucene.store.Lock.obtain(Lock.java:89)
-    at org.apache.lucene.index.IndexWriter.&lt;init&gt;(IndexWriter.java:753)
-    at org.apache.solr.update.SolrIndexWriter.&lt;init&gt;(SolrIndexWriter.java:77)
-    at org.apache.solr.update.SolrIndexWriter.create(SolrIndexWriter.java:64)
-    at org.apache.solr.update.DefaultSolrCoreState.createMainIndexWriter(DefaultSolrCoreState.java:279)
-    at org.apache.solr.update.DefaultSolrCoreState.getIndexWriter(DefaultSolrCoreState.java:111)
-    at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1528)
-    ... 33 more
+at org.apache.lucene.store.Lock.obtain(Lock.java:89)
+at org.apache.lucene.index.IndexWriter.&lt;init&gt;(IndexWriter.java:753)
+at org.apache.solr.update.SolrIndexWriter.&lt;init&gt;(SolrIndexWriter.java:77)
+at org.apache.solr.update.SolrIndexWriter.create(SolrIndexWriter.java:64)
+at org.apache.solr.update.DefaultSolrCoreState.createMainIndexWriter(DefaultSolrCoreState.java:279)
+at org.apache.solr.update.DefaultSolrCoreState.getIndexWriter(DefaultSolrCoreState.java:111)
+at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1528)
+... 33 more
 2019-01-16 13:37:55,401 ERROR org.apache.solr.core.SolrCore @ org.apache.solr.common.SolrException: Error CREATEing SolrCore 'statistics-2018': Unable to create core [statistics-2018] Caused by: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleCreateAction(CoreAdminHandler.java:613)
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestInternal(CoreAdminHandler.java:199)
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestBody(CoreAdminHandler.java:188)
-    at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
-    at org.apache.solr.servlet.SolrDispatchFilter.handleAdminRequest(SolrDispatchFilter.java:729)
-    at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:258)
-    at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:207)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-    at org.dspace.solr.filters.LocalHostRestrictionFilter.doFilter(LocalHostRestrictionFilter.java:50)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-    at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:221)
-    at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
-    at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)
-    at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
-    at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
-    at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:180)
-    at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:956)
-    at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
-    at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)
-    at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)
-    at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)
-    at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-    at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-    at java.lang.Thread.run(Thread.java:748)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleCreateAction(CoreAdminHandler.java:613)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestInternal(CoreAdminHandler.java:199)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleRequestBody(CoreAdminHandler.java:188)
+at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:135)
+at org.apache.solr.servlet.SolrDispatchFilter.handleAdminRequest(SolrDispatchFilter.java:729)
+at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:258)
+at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:207)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+at org.dspace.solr.filters.LocalHostRestrictionFilter.doFilter(LocalHostRestrictionFilter.java:50)
+at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:221)
+at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)
+at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
+at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+at org.apache.catalina.valves.CrawlerSessionManagerValve.invoke(CrawlerSessionManagerValve.java:180)
+at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:956)
+at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)
+at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)
+at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)
+at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+at java.lang.Thread.run(Thread.java:748)
 Caused by: org.apache.solr.common.SolrException: Unable to create core [statistics-2018]
-    at org.apache.solr.core.CoreContainer.create(CoreContainer.java:507)
-    at org.apache.solr.core.CoreContainer.create(CoreContainer.java:466)
-    at org.apache.solr.handler.admin.CoreAdminHandler.handleCreateAction(CoreAdminHandler.java:575)
-    ... 27 more
+at org.apache.solr.core.CoreContainer.create(CoreContainer.java:507)
+at org.apache.solr.core.CoreContainer.create(CoreContainer.java:466)
+at org.apache.solr.handler.admin.CoreAdminHandler.handleCreateAction(CoreAdminHandler.java:575)
+... 27 more
 Caused by: org.apache.solr.common.SolrException: Error opening new searcher
-    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:873)
-    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:646)
-    at org.apache.solr.core.CoreContainer.create(CoreContainer.java:491)
-    ... 29 more
+at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:873)
+at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:646)
+at org.apache.solr.core.CoreContainer.create(CoreContainer.java:491)
+... 29 more
 Caused by: org.apache.solr.common.SolrException: Error opening new searcher
-    at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
-    at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
-    at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
-    ... 31 more
+at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
+at org.apache.solr.core.SolrCore.getSearcher(SolrCore.java:1677)
+at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:845)
+... 31 more
 Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
-    at org.apache.lucene.store.Lock.obtain(Lock.java:89)
-    at org.apache.lucene.index.IndexWriter.&lt;init&gt;(IndexWriter.java:753)
-    at org.apache.solr.update.SolrIndexWriter.&lt;init&gt;(SolrIndexWriter.java:77)
-    at org.apache.solr.update.SolrIndexWriter.create(SolrIndexWriter.java:64)
-    at org.apache.solr.update.DefaultSolrCoreState.createMainIndexWriter(DefaultSolrCoreState.java:279)
-    at org.apache.solr.update.DefaultSolrCoreState.getIndexWriter(DefaultSolrCoreState.java:111)
-    at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1528)
-    ... 33 more
-</code></pre>
+at org.apache.lucene.store.Lock.obtain(Lock.java:89)
+at org.apache.lucene.index.IndexWriter.&lt;init&gt;(IndexWriter.java:753)
+at org.apache.solr.update.SolrIndexWriter.&lt;init&gt;(SolrIndexWriter.java:77)
+at org.apache.solr.update.SolrIndexWriter.create(SolrIndexWriter.java:64)
+at org.apache.solr.update.DefaultSolrCoreState.createMainIndexWriter(DefaultSolrCoreState.java:279)
+at org.apache.solr.update.DefaultSolrCoreState.getIndexWriter(DefaultSolrCoreState.java:111)
+at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1528)
+... 33 more
+</code></pre></li>
 
-<ul>
-<li>I found some threads on StackOverflow etc discussing this and several suggested increasing the address space for the shell with ulimit</li>
-<li>I added <code>ulimit -v unlimited</code> to the <code>/etc/default/tomcat7</code> and restarted Tomcat and now Solr is working again:</li>
+<li><p>I found some threads on StackOverflow etc discussing this and several suggested increasing the address space for the shell with ulimit</p></li>
+
+<li><p>I added <code>ulimit -v unlimited</code> to the <code>/etc/default/tomcat7</code> and restarted Tomcat and now Solr is working again:</p></li>
 </ul>
 
 <p><img src="/cgspace-notes/2019/01/solr-stats-incorrect.png" alt="Solr stats working" /></p>
@@ -768,8 +759,8 @@ Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed 
 </ul></li>
 <li>Abenet was asking if the Atmire Usage Stats are correct because they are over 2 million the last few months&hellip;</li>
 <li>For 2019-01 alone the Usage Stats are already around 1.2 million</li>
-<li>I tried to look in the nginx logs to see how many raw requests there are so far this month and it&rsquo;s about 1.4 million:</li>
-</ul>
+
+<li><p>I tried to look in the nginx logs to see how many raw requests there are so far this month and it&rsquo;s about 1.4 million:</p>
 
 <pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Jan/2019&quot;
 1442874
@@ -777,7 +768,8 @@ Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed 
 real    0m17.161s
 user    0m16.205s
 sys     0m2.396s
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2019-01-17">2019-01-17</h2>
 
@@ -834,30 +826,35 @@ sys     0m2.396s
 <h2 id="2019-01-20">2019-01-20</h2>
 
 <ul>
-<li>That&rsquo;s weird, I logged into DSpace Test (linode19) and it says it has been up for 213 days:</li>
-</ul>
+<li><p>That&rsquo;s weird, I logged into DSpace Test (linode19) and it says it has been up for 213 days:</p>
 
 <pre><code># w
- 04:46:14 up 213 days,  7:25,  4 users,  load average: 1.94, 1.50, 1.35
-</code></pre>
+04:46:14 up 213 days,  7:25,  4 users,  load average: 1.94, 1.50, 1.35
+</code></pre></li>
 
-<ul>
-<li>I&rsquo;ve definitely rebooted it several times in the past few months&hellip; according to <code>journalctl -b</code> it was a few weeks ago on 2019-01-02</li>
-<li>I re-ran the Ansible DSpace tag, ran all system updates, and rebooted the host</li>
-<li>After rebooting I notice that the Linode kernel went down from 4.19.8 to 4.18.16&hellip;</li>
-<li>Atmire sent a quote on our <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=657">ticket about purchasing the Metadata Quality Module (MQM) for DSpace 5.8</a></li>
-<li>Abenet asked me for an <a href="https://cgspace.cgiar.org/open-search/discover?query=crpsubject:Livestock&amp;sort_by=3&amp;order=DESC">OpenSearch query that could generate and RSS feed for items in the Livestock CRP</a></li>
-<li>According to my notes, <code>sort_by=3</code> is accession date (as configured in `dspace.cfg)</li>
-<li>The query currently shows 3023 items, but a <a href="https://cgspace.cgiar.org/discover?filtertype_1=crpsubject&amp;filter_relational_operator_1=equals&amp;filter_1=Livestock&amp;submit_apply_filter=&amp;query=">Discovery search for Livestock CRP only returns 858 items</a></li>
-<li>That query seems to return items tagged with <code>Livestock and Fish</code> CRP as well&hellip; hmm.</li>
+<li><p>I&rsquo;ve definitely rebooted it several times in the past few months&hellip; according to <code>journalctl -b</code> it was a few weeks ago on 2019-01-02</p></li>
+
+<li><p>I re-ran the Ansible DSpace tag, ran all system updates, and rebooted the host</p></li>
+
+<li><p>After rebooting I notice that the Linode kernel went down from 4.19.8 to 4.18.16&hellip;</p></li>
+
+<li><p>Atmire sent a quote on our <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=657">ticket about purchasing the Metadata Quality Module (MQM) for DSpace 5.8</a></p></li>
+
+<li><p>Abenet asked me for an <a href="https://cgspace.cgiar.org/open-search/discover?query=crpsubject:Livestock&amp;sort_by=3&amp;order=DESC">OpenSearch query that could generate and RSS feed for items in the Livestock CRP</a></p></li>
+
+<li><p>According to my notes, <code>sort_by=3</code> is accession date (as configured in `dspace.cfg)</p></li>
+
+<li><p>The query currently shows 3023 items, but a <a href="https://cgspace.cgiar.org/discover?filtertype_1=crpsubject&amp;filter_relational_operator_1=equals&amp;filter_1=Livestock&amp;submit_apply_filter=&amp;query=">Discovery search for Livestock CRP only returns 858 items</a></p></li>
+
+<li><p>That query seems to return items tagged with <code>Livestock and Fish</code> CRP as well&hellip; hmm.</p></li>
 </ul>
 
 <h2 id="2019-01-21">2019-01-21</h2>
 
 <ul>
 <li>Investigating running Tomcat 7 on Ubuntu 18.04 with the tarball and a custom systemd package instead of waiting for our DSpace to get compatible with Ubuntu 18.04&rsquo;s Tomcat 8.5</li>
-<li>I could either run with a simple <code>tomcat7.service</code> like this:</li>
-</ul>
+
+<li><p>I could either run with a simple <code>tomcat7.service</code> like this:</p>
 
 <pre><code>[Unit]
 Description=Apache Tomcat 7 Web Application Container
@@ -870,11 +867,9 @@ User=aorth
 Group=aorth
 [Install]
 WantedBy=multi-user.target
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Or try to use adapt a real systemd service like Arch Linux&rsquo;s:</li>
-</ul>
+<li><p>Or try to use adapt a real systemd service like Arch Linux&rsquo;s:</p>
 
 <pre><code>[Unit]
 Description=Tomcat 7 servlet container
@@ -892,57 +887,57 @@ Environment=ERRFILE=SYSLOG
 Environment=OUTFILE=SYSLOG
 
 ExecStart=/usr/bin/jsvc \
-            -Dcatalina.home=${CATALINA_HOME} \
-            -Dcatalina.base=${CATALINA_BASE} \
-            -Djava.io.tmpdir=/var/tmp/tomcat7/temp \
-            -cp /usr/share/java/commons-daemon.jar:/usr/share/java/eclipse-ecj.jar:${CATALINA_HOME}/bin/bootstrap.jar:${CATALINA_HOME}/bin/tomcat-juli.jar \
-            -user tomcat7 \
-            -java-home ${TOMCAT_JAVA_HOME} \
-            -pidfile /var/run/tomcat7.pid \
-            -errfile ${ERRFILE} \
-            -outfile ${OUTFILE} \
-            $CATALINA_OPTS \
-            org.apache.catalina.startup.Bootstrap
+        -Dcatalina.home=${CATALINA_HOME} \
+        -Dcatalina.base=${CATALINA_BASE} \
+        -Djava.io.tmpdir=/var/tmp/tomcat7/temp \
+        -cp /usr/share/java/commons-daemon.jar:/usr/share/java/eclipse-ecj.jar:${CATALINA_HOME}/bin/bootstrap.jar:${CATALINA_HOME}/bin/tomcat-juli.jar \
+        -user tomcat7 \
+        -java-home ${TOMCAT_JAVA_HOME} \
+        -pidfile /var/run/tomcat7.pid \
+        -errfile ${ERRFILE} \
+        -outfile ${OUTFILE} \
+        $CATALINA_OPTS \
+        org.apache.catalina.startup.Bootstrap
 
 ExecStop=/usr/bin/jsvc \
-            -pidfile /var/run/tomcat7.pid \
-            -stop \
-            org.apache.catalina.startup.Bootstrap
+        -pidfile /var/run/tomcat7.pid \
+        -stop \
+        org.apache.catalina.startup.Bootstrap
 
 [Install]
 WantedBy=multi-user.target
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I see that <code>jsvc</code> and <code>libcommons-daemon-java</code> are both available on Ubuntu so that should be easy to port</li>
-<li>We probably don&rsquo;t need Eclipse Java Bytecode Compiler (ecj)</li>
-<li>I tested Tomcat 7.0.92 on Arch Linux using the <code>tomcat7.service</code> with <code>jsvc</code> and it works&hellip; nice!</li>
-<li>I think I might manage this the same way I do the restic releases in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a>, where I download a specific version and symlink to some generic location without the version number</li>
-<li>I verified that there is indeed an issue with sharded Solr statistics cores on DSpace, which will cause inaccurate results in the dspace-statistics-api:</li>
-</ul>
+<li><p>I see that <code>jsvc</code> and <code>libcommons-daemon-java</code> are both available on Ubuntu so that should be easy to port</p></li>
+
+<li><p>We probably don&rsquo;t need Eclipse Java Bytecode Compiler (ecj)</p></li>
+
+<li><p>I tested Tomcat 7.0.92 on Arch Linux using the <code>tomcat7.service</code> with <code>jsvc</code> and it works&hellip; nice!</p></li>
+
+<li><p>I think I might manage this the same way I do the restic releases in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a>, where I download a specific version and symlink to some generic location without the version number</p></li>
+
+<li><p>I verified that there is indeed an issue with sharded Solr statistics cores on DSpace, which will cause inaccurate results in the dspace-statistics-api:</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;33&quot; start=&quot;0&quot;&gt;
 $ http 'http://localhost:3000/solr/statistics-2018/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;241&quot; start=&quot;0&quot;&gt;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I opened an issue on the GitHub issue tracker (<a href="https://github.com/ilri/dspace-statistics-api/issues/10">#10</a>)</li>
-<li>I don&rsquo;t think the <a href="https://solrclient.readthedocs.io/en/latest/">SolrClient library</a> we are currently using supports these type of queries so we might have to just do raw queries with requests</li>
-<li>The <a href="https://github.com/django-haystack/pysolr">pysolr</a> library says it supports multicore indexes, but I am not sure it does (or at least not with our setup):</li>
-</ul>
+<li><p>I opened an issue on the GitHub issue tracker (<a href="https://github.com/ilri/dspace-statistics-api/issues/10">#10</a>)</p></li>
+
+<li><p>I don&rsquo;t think the <a href="https://solrclient.readthedocs.io/en/latest/">SolrClient library</a> we are currently using supports these type of queries so we might have to just do raw queries with requests</p></li>
+
+<li><p>The <a href="https://github.com/django-haystack/pysolr">pysolr</a> library says it supports multicore indexes, but I am not sure it does (or at least not with our setup):</p>
 
 <pre><code>import pysolr
 solr = pysolr.Solr('http://localhost:3000/solr/statistics')
 results = solr.search('type:2', **{'fq': 'isBot:false AND statistics_type:view', 'facet': 'true', 'facet.field': 'id', 'facet.mincount': 1, 'facet.limit': 10, 'facet.offset': 0, 'rows': 0})
 print(results.facets['facet_fields'])
 {'id': ['77572', 646, '93185', 380, '92932', 375, '102499', 372, '101430', 337, '77632', 331, '102449', 289, '102485', 276, '100849', 270, '47080', 260]}
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>If I double check one item from above, for example <code>77572</code>, it appears this is only working on the current statistics core and not the shards:</li>
-</ul>
+<li><p>If I double check one item from above, for example <code>77572</code>, it appears this is only working on the current statistics core and not the shards:</p>
 
 <pre><code>import pysolr
 solr = pysolr.Solr('http://localhost:3000/solr/statistics')
@@ -953,20 +948,18 @@ solr = pysolr.Solr('http://localhost:3000/solr/statistics-2018/')
 results = solr.search('type:2 id:77572', **{'fq': 'isBot:false AND statistics_type:view'})
 print(results.hits)
 595
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>So I guess I need to figure out how to use join queries and maybe even switch to using raw Python requests with JSON</li>
-<li>This enumerates the list of Solr cores and returns JSON format:</li>
-</ul>
+<li><p>So I guess I need to figure out how to use join queries and maybe even switch to using raw Python requests with JSON</p></li>
+
+<li><p>This enumerates the list of Solr cores and returns JSON format:</p>
 
 <pre><code>http://localhost:3000/solr/admin/cores?action=STATUS&amp;wt=json
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I think I figured out how to search across shards, I needed to give the whole URL to each other core</li>
-<li>Now I get more results when I start adding the other statistics cores:</li>
-</ul>
+<li><p>I think I figured out how to search across shards, I needed to give the whole URL to each other core</p></li>
+
+<li><p>Now I get more results when I start adding the other statistics cores:</p>
 
 <pre><code>$ http 'http://localhost:3000/solr/statistics/select?&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound&lt;result name=&quot;response&quot; numFound=&quot;2061320&quot; start=&quot;0&quot;&gt;
 $ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
@@ -975,26 +968,28 @@ $ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/
 &lt;result name=&quot;response&quot; numFound=&quot;25606142&quot; start=&quot;0&quot; maxScore=&quot;1.0&quot;&gt;
 $ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018,localhost:8081/solr/statistics-2017,localhost:8081/solr/statistics-2016&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;31532212&quot; start=&quot;0&quot; maxScore=&quot;1.0&quot;&gt;
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I should be able to modify the dspace-statistics-api to check the shards via the Solr core status, then add the <code>shards</code> parameter to each query to make the search distributed among the cores</li>
-<li>I implemented a proof of concept to query the Solr STATUS for active cores and to add them with a <code>shards</code> query string</li>
-<li>A few things I noticed:
+<li><p>I should be able to modify the dspace-statistics-api to check the shards via the Solr core status, then add the <code>shards</code> parameter to each query to make the search distributed among the cores</p></li>
+
+<li><p>I implemented a proof of concept to query the Solr STATUS for active cores and to add them with a <code>shards</code> query string</p></li>
+
+<li><p>A few things I noticed:</p>
 
 <ul>
 <li>Solr doesn&rsquo;t mind if you use an empty <code>shards</code> parameter</li>
 <li>Solr doesn&rsquo;t mind if you have an extra comma at the end of the <code>shards</code> parameter</li>
 <li>If you are searching multiple cores, you need to include the base core in the <code>shards</code> parameter as well</li>
-<li>For example, compare the following two queries, first including the base core and the shard in the <code>shards</code> parameter, and then only including the shard:</li>
-</ul></li>
-</ul>
+
+<li><p>For example, compare the following two queries, first including the base core and the shard in the <code>shards</code> parameter, and then only including the shard:</p>
 
 <pre><code>$ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics,localhost:8081/solr/statistics-2018' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;275&quot; start=&quot;0&quot; maxScore=&quot;12.205825&quot;&gt;
 $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics-2018' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;241&quot; start=&quot;0&quot; maxScore=&quot;12.205825&quot;&gt;
-</code></pre>
+</code></pre></li>
+</ul></li>
+</ul>
 
 <h2 id="2019-01-22">2019-01-22</h2>
 
@@ -1002,37 +997,36 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 <li>Release <a href="https://github.com/ilri/dspace-statistics-api/releases/tag/v0.9.0">version 0.9.0 of the dspace-statistics-api</a> to address the issue of querying multiple Solr statistics shards</li>
 <li>I deployed it on DSpace Test (linode19) and restarted the indexer and now it shows all the stats from 2018 as well (756 pages of views, intead of 6)</li>
 <li>I deployed it on CGSpace (linode18) and restarted the indexer as well</li>
-<li>Linode sent an alert that CGSpace (linode18) was using high CPU this afternoon, the top ten IPs during that time were:</li>
-</ul>
+
+<li><p>Linode sent an alert that CGSpace (linode18) was using high CPU this afternoon, the top ten IPs during that time were:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;22/Jan/2019:1(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    155 40.77.167.106
-    176 2003:d5:fbda:1c00:1106:c7a0:4b17:3af8
-    189 107.21.16.70
-    217 54.83.93.85
-    310 46.174.208.142
-    346 83.103.94.48
-    360 45.5.186.2
-    595 154.113.73.30
-    716 196.191.127.37
-    915 35.237.175.180
-</code></pre>
+155 40.77.167.106
+176 2003:d5:fbda:1c00:1106:c7a0:4b17:3af8
+189 107.21.16.70
+217 54.83.93.85
+310 46.174.208.142
+346 83.103.94.48
+360 45.5.186.2
+595 154.113.73.30
+716 196.191.127.37
+915 35.237.175.180
+</code></pre></li>
 
-<ul>
-<li>35.237.175.180 is known to us</li>
-<li>I don&rsquo;t think we&rsquo;ve seen 196.191.127.37 before. Its user agent is:</li>
-</ul>
+<li><p>35.237.175.180 is known to us</p></li>
+
+<li><p>I don&rsquo;t think we&rsquo;ve seen 196.191.127.37 before. Its user agent is:</p>
 
 <pre><code>Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/7.0.185.1002 Safari/537.36
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Interestingly this IP is located in Addis Ababa&hellip;</li>
-<li>Another interesting one is 154.113.73.30, which is apparently at IITA Nigeria and uses the user agent:</li>
-</ul>
+<li><p>Interestingly this IP is located in Addis Ababa&hellip;</p></li>
+
+<li><p>Another interesting one is 154.113.73.30, which is apparently at IITA Nigeria and uses the user agent:</p>
 
 <pre><code>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2019-01-23">2019-01-23</h2>
 
@@ -1065,32 +1059,29 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 
 <li><p>Maria Garruccio asked me for a list of author affiliations from all of their submitted items so she can clean them up</p></li>
 
-<li><p>I got a list of their collections from the CGSpace XMLUI and then used an SQL query to dump the unique values to CSV:</p></li>
-</ul>
+<li><p>I got a list of their collections from the CGSpace XMLUI and then used an SQL query to dump the unique values to CSV:</p>
 
 <pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/35501', '10568/41728', '10568/49622', '10568/56589', '10568/56592', '10568/65064', '10568/65718', '10568/65719', '10568/67373', '10568/67731', '10568/68235', '10568/68546', '10568/69089', '10568/69160', '10568/69419', '10568/69556', '10568/70131', '10568/70252', '10568/70978'))) group by text_value order by count desc) to /tmp/bioversity-affiliations.csv with csv;
 COPY 1109
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Send a mail to the dspace-tech mailing list about the OpenSearch issue we had with the Livestock CRP</li>
-<li>Linode sent an alert that CGSpace (linode18) had a high load this morning, here are the top ten IPs during that time:</li>
-</ul>
+<li><p>Send a mail to the dspace-tech mailing list about the OpenSearch issue we had with the Livestock CRP</p></li>
+
+<li><p>Linode sent an alert that CGSpace (linode18) had a high load this morning, here are the top ten IPs during that time:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    222 54.226.25.74
-    241 40.77.167.13
-    272 46.101.86.248
-    297 35.237.175.180
-    332 45.5.184.72
-    355 34.218.226.147
-    404 66.249.64.155
-   4637 205.186.128.185
-   4637 70.32.83.92
-   9265 45.5.186.2
-</code></pre>
+222 54.226.25.74
+241 40.77.167.13
+272 46.101.86.248
+297 35.237.175.180
+332 45.5.184.72
+355 34.218.226.147
+404 66.249.64.155
+4637 205.186.128.185
+4637 70.32.83.92
+9265 45.5.186.2
+</code></pre></li>
 
-<ul>
 <li><p>I think it&rsquo;s the usual IPs:</p>
 
 <ul>
@@ -1108,18 +1099,19 @@ COPY 1109
 <li><a href="https://hdl.handle.net/10568/98391"><sup>10568</sup>&frasl;<sub>98391</sub></a></li>
 </ul></li>
 
-<li><p>Just to make sure these were not uploaded by the user or something, I manually forced the regeneration of these with DSpace&rsquo;s <code>filter-media</code>:</p></li>
-</ul>
+<li><p>Just to make sure these were not uploaded by the user or something, I manually forced the regeneration of these with DSpace&rsquo;s <code>filter-media</code>:</p>
 
 <pre><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace filter-media -v -f -i 10568/98390
 $ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace filter-media -v -f -i 10568/98391
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Both of these were successful, so there must have been an update to ImageMagick or Ghostscript in Ubuntu since early 2018-12</li>
-<li>Looking at the apt history logs I see that on 2018-12-07 a security update for Ghostscript was installed (version 9.26~dfsg+0-0ubuntu0.16.04.3)</li>
-<li>I think this Launchpad discussion is relevant: <a href="https://bugs.launchpad.net/ubuntu/+source/ghostscript/+bug/1806517">https://bugs.launchpad.net/ubuntu/+source/ghostscript/+bug/1806517</a></li>
-<li>As well as the original Ghostscript bug report: <a href="https://bugs.ghostscript.com/show_bug.cgi?id=699815">https://bugs.ghostscript.com/show_bug.cgi?id=699815</a></li>
+<li><p>Both of these were successful, so there must have been an update to ImageMagick or Ghostscript in Ubuntu since early 2018-12</p></li>
+
+<li><p>Looking at the apt history logs I see that on 2018-12-07 a security update for Ghostscript was installed (version 9.26~dfsg+0-0ubuntu0.16.04.3)</p></li>
+
+<li><p>I think this Launchpad discussion is relevant: <a href="https://bugs.launchpad.net/ubuntu/+source/ghostscript/+bug/1806517">https://bugs.launchpad.net/ubuntu/+source/ghostscript/+bug/1806517</a></p></li>
+
+<li><p>As well as the original Ghostscript bug report: <a href="https://bugs.ghostscript.com/show_bug.cgi?id=699815">https://bugs.ghostscript.com/show_bug.cgi?id=699815</a></p></li>
 </ul>
 
 <h2 id="2019-01-24">2019-01-24</h2>
@@ -1128,71 +1120,72 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace fi
 <li>I noticed Ubuntu&rsquo;s Ghostscript 9.26 works on some troublesome PDFs where Arch&rsquo;s Ghostscript 9.26 doesn&rsquo;t, so the fix for the first/last page crash is not the patch I found yesterday</li>
 <li>Ubuntu&rsquo;s Ghostscript uses another <a href="http://git.ghostscript.com/?p=ghostpdl.git;h=fae21f1668d2b44b18b84cf0923a1d5f3008a696">patch from Ghostscript git</a> (<a href="https://bugs.ghostscript.com/show_bug.cgi?id=700315">upstream bug report</a>)</li>
 <li>I re-compiled Arch&rsquo;s ghostscript with the patch and then I was able to generate a thumbnail from one of the <a href="https://cgspace.cgiar.org/handle/10568/98390">troublesome PDFs</a></li>
-<li>Before and after:</li>
-</ul>
+
+<li><p>Before and after:</p>
 
 <pre><code>$ identify Food\ safety\ Kenya\ fruits.pdf\[0\]
 zsh: abort (core dumped)  identify Food\ safety\ Kenya\ fruits.pdf\[0\]
 $ identify Food\ safety\ Kenya\ fruits.pdf\[0\]
 Food safety Kenya fruits.pdf[0]=&gt;Food safety Kenya fruits.pdf PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.000u 0:00.000
 identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/1747.
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>I reported it to the Arch Linux bug tracker (<a href="https://bugs.archlinux.org/task/61513">61513</a>)</li>
-<li>I told Atmire to go ahead with the Metadata Quality Module addition based on our <code>5_x-dev</code> branch (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=657">657</a>)</li>
-<li>Linode sent alerts last night to say that CGSpace (linode18) was using high CPU last night, here are the top ten IPs from the nginx logs around that time:</li>
-</ul>
+<li><p>I reported it to the Arch Linux bug tracker (<a href="https://bugs.archlinux.org/task/61513">61513</a>)</p></li>
+
+<li><p>I told Atmire to go ahead with the Metadata Quality Module addition based on our <code>5_x-dev</code> branch (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=657">657</a>)</p></li>
+
+<li><p>Linode sent alerts last night to say that CGSpace (linode18) was using high CPU last night, here are the top ten IPs from the nginx logs around that time:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:(18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    305 3.81.136.184
-    306 3.83.14.11
-    306 52.54.252.47
-    325 54.221.57.180
-    378 66.249.64.157
-    424 54.70.40.11
-    497 47.29.247.74
-    783 35.237.175.180
-   1108 66.249.64.155
-   2378 45.5.186.2
-</code></pre>
+305 3.81.136.184
+306 3.83.14.11
+306 52.54.252.47
+325 54.221.57.180
+378 66.249.64.157
+424 54.70.40.11
+497 47.29.247.74
+783 35.237.175.180
+1108 66.249.64.155
+2378 45.5.186.2
+</code></pre></li>
 
-<ul>
-<li>45.5.186.2 is CIAT and 66.249.64.155 is Google&hellip; hmmm.</li>
-<li>Linode sent another alert this morning, here are the top ten IPs active during that time:</li>
-</ul>
+<li><p>45.5.186.2 is CIAT and 66.249.64.155 is Google&hellip; hmmm.</p></li>
+
+<li><p>Linode sent another alert this morning, here are the top ten IPs active during that time:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;24/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    360 3.89.134.93
-    362 34.230.15.139
-    366 100.24.48.177
-    369 18.212.208.240
-    377 3.81.136.184
-    404 54.221.57.180
-    506 66.249.64.155
-   4642 70.32.83.92
-   4643 205.186.128.185
-   8593 45.5.186.2
-</code></pre>
+360 3.89.134.93
+362 34.230.15.139
+366 100.24.48.177
+369 18.212.208.240
+377 3.81.136.184
+404 54.221.57.180
+506 66.249.64.155
+4642 70.32.83.92
+4643 205.186.128.185
+8593 45.5.186.2
+</code></pre></li>
 
-<ul>
-<li>Just double checking what CIAT is doing, they are mainly hitting the REST API:</li>
-</ul>
+<li><p>Just double checking what CIAT is doing, they are mainly hitting the REST API:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;24/Jan/2019:&quot; | grep 45.5.186.2 | grep -Eo &quot;GET /(handle|bitstream|rest|oai)/&quot; | sort | uniq -c | sort -n
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>CIAT&rsquo;s community currently has 12,000 items in it so this is normal</li>
-<li>The issue with goo.gl links that we saw yesterday appears to be resolved, as links are working again&hellip;</li>
-<li>For example: <a href="https://goo.gl/fb/VRj9Gq">https://goo.gl/fb/VRj9Gq</a></li>
-<li>The full <a href="http://id.loc.gov/vocabulary/relators.html">list of MARC Relators on the Library of Congress website</a> linked from the <a href="http://dublincore.org/usage/documents/relators/">DMCI relators page</a> is very confusing</li>
-<li>Looking at the default DSpace XMLUI crosswalk in <a href="https://github.com/DSpace/DSpace/blob/dspace-5_x/dspace/config/crosswalks/xhtml-head-item.properties">xhtml-head-item.properties</a> I see a very complete mapping of DSpace DC and QDC fields to DCTERMS
+<li><p>CIAT&rsquo;s community currently has 12,000 items in it so this is normal</p></li>
+
+<li><p>The issue with goo.gl links that we saw yesterday appears to be resolved, as links are working again&hellip;</p></li>
+
+<li><p>For example: <a href="https://goo.gl/fb/VRj9Gq">https://goo.gl/fb/VRj9Gq</a></p></li>
+
+<li><p>The full <a href="http://id.loc.gov/vocabulary/relators.html">list of MARC Relators on the Library of Congress website</a> linked from the <a href="http://dublincore.org/usage/documents/relators/">DMCI relators page</a> is very confusing</p></li>
+
+<li><p>Looking at the default DSpace XMLUI crosswalk in <a href="https://github.com/DSpace/DSpace/blob/dspace-5_x/dspace/config/crosswalks/xhtml-head-item.properties">xhtml-head-item.properties</a> I see a very complete mapping of DSpace DC and QDC fields to DCTERMS</p>
 
 <ul>
 <li>This is good for standards-compliant web crawlers, but what about for those harvesting via REST or OAI APIs?</li>
 </ul></li>
-<li>I sent a message titled &ldquo;<a href="https://groups.google.com/forum/#!topic/dspace-tech/phV_t51TGuE">DC, QDC, and DCTERMS: reviewing our metadata practices</a>&rdquo; to the dspace-tech mailing list to ask about some of this</li>
+
+<li><p>I sent a message titled &ldquo;<a href="https://groups.google.com/forum/#!topic/dspace-tech/phV_t51TGuE">DC, QDC, and DCTERMS: reviewing our metadata practices</a>&rdquo; to the dspace-tech mailing list to ask about some of this</p></li>
 </ul>
 
 <h2 id="2019-01-25">2019-01-25</h2>
@@ -1212,24 +1205,22 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <h2 id="2019-01-27">2019-01-27</h2>
 
 <ul>
-<li>Linode sent an email that the server was using a lot of CPU this morning, and these were the top IPs in the web server logs at the time:</li>
-</ul>
+<li><p>Linode sent an email that the server was using a lot of CPU this morning, and these were the top IPs in the web server logs at the time:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;27/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    189 40.77.167.108
-    191 157.55.39.2
-    263 34.218.226.147
-    283 45.5.184.2
-    332 45.5.184.72
-    608 5.9.6.51
-    679 66.249.66.223
-   1116 66.249.66.219
-   4644 205.186.128.185
-   4644 70.32.83.92
-</code></pre>
+189 40.77.167.108
+191 157.55.39.2
+263 34.218.226.147
+283 45.5.184.2
+332 45.5.184.72
+608 5.9.6.51
+679 66.249.66.223
+1116 66.249.66.219
+4644 205.186.128.185
+4644 70.32.83.92
+</code></pre></li>
 
-<ul>
-<li>I think it&rsquo;s the usual IPs:
+<li><p>I think it&rsquo;s the usual IPs:</p>
 
 <ul>
 <li>70.32.83.92 is CCAFS</li>
@@ -1247,78 +1238,80 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <li>I told him that, as far as I remember, when WLE introduced Phase II research themes in 2017 we decided to infer theme ownership from the collection hierarchy and we created a <a href="https://cgspace.cgiar.org/handle/10568/81268">WLE Phase II Research Themes</a> subCommunity</li>
 <li>Perhaps they need to ask Macaroni Bros about the mapping</li>
 </ul></li>
-<li>Linode alerted that CGSpace (linode18) was using too much CPU again this morning, here are the active IPs from the web server log at the time:</li>
-</ul>
+
+<li><p>Linode alerted that CGSpace (linode18) was using too much CPU again this morning, here are the active IPs from the web server log at the time:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-     67 207.46.13.50
-    105 41.204.190.40
-    117 34.218.226.147
-    126 35.237.175.180
-    203 213.55.99.121
-    332 45.5.184.72
-    377 5.9.6.51
-    512 45.5.184.2
-   4644 205.186.128.185
-   4644 70.32.83.92
-</code></pre>
+ 67 207.46.13.50
+105 41.204.190.40
+117 34.218.226.147
+126 35.237.175.180
+203 213.55.99.121
+332 45.5.184.72
+377 5.9.6.51
+512 45.5.184.2
+4644 205.186.128.185
+4644 70.32.83.92
+</code></pre></li>
 
-<ul>
-<li>There seems to be a pattern with <code>70.32.83.92</code> and <code>205.186.128.185</code> lately!</li>
-<li>Every morning at 8AM they are the top users&hellip; I should tell them to stagger their requests&hellip;</li>
-<li>I signed up for a <a href="https://visualping.io/">VisualPing</a> of the <a href="https://jdbc.postgresql.org/download.html">PostgreSQL JDBC driver download page</a> to my CGIAR email address
+<li><p>There seems to be a pattern with <code>70.32.83.92</code> and <code>205.186.128.185</code> lately!</p></li>
+
+<li><p>Every morning at 8AM they are the top users&hellip; I should tell them to stagger their requests&hellip;</p></li>
+
+<li><p>I signed up for a <a href="https://visualping.io/">VisualPing</a> of the <a href="https://jdbc.postgresql.org/download.html">PostgreSQL JDBC driver download page</a> to my CGIAR email address</p>
 
 <ul>
 <li>Hopefully this will one day alert me that a new driver is released!</li>
 </ul></li>
-<li>Last night Linode sent an alert that CGSpace (linode18) was using high CPU, here are the most active IPs in the hours just before, during, and after the alert:</li>
-</ul>
+
+<li><p>Last night Linode sent an alert that CGSpace (linode18) was using high CPU, here are the most active IPs in the hours just before, during, and after the alert:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:(17|18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    310 45.5.184.2
-    425 5.143.231.39
-    526 54.70.40.11
-   1003 199.47.87.141
-   1374 35.237.175.180
-   1455 5.9.6.51
-   1501 66.249.66.223
-   1771 66.249.66.219
-   2107 199.47.87.140
-   2540 45.5.186.2
-</code></pre>
+310 45.5.184.2
+425 5.143.231.39
+526 54.70.40.11
+1003 199.47.87.141
+1374 35.237.175.180
+1455 5.9.6.51
+1501 66.249.66.223
+1771 66.249.66.219
+2107 199.47.87.140
+2540 45.5.186.2
+</code></pre></li>
 
-<ul>
-<li>Of course there is CIAT&rsquo;s <code>45.5.186.2</code>, but also <code>45.5.184.2</code> appears to be CIAT&hellip; I wonder why they have two harvesters?</li>
-<li><code>199.47.87.140</code> and <code>199.47.87.141</code> is TurnItIn with the following user agent:</li>
-</ul>
+<li><p>Of course there is CIAT&rsquo;s <code>45.5.186.2</code>, but also <code>45.5.184.2</code> appears to be CIAT&hellip; I wonder why they have two harvesters?</p></li>
+
+<li><p><code>199.47.87.140</code> and <code>199.47.87.141</code> is TurnItIn with the following user agent:</p>
 
 <pre><code>TurnitinBot (https://turnitin.com/robot/crawlerinfo.html)
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="2019-01-29">2019-01-29</h2>
 
 <ul>
-<li>Linode sent an alert about CGSpace (linode18) CPU usage this morning, here are the top IPs in the web server logs just before, during, and after the alert:</li>
-</ul>
+<li><p>Linode sent an alert about CGSpace (linode18) CPU usage this morning, here are the top IPs in the web server logs just before, during, and after the alert:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;29/Jan/2019:0(3|4|5|6|7)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    334 45.5.184.72
-    429 66.249.66.223
-    522 35.237.175.180
-    555 34.218.226.147
-    655 66.249.66.221
-    844 5.9.6.51
-   2507 66.249.66.219
-   4645 70.32.83.92
-   4646 205.186.128.185
-   9329 45.5.186.2
-</code></pre>
+334 45.5.184.72
+429 66.249.66.223
+522 35.237.175.180
+555 34.218.226.147
+655 66.249.66.221
+844 5.9.6.51
+2507 66.249.66.219
+4645 70.32.83.92
+4646 205.186.128.185
+9329 45.5.186.2
+</code></pre></li>
 
-<ul>
-<li><code>45.5.186.2</code> is CIAT as usual&hellip;</li>
-<li><code>70.32.83.92</code> and <code>205.186.128.185</code> are CCAFS as usual&hellip;</li>
-<li><code>66.249.66.219</code> is Google&hellip;</li>
-<li>I&rsquo;m thinking it might finally be time to increase the threshold of the Linode CPU alerts
+<li><p><code>45.5.186.2</code> is CIAT as usual&hellip;</p></li>
+
+<li><p><code>70.32.83.92</code> and <code>205.186.128.185</code> are CCAFS as usual&hellip;</p></li>
+
+<li><p><code>66.249.66.219</code> is Google&hellip;</p></li>
+
+<li><p>I&rsquo;m thinking it might finally be time to increase the threshold of the Linode CPU alerts</p>
 
 <ul>
 <li>I adjusted the alert threshold from 250% to 275%</li>
@@ -1328,63 +1321,60 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <h2 id="2019-01-30">2019-01-30</h2>
 
 <ul>
-<li>Got another alert from Linode about CGSpace (linode18) this morning, here are the top IPs before, during, and after the alert:</li>
-</ul>
+<li><p>Got another alert from Linode about CGSpace (linode18) this morning, here are the top IPs before, during, and after the alert:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    273 46.101.86.248
-    301 35.237.175.180
-    334 45.5.184.72
-    387 5.9.6.51
-    527 2a01:4f8:13b:1296::2
-   1021 34.218.226.147
-   1448 66.249.66.219
-   4649 205.186.128.185
-   4649 70.32.83.92
-   5163 45.5.184.2
-</code></pre>
+273 46.101.86.248
+301 35.237.175.180
+334 45.5.184.72
+387 5.9.6.51
+527 2a01:4f8:13b:1296::2
+1021 34.218.226.147
+1448 66.249.66.219
+4649 205.186.128.185
+4649 70.32.83.92
+5163 45.5.184.2
+</code></pre></li>
 
-<ul>
-<li>I might need to adjust the threshold again, because the load average this morning was 296% and the activity looks pretty normal (as always recently)</li>
+<li><p>I might need to adjust the threshold again, because the load average this morning was 296% and the activity looks pretty normal (as always recently)</p></li>
 </ul>
 
 <h2 id="2019-01-31">2019-01-31</h2>
 
 <ul>
-<li>Linode sent alerts about CGSpace (linode18) last night and this morning, here are the top IPs before, during, and after those times:</li>
-</ul>
+<li><p>Linode sent alerts about CGSpace (linode18) last night and this morning, here are the top IPs before, during, and after those times:</p>
 
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:(16|17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    436 18.196.196.108
-    460 157.55.39.168
-    460 207.46.13.96
-    500 197.156.105.116
-    728 54.70.40.11
-   1560 5.9.6.51
-   1562 35.237.175.180
-   1601 85.25.237.71
-   1894 66.249.66.219
-   2610 45.5.184.2
+436 18.196.196.108
+460 157.55.39.168
+460 207.46.13.96
+500 197.156.105.116
+728 54.70.40.11
+1560 5.9.6.51
+1562 35.237.175.180
+1601 85.25.237.71
+1894 66.249.66.219
+2610 45.5.184.2
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;31/Jan/2019:0(2|3|4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-    318 207.46.13.242
-    334 45.5.184.72
-    486 35.237.175.180
-    609 34.218.226.147
-    620 66.249.66.219
-   1054 5.9.6.51
-   4391 70.32.83.92
-   4428 205.186.128.185
-   6758 85.25.237.71
-   9239 45.5.186.2
-</code></pre>
+318 207.46.13.242
+334 45.5.184.72
+486 35.237.175.180
+609 34.218.226.147
+620 66.249.66.219
+1054 5.9.6.51
+4391 70.32.83.92
+4428 205.186.128.185
+6758 85.25.237.71
+9239 45.5.186.2
+</code></pre></li>
 
-<ul>
-<li><code>45.5.186.2</code> and <code>45.5.184.2</code> are CIAT as always</li>
-<li><code>85.25.237.71</code> is some new server in Germany that I&rsquo;ve never seen before with the user agent:</li>
-</ul>
+<li><p><code>45.5.186.2</code> and <code>45.5.184.2</code> are CIAT as always</p></li>
+
+<li><p><code>85.25.237.71</code> is some new server in Germany that I&rsquo;ve never seen before with the user agent:</p>
 
 <pre><code>Linguee Bot (http://www.linguee.com/bot; bot@linguee.com)
-</code></pre>
+</code></pre></li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
