@@ -28,7 +28,7 @@ But after this I tried to delete the item from the XMLUI and it is still present
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-05/" />
 <meta property="article:published_time" content="2019-05-01T07:37:43&#43;03:00"/>
-<meta property="article:modified_time" content="2019-05-24T12:27:22&#43;03:00"/>
+<meta property="article:modified_time" content="2019-05-25T14:17:27&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2019"/>
@@ -61,9 +61,9 @@ But after this I tried to delete the item from the XMLUI and it is still present
   "@type": "BlogPosting",
   "headline": "May, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-05\/",
-  "wordCount": "2874",
+  "wordCount": "3023",
   "datePublished": "2019-05-01T07:37:43\x2b03:00",
-  "dateModified": "2019-05-24T12:27:22\x2b03:00",
+  "dateModified": "2019-05-25T14:17:27\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -647,6 +647,33 @@ $ ./delete-metadata-values.py -i /tmp/2019-05-17-delete-14-Investors.csv -db dsp
 
 <pre><code>$ dspace import -a -e me@cgiar.org -m 2019-05-25-AfricaRice.map -s /tmp/SimpleArchiveFormat
 </code></pre></li>
+</ul>
+
+<h2 id="2019-05-27">2019-05-27</h2>
+
+<ul>
+<li><p>Peter sent me over two thousand corrections for the authors on CGSpace that I had dumped last month</p>
+
+<ul>
+<li><p>I proofed them for whitespace and invalid special characters in OpenRefine and then applied them on CGSpace and DSpace Test:</p>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-05-27-fix-2472-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t corrections -d
+</code></pre></li>
+</ul></li>
+
+<li><p>Then start a full Discovery re-indexing on each server:</p>
+
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;                                   
+$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre></li>
+
+<li><p>Export new list of all authors from CGSpace database to send to Peter:</p>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-05-27-all-authors.csv with csv header;
+COPY 64871
+</code></pre></li>
+
+<li><p>Run all system updates on DSpace Test (linode19) and reboot it</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
