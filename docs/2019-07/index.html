@@ -21,7 +21,7 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-07/" />
 <meta property="article:published_time" content="2019-07-01T12:13:51&#43;03:00"/>
-<meta property="article:modified_time" content="2019-07-01T12:22:43&#43;03:00"/>
+<meta property="article:modified_time" content="2019-07-01T18:54:35&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2019"/>
@@ -47,9 +47,9 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
   "@type": "BlogPosting",
   "headline": "July, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-07\/",
-  "wordCount": "359",
+  "wordCount": "432",
   "datePublished": "2019-07-01T12:13:51\x2b03:00",
-  "dateModified": "2019-07-01T12:22:43\x2b03:00",
+  "dateModified": "2019-07-01T18:54:35\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -191,6 +191,38 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 <li><p>Now the cores seem to load, but I still see an error in the Solr Admin UI and I still can&rsquo;t access any stats before 2018</p></li>
 
 <li><p>I filed an <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=685">issue with Atmire</a>, so let&rsquo;s see if they can help</p></li>
+
+<li><p>And since I&rsquo;m annoyed and it&rsquo;s been a few months, I&rsquo;m going to move the JVM heap settings that I&rsquo;ve been testing on DSpace Test to CGSpace</p></li>
+
+<li><p>The old ones were:</p>
+
+<pre><code>-Djava.awt.headless=true -Xms8192m -Xmx8192m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=5400 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
+</code></pre></li>
+
+<li><p>And the new ones come from Solr 4.10.x&rsquo;s startup scripts:</p>
+
+<pre><code>-Djava.awt.headless=true
+-Xms8192m -Xmx8192m
+-Dfile.encoding=UTF-8
+-XX:NewRatio=3
+-XX:SurvivorRatio=4
+-XX:TargetSurvivorRatio=90
+-XX:MaxTenuringThreshold=8
+-XX:+UseConcMarkSweepGC
+-XX:+UseParNewGC
+-XX:ConcGCThreads=4 -XX:ParallelGCThreads=4
+-XX:+CMSScavengeBeforeRemark
+-XX:PretenureSizeThreshold=64m
+-XX:+UseCMSInitiatingOccupancyOnly
+-XX:CMSInitiatingOccupancyFraction=50
+-XX:CMSMaxAbortablePrecleanTime=6000
+-XX:+CMSParallelRemarkEnabled
+-XX:+ParallelRefProcEnabled
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=1337
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false
+</code></pre></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
