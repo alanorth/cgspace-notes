@@ -21,7 +21,7 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-07/" />
 <meta property="article:published_time" content="2019-07-01T12:13:51&#43;03:00"/>
-<meta property="article:modified_time" content="2019-07-08T11:12:32&#43;03:00"/>
+<meta property="article:modified_time" content="2019-07-08T15:23:05&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2019"/>
@@ -47,9 +47,9 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
   "@type": "BlogPosting",
   "headline": "July, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-07\/",
-  "wordCount": "855",
+  "wordCount": "1008",
   "datePublished": "2019-07-01T12:13:51\x2b03:00",
-  "dateModified": "2019-07-08T11:12:32\x2b03:00",
+  "dateModified": "2019-07-08T15:23:05\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -308,6 +308,46 @@ $ ./resolve-orcids.py -i /tmp/2019-07-04-orcid-ids.txt -o 2019-07-04-orcid-names
 <ul>
 <li>AgroKnow has developed a React application to display tag clouds based on harvesting metadata and full text from CGSpace items</li>
 <li>We discussed how to host it technically, perhaps we purchase a server to run it on and just give AgroKnow guys access</li>
+</ul></li>
+
+<li><p>Playing with the idea of using <a href="https://github.com/BurntSushi/xsv">xsv</a> to do some basic batch quality checks on CSVs, for example to find items that might be duplicates if they have the same DOI or title:</p>
+
+<pre><code>$ xsv frequency --select cg.identifier.doi --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E ',1'
+field,value,count
+cg.identifier.doi,https://doi.org/10.1016/j.agwat.2018.06.018,2
+$ xsv frequency --select dc.title --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E ',1'         
+field,value,count
+dc.title,Reference evapotranspiration prediction using hybridized fuzzy model with firefly algorithm: Regional case study in Burkina Faso,2
+</code></pre></li>
+
+<li><p>Or perhaps if DOIs are valid or not (having doi.org in the URL):</p>
+
+<pre><code>$ xsv frequency --select cg.identifier.doi --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E 'doi.org'
+field,value,count
+cg.identifier.doi,https://hdl.handle.net/10520/EJC-1236ac700f,1
+</code></pre></li>
+
+<li><p>Or perhaps items with invalid ISSNs (according to the <a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Code_format">ISSN code format</a>):</p>
+
+<pre><code>$ xsv select dc.identifier.issn cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v '&quot;' | grep -v -E '^[0-9]{4}-[0-9]{3}[0-9xX]$'
+dc.identifier.issn
+978-3-319-71997-9
+978-3-319-71997-9
+978-3-319-71997-9
+978-3-319-58789-9
+2320-7035 
+2593-9173
+</code></pre></li>
+</ul>
+
+<h2 id="2019-07-09">2019-07-09</h2>
+
+<ul>
+<li>Thinking about data cleaning automation again and found some resources about Python and Pandas:
+
+<ul>
+<li><a href="https://realpython.com/python-data-cleaning-numpy-pandas/">https://realpython.com/python-data-cleaning-numpy-pandas/</a></li>
+<li><a href="https://mode.com/blog/python-data-cleaning-libraries">https://mode.com/blog/python-data-cleaning-libraries</a></li>
 </ul></li>
 </ul>
 
