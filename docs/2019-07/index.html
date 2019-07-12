@@ -21,7 +21,7 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-07/" />
 <meta property="article:published_time" content="2019-07-01T12:13:51&#43;03:00"/>
-<meta property="article:modified_time" content="2019-07-11T19:52:07&#43;03:00"/>
+<meta property="article:modified_time" content="2019-07-11T20:08:42&#43;03:00"/>
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2019"/>
@@ -47,9 +47,9 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
   "@type": "BlogPosting",
   "headline": "July, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-07\/",
-  "wordCount": "1187",
+  "wordCount": "1360",
   "datePublished": "2019-07-01T12:13:51\x2b03:00",
-  "dateModified": "2019-07-11T19:52:07\x2b03:00",
+  "dateModified": "2019-07-11T20:08:42\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -376,6 +376,33 @@ dc.identifier.issn
 </code></pre></li>
 
 <li><p>I&rsquo;m assuming something happened in his browser (like a refresh) after the item was submitted&hellip;</p></li>
+</ul>
+
+<h2 id="2019-07-12">2019-07-12</h2>
+
+<ul>
+<li>Atmire responded with some initial feedback about our Tomcat configuration related to the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=685">Solr issue I raised recently</a>
+
+<ul>
+<li>Unfortunately there is no concrete feedback yet</li>
+<li>I think we need to upgrade our DSpace Test server so we can fit all the Solr cores&hellip;</li>
+<li>Actually, I looked and there were over 40 GB free on DSpace Test so I copied the Solr statistics cores for the years 2017 to 2010 from CGSpace to DSpace Test because they weren&rsquo;t actually very large</li>
+<li>I re-deployed DSpace for good measure, and I think all Solr cores are loading&hellip; I will do more tests later</li>
+</ul></li>
+<li>Run all system updates on DSpace Test (linode19) and reboot it</li>
+
+<li><p>Try to run <code>dspace cleanup -v</code> on CGSpace and ran into an error:</p>
+
+<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+Detail: Key (bitstream_id)=(167394) is still referenced from table &quot;bundle&quot;.
+</code></pre></li>
+
+<li><p>The solution is, as always:</p>
+
+<pre><code># su - postgres
+$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (167394);'
+UPDATE 1
+</code></pre></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
