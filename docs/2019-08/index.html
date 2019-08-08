@@ -26,8 +26,8 @@ Run system updates on DSpace Test (linode19) and reboot it
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-08/" />
-<meta property="article:published_time" content="2019-08-03T12:39:51&#43;03:00"/>
-<meta property="article:modified_time" content="2019-08-06T20:07:44&#43;03:00"/>
+<meta property="article:published_time" content="2019-08-03T12:39:51+03:00" />
+<meta property="article:modified_time" content="2019-08-06T20:11:27+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2019"/>
@@ -49,7 +49,7 @@ After rebooting, all statistics cores were loaded&hellip; wow, that&rsquo;s luck
 
 Run system updates on DSpace Test (linode19) and reboot it
 "/>
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.56.3" />
 
 
     
@@ -59,9 +59,9 @@ Run system updates on DSpace Test (linode19) and reboot it
   "@type": "BlogPosting",
   "headline": "August, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-08\/",
-  "wordCount": "433",
+  "wordCount": "793",
   "datePublished": "2019-08-03T12:39:51\x2b03:00",
-  "dateModified": "2019-08-06T20:07:44\x2b03:00",
+  "dateModified": "2019-08-06T20:11:27\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -209,6 +209,61 @@ isNotNull(value.match(/^.*û.*$/))
 <li>After removing the two duplicates there are now 1427 records</li>
 <li>Fix one invalid ISSN: 1020-2002→1020-3362</li>
 </ul></li>
+</ul>
+
+<h2 id="2019-08-07">2019-08-07</h2>
+
+<ul>
+<li>Daniel Haile-Michael asked about using a logical OR with the DSpace OpenSearch, but I looked in the DSpace manual and it does not seem to be possible</li>
+</ul>
+
+<h2 id="2019-08-08">2019-08-08</h2>
+
+<ul>
+<li><p>Moayad noticed that the HTTPS certificate expired on the AReS dev server (linode20)</p>
+
+<ul>
+<li>The first problem was that there is a Docker container listening on port 80, so it conflicts with the ACME http-01 validation</li>
+<li>The second problem was that we only allow access to port 80 from localhost</li>
+
+<li><p>I adjusted the <code>renew-letsencrypt</code> systemd service so it stops/starts the Docker container and firewall:</p>
+
+<pre><code># /opt/certbot-auto renew --standalone --pre-hook &quot;/usr/bin/docker stop angular_nginx; /bin/systemctl stop firewalld&quot; --post-hook &quot;/bin/systemctl start firewalld; /usr/bin/docker start angular_nginx&quot;
+</code></pre></li>
+</ul></li>
+
+<li><p>It is important that the firewall starts back up before the Docker container or else Docker will complain about missing iptables chains</p></li>
+
+<li><p>Also, I updated to the latest TLS Intermediate settings as appropriate for Ubuntu 18.04&rsquo;s <a href="https://ssl-config.mozilla.org/#server=nginx&amp;server-version=1.16.0&amp;config=intermediate&amp;openssl-version=1.1.0g&amp;hsts=false&amp;ocsp=false">OpenSSL 1.1.0g with nginx 1.16.0</a></p></li>
+
+<li><p>Run all system updates on AReS dev server (linode20) and reboot it</p></li>
+
+<li><p>Get a list of all PDFs from the Bioversity migration that fail to download and save them so I can try again with a different path in the URL:</p>
+
+<pre><code>$ ./generate-thumbnails.py -i /tmp/2019-08-05-Bioversity-Migration.csv -w --url-field-name url -d | tee /tmp/2019-08-08-download-pdfs.txt
+$ grep -B1 &quot;Download failed&quot; /tmp/2019-08-08-download-pdfs.txt | grep &quot;Downloading&quot; | sed -e 's/&gt; Downloading //' -e 's/\.\.\.//' | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g' | csvcut -H -c 1,1 &gt; /tmp/user-upload.csv
+$ ./generate-thumbnails.py -i /tmp/user-upload.csv -w --url-field-name url -d | tee /tmp/2019-08-08-download-pdfs2.txt
+$ grep -B1 &quot;Download failed&quot; /tmp/2019-08-08-download-pdfs2.txt | grep &quot;Downloading&quot; | sed -e 's/&gt; Downloading //' -e 's/\.\.\.//' | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g' | csvcut -H -c 1,1 &gt; /tmp/user-upload2.csv
+$ ./generate-thumbnails.py -i /tmp/user-upload2.csv -w --url-field-name url -d | tee /tmp/2019-08-08-download-pdfs3.txt
+</code></pre></li>
+
+<li><p>(the weird sed regex removes color codes, because my generate-thumbnails script prints pretty colors)</p></li>
+
+<li><p>Some PDFs are uploaded in different paths so I have to try a few times to get them all:</p>
+
+<ul>
+<li><code>/fileadmin/_migrated/uploads/tx_news/</code></li>
+<li><code>/fileadmin/user_upload/online_library/publications/pdfs/</code></li>
+<li><code>/fileadmin/user_upload/</code></li>
+</ul></li>
+
+<li><p>Even so, there are still 52 items with incorrect filenames, so I can&rsquo;t derive their PDF URLs&hellip;</p>
+
+<ul>
+<li>For example, <code>Wild_cherry_Prunus_avium_859.pdf</code> is here (with double underscore): <a href="https://www.bioversityinternational.org/fileadmin/_migrated/uploads/tx_news/Wild_cherry__Prunus_avium__859.pdf">https://www.bioversityinternational.org/fileadmin/_migrated/uploads/tx_news/Wild_cherry__Prunus_avium__859.pdf</a></li>
+</ul></li>
+
+<li><p>I will proceed with a metadata-only upload first and then let them know about the missing PDFs</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->

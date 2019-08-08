@@ -13,8 +13,8 @@ Export a CSV of the IITA community metadata for Martin Mueller
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-03/" />
-<meta property="article:published_time" content="2018-03-02T16:07:54&#43;02:00"/>
-<meta property="article:modified_time" content="2019-04-26T12:13:02&#43;03:00"/>
+<meta property="article:published_time" content="2018-03-02T16:07:54+02:00" />
+<meta property="article:modified_time" content="2019-04-26T12:13:02+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2018"/>
@@ -23,7 +23,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 Export a CSV of the IITA community metadata for Martin Mueller
 "/>
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.56.3" />
 
 
     
@@ -494,24 +494,22 @@ java.lang.IllegalArgumentException: No choices plugin was configured for  field 
 <ul>
 <li>Looks like the indexing gets confused that there is still data in the <code>authority</code> column</li>
 <li>Unfortunately this causes those items to simply not be indexed, which users noticed because item counts were cut in half and old items showed up in RSS!</li>
-<li>Since we&rsquo;ve migrated the ORCID identifiers associated with the authority data to the <code>cg.creator.id</code> field we can nullify the authorities remaining in the database:</li>
-</ul>
+
+<li><p>Since we&rsquo;ve migrated the ORCID identifiers associated with the authority data to the <code>cg.creator.id</code> field we can nullify the authorities remaining in the database:</p>
 
 <pre><code class="language-sql">dspace=# UPDATE metadatavalue SET authority=NULL WHERE resource_type_id=2 AND metadata_field_id=3 AND authority IS NOT NULL;
 UPDATE 195463
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>After this the indexing works as usual and item counts and facets are back to normal</li>
-<li>Send Peter a list of all authors to correct:</li>
-</ul>
+<li><p>After this the indexing works as usual and item counts and facets are back to normal</p></li>
+
+<li><p>Send Peter a list of all authors to correct:</p>
 
 <pre><code class="language-sql">dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv header;
 COPY 56156
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>Afterwards we&rsquo;ll want to do some batch tagging of ORCID identifiers to these names</li>
+<li><p>Afterwards we&rsquo;ll want to do some batch tagging of ORCID identifiers to these names</p></li>
 
 <li><p>CGSpace crashed again this afternoon, I&rsquo;m not sure of the cause but there are a lot of SQL errors in the DSpace log:</p>
 
