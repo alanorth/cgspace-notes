@@ -27,7 +27,7 @@ Run system updates on DSpace Test (linode19) and reboot it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-08/" />
 <meta property="article:published_time" content="2019-08-03T12:39:51+03:00" />
-<meta property="article:modified_time" content="2019-08-21T17:14:49+03:00" />
+<meta property="article:modified_time" content="2019-08-23T13:38:38+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2019"/>
@@ -59,9 +59,9 @@ Run system updates on DSpace Test (linode19) and reboot it
   "@type": "BlogPosting",
   "headline": "August, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-08\/",
-  "wordCount": "1744",
+  "wordCount": "1924",
   "datePublished": "2019-08-03T12:39:51\x2b03:00",
-  "dateModified": "2019-08-21T17:14:49\x2b03:00",
+  "dateModified": "2019-08-23T13:38:38\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -445,6 +445,43 @@ return os.path.basename(value)
 <ul>
 <li>Run system updates on AReS / OpenRXV dev server (linode20) and reboot it</li>
 <li>Fix AReS exports on DSpace Test by adding a new nginx proxy pass</li>
+</ul>
+
+<h2 id="2019-08-26">2019-08-26</h2>
+
+<ul>
+<li><p>Peter sent 2,943 corrections to the author dump I had originally sent him on 2019-05-27</p>
+
+<ul>
+<li>I noticed that one correction had a missing space after the comma, ie &ldquo;Adamou,A.&rdquo; so I corrected it</li>
+<li>Also, I should add that as a check to the csv-metadata-quality pipeline</li>
+
+<li><p>Apply the corrections to my local dev machine in preparation for the CGSpace:</p>
+
+<pre><code>$ ./fix-metadata-values.py -i ~/Downloads/2019-08-26-Peter-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t correct
+</code></pre></li>
+</ul></li>
+
+<li><p>Apply the corrections on CGSpace and DSpace Test</p>
+
+<ul>
+<li><p>After that I started a full Discovery re-indexing on both servers:</p>
+
+<pre><code>$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre></li>
+</ul></li>
+
+<li><p>Peter asked me to add related citation aka <code>cg.link.citation</code> to the item view</p>
+
+<ul>
+<li>I created a <a href="https://github.com/ilri/DSpace/pull/430">pull request</a> with a draft implementation and asked for Peter&rsquo;s feedback</li>
+</ul></li>
+
+<li><p>Add the ability to skip certain fields from the csv-metadata-quality script using <code>--exclude-fields</code></p>
+
+<ul>
+<li>For example, when I&rsquo;m working on the author corrections I want to do the basic checks on the corrected fields, but on the original fields so I would use <code>--exclude-fields dc.contributor.author</code> for example</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
