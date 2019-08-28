@@ -27,7 +27,7 @@ Run system updates on DSpace Test (linode19) and reboot it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-08/" />
 <meta property="article:published_time" content="2019-08-03T12:39:51+03:00" />
-<meta property="article:modified_time" content="2019-08-28T00:12:00+03:00" />
+<meta property="article:modified_time" content="2019-08-28T11:19:52+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2019"/>
@@ -59,9 +59,9 @@ Run system updates on DSpace Test (linode19) and reboot it
   "@type": "BlogPosting",
   "headline": "August, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-08\/",
-  "wordCount": "2065",
+  "wordCount": "2233",
   "datePublished": "2019-08-03T12:39:51\x2b03:00",
-  "dateModified": "2019-08-28T00:12:00\x2b03:00",
+  "dateModified": "2019-08-28T11:19:52\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -507,6 +507,35 @@ sys     2m24.715s
 
 <ul>
 <li>Skype with Jane about AReS Phase III priorities</li>
+
+<li><p>I did a test to automatically fix some authors in the database using my csv-metadata-quality script</p>
+
+<ul>
+<li><p>First I dumped a list of all unique authors:</p>
+
+<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-08-28-all-authors.csv with csv header;
+COPY 65597
+</code></pre></li>
+</ul></li>
+
+<li><p>Then I created a new CSV with two author columns (edit title of second column after):</p>
+
+<pre><code>$ csvcut -c dc.contributor.author,dc.contributor.author /tmp/2019-08-28-all-authors.csv &gt; /tmp/all-authors.csv
+</code></pre></li>
+
+<li><p>Then I ran my script on the new CSV, skipping one of the author columns:</p>
+
+<pre><code>$ csv-metadata-quality -u -i /tmp/all-authors.csv -o /tmp/authors.csv -x dc.contributor.author
+</code></pre></li>
+
+<li><p>This fixed a bunch of issues with spaces, commas, unneccesary Unicode characters, etc</p></li>
+
+<li><p>Then I ran the corrections on my test server and there were 185 of them!</p>
+
+<pre><code>$ ./fix-metadata-values.py -i /tmp/authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t correctauthor
+</code></pre></li>
+
+<li><p>I very well might run these on CGSpace soon&hellip;</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
