@@ -27,7 +27,7 @@ Run system updates on DSpace Test (linode19) and reboot it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-08/" />
 <meta property="article:published_time" content="2019-08-03T12:39:51+03:00" />
-<meta property="article:modified_time" content="2019-08-29T01:24:23+03:00" />
+<meta property="article:modified_time" content="2019-08-29T19:25:06+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2019"/>
@@ -59,9 +59,9 @@ Run system updates on DSpace Test (linode19) and reboot it
   "@type": "BlogPosting",
   "headline": "August, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-08\/",
-  "wordCount": "2523",
+  "wordCount": "2703",
   "datePublished": "2019-08-03T12:39:51\x2b03:00",
-  "dateModified": "2019-08-29T01:24:23\x2b03:00",
+  "dateModified": "2019-08-29T19:25:06\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -577,6 +577,32 @@ COPY 65597
 </ul></li>
 
 <li><p>So this is the same issue we had before, where Altmetric <em>knows</em> this Handle is associated with a DOI that has a score, but the client-side JavaScript code doesn&rsquo;t show it because it seems to a secondary handle or something</p></li>
+</ul>
+
+<h2 id="2019-08-31">2019-08-31</h2>
+
+<ul>
+<li>Run system updates on DSpace Test (linode19) and reboot the server</li>
+
+<li><p>Run the author fixes on DSpace Test and CGSpace and start a full Discovery re-index:</p>
+
+<pre><code>$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+ 
+real    90m47.967s
+user    8m12.826s
+sys     2m27.496s
+</code></pre></li>
+
+<li><p>I set up a test environment for CG Core v2 on my local environment and ran all the field migrations</p>
+
+<ul>
+<li>DSpace comes up and runs, but there are some graphical issues, like missing community names</li>
+<li>It turns out that my sed script was replacing some XSL code that was responsible for printing community names</li>
+<li>See: <code>dspace/modules/xmlui-mirage2/src/main/webapp/themes/0_CGIAR/xsl/preprocess/custom/communitylist.xsl</code></li>
+<li>After reading the code I see that XSLT is reading the community titles from the DIM representation (stored in the <code>$dim</code> variable) created from METS</li>
+<li>I modified the patterns in my sed script so that those lines are not replaced and then the community list works again</li>
+<li>This is actually not a problem at all because this metadata is only used in the HTML meta tags in XMLUI community lists and has nothing to do with item metadata</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
