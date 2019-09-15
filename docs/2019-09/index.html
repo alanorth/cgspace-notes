@@ -40,7 +40,7 @@ Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-09/" />
 <meta property="article:published_time" content="2019-09-01T10:17:51+03:00" />
-<meta property="article:modified_time" content="2019-09-10T17:20:42+03:00" />
+<meta property="article:modified_time" content="2019-09-12T18:21:43+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2019"/>
@@ -85,9 +85,9 @@ Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:
   "@type": "BlogPosting",
   "headline": "September, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-09\/",
-  "wordCount": "685",
+  "wordCount": "1000",
   "datePublished": "2019-09-01T10:17:51\x2b03:00",
-  "dateModified": "2019-09-10T17:20:42\x2b03:00",
+  "dateModified": "2019-09-12T18:21:43\x2b03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -270,6 +270,72 @@ Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:
 
 <ul>
 <li>Deploy <a href="https://jdbc.postgresql.org/">PostgreSQL JDBC driver</a> version 42.2.7 on DSpace Test and update the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a></li>
+</ul>
+
+<h2 id="2019-09-15">2019-09-15</h2>
+
+<ul>
+<li>Deploy Bioversity ORCID identifier updates to CGSpace</li>
+<li>Deploy PostgreSQL JDBC driver 42.2.7 on CGSpace</li>
+<li>Run system updates on CGSpace (linode18) and restart the server
+
+<ul>
+<li>After restarting the system Tomcat came back up, but not all Solr statistics cores were loaded</li>
+<li>I had to restart Tomcat one more time until the cores were loaded (verified in the Solr admin)</li>
+</ul></li>
+<li>Update nginx TLS cipher suite to the latest <a href="https://ssl-config.mozilla.org/#server=nginx&amp;server-version=1.16.1&amp;config=intermediate&amp;openssl-version=1.0.2g">Mozilla intermediate recommendations for nginx 1.16.0 and openssl 1.0.2</a>
+
+<ul>
+<li>DSpace Test (linode19) is running Ubuntu 18.04 with nginx 1.17.x and openssl 1.1.1 so it can even use TLS v1.3 if we override the nginx ssl protocol in its host vars</li>
+</ul></li>
+
+<li><p>XMLUI item view pages are blank on CGSpace right now</p>
+
+<ul>
+<li><p>Like earliert this year, I see the following error in the Cocoon log while browsing:</p>
+
+<pre><code>2019-09-15 15:32:18,137 WARN  org.apache.cocoon.components.xslt.TraxErrorListener  - Can not load requested doc: unknown protocol: cocoon at jndi:/localhost/themes/CIAT/xsl/../../0_CGIAR/xsl//aspect/artifactbrowser/common.xsl:141:90
+</code></pre></li>
+</ul></li>
+
+<li><p>Around the same time I see the following in the DSpace log:</p>
+
+<pre><code>2019-09-15 15:32:18,079 INFO  org.dspace.usage.LoggerUsageEventListener @ aorth@blah:session_id=A11C362A7127004C24E77198AF9E4418:ip_addr=x.x.x.x:view_item:handle=10568/103644 
+2019-09-15 15:32:18,135 WARN  org.dspace.core.PluginManager @ Cannot find named plugin for interface=org.dspace.content.crosswalk.DisseminationCrosswalk, name=&quot;METSRIGHTS&quot;
+</code></pre></li>
+
+<li><p>I see a lot of these errors today, but not earlier this month:</p>
+
+<pre><code># grep -c 'Cannot find named plugin' dspace.log.2019-09-*
+dspace.log.2019-09-01:0
+dspace.log.2019-09-02:0
+dspace.log.2019-09-03:0
+dspace.log.2019-09-04:0
+dspace.log.2019-09-05:0
+dspace.log.2019-09-06:0
+dspace.log.2019-09-07:0
+dspace.log.2019-09-08:0
+dspace.log.2019-09-09:0
+dspace.log.2019-09-10:0
+dspace.log.2019-09-11:0
+dspace.log.2019-09-12:0
+dspace.log.2019-09-13:0
+dspace.log.2019-09-14:0
+dspace.log.2019-09-15:808
+</code></pre></li>
+
+<li><p>Something must have happened when I restarted Tomcat a few hours ago, because earlier in the DSpace log I see a bunch of errors like this:</p>
+
+<pre><code>2019-09-15 13:59:24,136 ERROR org.dspace.core.PluginManager @ Name collision in named plugin, implementation class=&quot;org.dspace.content.crosswalk.METSRightsCrosswalk&quot;, name=&quot;METSRIGHTS&quot;
+2019-09-15 13:59:24,136 ERROR org.dspace.core.PluginManager @ Name collision in named plugin, implementation class=&quot;org.dspace.content.crosswalk.OREDisseminationCrosswalk&quot;, name=&quot;ore&quot;
+2019-09-15 13:59:24,136 ERROR org.dspace.core.PluginManager @ Name collision in named plugin, implementation class=&quot;org.dspace.content.crosswalk.DIMDisseminationCrosswalk&quot;, name=&quot;dim&quot;
+</code></pre></li>
+
+<li><p>I restarted Tomcat and the item views came back, but then the Solr statistics cores didn&rsquo;t all load properly</p>
+
+<ul>
+<li>After restarting Tomcat once again, both the item views and the Solr statistics cores all came back OK</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
