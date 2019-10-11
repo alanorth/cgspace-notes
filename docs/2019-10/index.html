@@ -27,7 +27,7 @@
   "@type": "BlogPosting",
   "headline": "October, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-10\/",
-  "wordCount": "650",
+  "wordCount": "723",
   "datePublished": "2019-10-01T13:20:51+03:00",
   "dateModified": "2019-10-10T17:07:06+03:00",
   "author": {
@@ -214,6 +214,25 @@
 <pre><code>$ dspace user -a -m wow@me.com -g Felix -s Shaw -p 'fuananaaa'
 </code></pre></li>
 </ul></li>
+</ul>
+
+<h2 id="2019-10-11">2019-10-11</h2>
+
+<ul>
+<li><p>I ran the DSpace cleanup function on CGSpace and it found some errors:</p>
+
+<pre><code>$ dspace cleanup -v
+...
+Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+Detail: Key (bitstream_id)=(171221) is still referenced from table &quot;bundle&quot;.
+</code></pre></li>
+
+<li><p>The solution, as always, is (repeat as many times as needed):</p>
+
+<pre><code># su - postgres
+$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (171221);'
+UPDATE 1
+</code></pre></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
