@@ -11,7 +11,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-10/" />
 <meta property="article:published_time" content="2019-10-01T13:20:51+03:00" />
-<meta property="article:modified_time" content="2019-10-12T23:28:50+03:00" />
+<meta property="article:modified_time" content="2019-10-13T11:59:11+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2019"/>
@@ -27,9 +27,9 @@
   "@type": "BlogPosting",
   "headline": "October, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-10\/",
-  "wordCount": "1073",
+  "wordCount": "1250",
   "datePublished": "2019-10-01T13:20:51+03:00",
-  "dateModified": "2019-10-12T23:28:50+03:00",
+  "dateModified": "2019-10-13T11:59:11+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -286,6 +286,46 @@ International Maize and Wheat Improvement Centre,International Maize and Wheat I
 <ul>
 <li>Now I sent the final feedback to Francesca, Carol, and Abenet</li>
 </ul></li>
+
+<li><p>Peter is still seeing some authors listed with &ldquo;|&rdquo; in the &ldquo;Top Authors&rdquo; statistics for some collections</p>
+
+<ul>
+<li>I looked in some of the items that are listed and the author field does not contain those invalid separators</li>
+
+<li><p>I decided to try doing a full Discovery re-indexing on CGSpace (linode18):</p>
+
+<pre><code>$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    82m35.993s
+</code></pre></li>
+</ul></li>
+
+<li><p>After the re-indexing the top authors still list the following:</p>
+
+<pre><code>Jagwe, J.|Ouma, E.A.|Brandes-van Dorresteijn, D.|Kawuma, Brian|Smith, J.
+</code></pre></li>
+
+<li><p>I looked in the database to find authors that had &ldquo;|&rdquo; in them:</p>
+
+<pre><code>dspace=# SELECT text_value, resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value LIKE '%|%';
+        text_value            | resource_id 
+----------------------------------+-------------
+Anandajayasekeram, P.|Puskur, R. |         157
+Morales, J.|Renner, I.           |       22779
+Zahid, A.|Haque, M.A.            |       25492
+(3 rows)
+</code></pre></li>
+
+<li><p>Then I found their handles and corrected them, for example:</p>
+
+<pre><code>dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = '157' and handle.resource_type_id=2;
+handle   
+-----------
+10568/129
+(1 row)
+</code></pre></li>
+
+<li><p>So I&rsquo;m still not sure where these weird authors in the &ldquo;Top Author&rdquo; stats are coming from</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
