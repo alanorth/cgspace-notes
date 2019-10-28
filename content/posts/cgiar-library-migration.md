@@ -3,6 +3,7 @@ title = "CGIAR Library Migration"
 date = 2017-09-18T16:38:35+03:00
 description = "Notes on the migration of the CGIAR Library to CGSpace"
 categories = ["Notes"]
+tags = ["Migration"]
 url = "cgiar-library-migration"
 
 +++
