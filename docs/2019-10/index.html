@@ -27,7 +27,7 @@
   "@type": "BlogPosting",
   "headline": "October, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-10\/",
-  "wordCount": "1593",
+  "wordCount": "1719",
   "datePublished": "2019-10-01T13:20:51+03:00",
   "dateModified": "2019-10-28T13:50:17+02:00",
   "author": {
@@ -399,6 +399,15 @@ $ dspace import -a -c 10568/104057 -e fuu@cgiar.org -m 2019-10-15-Bioversity.map
 
 <ul>
 <li>Move the CGSpace CG Core v2 notes from a <a href="https://gist.github.com/alanorth/2db39e91f48d116e00a4edffd6ba6409">GitHub Gist</a> to a <a href="/cgspace-notes/cgspace-cgcorev2-migration/">page</a> on this site for archive and searchability sake</li>
+<li>Work on the CG Core v2 implementation testing
+
+<ul>
+<li>I noticed that the page title is messed up on the item view, and after over an hour of troubleshooting it I couldn&rsquo;t figure out why</li>
+<li>It seems to be because the <code>dc.title</code>→<code>dcterms.title</code> modifications cause the title metadata to disappear from DRI&rsquo;s <code>&lt;pageMeta&gt;</code> and therefore the title is not accessible to the XSL transformation</li>
+<li>Also, I noticed a few places in the Java code where <code>dc.title</code> is hard coded so I think this might be one of the fields that we just assume DSpace relies on internally</li>
+<li>I will revert all changes to <code>dc.title</code> and <code>dc.title.alternative</code></li>
+<li>TODO: there are similar issues with the <code>citation_author</code> metadata element missing from DRI, so I might have to revert those changes too</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
