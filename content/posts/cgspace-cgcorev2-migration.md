@@ -26,7 +26,6 @@ As of 2019-09-11 the scope of the changes includes the following fields:
   - for people and institutional authors
 - cg.creator.id→cg.creator.identifier
   - ORCID identifiers
-- dc.title→dcterms.title
 - dc.format.extent→dcterms.extent
 - dc.date.issued→dcterms.issued
 - dc.description.abstract→dcterms.abstract
@@ -54,10 +53,11 @@ As of 2019-09-11 the scope of the changes includes the following fields:
 - dc.identifier.isbn→cg.isbn
 - dc.identifier.issn→cg.issn
 - cg.identifier.dataurl→cg.hasMetadata
-- dc.title.alternative→dcterms.alternative
 
 The following fields are currently out of the scope of this migration because they are used internally by DSpace 5.x/6.x and would be difficult to change without significant modifications to the core of the code:
 
+- dc.title
+- dc.title.alternative
 - dc.date.available
 - dc.date.accessioned
 - dc.identifier.uri
@@ -91,7 +91,6 @@ Tally of the status of the implementation of the new fields in the CGSpace `5_x-
 | ---------- | :---------------: | :---------: | :-----------: | :--------: | :-------: | :------------: | :--------: |
 dcterms.creator | ✓ | ✓ | ? | ✓ | ✓ | ✓ | |
 cg.creator.identifier | ✓ | ✓ | ✓ | - | ✓ | ✓ | |
-dcterms.title | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
 dcterms.extent | ✓ | ✓ | - | - | - | - | |
 dcterms.issued | ✓ | ✓ | ? | ✓ | ✓ | ✓ | |
 dcterms.abstract | ✓ | ✓ | ✓ | ✓ | ✓ | - | |
