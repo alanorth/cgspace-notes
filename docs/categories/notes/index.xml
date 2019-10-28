@@ -6,10 +6,662 @@
     <description>Recent content in Notes on CGSpace Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 Sep 2017 16:38:35 +0300</lastBuildDate>
+    <lastBuildDate>Mon, 28 Oct 2019 13:27:35 +0200</lastBuildDate>
     
 	<atom:link href="https://alanorth.github.io/cgspace-notes/categories/notes/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>CGSpace CG Core v2 Migration</title>
+      <link>https://alanorth.github.io/cgspace-notes/cgspace-cgcorev2-migration/</link>
+      <pubDate>Mon, 28 Oct 2019 13:27:35 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/cgspace-cgcorev2-migration/</guid>
+      <description>&lt;p&gt;Possible changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2.&lt;/p&gt;
+
+&lt;p&gt;With reference to &lt;a href=&#34;https://agriculturalsemantics.github.io/cg-core/cgcore.html&#34;&gt;CG Core v2 draft standard&lt;/a&gt; by Marie-Angélique as well as &lt;a href=&#34;http://www.dublincore.org/specifications/dublin-core/dcmi-terms/&#34;&gt;DCMI DCTERMS&lt;/a&gt;.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>October, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-10/</link>
+      <pubDate>Tue, 01 Oct 2019 13:20:51 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-10/</guid>
+      <description>2019-10-01  Udana from IWMI asked me for a CSV export of their community on CGSpace
+ I exported it, but a quick run through the csv-metadata-quality tool shows that there are some low-hanging fruits we can fix before I send him the data I will limit the scope to the titles, regions, subregions, and river basins for now to manually fix some non-breaking spaces (U+00A0) there that would otherwise be removed by the csv-metadata-quality script&amp;rsquo;s &amp;ldquo;unneccesary Unicode&amp;rdquo; fix:</description>
+    </item>
+    
+    <item>
+      <title>September, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-09/</link>
+      <pubDate>Sun, 01 Sep 2019 10:17:51 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-09/</guid>
+      <description>&lt;h2 id=&#34;2019-09-01&#34;&gt;2019-09-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Linode emailed to say that CGSpace (linode18) had a high rate of outbound traffic for several hours this morning&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &amp;quot;01/Sep/2019:0&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+440 17.58.101.255
+441 157.55.39.101
+485 207.46.13.43
+728 169.60.128.125
+730 207.46.13.108
+758 157.55.39.9
+808 66.160.140.179
+814 207.46.13.212
+2472 163.172.71.23
+6092 3.94.211.189
+# zcat --force /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &amp;quot;01/Sep/2019:0&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+ 33 2a01:7e00::f03c:91ff:fe16:fcb
+ 57 3.83.192.124
+ 57 3.87.77.25
+ 57 54.82.1.8
+822 2a01:9cc0:47:1:1a:4:0:2
+1223 45.5.184.72
+1633 172.104.229.92
+5112 205.186.128.185
+7249 2a01:7e00::f03c:91ff:fe18:7396
+9124 45.5.186.2
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>August, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-08/</link>
+      <pubDate>Sat, 03 Aug 2019 12:39:51 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-08/</guid>
+      <description>&lt;h2 id=&#34;2019-08-03&#34;&gt;2019-08-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Look at Bioversity&amp;rsquo;s latest migration CSV and now I see that Francesco has cleaned up the extra columns and the newline at the end of the file, but many of the column headers have an extra space in the name&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2019-08-04&#34;&gt;2019-08-04&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Deploy ORCID identifier updates requested by Bioversity to CGSpace&lt;/li&gt;
+&lt;li&gt;Run system updates on CGSpace (linode18) and reboot it
+
+&lt;ul&gt;
+&lt;li&gt;Before updating it I checked Solr and verified that all statistics cores were loaded properly&amp;hellip;&lt;/li&gt;
+&lt;li&gt;After rebooting, all statistics cores were loaded&amp;hellip; wow, that&amp;rsquo;s lucky.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Run system updates on DSpace Test (linode19) and reboot it&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>July, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-07/</link>
+      <pubDate>Mon, 01 Jul 2019 12:13:51 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-07/</guid>
+      <description>&lt;h2 id=&#34;2019-07-01&#34;&gt;2019-07-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Create an &amp;ldquo;AfricaRice books and book chapters&amp;rdquo; collection on CGSpace for AfricaRice&lt;/li&gt;
+&lt;li&gt;Last month Sisay asked why the following &amp;ldquo;most popular&amp;rdquo; statistics link for a range of months in 2018 works for the CIAT community on DSpace Test, but not on CGSpace:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://dspacetest.cgiar.org/handle/10568/35697/most-popular/item#simplefilter=custom&amp;amp;time_filter_end_date=01%2F12%2F2018&#34;&gt;DSpace Test&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/35697/most-popular/item#simplefilter=custom&amp;amp;time_filter_end_date=01%2F12%2F2018&#34;&gt;CGSpace&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Abenet had another similar issue a few days ago when trying to find the stats for 2018 in the RTB community&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>June, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-06/</link>
+      <pubDate>Sun, 02 Jun 2019 10:57:51 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-06/</guid>
+      <description>&lt;h2 id=&#34;2019-06-02&#34;&gt;2019-06-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Merge the &lt;a href=&#34;https://github.com/ilri/DSpace/pull/425&#34;&gt;Solr filterCache&lt;/a&gt; and &lt;a href=&#34;https://github.com/ilri/DSpace/pull/426&#34;&gt;XMLUI ISI journal&lt;/a&gt; changes to the &lt;code&gt;5_x-prod&lt;/code&gt; branch and deploy on CGSpace&lt;/li&gt;
+&lt;li&gt;Run system updates on CGSpace (linode18) and reboot it&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2019-06-03&#34;&gt;2019-06-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Skype with Marie-Angélique and Abenet about &lt;a href=&#34;https://agriculturalsemantics.github.io/cg-core/cgcore.html&#34;&gt;CG Core v2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>May, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-05/</link>
+      <pubDate>Wed, 01 May 2019 07:37:43 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-05/</guid>
+      <description>&lt;h2 id=&#34;2019-05-01&#34;&gt;2019-05-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Help CCAFS with regenerating some item thumbnails after they uploaded new PDFs to some items on CGSpace&lt;/li&gt;
+&lt;li&gt;A user on the dspace-tech mailing list offered some suggestions for troubleshooting the problem with the inability to delete certain items
+
+&lt;ul&gt;
+&lt;li&gt;Apparently if the item is in the &lt;code&gt;workflowitem&lt;/code&gt; table it is submitted to a workflow&lt;/li&gt;
+&lt;li&gt;And if it is in the &lt;code&gt;workspaceitem&lt;/code&gt; table it is in the pre-submitted state&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The item seems to be in a pre-submitted state, so I tried to delete it from there:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+DELETE 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;But after this I tried to delete the item from the XMLUI and it is &lt;em&gt;still&lt;/em&gt; present&amp;hellip;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>April, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-04/</link>
+      <pubDate>Mon, 01 Apr 2019 09:00:43 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-04/</guid>
+      <description>&lt;h2 id=&#34;2019-04-01&#34;&gt;2019-04-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Meeting with AgroKnow to discuss CGSpace, ILRI data, AReS, GARDIAN, etc
+
+&lt;ul&gt;
+&lt;li&gt;They asked if we had plans to enable RDF support in CGSpace&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;There have been 4,400 more downloads of the CTA Spore publication from those strange Amazon IP addresses today&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;I suspected that some might not be successful, because the stats show less, but today they were all HTTP 200!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &#39;Spore-192-EN-web.pdf&#39; | grep -E &#39;(18.196.196.108|18.195.78.144|18.195.218.6)&#39; | awk &#39;{print $9}&#39; | sort | uniq -c | sort -n | tail -n 5
+4432 200
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;In the last two weeks there have been 47,000 downloads of this &lt;em&gt;same exact PDF&lt;/em&gt; by these three IP addresses&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Apply country and region corrections and deletions on DSpace Test and CGSpace:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.country -m 228 -t ACTION -d
+$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.region -m 231 -t action -d
+$ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 228 -f cg.coverage.country -d
+$ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 231 -f cg.coverage.region -d
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>March, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-03/</link>
+      <pubDate>Fri, 01 Mar 2019 12:16:30 +0100</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-03/</guid>
+      <description>&lt;h2 id=&#34;2019-03-01&#34;&gt;2019-03-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I checked IITA&amp;rsquo;s 259 Feb 14 records from last month for duplicates using Atmire&amp;rsquo;s Duplicate Checker on a fresh snapshot of CGSpace on my local machine and everything looks good&lt;/li&gt;
+&lt;li&gt;I am now only waiting to hear from her about where the items should go, though I assume Journal Articles go to IITA Journal Articles collection, etc&amp;hellip;&lt;/li&gt;
+&lt;li&gt;Looking at the other half of Udana&amp;rsquo;s WLE records from 2018-11
+
+&lt;ul&gt;
+&lt;li&gt;I finished the ones for Restoring Degraded Landscapes (RDL), but these are for Variability, Risks and Competing Uses (VRC)&lt;/li&gt;
+&lt;li&gt;I did the usual cleanups for whitespace, added regions where they made sense for certain countries, cleaned up the DOI link formats, added rights information based on the publications page for a few items&lt;/li&gt;
+&lt;li&gt;Most worryingly, there are encoding errors in the abstracts for eleven items, for example:&lt;/li&gt;
+&lt;li&gt;68.15% � 9.45 instead of 68.15% ± 9.45&lt;/li&gt;
+&lt;li&gt;2003�2013 instead of 2003–2013&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;I think I will need to ask Udana to re-copy and paste the abstracts with more care using Google Docs&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>February, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-02/</link>
+      <pubDate>Fri, 01 Feb 2019 21:37:30 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-02/</guid>
+      <description>&lt;h2 id=&#34;2019-02-01&#34;&gt;2019-02-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Linode has alerted a few times since last night that the CPU usage on CGSpace (linode18) was high despite me increasing the alert threshold last week from 250% to 275%—I might need to increase it again!&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The top IPs before, during, and after this latest alert tonight were:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;01/Feb/2019:(17|18|19|20|21)&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+245 207.46.13.5
+332 54.70.40.11
+385 5.143.231.38
+405 207.46.13.173
+405 207.46.13.75
+1117 66.249.66.219
+1121 35.237.175.180
+1546 5.9.6.51
+2474 45.5.186.2
+5490 85.25.237.71
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;85.25.237.71&lt;/code&gt; is the &amp;ldquo;Linguee Bot&amp;rdquo; that I first saw last month&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The Solr statistics the past few months have been very high and I was wondering if the web server logs also showed an increase&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;There were just over 3 million accesses in the nginx logs last month:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# time zcat --force /var/log/nginx/* | grep -cE &amp;quot;[0-9]{1,2}/Jan/2019&amp;quot;
+3018243
+
+real    0m19.873s
+user    0m22.203s
+sys     0m1.979s
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>January, 2019</title>
+      <link>https://alanorth.github.io/cgspace-notes/2019-01/</link>
+      <pubDate>Wed, 02 Jan 2019 09:48:30 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2019-01/</guid>
+      <description>&lt;h2 id=&#34;2019-01-02&#34;&gt;2019-01-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Linode alerted that CGSpace (linode18) had a higher outbound traffic rate than normal early this morning&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I don&amp;rsquo;t see anything interesting in the web server logs around that time though:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;02/Jan/2019:0(1|2|3)&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+ 92 40.77.167.4
+ 99 210.7.29.100
+120 38.126.157.45
+177 35.237.175.180
+177 40.77.167.32
+216 66.249.75.219
+225 18.203.76.93
+261 46.101.86.248
+357 207.46.13.1
+903 54.70.40.11
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>December, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-12/</link>
+      <pubDate>Sun, 02 Dec 2018 02:09:30 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-12/</guid>
+      <description>&lt;h2 id=&#34;2018-12-01&#34;&gt;2018-12-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Switch CGSpace (linode18) to use OpenJDK instead of Oracle JDK&lt;/li&gt;
+&lt;li&gt;I manually installed OpenJDK, then removed Oracle JDK, then re-ran the &lt;a href=&#34;http://github.com/ilri/rmg-ansible-public&#34;&gt;Ansible playbook&lt;/a&gt; to update all configuration files, etc&lt;/li&gt;
+&lt;li&gt;Then I ran all system updates and restarted the server&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2018-12-02&#34;&gt;2018-12-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I noticed that there is another issue with PDF thumbnails on CGSpace, and I see there was another &lt;a href=&#34;https://usn.ubuntu.com/3831-1/&#34;&gt;Ghostscript vulnerability last week&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>November, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-11/</link>
+      <pubDate>Thu, 01 Nov 2018 16:41:30 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-11/</guid>
+      <description>&lt;h2 id=&#34;2018-11-01&#34;&gt;2018-11-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Finalize AReS Phase I and Phase II ToRs&lt;/li&gt;
+&lt;li&gt;Send a note about my &lt;a href=&#34;https://github.com/ilri/dspace-statistics-api&#34;&gt;dspace-statistics-api&lt;/a&gt; to the dspace-tech mailing list&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2018-11-03&#34;&gt;2018-11-03&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Linode has been sending mails a few times a day recently that CGSpace (linode18) has had high CPU usage&lt;/li&gt;
+&lt;li&gt;Today these are the top 10 IPs:&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>October, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-10/</link>
+      <pubDate>Mon, 01 Oct 2018 22:31:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-10/</guid>
+      <description>&lt;h2 id=&#34;2018-10-01&#34;&gt;2018-10-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items&lt;/li&gt;
+&lt;li&gt;I created a GitHub issue to track this &lt;a href=&#34;https://github.com/ilri/DSpace/issues/389&#34;&gt;#389&lt;/a&gt;, because I&amp;rsquo;m super busy in Nairobi right now&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>September, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-09/</link>
+      <pubDate>Sun, 02 Sep 2018 09:55:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-09/</guid>
+      <description>&lt;h2 id=&#34;2018-09-02&#34;&gt;2018-09-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;New &lt;a href=&#34;https://jdbc.postgresql.org/documentation/changelog.html#version_42.2.5&#34;&gt;PostgreSQL JDBC driver version 42.2.5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;ll update the DSpace role in our &lt;a href=&#34;https://github.com/ilri/rmg-ansible-public&#34;&gt;Ansible infrastructure playbooks&lt;/a&gt; and run the updated playbooks on CGSpace and DSpace Test&lt;/li&gt;
+&lt;li&gt;Also, I&amp;rsquo;ll re-run the &lt;code&gt;postgresql&lt;/code&gt; tasks because the custom PostgreSQL variables are dynamic according to the system&amp;rsquo;s RAM, and we never re-ran them after migrating to larger Linodes last month&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m testing the new DSpace 5.8 branch in my Ubuntu 18.04 environment and I&amp;rsquo;m getting those autowire errors in Tomcat 8.5.30 again:&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>August, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-08/</link>
+      <pubDate>Wed, 01 Aug 2018 11:52:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-08/</guid>
+      <description>&lt;h2 id=&#34;2018-08-01&#34;&gt;2018-08-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;DSpace Test had crashed at some point yesterday morning and I see the following in &lt;code&gt;dmesg&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[Tue Jul 31 00:00:41 2018] Out of memory: Kill process 1394 (java) score 668 or sacrifice child
+[Tue Jul 31 00:00:41 2018] Killed process 1394 (java) total-vm:15601860kB, anon-rss:5355528kB, file-rss:0kB, shmem-rss:0kB
+[Tue Jul 31 00:00:41 2018] oom_reaper: reaped process 1394 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Judging from the time of the crash it was probably related to the Discovery indexing that starts at midnight&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;From the DSpace log I see that eventually Solr stopped responding, so I guess the &lt;code&gt;java&lt;/code&gt; process that was OOM killed above was Tomcat&amp;rsquo;s&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I&amp;rsquo;m not sure why Tomcat didn&amp;rsquo;t crash with an OutOfMemoryError&amp;hellip;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Anyways, perhaps I should increase the JVM heap from 5120m to 6144m like we did a few months ago when we tried to run the whole CGSpace Solr core&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The server only has 8GB of RAM so we&amp;rsquo;ll eventually need to upgrade to a larger one because we&amp;rsquo;ll start starving the OS, PostgreSQL, and command line batch processes&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I ran all system updates on DSpace Test and rebooted it&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>July, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-07/</link>
+      <pubDate>Sun, 01 Jul 2018 12:56:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-07/</guid>
+      <description>&lt;h2 id=&#34;2018-07-01&#34;&gt;2018-07-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;During the &lt;code&gt;mvn package&lt;/code&gt; stage on the 5.8 branch I kept getting issues with java running out of memory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;There is insufficient memory for the Java Runtime Environment to continue.
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>June, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-06/</link>
+      <pubDate>Mon, 04 Jun 2018 19:49:54 -0700</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-06/</guid>
+      <description>&lt;h2 id=&#34;2018-06-04&#34;&gt;2018-06-04&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Test the &lt;a href=&#34;https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560&#34;&gt;DSpace 5.8 module upgrades from Atmire&lt;/a&gt; (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/378&#34;&gt;#378&lt;/a&gt;)
+
+&lt;ul&gt;
+&lt;li&gt;There seems to be a problem with the CUA and L&amp;amp;R versions in &lt;code&gt;pom.xml&lt;/code&gt; because they are using SNAPSHOT and it doesn&amp;rsquo;t build&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;I added the new CCAFS Phase II Project Tag &lt;code&gt;PII-FP1_PACCA2&lt;/code&gt; and merged it into the &lt;code&gt;5_x-prod&lt;/code&gt; branch (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/379&#34;&gt;#379&lt;/a&gt;)&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I proofed and tested the ILRI author corrections that Peter sent back to me this week:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correct -m 3 -n
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I think a sane proofing workflow in OpenRefine is to apply the custom text facets for check/delete/remove and illegal characters that I developed in &lt;a href=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2018-03/&#34;&gt;March, 2018&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Time to index ~70,000 items on CGSpace:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
+
+real    74m42.646s
+user    8m5.056s
+sys     2m7.289s
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>May, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-05/</link>
+      <pubDate>Tue, 01 May 2018 16:43:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-05/</guid>
+      <description>&lt;h2 id=&#34;2018-05-01&#34;&gt;2018-05-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I cleared the Solr statistics core on DSpace Test by issuing two commands directly to the Solr admin interface:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:3000/solr/statistics/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E&#34;&gt;http://localhost:3000/solr/statistics/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:3000/solr/statistics/update?stream.body=%3Ccommit/%3E&#34;&gt;http://localhost:3000/solr/statistics/update?stream.body=%3Ccommit/%3E&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Then I reduced the JVM heap size from 6144 back to 5120m&lt;/li&gt;
+&lt;li&gt;Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked the &lt;a href=&#34;https://github.com/ilri/rmg-ansible-public&#34;&gt;Ansible infrastructure scripts&lt;/a&gt; to support hosts choosing which distribution they want to use&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>April, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-04/</link>
+      <pubDate>Sun, 01 Apr 2018 16:13:54 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-04/</guid>
+      <description>&lt;h2 id=&#34;2018-04-01&#34;&gt;2018-04-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I tried to test something on DSpace Test but noticed that it&amp;rsquo;s down since god knows when&lt;/li&gt;
+&lt;li&gt;Catalina logs at least show some memory errors yesterday:&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>March, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-03/</link>
+      <pubDate>Fri, 02 Mar 2018 16:07:54 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-03/</guid>
+      <description>&lt;h2 id=&#34;2018-03-02&#34;&gt;2018-03-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Export a CSV of the IITA community metadata for Martin Mueller&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>February, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-02/</link>
+      <pubDate>Thu, 01 Feb 2018 16:28:54 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-02/</guid>
+      <description>&lt;h2 id=&#34;2018-02-01&#34;&gt;2018-02-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Peter gave feedback on the &lt;code&gt;dc.rights&lt;/code&gt; proof of concept that I had sent him last week&lt;/li&gt;
+&lt;li&gt;We don&amp;rsquo;t need to distinguish between internal and external works, so that makes it just a simple list&lt;/li&gt;
+&lt;li&gt;Yesterday I figured out how to monitor DSpace sessions using JMX&lt;/li&gt;
+&lt;li&gt;I copied the logic in the &lt;code&gt;jmx_tomcat_dbpools&lt;/code&gt; provided by Ubuntu&amp;rsquo;s &lt;code&gt;munin-plugins-java&lt;/code&gt; package and used the stuff I discovered about JMX &lt;a href=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2018-01/&#34;&gt;in 2018-01&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>January, 2018</title>
+      <link>https://alanorth.github.io/cgspace-notes/2018-01/</link>
+      <pubDate>Tue, 02 Jan 2018 08:35:54 -0800</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2018-01/</guid>
+      <description>&lt;h2 id=&#34;2018-01-02&#34;&gt;2018-01-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time&lt;/li&gt;
+&lt;li&gt;I didn&amp;rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&amp;rsquo;t show anything out of the ordinary&lt;/li&gt;
+&lt;li&gt;The nginx logs show HTTP 200s until &lt;code&gt;02/Jan/2018:11:27:17 +0000&lt;/code&gt; when Uptime Robot got an HTTP 500&lt;/li&gt;
+&lt;li&gt;In dspace.log around that time I see many errors like &amp;ldquo;Client closed the connection before file download was complete&amp;rdquo;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;And just before that I see this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Ah hah! So the pool was actually empty!&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I need to increase that, let&amp;rsquo;s try to bump it up from 50 to 75&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&amp;rsquo;t know what the hell Uptime Robot saw&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;I notice this error quite a few times in dspace.log:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
+org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse &#39;dateIssued_keyword:[1976+TO+1979]&#39;: Encountered &amp;quot; &amp;quot;]&amp;quot; &amp;quot;] &amp;quot;&amp;quot; at line 1, column 32.
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;And there are many of these errors every day for the past month:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ grep -c &amp;quot;Error while searching for sidebar facets&amp;quot; dspace.log.*
+dspace.log.2017-11-21:4
+dspace.log.2017-11-22:1
+dspace.log.2017-11-23:4
+dspace.log.2017-11-24:11
+dspace.log.2017-11-25:0
+dspace.log.2017-11-26:1
+dspace.log.2017-11-27:7
+dspace.log.2017-11-28:21
+dspace.log.2017-11-29:31
+dspace.log.2017-11-30:15
+dspace.log.2017-12-01:15
+dspace.log.2017-12-02:20
+dspace.log.2017-12-03:38
+dspace.log.2017-12-04:65
+dspace.log.2017-12-05:43
+dspace.log.2017-12-06:72
+dspace.log.2017-12-07:27
+dspace.log.2017-12-08:15
+dspace.log.2017-12-09:29
+dspace.log.2017-12-10:35
+dspace.log.2017-12-11:20
+dspace.log.2017-12-12:44
+dspace.log.2017-12-13:36
+dspace.log.2017-12-14:59
+dspace.log.2017-12-15:104
+dspace.log.2017-12-16:53
+dspace.log.2017-12-17:66
+dspace.log.2017-12-18:83
+dspace.log.2017-12-19:101
+dspace.log.2017-12-20:74
+dspace.log.2017-12-21:55
+dspace.log.2017-12-22:66
+dspace.log.2017-12-23:50
+dspace.log.2017-12-24:85
+dspace.log.2017-12-25:62
+dspace.log.2017-12-26:49
+dspace.log.2017-12-27:30
+dspace.log.2017-12-28:54
+dspace.log.2017-12-29:68
+dspace.log.2017-12-30:89
+dspace.log.2017-12-31:53
+dspace.log.2018-01-01:45
+dspace.log.2018-01-02:34
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Danny wrote to ask for help renewing the wildcard ilri.org certificate and I advised that we should probably use Let&amp;rsquo;s Encrypt if it&amp;rsquo;s just a handful of domains&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>December, 2017</title>
+      <link>https://alanorth.github.io/cgspace-notes/2017-12/</link>
+      <pubDate>Fri, 01 Dec 2017 13:53:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2017-12/</guid>
+      <description>&lt;h2 id=&#34;2017-12-01&#34;&gt;2017-12-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Uptime Robot noticed that CGSpace went down&lt;/li&gt;
+&lt;li&gt;The logs say &amp;ldquo;Timeout waiting for idle object&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;PostgreSQL activity says there are 115 connections currently&lt;/li&gt;
+&lt;li&gt;The list of connections to XMLUI and REST API for today:&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>November, 2017</title>
+      <link>https://alanorth.github.io/cgspace-notes/2017-11/</link>
+      <pubDate>Thu, 02 Nov 2017 09:37:54 +0200</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2017-11/</guid>
+      <description>&lt;h2 id=&#34;2017-11-01&#34;&gt;2017-11-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The CORE developers responded to say they are looking into their bot not respecting our robots.txt&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;2017-11-02&#34;&gt;2017-11-02&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Today there have been no hits by CORE and no alerts from Linode (coincidence?)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# grep -c &amp;quot;CORE&amp;quot; /var/log/nginx/access.log
+0
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Generate list of authors on CGSpace for Peter to go through and correct:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
+COPY 54701
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>October, 2017</title>
+      <link>https://alanorth.github.io/cgspace-notes/2017-10/</link>
+      <pubDate>Sun, 01 Oct 2017 08:07:54 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2017-10/</guid>
+      <description>&lt;h2 id=&#34;2017-10-01&#34;&gt;2017-10-01&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Peter emailed to point out that many items in the &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/2703&#34;&gt;ILRI archive collection&lt;/a&gt; have multiple handles:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;There appears to be a pattern but I&amp;rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>CGIAR Library Migration</title>
