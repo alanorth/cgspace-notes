@@ -111,7 +111,6 @@ dcterms.type | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
 cg.isbn | ✓ | ✓ | - | - | - | ✓ | |
 cg.issn | ✓ | ✓ | - | - | - | ✓ | |
 cg.hasMetadata | ✓ | ✓ | ✓ | - | ✓ | ✓ | |
-dcterms.alternative | ✓ | ✓ | - | ✓ | ✓ | ✓ | |
 
 There are a few things that I need to check once I get a deployment of this code up and running:
 
