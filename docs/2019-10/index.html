@@ -27,7 +27,7 @@
   "@type": "BlogPosting",
   "headline": "October, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-10\/",
-  "wordCount": "1719",
+  "wordCount": "1791",
   "datePublished": "2019-10-01T13:20:51+03:00",
   "dateModified": "2019-10-28T16:52:51+02:00",
   "author": {
@@ -407,6 +407,17 @@ $ dspace import -a -c 10568/104057 -e fuu@cgiar.org -m 2019-10-15-Bioversity.map
 <li>Also, I noticed a few places in the Java code where <code>dc.title</code> is hard coded so I think this might be one of the fields that we just assume DSpace relies on internally</li>
 <li>I will revert all changes to <code>dc.title</code> and <code>dc.title.alternative</code></li>
 <li>TODO: there are similar issues with the <code>citation_author</code> metadata element missing from DRI, so I might have to revert those changes too</li>
+</ul></li>
+</ul>
+
+<h2 id="2019-10-29">2019-10-29</h2>
+
+<ul>
+<li>After more digging in the source I found out why the <code>dcterms.title</code> and <code>dcterms.creator</code> fields are not present in the DRI <code>pageMeta</code>&hellip;
+
+<ul>
+<li>The <code>pageMeta</code> element is constructed in <code>dspace-xmlui/src/main/java/org/dspace/app/xmlui/wing/IncludePageMeta.java</code> and the code does not consider any other schemas besides DC</li>
+<li>I moved title and creator back to the original DC fields and then everything was working as expected in the pageMeta, so I guess we cannot use these in DCTERMS either!</li>
 </ul></li>
 </ul>
 

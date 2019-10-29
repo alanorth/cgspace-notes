@@ -20,10 +20,8 @@ With reference to [CG Core v2 draft standard](https://agriculturalsemantics.gith
 - [Implementation Progress](#implementation-progress)
 
 ## Proposed Changes
-As of 2019-09-11 the scope of the changes includes the following fields:
+As of 2019-10-29 the scope of the changes includes the following fields:
 
-- dc.contributor.author→dcterms.creator
-  - for people and institutional authors
 - cg.creator.id→cg.creator.identifier
   - ORCID identifiers
 - dc.format.extent→dcterms.extent
@@ -56,12 +54,13 @@ As of 2019-09-11 the scope of the changes includes the following fields:
 
 The following fields are currently out of the scope of this migration because they are used internally by DSpace 5.x/6.x and would be difficult to change without significant modifications to the core of the code:
 
-- dc.title
+- dc.title (`IncludePageMeta.java` only considers DC when building pageMeta, which we rely on in XMLUI because of XSLT from DRI)
 - dc.title.alternative
 - dc.date.available
 - dc.date.accessioned
-- dc.identifier.uri
+- dc.identifier.uri (hard coded for Handle assignment upon item submission)
 - dc.description.provenance
+- dc.contributor.author (`IncludePageMeta.java` only considers DC when building pageMeta, which we rely on in XMLUI because of XSLT from DRI)
 
 ## Fields to Create
 Make sure the following fields exist:
@@ -89,7 +88,6 @@ Tally of the status of the implementation of the new fields in the CGSpace `5_x-
 
 | Field Name | migrate-fields.sh | Input Forms | XMLUI Themes¹ | dspace.cfg | Discovery | Atmire Modules | Crosswalks |
 | ---------- | :---------------: | :---------: | :-----------: | :--------: | :-------: | :------------: | :--------: |
-dcterms.creator | ✓ | ✓ | ? | ✓ | ✓ | ✓ | |
 cg.creator.identifier | ✓ | ✓ | ✓ | - | ✓ | ✓ | |
 dcterms.extent | ✓ | ✓ | - | - | - | - | |
 dcterms.issued | ✓ | ✓ | ? | ✓ | ✓ | ✓ | |
