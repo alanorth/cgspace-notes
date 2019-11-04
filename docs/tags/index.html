@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tags"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.59.0" />
+<meta name="generator" content="Hugo 0.59.1" />
 
 
     
@@ -85,6 +85,48 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2019-11/">November, 2019</a></h2>
+    <p class="blog-post-meta"><time datetime="2019-11-04T12:20:30&#43;02:00">Mon Nov 04, 2019</time> by Alan Orth in 
+<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2019-11-04">2019-11-04</h2>
+
+<ul>
+<li><p>Peter noticed that there were 5.2 million hits on CGSpace in 2019-10 according to the Atmire usage statistics</p>
+
+<ul>
+<li><p>I looked in the nginx logs and see 4.6 million in the access logs, and 1.2 million in the API logs:</p>
+
+<pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
+4671942
+# zcat --force /var/log/nginx/{rest,oai,statistics}.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
+1277694
+</code></pre></li>
+</ul></li>
+
+<li><p>So 4.6 million from XMLUI and another 1.2 million from API requests</p></li>
+
+<li><p>Let&rsquo;s see how many of the REST API requests were for bitstreams (because they are counted in Solr stats):</p>
+
+<pre><code># zcat --force /var/log/nginx/rest.log.*.gz | grep -c -E &quot;[0-9]{1,2}/Oct/2019&quot;
+1183456 
+# zcat --force /var/log/nginx/rest.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E &quot;/rest/bitstreams&quot;
+106781
+</code></pre></li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2019-11/'>Read more →</a>
+</article> 
 
 
 
@@ -387,57 +429,6 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2019-02/">February, 2019</a></h2>
-    <p class="blog-post-meta"><time datetime="2019-02-01T21:37:30&#43;02:00">Fri Feb 01, 2019</time> by Alan Orth in 
-<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
-
-
-</p>
-  </header>
-  <h2 id="2019-02-01">2019-02-01</h2>
-
-<ul>
-<li>Linode has alerted a few times since last night that the CPU usage on CGSpace (linode18) was high despite me increasing the alert threshold last week from 250% to 275%—I might need to increase it again!</li>
-
-<li><p>The top IPs before, during, and after this latest alert tonight were:</p>
-
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;01/Feb/2019:(17|18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-245 207.46.13.5
-332 54.70.40.11
-385 5.143.231.38
-405 207.46.13.173
-405 207.46.13.75
-1117 66.249.66.219
-1121 35.237.175.180
-1546 5.9.6.51
-2474 45.5.186.2
-5490 85.25.237.71
-</code></pre></li>
-
-<li><p><code>85.25.237.71</code> is the &ldquo;Linguee Bot&rdquo; that I first saw last month</p></li>
-
-<li><p>The Solr statistics the past few months have been very high and I was wondering if the web server logs also showed an increase</p></li>
-
-<li><p>There were just over 3 million accesses in the nginx logs last month:</p>
-
-<pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Jan/2019&quot;
-3018243
-
-real    0m19.873s
-user    0m22.203s
-sys     0m1.979s
-</code></pre></li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2019-02/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   
@@ -462,6 +453,8 @@ sys     0m1.979s
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2019-11/">November, 2019</a></li>
+
 <li><a href="/cgspace-notes/cgspace-cgcorev2-migration/">CGSpace CG Core v2 Migration</a></li>
 
 <li><a href="/cgspace-notes/2019-10/">October, 2019</a></li>
@@ -469,8 +462,6 @@ sys     0m1.979s
 <li><a href="/cgspace-notes/2019-09/">September, 2019</a></li>
 
 <li><a href="/cgspace-notes/2019-08/">August, 2019</a></li>
-
-<li><a href="/cgspace-notes/2019-07/">July, 2019</a></li>
 
     </ol>
   </section>
