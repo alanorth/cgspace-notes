@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-04T12:20:30+02:00" />
+<meta property="article:modified_time" content="2019-11-04T16:41:19+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "385",
+  "wordCount": "931",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-04T12:20:30+02:00",
+  "dateModified": "2019-11-04T16:41:19+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -222,8 +222,96 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 
 </code></pre>
 
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/1/discover'">https://dspacetest.cgiar.org/handle/10568/1/discover'</a> User-Agent:&ldquo;Amazonbot/0.1&rdquo;
+<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/1/discover'">https://dspacetest.cgiar.org/handle/10568/1/discover'</a> User-Agent:&ldquo;Amazonbot/0.1&rdquo;</p>
+
+<pre><code>
+- On the topic of spiders, I have been wanting to update DSpace's default list of spiders in `config/spiders/agents`, perhaps by dropping a new list in from [Atmire's COUNTER-Robots](https://github.com/atmire/COUNTER-Robots) project
+  - First I checked for a user agent that is in COUNTER-Robots, but NOT in the current `dspace/config/spiders/example` list
+  - Then I made some item and bitstream requests on DSpace Test using that user agent:
+
+</code></pre>
+
+<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;iskanie&rdquo;
+$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;iskanie&rdquo;
+$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'">https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'</a> User-Agent:&ldquo;iskanie&rdquo;</p>
+
+<pre><code>
+- A bit later I checked Solr and found three requests from my IP with that user agent this month:
+
+</code></pre>
+
+<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'">http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'</a>
+&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?&gt;
+<response>
+<lst name="responseHeader"><int name="status">0</int><int name="QTime">1</int><lst name="params"><str name="q">ip:73.178.9.24 AND userAgent:iskanie</str><str name="fq">dateYearMonth:2019-11</str><str name="rows">0</str></lst></lst><result name="response" numFound="3" start="0"></result>
+</response></p>
+
+<pre><code>
+- Now I want to make similar requests with a user agent that is included in DSpace's current user agent list:
+
+</code></pre>
+
+<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;celestial&rdquo;
+$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;celestial&rdquo;
+$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'">https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'</a> User-Agent:&ldquo;celestial&rdquo;</p>
+
+<pre><code>
+- After twenty minutes I didn't see any requests in Solr, so I assume they did not get logged because they matched a bot list...
+  - What's strange is that the Solr spider agent configuration in `dspace/config/modules/solr-statistics.cfg` points to a file that doesn't exist...
+
+</code></pre>
+
+<p>spider.agentregex.regexfile = ${dspace.dir}/config/spiders/Bots-2013-03.txt</p>
+
+<pre><code>
+- Apparently that is part of Atmire's CUA, despite being in a standard DSpace configuration file...
+- I tried with some other garbage user agents like &quot;fuuuualan&quot; and they were visible in Solr
+  - Now I want to try adding &quot;iskanie&quot; and &quot;fuuuualan&quot; to the list of spider regexes in `dspace/config/spiders/example` and then try to use DSpace's &quot;mark spiders&quot; feature to change them to &quot;isBot:true&quot; in Solr
+  - I restarted Tomcat and ran `dspace stats-util -m` and it did some stuff for awhile, but I still don't see any items in Solr with `isBot:true`
+  - According to `dspace-api/src/main/java/org/dspace/statistics/util/SpiderDetector.java` the patterns for user agents are loaded from any file in the `config/spiders/agents` directory
+  - I downloaded the COUNTER-Robots list to DSpace Test and overwrote the example file, then ran `dspace stats-util -m` and still there were no new items marked as being bots in Solr, so I think there is still something wrong
+  - Jesus, the code in `./dspace-api/src/main/java/org/dspace/statistics/util/StatisticsClient.java` says that `stats-util -m` marks spider requests by their IPs, not by their user agents... WTF:
+
+</code></pre>
+
+<p>else if (line.hasOption(&rsquo;m&rsquo;))
+{
+    SolrLogger.markRobotsByIP();
+}</p>
+
+<pre><code>
+- WTF again, there is actually a function called `markRobotByUserAgent()` that is never called anywhere!
+  - It appears to be unimplemented...
+  - I sent a message to the dspace-tech mailing list to ask if I should file an issue
+
+## 2019-11-05
+
+- I added &quot;alanfuu2&quot; to the example spiders file, restarted Tomcat, then made two requests to DSpace Test:
+
+</code></pre>
+
+<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;alanfuuu1&rdquo;
+$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;alanfuuu2&rdquo;</p>
+
+<pre><code>
+- After committing the changes in Solr I saw one request for &quot;alanfuu1&quot; and no requests for &quot;alanfuu2&quot;:
+
+</code></pre>
+
+<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/update?commit=true'">http://localhost:8081/solr/statistics/update?commit=true'</a>
+$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu1&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu1&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="1" start="0">
+$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu2&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu2&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="0" start="0"/>
 ```</p>
+
+<ul>
+<li>So basically it seems like a win to update the example file with the latest one from Atmire&rsquo;s COUNTER-Robots list
+
+<ul>
+<li>Even though the &ldquo;mark by user agent&rdquo; function is not working (see email to dspace-tech mailing list) DSpace will still not log Solr events from these user agents</li>
+</ul></li>
+</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
