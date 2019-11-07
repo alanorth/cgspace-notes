@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-06T09:35:51+02:00" />
+<meta property="article:modified_time" content="2019-11-07T12:40:25+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "1088",
+  "wordCount": "1293",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-06T09:35:51+02:00",
+  "dateModified": "2019-11-07T12:40:25+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -323,21 +323,56 @@ $ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568
 $ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:www.gnip.com&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:www.gnip.com&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
   <result name="response" numFound="0" start="0"/>
 $ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:www.gnyp.com&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:www.gnyp.com&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="1" start="0">
+  <result name="response" numFound="1" start="0"></p>
+
+<pre><code>
+- So the blocking seems to be working because &quot;www\.gnip\.com&quot; is one of the new patterns added to the spiders file...
+
+## 2019-11-07
+
+- CCAFS finally confirmed that they do indeed need the confusing new project tag that looks like a duplicate
+  - They had proposed a batch of new tags in 2019-09 and we never merged them due to this uncertainty
+  - I have now merged the changes in to the `5_x-prod` branch ([#432](https://github.com/ilri/DSpace/pull/432))
+- I am reconsidering the move of `cg.identifier.dataurl` to `cg.hasMetadata` in CG Core v2
+  - The values of this field are mostly links to data sets on Dataverse and partner sites
+  - I opened an [issue on GitHub](https://github.com/AgriculturalSemantics/cg-core/issues/10) to ask Marie-Angelique for clarification
+- Looking into CGSpace statistics again
+  - I searched for hits in Solr from the BUbiNG bot and found 63,000 in the `statistics-2018` core:
+
+</code></pre>
+
+<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*'</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="62944" start="0"></p>
+
+<pre><code>
+  - Similar for com.plumanalytics, Grammarly, and ltx71!
+
+</code></pre>
+
+<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:</a>
+<em>com.plumanalytics</em>&rsquo; | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="28256" start="0">
+$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*Grammarly*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*Grammarly*'</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="6288" start="0">
+$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="105663" start="0"></p>
+
+<pre><code>
+- Deleting these seems to work, for example the 105,000 ltx71 records from 2018:
+
+</code></pre>
+
+<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/update?stream.body=">http://localhost:8081/solr/statistics-2018/update?stream.body=</a><delete><query>userAgent:<em>ltx71</em></query><query>type:0</query></delete>&amp;commit=true&rsquo;
+$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="0" start="0"/>
 ```</p>
 
 <ul>
-<li>So the blocking seems to be working because &ldquo;www.gnip.com&rdquo; is one of the new patterns added to the spiders file&hellip;</li>
-</ul>
-
-<h2 id="2019-11-07">2019-11-07</h2>
+<li>I wrote a quick bash script to check all these user agents against the CGSpace Solr statistics cores
 
 <ul>
-<li>CCAFS finally confirmed that they do indeed need the confusing new project tag that looks like a duplicate
-
-<ul>
-<li>They had proposed a batch of new tags in 2019-09 and we never merged them due to this uncertainty</li>
-<li>I have now merged the changes in to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/432">#432</a>)</li>
+<li>For years 2010 until 2019 there are 1.6 million hits from these spider user agents</li>
+<li>For 2019 alone there are 740,000, over half of which come from Unpaywall!</li>
 </ul></li>
 </ul>
 
