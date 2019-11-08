@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-07T12:40:25+02:00" />
+<meta property="article:modified_time" content="2019-11-07T18:22:19+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "1293",
+  "wordCount": "1343",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-07T12:40:25+02:00",
+  "dateModified": "2019-11-07T18:22:19+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -364,16 +364,37 @@ $ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018
 
 <p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/update?stream.body=">http://localhost:8081/solr/statistics-2018/update?stream.body=</a><delete><query>userAgent:<em>ltx71</em></query><query>type:0</query></delete>&amp;commit=true&rsquo;
 $ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="0" start="0"/>
+  <result name="response" numFound="0" start="0"/></p>
+
+<pre><code>
+- I wrote a quick bash script to check all these user agents against the CGSpace Solr statistics cores
+  - For years 2010 until 2019 there are 1.6 million hits from these spider user agents
+  - For 2019 alone there are 740,000, over half of which come from Unpaywall!
+  - Looking at the facets I see there were about 200,000 hits from Unpaywall in 2019-10:
+
+</code></pre>
+
+<p>$ curl -s &lsquo;<a href="http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=">http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=</a>
+12&amp;q=userAgent:<em>Unpaywall</em>&rsquo; | xmllint &ndash;format - | less
+&hellip;
+  <lst name="facet_counts">
+    <lst name="facet_queries"/>
+    <lst name="facet_fields">
+      <lst name="dateYearMonth">
+        <int name="2019-10">198624</int>
+        <int name="2019-05">88422</int>
+        <int name="2019-06">79911</int>
+        <int name="2019-09">67065</int>
+        <int name="2019-07">39026</int>
+        <int name="2019-08">36889</int>
+        <int name="2019-04">36512</int>
+        <int name="2019-11">760</int>
+      </lst>
+    </lst>
 ```</p>
 
 <ul>
-<li>I wrote a quick bash script to check all these user agents against the CGSpace Solr statistics cores
-
-<ul>
-<li>For years 2010 until 2019 there are 1.6 million hits from these spider user agents</li>
-<li>For 2019 alone there are 740,000, over half of which come from Unpaywall!</li>
-</ul></li>
+<li>That answers Peter&rsquo;s question about why the stats jumped in October&hellip;</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
