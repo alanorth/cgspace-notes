@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-08T09:27:13+02:00" />
+<meta property="article:modified_time" content="2019-11-08T18:29:25+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "1442",
+  "wordCount": "1573",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-08T09:27:13+02:00",
+  "dateModified": "2019-11-08T18:29:25+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -390,28 +390,37 @@ $ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018
         <int name="2019-04">36512</int>
         <int name="2019-11">760</int>
       </lst>
-    </lst>
+    </lst></p>
+
+<pre><code>
+- That answers Peter's question about why the stats jumped in October...
+
+## 2019-11-08
+
+- I saw a bunch of user agents that have the literal string `User-Agent` in their user agent HTTP header, for example:
+  - `User-Agent: Drupal (+http://drupal.org/)`
+  - `User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31`
+  - `User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;`
+  - `User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)`
+  - `User-Agent:User-Agent:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; GTB7.5; .NET4.0C)IKU/6.7.6.12189;IKUCID/IKU;IKU/6.7.6.12189;IKUCID/IKU;`
+  - `User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;`
+- I filed [an issue](https://github.com/atmire/COUNTER-Robots/issues/27) on the COUNTER-Robots project to see if they agree to add `User-Agent:` to the list of robot user agents
+
+## 2019-11-09
+
+- Deploy the latest `5_x-prod` branch on CGSpace (linode19)
+  - This includes the updated CCAFS phase II project tags and the updated spider user agents
+- Run all system updates on CGSpace and reboot the server
+  - After rebooting it seems that all Solr statistics cores came back up fine...
+- I did some work to clean up my bot processing script and removed about 2 million hits from the statistics cores on CGSpace
+  - The script is called `check-spider-hits.sh`
+  - After a bunch of tests and checks I ran it for each statistics shard like so:
+
+</code></pre>
+
+<p>$ for shard in statistics statistics-2018 statistics-2017 statistics-2016 statistics-2015 stat
+istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do ./check-spider-hits.sh -s $shard -p yes; done
 ```</p>
-
-<ul>
-<li>That answers Peter&rsquo;s question about why the stats jumped in October&hellip;</li>
-</ul>
-
-<h2 id="2019-11-08">2019-11-08</h2>
-
-<ul>
-<li>I saw a bunch of user agents that have the literal string <code>User-Agent</code> in their user agent HTTP header, for example:
-
-<ul>
-<li><code>User-Agent: Drupal (+http://drupal.org/)</code></li>
-<li><code>User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31</code></li>
-<li><code>User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;</code></li>
-<li><code>User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)</code></li>
-<li><code>User-Agent:User-Agent:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; GTB7.5; .NET4.0C)IKU/6.7.6.12189;IKUCID/IKU;IKU/6.7.6.12189;IKUCID/IKU;</code></li>
-<li><code>User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;</code></li>
-</ul></li>
-<li>I filed <a href="https://github.com/atmire/COUNTER-Robots/issues/27">an issue</a> on the COUNTER-Robots project to see if they agree to add <code>User-Agent:</code> to the list of robot user agents</li>
-</ul>
 
 <!-- vim: set sw=2 ts=2: -->
 
