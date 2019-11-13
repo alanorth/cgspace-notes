@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-09T21:41:15+02:00" />
+<meta property="article:modified_time" content="2019-11-12T11:44:05+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "1710",
+  "wordCount": "1819",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-09T21:41:15+02:00",
+  "dateModified": "2019-11-12T11:44:05+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -419,28 +419,38 @@ $ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018
 </code></pre>
 
 <p>$ for shard in statistics statistics-2018 statistics-2017 statistics-2016 statistics-2015 stat
-istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do ./check-spider-hits.sh -s $shard -p yes; done
+istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do ./check-spider-hits.sh -s $shard -p yes; done</p>
+
+<pre><code>
+- Open a [pull request](https://github.com/atmire/COUNTER-Robots/pull/28) against COUNTER-Robots to remove unnecessary escaping of dashes
+
+## 2019-11-12
+
+- Udana and Chandima emailed me to ask why [one of their WLE items](https://hdl.handle.net/10568/81236) that is mapped from IWMI only shows up in the IWMI &quot;department&quot; on the Altmetric dashboard
+  - A [search in the IWMI department shows the item](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management)
+  - A [search in the WLE department shows no results](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management)
+  - I emailed Altmetric support to ask for help
+- Also, while analysing this, I looked through some of the other top WLE items and fixed some metadata issues (adding `dc.rights`, fixing DOIs, adding ISSNs, etc) and noticed one issue with [an item](https://hdl.handle.net/10568/97087) that has an Altmetric score for its Handle (lower) despite it having a correct DOI (with a higher score)
+  - I tweeted the Handle to see if the score would get linked once Altmetric noticed it
+
+## 2019-11-13
+
+- The [item with a low Altmetric score for its Handle](https://hdl.handle.net/10568/97087) that I tweeted yesterday still hasn't linked with the DOI's score
+  - I tweeted it again with the Handle and the DOI
+- Testing modifying some of the COUNTER-Robots patterns to use `[0-9]` instead of `\d` digit character type, as Solr's regex search can't use those
+
+</code></pre>
+
+<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;Scrapoo/1&rdquo;
+$ http &ldquo;<a href="http://localhost:8081/solr/statistics/update?commit=true&quot;">http://localhost:8081/solr/statistics/update?commit=true&quot;</a>
+$ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot;">http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot;</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="1" start="0">
+$ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo/[0-9]/&quot;">http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo/[0-9]/&quot;</a> | xmllint &ndash;format - | grep numFound
+  <result name="response" numFound="1" start="0">
 ```</p>
 
 <ul>
-<li>Open a <a href="https://github.com/atmire/COUNTER-Robots/pull/28">pull request</a> against COUNTER-Robots to remove unnecessary escaping of dashes</li>
-</ul>
-
-<h2 id="2019-11-12">2019-11-12</h2>
-
-<ul>
-<li>Udana and Chandima emailed me to ask why <a href="https://hdl.handle.net/10568/81236">one of their WLE items</a> that is mapped from IWMI only shows up in the IWMI &ldquo;department&rdquo; on the Altmetric dashboard
-
-<ul>
-<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management">search in the IWMI department shows the item</a></li>
-<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management">search in the WLE department shows no results</a></li>
-<li>I emailed Altmetric support to ask for help</li>
-</ul></li>
-<li>Also, while analysing this, I looked throgh some of the other top WLE items and fixed some metadata issues (adding <code>dc.rights</code>, fixing DOIs, adding ISSNs, etc) and noticed one issue with <a href="https://hdl.handle.net/10568/97087">https://hdl.handle.net</a> an item that has an Altmetric score for its Handle (lower) despite it having a correct DOI (with a higher score)
-
-<ul>
-<li>I tweeted the Handle to see if the score would get linked once Altmetric noticed it</li>
-</ul></li>
+<li>Nice, so searching with regex in Solr with <code>//</code> syntax works for those digits!</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
