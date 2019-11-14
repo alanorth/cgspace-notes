@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-12T11:44:05+02:00" />
+<meta property="article:modified_time" content="2019-11-13T18:18:24+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "1819",
+  "wordCount": "1951",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-12T11:44:05+02:00",
+  "dateModified": "2019-11-13T18:18:24+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -446,11 +446,27 @@ $ http &ldquo;<a href="http://localhost:8081/solr/statistics/update?commit=true&
 $ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot;">http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot;</a> | xmllint &ndash;format - | grep numFound
   <result name="response" numFound="1" start="0">
 $ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo/[0-9]/&quot;">http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo/[0-9]/&quot;</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="1" start="0">
+  <result name="response" numFound="1" start="0"></p>
+
+<pre><code>
+- Nice, so searching with regex in Solr with `//` syntax works for those digits!
+- I realized that it's easier to search Solr from curl via POST using this syntax:
+
+</code></pre>
+
+<p>$ curl -s &ldquo;<a href="http://localhost:8081/solr/statistics/select&quot;">http://localhost:8081/solr/statistics/select&quot;</a> -d &ldquo;q=userAgent:<em>Scrapoo</em>&amp;rows=0&rdquo;)</p>
+
+<pre><code>
+- If the parameters include something like &quot;[0-9]&quot; then curl interprets it as a range and will make ten requests
+  - You can disable this using the `-g` option, but there are other benefits to searching with POST, for example it seems that I have less issues with escaping special parameters when using Solr's regex search:
+
+</code></pre>
+
+<p>$ curl -s &lsquo;<a href="http://localhost:8081/solr/statistics/select'">http://localhost:8081/solr/statistics/select'</a> -d &lsquo;q=userAgent:/Postgenomic(\s|+)v2/&amp;rows=2&rsquo;
 ```</p>
 
 <ul>
-<li>Nice, so searching with regex in Solr with <code>//</code> syntax works for those digits!</li>
+<li>I updated the <code>check-spider-hits.sh</code> script to use the POST syntax, and I&rsquo;m evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
