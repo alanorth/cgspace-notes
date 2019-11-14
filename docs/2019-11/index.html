@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-13T18:18:24+02:00" />
+<meta property="article:modified_time" content="2019-11-14T09:47:49+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "1951",
+  "wordCount": "2115",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-13T18:18:24+02:00",
+  "dateModified": "2019-11-14T09:47:49+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -462,11 +462,38 @@ $ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:
 
 </code></pre>
 
-<p>$ curl -s &lsquo;<a href="http://localhost:8081/solr/statistics/select'">http://localhost:8081/solr/statistics/select'</a> -d &lsquo;q=userAgent:/Postgenomic(\s|+)v2/&amp;rows=2&rsquo;
+<p>$ curl -s &lsquo;<a href="http://localhost:8081/solr/statistics/select'">http://localhost:8081/solr/statistics/select'</a> -d &lsquo;q=userAgent:/Postgenomic(\s|+)v2/&amp;rows=2&rsquo;</p>
+
+<pre><code>
+- I updated the `check-spider-hits.sh` script to use the POST syntax, and I'm evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling
+
+## 2019-11-14
+
+- IWMI sent a few new ORCID identifiers for us to add to our controlled vocabulary
+- I will merge them with our existing list and then resolve their names using my `resolve-orcids.py` script:
+
+</code></pre>
+
+<p>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt | grep -oE &lsquo;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&rsquo; | sort | uniq &gt; /tmp/2019-11-14-combined-orcids.txt
+$ ./resolve-orcids.py -i /tmp/2019-11-14-combined-orcids.txt -o /tmp/2019-11-14-combined-names.txt -d</p>
+
+<h1 id="sort-names-copy-to-cg-creator-id-xml-add-xml-formatting-and-then-format-with-tidy-preserving-accents">sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)</h1>
+
+<p>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 ```</p>
 
 <ul>
-<li>I updated the <code>check-spider-hits.sh</code> script to use the POST syntax, and I&rsquo;m evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling</li>
+<li>I created a <a href="https://github.com/ilri/DSpace/pull/437">pull request</a> and merged them into the <code>5_x-prod</code> branch
+
+<ul>
+<li>I will deploy them to CGSpace in the next few days</li>
+</ul></li>
+<li>Greatly improve my <code>check-spider-hits.sh</code> script to handle regular expressions in the spider agents patterns file
+
+<ul>
+<li>This allows me to detect and purge many more hits from the Solr statistics core</li>
+<li>I&rsquo;ve tested it quite a bit on DSpace Test, but I need to do a little more before I feel comfortable running the new code on CGSpace&rsquo;s Solr cores</li>
+</ul></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
