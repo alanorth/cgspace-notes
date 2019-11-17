@@ -116,5 +116,5 @@ There are a few things that I need to check once I get a deployment of this code
 ¹ Not committed yet because I don't want to have to make minor adjustments in multiple commits. Re-apply the gauntlet of fixes with the sed script:
 
 ```
-$ find dspace/modules/xmlui-mirage2/src/main/webapp/themes -iname "*.xsl" -exec ./cgcore-xsl-replacements.sed {} \;
+$ find dspace/modules/xmlui-mirage2/src/main/webapp/themes -iname "*.xsl" -exec sed -i -f ./cgcore-xsl-replacements.sed {} \;
 ```
