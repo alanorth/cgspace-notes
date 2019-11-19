@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-17T14:21:58+02:00" />
+<meta property="article:modified_time" content="2019-11-17T15:39:10+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "2595",
+  "wordCount": "2866",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-17T14:21:58+02:00",
+  "dateModified": "2019-11-17T15:39:10+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -524,32 +524,53 @@ $ ./resolve-orcids.py -i /tmp/2019-11-14-combined-orcids.txt -o /tmp/2019-11-14-
 
 </code></pre>
 
-<p>Guzzle/<Guzzle_Version> curl/<curl_version> PHP/<PHP_VERSION>
+<p>Guzzle/<Guzzle_Version> curl/<curl_version> PHP/<PHP_VERSION></p>
+
+<pre><code>
+- Run system updates on DSpace Test and reboot the server
+
+## 2019-11-17
+
+- Altmetric support responded about our dashboard question, asking if the second &quot;department&quot; (aka WLE's collection) was added recently and might have not been in the last harvesting yet
+  - I told her no, that the department is several years old, and the item was added in 2017
+  - Then I looked again at the dashboard for each department and I see the item in both departments now... shit.
+  - A [search in the IWMI department shows the item](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management)
+  - A [search in the WLE department shows the item](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management)
+- I finally decided to revert `cg.hasMetadata` back to `cg.identifier.dataurl` in my CG Core v2 branch (see [#10](https://github.com/AgriculturalSemantics/cg-core/issues/10))
+- Regarding the [WLE item](https://hdl.handle.net/10568/97087) that has a much lower score than its DOI...
+  - I tweeted the item twice last week and the score never got linked
+  - Then I noticed that I had already made a note about the same issue in 2019-04, when I also tweeted it several times...
+  - I will ask Altmetric support for help with that
+- Finally deploy `5_x-cgcorev2` branch on DSpace Test
+
+## 2019-11-18
+
+- I sent a mail to the CGSpace partners in Addis about the CG Core v2 changes on DSpace Test
+- Then I filed an [issue on the CG Core GitHub](https://github.com/AgriculturalSemantics/cg-core/issues/11) to let the metadata people know about our progress
+- It seems like I will do a session about CG Core v2 implementation and limitations in DSpace for the data workshop in December in Nairobi (?)
+
+## 2019-11-19
+
+- Export IITA's community from CGSpace because they want to experiment with importing it into their internal DSpace for some testing or something
+  - I had previously sent them an export in 2019-04
+- Atmire merged my [pull request regarding unnecessary escaping of dashes](https://github.com/atmire/COUNTER-Robots/pull/28) in regular expressions, as well as [my suggestion of adding &quot;User-Agent&quot; to the list of patterns](https://github.com/atmire/COUNTER-Robots/issues/27)
+- I made another [pull request to fix invalid escaping of one of their new patterns](https://github.com/atmire/COUNTER-Robots/pull/29)
+- I ran my `check-spider-hits.sh` script again with these new patterns and found a bunch more statistics requests that match, for example:
+  - Found 39560 hits from ^Buck\/[0-9] in statistics
+  - Found 5471 hits from ^User-Agent in statistics
+  - Found 2994 hits from ^Buck\/[0-9] in statistics-2018
+  - Found 14076 hits from ^User-Agent in statistics-2018
+  - Found 16310 hits from ^User-Agent in statistics-2017
+  - Found 4429 hits from ^User-Agent in statistics-2016
+- Buck is one I've never heard of before, its user agent is:
+
+</code></pre>
+
+<p>Buck/2.2; (+<a href="https://app.hypefactors.com/media-monitoring/about.html">https://app.hypefactors.com/media-monitoring/about.html</a>)
 ```</p>
 
 <ul>
-<li>Run system updates on DSpace Test and reboot the server</li>
-</ul>
-
-<h2 id="2019-11-17">2019-11-17</h2>
-
-<ul>
-<li>Altmetric support responded about our dashboard question, asking if the second &ldquo;department&rdquo; (aka WLE&rsquo;s collection) was added recently and might have not been in the last harvesting yet
-
-<ul>
-<li>I told her no, that the department is several years old, and the item was added in 2017</li>
-<li>Then I looked again at the dashboard for each department and I see the item in both departments now&hellip; shit.</li>
-<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management">search in the IWMI department shows the item</a></li>
-<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management">search in the WLE department shows the item</a></li>
-</ul></li>
-<li>I finally decided to revert <code>cg.hasMetadata</code> back to <code>cg.identifier.dataurl</code> in my CG Core v2 branch (see <a href="https://github.com/AgriculturalSemantics/cg-core/issues/10">#10</a>)</li>
-<li>Regarding the <a href="https://hdl.handle.net/10568/97087">WLE item</a> that has a much lower score than its DOI&hellip;
-
-<ul>
-<li>I tweeted the item twice last week and the score never got linked</li>
-<li>Then I noticed that I had already made a note about the same issue in 2019-04, when I also tweeted it several times&hellip;</li>
-<li>I will ask Altmetric support for help with that</li>
-</ul></li>
+<li>All in all that&rsquo;s about 85,000 more hits purged, in addition to the 3.4 million I purged last week</li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
