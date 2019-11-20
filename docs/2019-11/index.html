@@ -34,7 +34,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-11/" />
 <meta property="article:published_time" content="2019-11-04T12:20:30+02:00" />
-<meta property="article:modified_time" content="2019-11-17T15:39:10+02:00" />
+<meta property="article:modified_time" content="2019-11-19T17:17:28+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2019"/>
@@ -73,9 +73,9 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
   "@type": "BlogPosting",
   "headline": "November, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-11\/",
-  "wordCount": "2866",
+  "wordCount": "2795",
   "datePublished": "2019-11-04T12:20:30+02:00",
-  "dateModified": "2019-11-17T15:39:10+02:00",
+  "dateModified": "2019-11-19T17:17:28+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -193,384 +193,449 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot)
 </code></pre></li>
 
-<li><p>Most of them seem to be to community or collection discover and browse results pages like <code>/handle/10568/103/discover</code>:</p></li>
-</ul>
+<li><p>Most of them seem to be to community or collection discover and browse results pages like <code>/handle/10568/103/discover</code>:</p>
 
-<h1 id="zcat-force-var-log-nginx-access-log-gz-grep-e-0-9-1-2-oct-2019-grep-amazonbot-grep-o-e-get-bitstream-discover-handle-sort-uniq-c">zcat &ndash;force /var/log/nginx/<em>access.log.</em>.gz | grep -E &ldquo;[0-9]{1,2}/Oct/2019&rdquo; | grep Amazonbot | grep -o -E &ldquo;GET /(bitstream|discover|handle)&rdquo; | sort | uniq -c</h1>
+<pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep Amazonbot | grep -o -E &quot;GET /(bitstream|discover|handle)&quot; | sort | uniq -c
+6566 GET /bitstream
+351928 GET /handle
+# zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep Amazonbot | grep -E &quot;GET /(bitstream|discover|handle)&quot; | grep -c discover
+214209
+# zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep Amazonbot | grep -E &quot;GET /(bitstream|discover|handle)&quot; | grep -c browse
+86874
+</code></pre></li>
 
-<p>6566 GET /bitstream
- 351928 GET /handle</p>
+<li><p>As far as I can tell, none of their requests are counted in the Solr statistics:</p>
 
-<h1 id="zcat-force-var-log-nginx-access-log-gz-grep-e-0-9-1-2-oct-2019-grep-amazonbot-grep-e-get-bitstream-discover-handle-grep-c-discover">zcat &ndash;force /var/log/nginx/<em>access.log.</em>.gz | grep -E &ldquo;[0-9]{1,2}/Oct/2019&rdquo; | grep Amazonbot | grep -E &ldquo;GET /(bitstream|discover|handle)&rdquo; | grep -c discover</h1>
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=(ip%3A34.224.4.16+OR+ip%3A34.234.204.152)&amp;rows=0&amp;wt=json&amp;indent=true'
+</code></pre></li>
 
-<p>214209</p>
+<li><p>Still, those requests are CPU intensive so I will add their user agent to the &ldquo;badbots&rdquo; rate limiting in nginx to reduce the impact on server load</p></li>
 
-<h1 id="zcat-force-var-log-nginx-access-log-gz-grep-e-0-9-1-2-oct-2019-grep-amazonbot-grep-e-get-bitstream-discover-handle-grep-c-browse">zcat &ndash;force /var/log/nginx/<em>access.log.</em>.gz | grep -E &ldquo;[0-9]{1,2}/Oct/2019&rdquo; | grep Amazonbot | grep -E &ldquo;GET /(bitstream|discover|handle)&rdquo; | grep -c browse</h1>
+<li><p>After deploying it I checked by setting my user agent to Amazonbot and making a few requests (which were denied with HTTP 503):</p>
 
-<p>86874</p>
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/1/discover' User-Agent:&quot;Amazonbot/0.1&quot;
+</code></pre></li>
 
-<pre><code>
-- As far as I can tell, none of their requests are counted in the Solr statistics:
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=(ip%3A34.224.4.16+OR+ip%3A34.234.204.152)&amp;rows=0&amp;wt=json&amp;indent=true'">http://localhost:8081/solr/statistics/select?q=(ip%3A34.224.4.16+OR+ip%3A34.234.204.152)&amp;rows=0&amp;wt=json&amp;indent=true'</a></p>
-
-<pre><code>
-- Still, those requests are CPU intensive so I will add their user agent to the &quot;badbots&quot; rate limiting in nginx to reduce the impact on server load
-- After deploying it I checked by setting my user agent to Amazonbot and making a few requests (which were denied with HTTP 503):
-
-</code></pre>
-
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/1/discover'">https://dspacetest.cgiar.org/handle/10568/1/discover'</a> User-Agent:&ldquo;Amazonbot/0.1&rdquo;</p>
-
-<pre><code>
-- On the topic of spiders, I have been wanting to update DSpace's default list of spiders in `config/spiders/agents`, perhaps by dropping a new list in from [Atmire's COUNTER-Robots](https://github.com/atmire/COUNTER-Robots) project
-  - First I checked for a user agent that is in COUNTER-Robots, but NOT in the current `dspace/config/spiders/example` list
-  - Then I made some item and bitstream requests on DSpace Test using that user agent:
-
-</code></pre>
-
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;iskanie&rdquo;
-$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;iskanie&rdquo;
-$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'">https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'</a> User-Agent:&ldquo;iskanie&rdquo;</p>
-
-<pre><code>
-- A bit later I checked Solr and found three requests from my IP with that user agent this month:
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'">http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'</a>
-&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?&gt;
-<response>
-<lst name="responseHeader"><int name="status">0</int><int name="QTime">1</int><lst name="params"><str name="q">ip:73.178.9.24 AND userAgent:iskanie</str><str name="fq">dateYearMonth:2019-11</str><str name="rows">0</str></lst></lst><result name="response" numFound="3" start="0"></result>
-</response></p>
-
-<pre><code>
-- Now I want to make similar requests with a user agent that is included in DSpace's current user agent list:
-
-</code></pre>
-
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;celestial&rdquo;
-$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;celestial&rdquo;
-$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'">https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y'</a> User-Agent:&ldquo;celestial&rdquo;</p>
-
-<pre><code>
-- After twenty minutes I didn't see any requests in Solr, so I assume they did not get logged because they matched a bot list...
-  - What's strange is that the Solr spider agent configuration in `dspace/config/modules/solr-statistics.cfg` points to a file that doesn't exist...
-
-</code></pre>
-
-<p>spider.agentregex.regexfile = ${dspace.dir}/config/spiders/Bots-2013-03.txt</p>
-
-<pre><code>
-- Apparently that is part of Atmire's CUA, despite being in a standard DSpace configuration file...
-- I tried with some other garbage user agents like &quot;fuuuualan&quot; and they were visible in Solr
-  - Now I want to try adding &quot;iskanie&quot; and &quot;fuuuualan&quot; to the list of spider regexes in `dspace/config/spiders/example` and then try to use DSpace's &quot;mark spiders&quot; feature to change them to &quot;isBot:true&quot; in Solr
-  - I restarted Tomcat and ran `dspace stats-util -m` and it did some stuff for awhile, but I still don't see any items in Solr with `isBot:true`
-  - According to `dspace-api/src/main/java/org/dspace/statistics/util/SpiderDetector.java` the patterns for user agents are loaded from any file in the `config/spiders/agents` directory
-  - I downloaded the COUNTER-Robots list to DSpace Test and overwrote the example file, then ran `dspace stats-util -m` and still there were no new items marked as being bots in Solr, so I think there is still something wrong
-  - Jesus, the code in `./dspace-api/src/main/java/org/dspace/statistics/util/StatisticsClient.java` says that `stats-util -m` marks spider requests by their IPs, not by their user agents... WTF:
-
-</code></pre>
-
-<p>else if (line.hasOption(&rsquo;m&rsquo;))
-{
-    SolrLogger.markRobotsByIP();
-}</p>
-
-<pre><code>
-- WTF again, there is actually a function called `markRobotByUserAgent()` that is never called anywhere!
-  - It appears to be unimplemented...
-  - I sent a message to the dspace-tech mailing list to ask if I should file an issue
-
-## 2019-11-05
-
-- I added &quot;alanfuu2&quot; to the example spiders file, restarted Tomcat, then made two requests to DSpace Test:
-
-</code></pre>
-
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;alanfuuu1&rdquo;
-$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;alanfuuu2&rdquo;</p>
-
-<pre><code>
-- After committing the changes in Solr I saw one request for &quot;alanfuu1&quot; and no requests for &quot;alanfuu2&quot;:
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/update?commit=true'">http://localhost:8081/solr/statistics/update?commit=true'</a>
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu1&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu1&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="1" start="0">
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu2&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu2&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="0" start="0"/></p>
-
-<pre><code>
-- So basically it seems like a win to update the example file with the latest one from Atmire's COUNTER-Robots list
-  - Even though the &quot;mark by user agent&quot; function is not working (see email to dspace-tech mailing list) DSpace will still not log Solr events from these user agents
-- I'm curious how the special character matching is in Solr, so I will test two requests: one with &quot;www.gnip.com&quot; which is in the spider list, and one with &quot;www.gnyp.com&quot; which isn't:
-
-</code></pre>
-
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;www.gnip.com&rdquo;
-$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;www.gnyp.com&rdquo;</p>
-
-<pre><code>
-- Then commit changes to Solr so we don't have to wait:
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/update?commit=true'">http://localhost:8081/solr/statistics/update?commit=true'</a>
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:www.gnip.com&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:www.gnip.com&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="0" start="0"/>
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:www.gnyp.com&amp;fq=dateYearMonth%3A2019-11'">http://localhost:8081/solr/statistics/select?q=userAgent:www.gnyp.com&amp;fq=dateYearMonth%3A2019-11'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="1" start="0"></p>
-
-<pre><code>
-- So the blocking seems to be working because &quot;www\.gnip\.com&quot; is one of the new patterns added to the spiders file...
-
-## 2019-11-07
-
-- CCAFS finally confirmed that they do indeed need the confusing new project tag that looks like a duplicate
-  - They had proposed a batch of new tags in 2019-09 and we never merged them due to this uncertainty
-  - I have now merged the changes in to the `5_x-prod` branch ([#432](https://github.com/ilri/DSpace/pull/432))
-- I am reconsidering the move of `cg.identifier.dataurl` to `cg.hasMetadata` in CG Core v2
-  - The values of this field are mostly links to data sets on Dataverse and partner sites
-  - I opened an [issue on GitHub](https://github.com/AgriculturalSemantics/cg-core/issues/10) to ask Marie-Angelique for clarification
-- Looking into CGSpace statistics again
-  - I searched for hits in Solr from the BUbiNG bot and found 63,000 in the `statistics-2018` core:
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="62944" start="0"></p>
-
-<pre><code>
-  - Similar for com.plumanalytics, Grammarly, and ltx71!
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:</a>
-<em>com.plumanalytics</em>&rsquo; | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="28256" start="0">
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*Grammarly*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*Grammarly*'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="6288" start="0">
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="105663" start="0"></p>
-
-<pre><code>
-- Deleting these seems to work, for example the 105,000 ltx71 records from 2018:
-
-</code></pre>
-
-<p>$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/update?stream.body=">http://localhost:8081/solr/statistics-2018/update?stream.body=</a><delete><query>userAgent:<em>ltx71</em></query><query>type:0</query></delete>&amp;commit=true&rsquo;
-$ http &ndash;print b &lsquo;<a href="http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'">http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*'</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="0" start="0"/></p>
-
-<pre><code>
-- I wrote a quick bash script to check all these user agents against the CGSpace Solr statistics cores
-  - For years 2010 until 2019 there are 1.6 million hits from these spider user agents
-  - For 2019 alone there are 740,000, over half of which come from Unpaywall!
-  - Looking at the facets I see there were about 200,000 hits from Unpaywall in 2019-10:
-
-</code></pre>
-
-<p>$ curl -s &lsquo;<a href="http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=">http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=</a>
-12&amp;q=userAgent:<em>Unpaywall</em>&rsquo; | xmllint &ndash;format - | less
-&hellip;
-  <lst name="facet_counts">
-    <lst name="facet_queries"/>
-    <lst name="facet_fields">
-      <lst name="dateYearMonth">
-        <int name="2019-10">198624</int>
-        <int name="2019-05">88422</int>
-        <int name="2019-06">79911</int>
-        <int name="2019-09">67065</int>
-        <int name="2019-07">39026</int>
-        <int name="2019-08">36889</int>
-        <int name="2019-04">36512</int>
-        <int name="2019-11">760</int>
-      </lst>
-    </lst></p>
-
-<pre><code>
-- That answers Peter's question about why the stats jumped in October...
-
-## 2019-11-08
-
-- I saw a bunch of user agents that have the literal string `User-Agent` in their user agent HTTP header, for example:
-  - `User-Agent: Drupal (+http://drupal.org/)`
-  - `User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31`
-  - `User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;`
-  - `User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)`
-  - `User-Agent:User-Agent:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; GTB7.5; .NET4.0C)IKU/6.7.6.12189;IKUCID/IKU;IKU/6.7.6.12189;IKUCID/IKU;`
-  - `User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;`
-- I filed [an issue](https://github.com/atmire/COUNTER-Robots/issues/27) on the COUNTER-Robots project to see if they agree to add `User-Agent:` to the list of robot user agents
-
-## 2019-11-09
-
-- Deploy the latest `5_x-prod` branch on CGSpace (linode19)
-  - This includes the updated CCAFS phase II project tags and the updated spider user agents
-- Run all system updates on CGSpace and reboot the server
-  - After rebooting it seems that all Solr statistics cores came back up fine...
-- I did some work to clean up my bot processing script and removed about 2 million hits from the statistics cores on CGSpace
-  - The script is called `check-spider-hits.sh`
-  - After a bunch of tests and checks I ran it for each statistics shard like so:
-
-</code></pre>
-
-<p>$ for shard in statistics statistics-2018 statistics-2017 statistics-2016 statistics-2015 stat
-istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do ./check-spider-hits.sh -s $shard -p yes; done</p>
-
-<pre><code>
-- Open a [pull request](https://github.com/atmire/COUNTER-Robots/pull/28) against COUNTER-Robots to remove unnecessary escaping of dashes
-
-## 2019-11-12
-
-- Udana and Chandima emailed me to ask why [one of their WLE items](https://hdl.handle.net/10568/81236) that is mapped from IWMI only shows up in the IWMI &quot;department&quot; on the Altmetric dashboard
-  - A [search in the IWMI department shows the item](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management)
-  - A [search in the WLE department shows no results](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management)
-  - I emailed Altmetric support to ask for help
-- Also, while analysing this, I looked through some of the other top WLE items and fixed some metadata issues (adding `dc.rights`, fixing DOIs, adding ISSNs, etc) and noticed one issue with [an item](https://hdl.handle.net/10568/97087) that has an Altmetric score for its Handle (lower) despite it having a correct DOI (with a higher score)
-  - I tweeted the Handle to see if the score would get linked once Altmetric noticed it
-
-## 2019-11-13
-
-- The [item with a low Altmetric score for its Handle](https://hdl.handle.net/10568/97087) that I tweeted yesterday still hasn't linked with the DOI's score
-  - I tweeted it again with the Handle and the DOI
-- Testing modifying some of the COUNTER-Robots patterns to use `[0-9]` instead of `\d` digit character type, as Solr's regex search can't use those
-
-</code></pre>
-
-<p>$ http &ndash;print Hh &lsquo;<a href="https://dspacetest.cgiar.org/handle/10568/105487'">https://dspacetest.cgiar.org/handle/10568/105487'</a> User-Agent:&ldquo;Scrapoo/1&rdquo;
-$ http &ldquo;<a href="http://localhost:8081/solr/statistics/update?commit=true&quot;">http://localhost:8081/solr/statistics/update?commit=true&quot;</a>
-$ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot;">http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot;</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="1" start="0">
-$ http &ldquo;<a href="http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo/[0-9]/&quot;">http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo/[0-9]/&quot;</a> | xmllint &ndash;format - | grep numFound
-  <result name="response" numFound="1" start="0"></p>
-
-<pre><code>
-- Nice, so searching with regex in Solr with `//` syntax works for those digits!
-- I realized that it's easier to search Solr from curl via POST using this syntax:
-
-</code></pre>
-
-<p>$ curl -s &ldquo;<a href="http://localhost:8081/solr/statistics/select&quot;">http://localhost:8081/solr/statistics/select&quot;</a> -d &ldquo;q=userAgent:<em>Scrapoo</em>&amp;rows=0&rdquo;)</p>
-
-<pre><code>
-- If the parameters include something like &quot;[0-9]&quot; then curl interprets it as a range and will make ten requests
-  - You can disable this using the `-g` option, but there are other benefits to searching with POST, for example it seems that I have less issues with escaping special parameters when using Solr's regex search:
-
-</code></pre>
-
-<p>$ curl -s &lsquo;<a href="http://localhost:8081/solr/statistics/select'">http://localhost:8081/solr/statistics/select'</a> -d &lsquo;q=userAgent:/Postgenomic(\s|+)v2/&amp;rows=2&rsquo;</p>
-
-<pre><code>
-- I updated the `check-spider-hits.sh` script to use the POST syntax, and I'm evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling
-
-## 2019-11-14
-
-- IWMI sent a few new ORCID identifiers for us to add to our controlled vocabulary
-- I will merge them with our existing list and then resolve their names using my `resolve-orcids.py` script:
-
-</code></pre>
-
-<p>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt | grep -oE &lsquo;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&rsquo; | sort | uniq &gt; /tmp/2019-11-14-combined-orcids.txt
-$ ./resolve-orcids.py -i /tmp/2019-11-14-combined-orcids.txt -o /tmp/2019-11-14-combined-names.txt -d</p>
-
-<h1 id="sort-names-copy-to-cg-creator-id-xml-add-xml-formatting-and-then-format-with-tidy-preserving-accents">sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)</h1>
-
-<p>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml</p>
-
-<pre><code>
-- I created a [pull request](https://github.com/ilri/DSpace/pull/437) and merged them into the `5_x-prod` branch
-  - I will deploy them to CGSpace in the next few days
-- Greatly improve my `check-spider-hits.sh` script to handle regular expressions in the spider agents patterns file
-  - This allows me to detect and purge many more hits from the Solr statistics core
-  - I've tested it quite a bit on DSpace Test, but I need to do a little more before I feel comfortable running the new code on CGSpace's Solr cores
-
-## 2019-11-15
-
-- Run the new version of `check-spider-hits.sh` on CGSpace's Solr statistics cores one by one, starting from the oldest just in case something goes wrong
-- But then I noticed that some (all?) of the hits weren't actually getting purged, all of which were using regular expressions like:
-  - `MetaURI[\+\s]API\/[0-9]\.[0-9]`
-  - `FDM(\s|\+)[0-9]`
-  - `Goldfire(\s|\+)Server`
-  - `^Mozilla\/4\.0\+\(compatible;\)$`
-  - `^Mozilla\/4\.0\+\(compatible;\+ICS\)$`
-  - `^Mozilla\/4\.5\+\[en]\+\(Win98;\+I\)$`
-- Upon closer inspection, the plus signs seem to be getting misinterpreted somehow in the delete, but not in the select!
-- Plus signs are special in regular expressions, URLs, and Solr's Lucene query parser, so I'm actually not sure where the issue is
-  - I tried to do URL encoding of the +, double escaping, etc... but nothing worked 
-  - I'm going to ignore regular expressions that have pluses for now
-- I think I might also have to ignore patterns that have percent signs, like `^\%?default\%?$`
-- After I added the ignores and did some more testing I finally ran the `check-spider-hits.sh` on all CGSpace Solr statistics cores and these are the number of hits purged from each core:
-  - statistics-2010: 113
-  - statistics-2011: 7235
-  - statistics-2012: 0
-  - statistics-2013: 0
-  - statistics-2014: 316
-  - statistics-2015: 16809
-  - statistics-2016: 41732
-  - statistics-2017: 39207
-  - statistics-2018: 295546
-  - statistics: 1043373
-- That's 1.4 million hits in addition to the 2 million I purged earlier this week...
-- For posterity, the major contributors to the hits on the statistics core were:
-  - Purging 812429 hits from curl\/ in statistics
-  - Purging 48206 hits from facebookexternalhit\/ in statistics
-  - Purging 72004 hits from PHP\/ in statistics
-  - Purging 76072 hits from Yeti\/[0-9] in statistics
-- Most of the curl hits were from CIAT in mid-2019, where they were using [GuzzleHttp](https://guzzle3.readthedocs.io/http-client/client.html) from PHP, which uses something like this for its user agent:
-
-</code></pre>
-
-<p>Guzzle/<Guzzle_Version> curl/<curl_version> PHP/<PHP_VERSION></p>
-
-<pre><code>
-- Run system updates on DSpace Test and reboot the server
-
-## 2019-11-17
-
-- Altmetric support responded about our dashboard question, asking if the second &quot;department&quot; (aka WLE's collection) was added recently and might have not been in the last harvesting yet
-  - I told her no, that the department is several years old, and the item was added in 2017
-  - Then I looked again at the dashboard for each department and I see the item in both departments now... shit.
-  - A [search in the IWMI department shows the item](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management)
-  - A [search in the WLE department shows the item](https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management)
-- I finally decided to revert `cg.hasMetadata` back to `cg.identifier.dataurl` in my CG Core v2 branch (see [#10](https://github.com/AgriculturalSemantics/cg-core/issues/10))
-- Regarding the [WLE item](https://hdl.handle.net/10568/97087) that has a much lower score than its DOI...
-  - I tweeted the item twice last week and the score never got linked
-  - Then I noticed that I had already made a note about the same issue in 2019-04, when I also tweeted it several times...
-  - I will ask Altmetric support for help with that
-- Finally deploy `5_x-cgcorev2` branch on DSpace Test
-
-## 2019-11-18
-
-- I sent a mail to the CGSpace partners in Addis about the CG Core v2 changes on DSpace Test
-- Then I filed an [issue on the CG Core GitHub](https://github.com/AgriculturalSemantics/cg-core/issues/11) to let the metadata people know about our progress
-- It seems like I will do a session about CG Core v2 implementation and limitations in DSpace for the data workshop in December in Nairobi (?)
-
-## 2019-11-19
-
-- Export IITA's community from CGSpace because they want to experiment with importing it into their internal DSpace for some testing or something
-  - I had previously sent them an export in 2019-04
-- Atmire merged my [pull request regarding unnecessary escaping of dashes](https://github.com/atmire/COUNTER-Robots/pull/28) in regular expressions, as well as [my suggestion of adding &quot;User-Agent&quot; to the list of patterns](https://github.com/atmire/COUNTER-Robots/issues/27)
-- I made another [pull request to fix invalid escaping of one of their new patterns](https://github.com/atmire/COUNTER-Robots/pull/29)
-- I ran my `check-spider-hits.sh` script again with these new patterns and found a bunch more statistics requests that match, for example:
-  - Found 39560 hits from ^Buck\/[0-9] in statistics
-  - Found 5471 hits from ^User-Agent in statistics
-  - Found 2994 hits from ^Buck\/[0-9] in statistics-2018
-  - Found 14076 hits from ^User-Agent in statistics-2018
-  - Found 16310 hits from ^User-Agent in statistics-2017
-  - Found 4429 hits from ^User-Agent in statistics-2016
-- Buck is one I've never heard of before, its user agent is:
-
-</code></pre>
-
-<p>Buck/2.2; (+<a href="https://app.hypefactors.com/media-monitoring/about.html">https://app.hypefactors.com/media-monitoring/about.html</a>)
-```</p>
+<li><p>On the topic of spiders, I have been wanting to update DSpace&rsquo;s default list of spiders in <code>config/spiders/agents</code>, perhaps by dropping a new list in from <a href="https://github.com/atmire/COUNTER-Robots">Atmire&rsquo;s COUNTER-Robots</a> project</p>
 
 <ul>
-<li>All in all that&rsquo;s about 85,000 more hits purged, in addition to the 3.4 million I purged last week</li>
+<li>First I checked for a user agent that is in COUNTER-Robots, but NOT in the current <code>dspace/config/spiders/example</code> list</li>
+
+<li><p>Then I made some item and bitstream requests on DSpace Test using that user agent:</p>
+
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;iskanie&quot;
+$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;iskanie&quot;
+$ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y' User-Agent:&quot;iskanie&quot;
+</code></pre></li>
+</ul></li>
+
+<li><p>A bit later I checked Solr and found three requests from my IP with that user agent this month:</p>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;response&gt;
+&lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;1&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;ip:73.178.9.24 AND userAgent:iskanie&lt;/str&gt;&lt;str name=&quot;fq&quot;&gt;dateYearMonth:2019-11&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;3&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
+&lt;/response&gt;
+</code></pre></li>
+
+<li><p>Now I want to make similar requests with a user agent that is included in DSpace&rsquo;s current user agent list:</p>
+
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;celestial&quot;
+$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;celestial&quot;
+$ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y' User-Agent:&quot;celestial&quot;
+</code></pre></li>
+
+<li><p>After twenty minutes I didn&rsquo;t see any requests in Solr, so I assume they did not get logged because they matched a bot list&hellip;</p>
+
+<ul>
+<li><p>What&rsquo;s strange is that the Solr spider agent configuration in <code>dspace/config/modules/solr-statistics.cfg</code> points to a file that doesn&rsquo;t exist&hellip;</p>
+
+<pre><code>spider.agentregex.regexfile = ${dspace.dir}/config/spiders/Bots-2013-03.txt
+</code></pre></li>
+</ul></li>
+
+<li><p>Apparently that is part of Atmire&rsquo;s CUA, despite being in a standard DSpace configuration file&hellip;</p></li>
+
+<li><p>I tried with some other garbage user agents like &ldquo;fuuuualan&rdquo; and they were visible in Solr</p>
+
+<ul>
+<li>Now I want to try adding &ldquo;iskanie&rdquo; and &ldquo;fuuuualan&rdquo; to the list of spider regexes in <code>dspace/config/spiders/example</code> and then try to use DSpace&rsquo;s &ldquo;mark spiders&rdquo; feature to change them to &ldquo;isBot:true&rdquo; in Solr</li>
+<li>I restarted Tomcat and ran <code>dspace stats-util -m</code> and it did some stuff for awhile, but I still don&rsquo;t see any items in Solr with <code>isBot:true</code></li>
+<li>According to <code>dspace-api/src/main/java/org/dspace/statistics/util/SpiderDetector.java</code> the patterns for user agents are loaded from any file in the <code>config/spiders/agents</code> directory</li>
+<li>I downloaded the COUNTER-Robots list to DSpace Test and overwrote the example file, then ran <code>dspace stats-util -m</code> and still there were no new items marked as being bots in Solr, so I think there is still something wrong</li>
+
+<li><p>Jesus, the code in <code>./dspace-api/src/main/java/org/dspace/statistics/util/StatisticsClient.java</code> says that <code>stats-util -m</code> marks spider requests by their IPs, not by their user agents&hellip; WTF:</p>
+
+<pre><code>else if (line.hasOption('m'))
+{
+SolrLogger.markRobotsByIP();
+}
+</code></pre></li>
+</ul></li>
+
+<li><p>WTF again, there is actually a function called <code>markRobotByUserAgent()</code> that is never called anywhere!</p>
+
+<ul>
+<li>It appears to be unimplemented&hellip;</li>
+<li>I sent a message to the dspace-tech mailing list to ask if I should file an issue</li>
+</ul></li>
+</ul>
+
+<h2 id="2019-11-05">2019-11-05</h2>
+
+<ul>
+<li><p>I added &ldquo;alanfuu2&rdquo; to the example spiders file, restarted Tomcat, then made two requests to DSpace Test:</p>
+
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;alanfuuu1&quot;
+$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;alanfuuu2&quot;
+</code></pre></li>
+
+<li><p>After committing the changes in Solr I saw one request for &ldquo;alanfuu1&rdquo; and no requests for &ldquo;alanfuu2&rdquo;:</p>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/update?commit=true'
+$ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu1&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;1&quot; start=&quot;0&quot;&gt;
+$ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu2&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;0&quot; start=&quot;0&quot;/&gt;
+</code></pre></li>
+
+<li><p>So basically it seems like a win to update the example file with the latest one from Atmire&rsquo;s COUNTER-Robots list</p>
+
+<ul>
+<li>Even though the &ldquo;mark by user agent&rdquo; function is not working (see email to dspace-tech mailing list) DSpace will still not log Solr events from these user agents</li>
+</ul></li>
+
+<li><p>I&rsquo;m curious how the special character matching is in Solr, so I will test two requests: one with &ldquo;www.gnip.com&rdquo; which is in the spider list, and one with &ldquo;www.gnyp.com&rdquo; which isn&rsquo;t:</p>
+
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnip.com&quot;
+$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnyp.com&quot;
+</code></pre></li>
+
+<li><p>Then commit changes to Solr so we don&rsquo;t have to wait:</p>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/update?commit=true'
+$ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:www.gnip.com&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound 
+&lt;result name=&quot;response&quot; numFound=&quot;0&quot; start=&quot;0&quot;/&gt;
+$ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:www.gnyp.com&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;1&quot; start=&quot;0&quot;&gt;
+</code></pre></li>
+
+<li><p>So the blocking seems to be working because &ldquo;www.gnip.com&rdquo; is one of the new patterns added to the spiders file&hellip;</p></li>
+</ul>
+
+<h2 id="2019-11-07">2019-11-07</h2>
+
+<ul>
+<li>CCAFS finally confirmed that they do indeed need the confusing new project tag that looks like a duplicate
+
+<ul>
+<li>They had proposed a batch of new tags in 2019-09 and we never merged them due to this uncertainty</li>
+<li>I have now merged the changes in to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/432">#432</a>)</li>
+</ul></li>
+<li>I am reconsidering the move of <code>cg.identifier.dataurl</code> to <code>cg.hasMetadata</code> in CG Core v2
+
+<ul>
+<li>The values of this field are mostly links to data sets on Dataverse and partner sites</li>
+<li>I opened an <a href="https://github.com/AgriculturalSemantics/cg-core/issues/10">issue on GitHub</a> to ask Marie-Angelique for clarification</li>
+</ul></li>
+
+<li><p>Looking into CGSpace statistics again</p>
+
+<ul>
+<li><p>I searched for hits in Solr from the BUbiNG bot and found 63,000 in the <code>statistics-2018</code> core:</p>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;62944&quot; start=&quot;0&quot;&gt;
+</code></pre></li>
+
+<li><p>Similar for com.plumanalytics, Grammarly, and ltx71!</p>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:
+*com.plumanalytics*' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;28256&quot; start=&quot;0&quot;&gt;
+$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*Grammarly*' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;6288&quot; start=&quot;0&quot;&gt;
+$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;105663&quot; start=&quot;0&quot;&gt;
+</code></pre></li>
+</ul></li>
+
+<li><p>Deleting these seems to work, for example the 105,000 ltx71 records from 2018:</p>
+
+<pre><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/update?stream.body=&lt;delete&gt;&lt;query&gt;userAgent:*ltx71*&lt;/query&gt;&lt;query&gt;type:0&lt;/query&gt;&lt;/delete&gt;&amp;commit=true'
+$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*' | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;0&quot; start=&quot;0&quot;/&gt;
+</code></pre></li>
+
+<li><p>I wrote a quick bash script to check all these user agents against the CGSpace Solr statistics cores</p>
+
+<ul>
+<li>For years 2010 until 2019 there are 1.6 million hits from these spider user agents</li>
+<li>For 2019 alone there are 740,000, over half of which come from Unpaywall!</li>
+
+<li><p>Looking at the facets I see there were about 200,000 hits from Unpaywall in 2019-10:</p>
+
+<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=
+12&amp;q=userAgent:*Unpaywall*' | xmllint --format - | less
+...
+&lt;lst name=&quot;facet_counts&quot;&gt;
+&lt;lst name=&quot;facet_queries&quot;/&gt;
+&lt;lst name=&quot;facet_fields&quot;&gt;
+&lt;lst name=&quot;dateYearMonth&quot;&gt;
+&lt;int name=&quot;2019-10&quot;&gt;198624&lt;/int&gt;
+&lt;int name=&quot;2019-05&quot;&gt;88422&lt;/int&gt;
+&lt;int name=&quot;2019-06&quot;&gt;79911&lt;/int&gt;
+&lt;int name=&quot;2019-09&quot;&gt;67065&lt;/int&gt;
+&lt;int name=&quot;2019-07&quot;&gt;39026&lt;/int&gt;
+&lt;int name=&quot;2019-08&quot;&gt;36889&lt;/int&gt;
+&lt;int name=&quot;2019-04&quot;&gt;36512&lt;/int&gt;
+&lt;int name=&quot;2019-11&quot;&gt;760&lt;/int&gt;
+&lt;/lst&gt;
+&lt;/lst&gt;
+</code></pre></li>
+</ul></li>
+
+<li><p>That answers Peter&rsquo;s question about why the stats jumped in October&hellip;</p></li>
+</ul>
+
+<h2 id="2019-11-08">2019-11-08</h2>
+
+<ul>
+<li>I saw a bunch of user agents that have the literal string <code>User-Agent</code> in their user agent HTTP header, for example:
+
+<ul>
+<li><code>User-Agent: Drupal (+http://drupal.org/)</code></li>
+<li><code>User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31</code></li>
+<li><code>User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;</code></li>
+<li><code>User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)</code></li>
+<li><code>User-Agent:User-Agent:Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; GTB7.5; .NET4.0C)IKU/6.7.6.12189;IKUCID/IKU;IKU/6.7.6.12189;IKUCID/IKU;</code></li>
+<li><code>User-Agent:Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) IKU/7.0.5.9226;IKUCID/IKU;</code></li>
+</ul></li>
+<li>I filed <a href="https://github.com/atmire/COUNTER-Robots/issues/27">an issue</a> on the COUNTER-Robots project to see if they agree to add <code>User-Agent:</code> to the list of robot user agents</li>
+</ul>
+
+<h2 id="2019-11-09">2019-11-09</h2>
+
+<ul>
+<li>Deploy the latest <code>5_x-prod</code> branch on CGSpace (linode19)
+
+<ul>
+<li>This includes the updated CCAFS phase II project tags and the updated spider user agents</li>
+</ul></li>
+<li>Run all system updates on CGSpace and reboot the server
+
+<ul>
+<li>After rebooting it seems that all Solr statistics cores came back up fine&hellip;</li>
+</ul></li>
+
+<li><p>I did some work to clean up my bot processing script and removed about 2 million hits from the statistics cores on CGSpace</p>
+
+<ul>
+<li>The script is called <code>check-spider-hits.sh</code></li>
+
+<li><p>After a bunch of tests and checks I ran it for each statistics shard like so:</p>
+
+<pre><code>$ for shard in statistics statistics-2018 statistics-2017 statistics-2016 statistics-2015 stat
+istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do ./check-spider-hits.sh -s $shard -p yes; done
+</code></pre></li>
+</ul></li>
+
+<li><p>Open a <a href="https://github.com/atmire/COUNTER-Robots/pull/28">pull request</a> against COUNTER-Robots to remove unnecessary escaping of dashes</p></li>
+</ul>
+
+<h2 id="2019-11-12">2019-11-12</h2>
+
+<ul>
+<li>Udana and Chandima emailed me to ask why <a href="https://hdl.handle.net/10568/81236">one of their WLE items</a> that is mapped from IWMI only shows up in the IWMI &ldquo;department&rdquo; on the Altmetric dashboard
+
+<ul>
+<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management">search in the IWMI department shows the item</a></li>
+<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management">search in the WLE department shows no results</a></li>
+<li>I emailed Altmetric support to ask for help</li>
+</ul></li>
+<li>Also, while analysing this, I looked through some of the other top WLE items and fixed some metadata issues (adding <code>dc.rights</code>, fixing DOIs, adding ISSNs, etc) and noticed one issue with <a href="https://hdl.handle.net/10568/97087">an item</a> that has an Altmetric score for its Handle (lower) despite it having a correct DOI (with a higher score)
+
+<ul>
+<li>I tweeted the Handle to see if the score would get linked once Altmetric noticed it</li>
+</ul></li>
+</ul>
+
+<h2 id="2019-11-13">2019-11-13</h2>
+
+<ul>
+<li>The <a href="https://hdl.handle.net/10568/97087">item with a low Altmetric score for its Handle</a> that I tweeted yesterday still hasn&rsquo;t linked with the DOI&rsquo;s score
+
+<ul>
+<li>I tweeted it again with the Handle and the DOI</li>
+</ul></li>
+
+<li><p>Testing modifying some of the COUNTER-Robots patterns to use <code>[0-9]</code> instead of <code>\d</code> digit character type, as Solr&rsquo;s regex search can&rsquo;t use those</p>
+
+<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;Scrapoo/1&quot;
+$ http &quot;http://localhost:8081/solr/statistics/update?commit=true&quot;
+$ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot; | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;1&quot; start=&quot;0&quot;&gt;
+$ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo\/[0-9]/&quot; | xmllint --format - | grep numFound
+&lt;result name=&quot;response&quot; numFound=&quot;1&quot; start=&quot;0&quot;&gt;
+</code></pre></li>
+
+<li><p>Nice, so searching with regex in Solr with <code>//</code> syntax works for those digits!</p></li>
+
+<li><p>I realized that it&rsquo;s easier to search Solr from curl via POST using this syntax:</p>
+
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:*Scrapoo*&amp;rows=0&quot;)
+</code></pre></li>
+
+<li><p>If the parameters include something like &ldquo;[0-9]&rdquo; then curl interprets it as a range and will make ten requests</p>
+
+<ul>
+<li><p>You can disable this using the <code>-g</code> option, but there are other benefits to searching with POST, for example it seems that I have less issues with escaping special parameters when using Solr&rsquo;s regex search:</p>
+
+<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select' -d 'q=userAgent:/Postgenomic(\s|\+)v2/&amp;rows=2'
+</code></pre></li>
+</ul></li>
+
+<li><p>I updated the <code>check-spider-hits.sh</code> script to use the POST syntax, and I&rsquo;m evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling</p></li>
+</ul>
+
+<h2 id="2019-11-14">2019-11-14</h2>
+
+<ul>
+<li>IWMI sent a few new ORCID identifiers for us to add to our controlled vocabulary</li>
+
+<li><p>I will merge them with our existing list and then resolve their names using my <code>resolve-orcids.py</code> script:</p>
+
+<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2019-11-14-combined-orcids.txt
+$ ./resolve-orcids.py -i /tmp/2019-11-14-combined-orcids.txt -o /tmp/2019-11-14-combined-names.txt -d
+# sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
+$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+</code></pre></li>
+
+<li><p>I created a <a href="https://github.com/ilri/DSpace/pull/437">pull request</a> and merged them into the <code>5_x-prod</code> branch</p>
+
+<ul>
+<li>I will deploy them to CGSpace in the next few days</li>
+</ul></li>
+
+<li><p>Greatly improve my <code>check-spider-hits.sh</code> script to handle regular expressions in the spider agents patterns file</p>
+
+<ul>
+<li>This allows me to detect and purge many more hits from the Solr statistics core</li>
+<li>I&rsquo;ve tested it quite a bit on DSpace Test, but I need to do a little more before I feel comfortable running the new code on CGSpace&rsquo;s Solr cores</li>
+</ul></li>
+</ul>
+
+<h2 id="2019-11-15">2019-11-15</h2>
+
+<ul>
+<li>Run the new version of <code>check-spider-hits.sh</code> on CGSpace&rsquo;s Solr statistics cores one by one, starting from the oldest just in case something goes wrong</li>
+<li>But then I noticed that some (all?) of the hits weren&rsquo;t actually getting purged, all of which were using regular expressions like:
+
+<ul>
+<li><code>MetaURI[\+\s]API\/[0-9]\.[0-9]</code></li>
+<li><code>FDM(\s|\+)[0-9]</code></li>
+<li><code>Goldfire(\s|\+)Server</code></li>
+<li><code>^Mozilla\/4\.0\+\(compatible;\)$</code></li>
+<li><code>^Mozilla\/4\.0\+\(compatible;\+ICS\)$</code></li>
+<li><code>^Mozilla\/4\.5\+\[en]\+\(Win98;\+I\)$</code></li>
+</ul></li>
+<li>Upon closer inspection, the plus signs seem to be getting misinterpreted somehow in the delete, but not in the select!</li>
+<li>Plus signs are special in regular expressions, URLs, and Solr&rsquo;s Lucene query parser, so I&rsquo;m actually not sure where the issue is
+
+<ul>
+<li>I tried to do URL encoding of the +, double escaping, etc&hellip; but nothing worked</li>
+<li>I&rsquo;m going to ignore regular expressions that have pluses for now</li>
+</ul></li>
+<li>I think I might also have to ignore patterns that have percent signs, like <code>^\%?default\%?$</code></li>
+<li>After I added the ignores and did some more testing I finally ran the <code>check-spider-hits.sh</code> on all CGSpace Solr statistics cores and these are the number of hits purged from each core:
+
+<ul>
+<li>statistics-2010: 113</li>
+<li>statistics-2011: 7235</li>
+<li>statistics-2012: 0</li>
+<li>statistics-2013: 0</li>
+<li>statistics-2014: 316</li>
+<li>statistics-2015: 16809</li>
+<li>statistics-2016: 41732</li>
+<li>statistics-2017: 39207</li>
+<li>statistics-2018: 295546</li>
+<li>statistics: 1043373</li>
+</ul></li>
+<li>That&rsquo;s 1.4 million hits in addition to the 2 million I purged earlier this week&hellip;</li>
+<li>For posterity, the major contributors to the hits on the statistics core were:
+
+<ul>
+<li>Purging 812429 hits from curl\/ in statistics</li>
+<li>Purging 48206 hits from facebookexternalhit\/ in statistics</li>
+<li>Purging 72004 hits from PHP\/ in statistics</li>
+<li>Purging 76072 hits from Yeti\/[0-9] in statistics</li>
+</ul></li>
+
+<li><p>Most of the curl hits were from CIAT in mid-2019, where they were using <a href="https://guzzle3.readthedocs.io/http-client/client.html">GuzzleHttp</a> from PHP, which uses something like this for its user agent:</p>
+
+<pre><code>Guzzle/&lt;Guzzle_Version&gt; curl/&lt;curl_version&gt; PHP/&lt;PHP_VERSION&gt;
+</code></pre></li>
+
+<li><p>Run system updates on DSpace Test and reboot the server</p></li>
+</ul>
+
+<h2 id="2019-11-17">2019-11-17</h2>
+
+<ul>
+<li>Altmetric support responded about our dashboard question, asking if the second &ldquo;department&rdquo; (aka WLE&rsquo;s collection) was added recently and might have not been in the last harvesting yet
+
+<ul>
+<li>I told her no, that the department is several years old, and the item was added in 2017</li>
+<li>Then I looked again at the dashboard for each department and I see the item in both departments now&hellip; shit.</li>
+<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_16814&amp;q=Towards%20sustainable%20sanitation%20management">search in the IWMI department shows the item</a></li>
+<li>A <a href="https://www.altmetric.com/explorer/outputs?department_id%5B%5D=CGSpace%3Agroup%3Acom_10568_34494&amp;q=Towards%20sustainable%20sanitation%20management">search in the WLE department shows the item</a></li>
+</ul></li>
+<li>I finally decided to revert <code>cg.hasMetadata</code> back to <code>cg.identifier.dataurl</code> in my CG Core v2 branch (see <a href="https://github.com/AgriculturalSemantics/cg-core/issues/10">#10</a>)</li>
+<li>Regarding the <a href="https://hdl.handle.net/10568/97087">WLE item</a> that has a much lower score than its DOI&hellip;
+
+<ul>
+<li>I tweeted the item twice last week and the score never got linked</li>
+<li>Then I noticed that I had already made a note about the same issue in 2019-04, when I also tweeted it several times&hellip;</li>
+<li>I will ask Altmetric support for help with that</li>
+</ul></li>
+<li>Finally deploy <code>5_x-cgcorev2</code> branch on DSpace Test</li>
+</ul>
+
+<h2 id="2019-11-18">2019-11-18</h2>
+
+<ul>
+<li>I sent a mail to the CGSpace partners in Addis about the CG Core v2 changes on DSpace Test</li>
+<li>Then I filed an <a href="https://github.com/AgriculturalSemantics/cg-core/issues/11">issue on the CG Core GitHub</a> to let the metadata people know about our progress</li>
+<li>It seems like I will do a session about CG Core v2 implementation and limitations in DSpace for the data workshop in December in Nairobi (?)</li>
+</ul>
+
+<h2 id="2019-11-19">2019-11-19</h2>
+
+<ul>
+<li>Export IITA&rsquo;s community from CGSpace because they want to experiment with importing it into their internal DSpace for some testing or something
+
+<ul>
+<li>I had previously sent them an export in 2019-04</li>
+</ul></li>
+<li>Atmire merged my <a href="https://github.com/atmire/COUNTER-Robots/pull/28">pull request regarding unnecessary escaping of dashes</a> in regular expressions, as well as <a href="https://github.com/atmire/COUNTER-Robots/issues/27">my suggestion of adding &ldquo;User-Agent&rdquo; to the list of patterns</a></li>
+<li>I made another <a href="https://github.com/atmire/COUNTER-Robots/pull/29">pull request to fix invalid escaping of one of their new patterns</a></li>
+<li>I ran my <code>check-spider-hits.sh</code> script again with these new patterns and found a bunch more statistics requests that match, for example:
+
+<ul>
+<li>Found 39560 hits from ^Buck\/[0-9] in statistics</li>
+<li>Found 5471 hits from ^User-Agent in statistics</li>
+<li>Found 2994 hits from ^Buck\/[0-9] in statistics-2018</li>
+<li>Found 14076 hits from ^User-Agent in statistics-2018</li>
+<li>Found 16310 hits from ^User-Agent in statistics-2017</li>
+<li>Found 4429 hits from ^User-Agent in statistics-2016</li>
+</ul></li>
+
+<li><p>Buck is one I&rsquo;ve never heard of before, its user agent is:</p>
+
+<pre><code>Buck/2.2; (+https://app.hypefactors.com/media-monitoring/about.html)
+</code></pre></li>
+
+<li><p>All in all that&rsquo;s about 85,000 more hits purged, in addition to the 3.4 million I purged last week</p></li>
 </ul>
 
 <!-- vim: set sw=2 ts=2: -->
