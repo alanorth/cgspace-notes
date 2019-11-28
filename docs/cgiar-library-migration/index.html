@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGIAR Library Migration"/>
 <meta name="twitter:description" content="Notes on the migration of the CGIAR Library to CGSpace"/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -25,7 +25,7 @@
   "@type": "BlogPosting",
   "headline": "CGIAR Library Migration",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/cgiar-library-migration\/",
-  "wordCount": "1285",
+  "wordCount": "1278",
   "datePublished": "2017-09-18T16:38:35+03:00",
   "dateModified": "2019-10-28T13:40:20+02:00",
   "author": {
@@ -100,47 +100,38 @@
 </p>
   </header>
   <p>Rough notes for importing the CGIAR Library content. It was decided that this content would go to a new top-level community called <em>CGIAR System Organization</em>.</p>
-
-<h2 id="pre-migration-technical-todos">Pre-migration Technical TODOs</h2>
-
+<h2 id="premigration-technical-todos">Pre-migration Technical TODOs</h2>
 <p>Things that need to happen before the migration:</p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Create top-level community on CGSpace to hold the CGIAR Library content: <code>10568/83389</code>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Update nginx redirects in ansible templates</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Update handle in DSpace XMLUI config</label></li>
-</ul></label></li>
+<ul>
+<li><input checked="" disabled="" type="checkbox">Create top-level community on CGSpace to hold the CGIAR Library content: <code>10568/83389</code>
+<ul>
+<li><input checked="" disabled="" type="checkbox">Update nginx redirects in ansible templates</li>
+<li><input checked="" disabled="" type="checkbox">Update handle in DSpace XMLUI config</li>
+</ul>
+</li>
 <li>Set up nginx redirects for URLs like:
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> <a href="https://library.cgiar.org/bitstream/handle/10947/2699/CGIAR_Branding_Guidelines_and_Toolkit.pdf">https://library.cgiar.org/bitstream/handle/10947/2699/CGIAR_Branding_Guidelines_and_Toolkit.pdf</a></label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> <a href="https://library.cgiar.org/handle/10947/4258">https://library.cgiar.org/handle/10947/4258</a></label></li>
-</ul></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Merge <a href="https://github.com/ilri/DSpace/pull/339">#339</a> to <code>5_x-prod</code> branch and rebuild DSpace</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Increase <code>max_connections</code> in <code>/etc/postgresql/9.5/main/postgresql.conf</code> by ~10
-
+<ul>
+<li><input checked="" disabled="" type="checkbox"><a href="https://library.cgiar.org/bitstream/handle/10947/2699/CGIAR_Branding_Guidelines_and_Toolkit.pdf">https://library.cgiar.org/bitstream/handle/10947/2699/CGIAR_Branding_Guidelines_and_Toolkit.pdf</a></li>
+<li><input checked="" disabled="" type="checkbox"><a href="https://library.cgiar.org/handle/10947/4258">https://library.cgiar.org/handle/10947/4258</a></li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox">Merge <a href="https://github.com/ilri/DSpace/pull/339">#339</a> to <code>5_x-prod</code> branch and rebuild DSpace</li>
+<li><input checked="" disabled="" type="checkbox">Increase <code>max_connections</code> in <code>/etc/postgresql/9.5/main/postgresql.conf</code> by ~10
 <ul>
 <li><code>SELECT * FROM pg_stat_activity;</code> seems to show ~6 extra connections used by the command line tools during import</li>
-</ul></label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Temporarily disable nightly <code>index-discovery</code> cron job because the import process will be taking place during some of this time and I don&rsquo;t want them to be competing to update the Solr index</label></li>
-
-<li><p>[x] Copy HTTPS certificate key pair from CGIAR Library server&rsquo;s Tomcat keystore:</p>
-
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox">Temporarily disable nightly <code>index-discovery</code> cron job because the import process will be taking place during some of this time and I don't want them to be competing to update the Solr index</li>
+<li><input checked="" disabled="" type="checkbox">Copy HTTPS certificate key pair from CGIAR Library server's Tomcat keystore:</li>
+</ul>
 <pre><code>$ keytool -list -keystore tomcat.keystore
 $ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
 $ openssl pkcs12 -in library.cgiar.org.p12 -nokeys -out library.cgiar.org.crt.pem
 $ openssl pkcs12 -in library.cgiar.org.p12 -nodes -nocerts -out library.cgiar.org.key.pem
 $ wget https://certs.godaddy.com/repository/gdroot-g2.crt https://certs.godaddy.com/repository/gdig2.crt.pem
 $ cat library.cgiar.org.crt.pem gdig2.crt.pem &gt; library.cgiar.org-chained.pem
-</code></pre></li>
-</ul>
-
-<h2 id="migration-process">Migration Process</h2>
-
+</code></pre><h2 id="migration-process">Migration Process</h2>
 <p><strong>Export all top-level communities and collections from DSpace Test:</strong></p>
-
 <pre><code>$ export PATH=$PATH:/home/dspacetest.cgiar.org/bin
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2515 10947-2515/10947-2515.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2516 10947-2516/10947-2516.zip
@@ -154,21 +145,16 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2527 10947-2527/10947
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10568/93759 10568-93759/10568-93759.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10568/93760 10568-93760/10568-93760.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
-</code></pre>
-
-<p><strong>Import to CGSpace (also see <a href="http://alanorth.github.io/cgspace-notes/2017-05/#2017-05-10">notes from 2017-05-10</a>):</strong></p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Copy all exports from DSpace Test</label></li>
-
-<li><p>[x] Add ingestion overrides to <code>dspace.cfg</code> before import:</p>
-
+</code></pre><p><strong>Import to CGSpace (also see <a href="http://alanorth.github.io/cgspace-notes/2017-05/#2017-05-10">notes from 2017-05-10</a>):</strong></p>
+<ul>
+<li><input checked="" disabled="" type="checkbox">Copy all exports from DSpace Test</li>
+<li><input checked="" disabled="" type="checkbox">Add ingestion overrides to <code>dspace.cfg</code> before import:</li>
+</ul>
 <pre><code>mets.dspaceAIP.ingest.crosswalk.METSRIGHTS = NIL
 mets.dspaceAIP.ingest.crosswalk.DSPACE-ROLES = NIL
-</code></pre></li>
-
-<li><p>[x] Import communities and collections, paying attention to options to skip missing parents and ignore handles:</p>
-
+</code></pre><ul>
+<li><input checked="" disabled="" type="checkbox">Import communities and collections, paying attention to options to skip missing parents and ignore handles:</li>
+</ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
 $ export PATH=$PATH:/home/cgspace.cgiar.org/bin
 $ dspace packager -r -u -a -t AIP -o skipIfParentMissing=true -e aorth@mjanja.ch -p 10568/83389 10947-2515/10947-2515.zip
@@ -185,65 +171,45 @@ $ for item in 10947-2527/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aor
 $ dspace packager -s -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83389 10947-1/10947-1.zip
 $ for collection in 10947-1/COLLECTION@10947-*; do dspace packager -s -o ignoreHandle=false -t AIP -e aorth@mjanja.ch -p 10947/1 $collection; done
 $ for item in 10947-1/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre></li>
-</ul>
-
-<p>This submits AIP hierarchies recursively (-r) and suppresses errors when an item&rsquo;s parent collection hasn&rsquo;t been created yet—for example, if the item is mapped. The large historic archive (<sup>10947</sup>&frasl;<sub>1</sub>) is created in several steps because it requires a lot of memory and often crashes.</p>
-
+</code></pre><p>This submits AIP hierarchies recursively (-r) and suppresses errors when an item's parent collection hasn't been created yet—for example, if the item is mapped. The large historic archive (10947/1) is created in several steps because it requires a lot of memory and often crashes.</p>
 <p><strong>Create new subcommunities and collections for content we reorganized into new hierarchies from the original:</strong></p>
-
-<ul class="task-list">
-<li><p>[x] Create <em>CGIAR System Management Board</em> sub-community: <code>10568/83536</code></p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Content from <em>CGIAR System Management Board documents</em> collection (<code>10947/4561</code>) goes here</label></li>
-
-<li><p>Import collection hierarchy first and then the items:</p>
-
+<ul>
+<li><input checked="" disabled="" type="checkbox">Create <em>CGIAR System Management Board</em> sub-community: <code>10568/83536</code>
+<ul>
+<li><input checked="" disabled="" type="checkbox">Content from <em>CGIAR System Management Board documents</em> collection (<code>10947/4561</code>) goes here</li>
+<li>Import collection hierarchy first and then the items:</li>
+</ul>
+</li>
+</ul>
 <pre><code>$ dspace packager -r -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83536 10568-93760/COLLECTION@10947-4651.zip
 $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre></li>
-</ul></li>
-
-<li><p>[x] Create <em>CGIAR System Management Office</em> sub-community: <code>10568/83537</code></p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Create <em>CGIAR System Management Office documents</em> collection: <code>10568/83538</code></label></li>
-
-<li><p>Import items to collection individually in replace mode (-r) while explicitly preserving handles and ignoring parents:</p>
-
-<pre><code>$ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
-</code></pre></li>
-</ul></li>
-</ul>
-
-<p><strong>Get the handles for the last few items from CGIAR Library that were created since we did the migration to DSpace Test in May:</strong></p>
-
-<pre><code>dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) &gt; '2017-05-01T00:00:00Z');
-</code></pre>
-
+</code></pre><ul>
+<li><input checked="" disabled="" type="checkbox">Create <em>CGIAR System Management Office</em> sub-community: <code>10568/83537</code>
 <ul>
-<li><p>Export them from the CGIAR Library:</p>
-
-<pre><code># for handle in 10947/4658 10947/4659 10947/4660 10947/4661 10947/4665 10947/4664 10947/4666 10947/4669; do /usr/local/dspace/bin/dspace packager -d -a -t AIP -e m.marus@cgiar.org -i $handle ${handle}.zip; done
-</code></pre></li>
-
-<li><p>Import on CGSpace:</p>
-
-<pre><code>$ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre></li>
+<li><input checked="" disabled="" type="checkbox">Create <em>CGIAR System Management Office documents</em> collection: <code>10568/83538</code></li>
+<li>Import items to collection individually in replace mode (-r) while explicitly preserving handles and ignoring parents:</li>
 </ul>
-
-<h2 id="post-migration">Post Migration</h2>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Shut down Tomcat and run <code>update-sequences.sql</code> as the system&rsquo;s <code>postgres</code> user</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Remove ingestion overrides from <code>dspace.cfg</code></label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Reset PostgreSQL <code>max_connections</code> to 183</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Enable nightly <code>index-discovery</code> cron job</label></li>
-
-<li><p>[x] Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</p>
-
+</li>
+</ul>
+<pre><code>$ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
+</code></pre><p><strong>Get the handles for the last few items from CGIAR Library that were created since we did the migration to DSpace Test in May:</strong></p>
+<pre><code>dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) &gt; '2017-05-01T00:00:00Z');
+</code></pre><ul>
+<li>Export them from the CGIAR Library:</li>
+</ul>
+<pre><code># for handle in 10947/4658 10947/4659 10947/4660 10947/4661 10947/4665 10947/4664 10947/4666 10947/4669; do /usr/local/dspace/bin/dspace packager -d -a -t AIP -e m.marus@cgiar.org -i $handle ${handle}.zip; done
+</code></pre><ul>
+<li>Import on CGSpace:</li>
+</ul>
+<pre><code>$ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
+</code></pre><h2 id="post-migration">Post Migration</h2>
+<ul>
+<li><input checked="" disabled="" type="checkbox">Shut down Tomcat and run <code>update-sequences.sql</code> as the system's <code>postgres</code> user</li>
+<li><input checked="" disabled="" type="checkbox">Remove ingestion overrides from <code>dspace.cfg</code></li>
+<li><input checked="" disabled="" type="checkbox">Reset PostgreSQL <code>max_connections</code> to 183</li>
+<li><input checked="" disabled="" type="checkbox">Enable nightly <code>index-discovery</code> cron job</li>
+<li><input checked="" disabled="" type="checkbox">Adjust CGSpace's <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</li>
+</ul>
 <pre><code>&quot;server_admins&quot; = (
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
@@ -258,54 +224,33 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
 )
-</code></pre></li>
-</ul>
-
-<p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don&rsquo;t need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Update DNS records:
-
+</code></pre><p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don't need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox">Update DNS records:
 <ul>
 <li>CNAME: cgspace.cgiar.org</li>
-</ul></label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Re-deploy DSpace from freshly built <code>5_x-prod</code> branch</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Merge <code>cgiar-library</code> branch to <code>master</code> and re-run ansible nginx templates</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> Run system updates and reboot server</label></li>
-
-<li><p>[x] Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</p>
-
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox">Re-deploy DSpace from freshly built <code>5_x-prod</code> branch</li>
+<li><input checked="" disabled="" type="checkbox">Merge <code>cgiar-library</code> branch to <code>master</code> and re-run ansible nginx templates</li>
+<li><input checked="" disabled="" type="checkbox">Run system updates and reboot server</li>
+<li><input checked="" disabled="" type="checkbox">Switch to Let's Encrypt HTTPS certificates (after DNS is updated and server isn't busy):</li>
+</ul>
 <pre><code>$ sudo systemctl stop nginx
 $ /opt/certbot-auto certonly --standalone -d library.cgiar.org
 $ sudo systemctl start nginx
-</code></pre></li>
-</ul>
-
-<h2 id="troubleshooting">Troubleshooting</h2>
-
+</code></pre><h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="foreign-key-error-in-dspace-cleanup">Foreign Key Error in <code>dspace cleanup</code></h3>
-
 <p>The cleanup script is sometimes used during import processes to clean the database and assetstore after failed AIP imports. If you see the following error with <code>dspace cleanup -v</code>:</p>
-
 <pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;                                                                                                                       
   Detail: Key (bitstream_id)=(119841) is still referenced from table &quot;bundle&quot;.
-</code></pre>
-
-<p>The solution is to set the <code>primary_bitstream_id</code> to NULL in PostgreSQL:</p>
-
+</code></pre><p>The solution is to set the <code>primary_bitstream_id</code> to NULL in PostgreSQL:</p>
 <pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (119841);
-</code></pre>
-
-<h3 id="psqlexception-during-aip-ingest">PSQLException During AIP Ingest</h3>
-
+</code></pre><h3 id="psqlexception-during-aip-ingest">PSQLException During AIP Ingest</h3>
 <p>After a few rounds of ingesting—possibly with failures—you might end up with inconsistent IDs in the database. In this case, during AIP ingest of a single collection in submit mode (-s):</p>
-
 <pre><code>org.dspace.content.packager.PackageValidationException: Exception while ingesting 10947-2527/10947-2527.zip, Reason: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;                                    
   Detail: Key (handle_id)=(86227) already exists.
-</code></pre>
-
-<p>The normal solution is to run the <code>update-sequences.sql</code> script (with Tomcat shut down) but it doesn&rsquo;t seem to work in this case. Finding the maximum <code>handle_id</code> and manually updating the sequence seems to work:</p>
-
+</code></pre><p>The normal solution is to run the <code>update-sequences.sql</code> script (with Tomcat shut down) but it doesn't seem to work in this case. Finding the maximum <code>handle_id</code> and manually updating the sequence seems to work:</p>
 <pre><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
 dspace=# select setval('handle_seq',86873);
 </code></pre>

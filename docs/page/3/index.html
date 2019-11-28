@@ -9,13 +9,12 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/" />
-
 <meta property="og:updated_time" content="2019-11-04T12:20:30+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGSpace Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -100,10 +99,9 @@
 
 </p>
   </header>
-  <h2 id="2018-04-01">2018-04-01</h2>
-
+  <h2 id="20180401">2018-04-01</h2>
 <ul>
-<li>I tried to test something on DSpace Test but noticed that it&rsquo;s down since god knows when</li>
+<li>I tried to test something on DSpace Test but noticed that it's down since god knows when</li>
 <li>Catalina logs at least show some memory errors yesterday:</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2018-04/'>Read more →</a>
@@ -123,8 +121,7 @@
 
 </p>
   </header>
-  <h2 id="2018-03-02">2018-03-02</h2>
-
+  <h2 id="20180302">2018-03-02</h2>
 <ul>
 <li>Export a CSV of the IITA community metadata for Martin Mueller</li>
 </ul>
@@ -145,13 +142,12 @@
 
 </p>
   </header>
-  <h2 id="2018-02-01">2018-02-01</h2>
-
+  <h2 id="20180201">2018-02-01</h2>
 <ul>
 <li>Peter gave feedback on the <code>dc.rights</code> proof of concept that I had sent him last week</li>
-<li>We don&rsquo;t need to distinguish between internal and external works, so that makes it just a simple list</li>
+<li>We don't need to distinguish between internal and external works, so that makes it just a simple list</li>
 <li>Yesterday I figured out how to monitor DSpace sessions using JMX</li>
-<li>I copied the logic in the <code>jmx_tomcat_dbpools</code> provided by Ubuntu&rsquo;s <code>munin-plugins-java</code> package and used the stuff I discovered about JMX <a href="/cgspace-notes/2018-01/">in 2018-01</a></li>
+<li>I copied the logic in the <code>jmx_tomcat_dbpools</code> provided by Ubuntu's <code>munin-plugins-java</code> package and used the stuff I discovered about JMX <a href="/cgspace-notes/2018-01/">in 2018-01</a></li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2018-02/'>Read more →</a>
 </article> 
@@ -170,33 +166,26 @@
 
 </p>
   </header>
-  <h2 id="2018-01-02">2018-01-02</h2>
-
+  <h2 id="20180102">2018-01-02</h2>
 <ul>
 <li>Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time</li>
-<li>I didn&rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&rsquo;t show anything out of the ordinary</li>
+<li>I didn't get any load alerts from Linode and the REST and XMLUI logs don't show anything out of the ordinary</li>
 <li>The nginx logs show HTTP 200s until <code>02/Jan/2018:11:27:17 +0000</code> when Uptime Robot got an HTTP 500</li>
 <li>In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;</li>
-
-<li><p>And just before that I see this:</p>
-
+<li>And just before that I see this:</li>
+</ul>
 <pre><code>Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
-</code></pre></li>
-
-<li><p>Ah hah! So the pool was actually empty!</p></li>
-
-<li><p>I need to increase that, let&rsquo;s try to bump it up from 50 to 75</p></li>
-
-<li><p>After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw</p></li>
-
-<li><p>I notice this error quite a few times in dspace.log:</p>
-
+</code></pre><ul>
+<li>Ah hah! So the pool was actually empty!</li>
+<li>I need to increase that, let's try to bump it up from 50 to 75</li>
+<li>After that one client got an HTTP 499 but then the rest were HTTP 200, so I don't know what the hell Uptime Robot saw</li>
+<li>I notice this error quite a few times in dspace.log:</li>
+</ul>
 <pre><code>2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
 org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse 'dateIssued_keyword:[1976+TO+1979]': Encountered &quot; &quot;]&quot; &quot;] &quot;&quot; at line 1, column 32.
-</code></pre></li>
-
-<li><p>And there are many of these errors every day for the past month:</p>
-
+</code></pre><ul>
+<li>And there are many of these errors every day for the past month:</li>
+</ul>
 <pre><code>$ grep -c &quot;Error while searching for sidebar facets&quot; dspace.log.*
 dspace.log.2017-11-21:4
 dspace.log.2017-11-22:1
@@ -241,9 +230,8 @@ dspace.log.2017-12-30:89
 dspace.log.2017-12-31:53
 dspace.log.2018-01-01:45
 dspace.log.2018-01-02:34
-</code></pre></li>
-
-<li><p>Danny wrote to ask for help renewing the wildcard ilri.org certificate and I advised that we should probably use Let&rsquo;s Encrypt if it&rsquo;s just a handful of domains</p></li>
+</code></pre><ul>
+<li>Danny wrote to ask for help renewing the wildcard ilri.org certificate and I advised that we should probably use Let's Encrypt if it's just a handful of domains</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2018-01/'>Read more →</a>
 </article> 
@@ -262,8 +250,7 @@ dspace.log.2018-01-02:34
 
 </p>
   </header>
-  <h2 id="2017-12-01">2017-12-01</h2>
-
+  <h2 id="20171201">2017-12-01</h2>
 <ul>
 <li>Uptime Robot noticed that CGSpace went down</li>
 <li>The logs say &ldquo;Timeout waiting for idle object&rdquo;</li>
@@ -287,27 +274,22 @@ dspace.log.2018-01-02:34
 
 </p>
   </header>
-  <h2 id="2017-11-01">2017-11-01</h2>
-
+  <h2 id="20171101">2017-11-01</h2>
 <ul>
 <li>The CORE developers responded to say they are looking into their bot not respecting our robots.txt</li>
 </ul>
-
-<h2 id="2017-11-02">2017-11-02</h2>
-
+<h2 id="20171102">2017-11-02</h2>
 <ul>
-<li><p>Today there have been no hits by CORE and no alerts from Linode (coincidence?)</p>
-
+<li>Today there have been no hits by CORE and no alerts from Linode (coincidence?)</li>
+</ul>
 <pre><code># grep -c &quot;CORE&quot; /var/log/nginx/access.log
 0
-</code></pre></li>
-
-<li><p>Generate list of authors on CGSpace for Peter to go through and correct:</p>
-
+</code></pre><ul>
+<li>Generate list of authors on CGSpace for Peter to go through and correct:</li>
+</ul>
 <pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
 COPY 54701
-</code></pre></li>
-</ul>
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2017-11/'>Read more →</a>
 </article> 
 
@@ -325,17 +307,14 @@ COPY 54701
 
 </p>
   </header>
-  <h2 id="2017-10-01">2017-10-01</h2>
-
+  <h2 id="20171001">2017-10-01</h2>
 <ul>
-<li><p>Peter emailed to point out that many items in the <a href="https://cgspace.cgiar.org/handle/10568/2703">ILRI archive collection</a> have multiple handles:</p>
-
+<li>Peter emailed to point out that many items in the <a href="https://cgspace.cgiar.org/handle/10568/2703">ILRI archive collection</a> have multiple handles:</li>
+</ul>
 <pre><code>http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
-</code></pre></li>
-
-<li><p>There appears to be a pattern but I&rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine</p></li>
-
-<li><p>Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections</p></li>
+</code></pre><ul>
+<li>There appears to be a pattern but I'll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine</li>
+<li>Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2017-10/'>Read more →</a>
 </article> 
@@ -374,16 +353,13 @@ COPY 54701
 
 </p>
   </header>
-  <h2 id="2017-09-06">2017-09-06</h2>
-
+  <h2 id="20170906">2017-09-06</h2>
 <ul>
 <li>Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two hours</li>
 </ul>
-
-<h2 id="2017-09-07">2017-09-07</h2>
-
+<h2 id="20170907">2017-09-07</h2>
 <ul>
-<li>Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account is both in the approvers step as well as the group</li>
+<li>Ask Sisay to clean up the WLE approvers a bit, as Marianne's user account is both in the approvers step as well as the group</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2017-09/'>Read more →</a>
 </article> 
@@ -402,22 +378,21 @@ COPY 54701
 
 </p>
   </header>
-  <h2 id="2017-08-01">2017-08-01</h2>
-
+  <h2 id="20170801">2017-08-01</h2>
 <ul>
 <li>Linode sent an alert that CGSpace (linode18) was using 350% CPU for the past two hours</li>
 <li>I looked in the Activity pane of the Admin Control Panel and it seems that Google, Baidu, Yahoo, and Bing are all crawling with massive numbers of bots concurrently (~100 total, mostly Baidu and Google)</li>
 <li>The good thing is that, according to <code>dspace.log.2017-08-01</code>, they are all using the same Tomcat session</li>
 <li>This means our Tomcat Crawler Session Valve is working</li>
 <li>But many of the bots are browsing dynamic URLs like:
-
 <ul>
 <li>/handle/10568/3353/discover</li>
 <li>/handle/10568/16510/browse</li>
-</ul></li>
+</ul>
+</li>
 <li>The <code>robots.txt</code> only blocks the top-level <code>/discover</code> and <code>/browse</code> URLs&hellip; we will need to find a way to forbid them from accessing these!</li>
 <li>Relevant issue from DSpace Jira (semi resolved in DSpace 6.0): <a href="https://jira.duraspace.org/browse/DS-2962">https://jira.duraspace.org/browse/DS-2962</a></li>
-<li>It turns out that we&rsquo;re already adding the <code>X-Robots-Tag &quot;none&quot;</code> HTTP header, but this only forbids the search engine from <em>indexing</em> the page, not crawling it!</li>
+<li>It turns out that we're already adding the <code>X-Robots-Tag &quot;none&quot;</code> HTTP header, but this only forbids the search engine from <em>indexing</em> the page, not crawling it!</li>
 <li>Also, the bot has to successfully browse the page first so it can receive the HTTP header&hellip;</li>
 <li>We might actually have to <em>block</em> these requests with HTTP 403 depending on the user agent</li>
 <li>Abenet pointed out that the CGIAR Library Historical Archive collection I sent July 20th only had ~100 entries, instead of 2415</li>

@@ -8,16 +8,13 @@
 <meta property="og:title" content="July, 2018" />
 <meta property="og:description" content="2018-07-01
 
-
 I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:
 
 $ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
 
-
 During the mvn package stage on the 5.8 branch I kept getting issues with java running out of memory:
 
 There is insufficient memory for the Java Runtime Environment to continue.
-
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-07/" />
@@ -28,18 +25,15 @@ There is insufficient memory for the Java Runtime Environment to continue.
 <meta name="twitter:title" content="July, 2018"/>
 <meta name="twitter:description" content="2018-07-01
 
-
 I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:
 
 $ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
 
-
 During the mvn package stage on the 5.8 branch I kept getting issues with java running out of memory:
 
 There is insufficient memory for the Java Runtime Environment to continue.
-
 "/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -120,29 +114,23 @@ There is insufficient memory for the Java Runtime Environment to continue.
 
 </p>
   </header>
-  <h2 id="2018-07-01">2018-07-01</h2>
-
+  <h2 id="20180701">2018-07-01</h2>
 <ul>
-<li><p>I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:</p>
-
-<pre><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
-</code></pre></li>
-
-<li><p>During the <code>mvn package</code> stage on the 5.8 branch I kept getting issues with java running out of memory:</p>
-
-<pre><code>There is insufficient memory for the Java Runtime Environment to continue.
-</code></pre></li>
+<li>I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:</li>
 </ul>
-
-<ul>
-<li><p>As the machine only has 8GB of RAM, I reduced the Tomcat memory heap from 5120m to 4096m so I could try to allocate more to the build process:</p>
-
+<pre><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
+</code></pre><ul>
+<li>During the <code>mvn package</code> stage on the 5.8 branch I kept getting issues with java running out of memory:</li>
+</ul>
+<pre><code>There is insufficient memory for the Java Runtime Environment to continue.
+</code></pre><ul>
+<li>As the machine only has 8GB of RAM, I reduced the Tomcat memory heap from 5120m to 4096m so I could try to allocate more to the build process:</li>
+</ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -Denv=dspacetest.cgiar.org -P \!dspace-lni,\!dspace-rdf,\!dspace-sword,\!dspace-swordv2 clean package
-</code></pre></li>
-
-<li><p>Then I stopped the Tomcat 7 service, ran the ant update, and manually ran the old and ignored SQL migrations:</p>
-
+</code></pre><ul>
+<li>Then I stopped the Tomcat 7 service, ran the ant update, and manually ran the old and ignored SQL migrations:</li>
+</ul>
 <pre><code>$ sudo su - postgres
 $ psql dspace
 ...
@@ -156,50 +144,42 @@ dspace=# commit
 dspace=# \q
 $ exit
 $ dspace database migrate ignored
-</code></pre></li>
-
-<li><p>After that I started Tomcat 7 and DSpace seems to be working, now I need to tell our colleagues to try stuff and report issues they have</p></li>
+</code></pre><ul>
+<li>After that I started Tomcat 7 and DSpace seems to be working, now I need to tell our colleagues to try stuff and report issues they have</li>
 </ul>
-
-<h2 id="2018-07-02">2018-07-02</h2>
-
+<h2 id="20180702">2018-07-02</h2>
 <ul>
 <li>Discuss AgriKnowledge including our Handle identifier on their harvested items from CGSpace</li>
 <li>They seem to be only interested in Gates-funded outputs, for example: <a href="https://www.agriknowledge.org/files/tm70mv21t">https://www.agriknowledge.org/files/tm70mv21t</a></li>
 </ul>
-
-<h2 id="2018-07-03">2018-07-03</h2>
-
+<h2 id="20180703">2018-07-03</h2>
 <ul>
-<li><p>Finally finish with the CIFOR Archive records (a total of 2448):</p>
-
+<li>Finally finish with the CIFOR Archive records (a total of 2448):
 <ul>
 <li>I mapped the 50 items that were duplicates from elsewhere in CGSpace into <a href="https://cgspace.cgiar.org/handle/10568/16702">CIFOR Archive</a></li>
 <li>I did one last check of the remaining 2398 items and found eight who have a <code>cg.identifier.doi</code> that links to some URL other than a DOI so I moved those to <code>cg.identifier.url</code> and <code>cg.identifier.googleurl</code> as appropriate</li>
 <li>Also, thirteen items had a DOI in their citation, but did not have a <code>cg.identifier.doi</code> field, so I added those</li>
-
-<li><p>Then I imported those 2398 items in two batches (to deal with memory issues):</p>
-
+<li>Then I imported those 2398 items in two batches (to deal with memory issues):</li>
+</ul>
+</li>
+</ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/2018-06-27-New-CIFOR-Archive.csv
 $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/2018-06-27-New-CIFOR-Archive2.csv
-</code></pre></li>
-</ul></li>
-
-<li><p>I noticed there are many items that use HTTP instead of HTTPS for their Google Books URL, and some missing HTTP entirely:</p>
-
+</code></pre><ul>
+<li>I noticed there are many items that use HTTP instead of HTTPS for their Google Books URL, and some missing HTTP entirely:</li>
+</ul>
 <pre><code>dspace=# select count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=222 and text_value like 'http://books.google.%';
-count
+ count
 -------
-785
+   785
 dspace=# select count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=222 and text_value ~ '^books\.google\..*';
-count
+ count
 -------
- 4
-</code></pre></li>
-
-<li><p>I think I should fix that as well as some other garbage values like &ldquo;test&rdquo; and &ldquo;dspace.ilri.org&rdquo; etc:</p>
-
+     4
+</code></pre><ul>
+<li>I think I should fix that as well as some other garbage values like &ldquo;test&rdquo; and &ldquo;dspace.ilri.org&rdquo; etc:</li>
+</ul>
 <pre><code>dspace=# begin;
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://books.google', 'https://books.google') where resource_type_id=2 and metadata_field_id=222 and text_value like 'http://books.google.%';
 UPDATE 785
@@ -210,12 +190,11 @@ UPDATE 1
 dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id=222 and metadata_value_id in (2299312, 10684, 10700, 996403);
 DELETE 4
 dspace=# commit;
-</code></pre></li>
-
-<li><p>Testing DSpace 5.8 with PostgreSQL 9.6 and Tomcat 8.5.32 (instead of my usual 7.0.88) and for some reason I get autowire errors on Catalina startup with 8.5.32:</p>
-
+</code></pre><ul>
+<li>Testing DSpace 5.8 with PostgreSQL 9.6 and Tomcat 8.5.32 (instead of my usual 7.0.88) and for some reason I get autowire errors on Catalina startup with 8.5.32:</li>
+</ul>
 <pre><code>03-Jul-2018 19:51:37.272 SEVERE [localhost-startStop-1] org.apache.catalina.core.StandardContext.listenerStart Exception sending context initialized event to listener instance of class [org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener]
-java.lang.RuntimeException: Failure during filter init: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'conversionService' defined in file [/home/aorth/dspace/config/spring/xmlui/spring-dspace-addon-cua-services.xml]: Cannot create inner bean 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a' of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter] while setting bean property 'converters' with key [1]; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a': Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter.filterConverter; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No matching bean of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+ java.lang.RuntimeException: Failure during filter init: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'conversionService' defined in file [/home/aorth/dspace/config/spring/xmlui/spring-dspace-addon-cua-services.xml]: Cannot create inner bean 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a' of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter] while setting bean property 'converters' with key [1]; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a': Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter.filterConverter; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No matching bean of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
 	at org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener.contextInitialized(DSpaceKernelServletContextListener.java:92)
 	at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4792)
 	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5256)
@@ -231,269 +210,208 @@ java.lang.RuntimeException: Failure during filter init: Failed to startup the DS
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at java.lang.Thread.run(Thread.java:748)
 Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'conversionService' defined in file [/home/aorth/dspace/config/spring/xmlui/spring-dspace-addon-cua-services.xml]: Cannot create inner bean 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a' of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter] while setting bean property 'converters' with key [1]; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a': Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter.filterConverter; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No matching bean of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
-</code></pre></li>
-
-<li><p>Gotta check that out later&hellip;</p></li>
+</code></pre><ul>
+<li>Gotta check that out later&hellip;</li>
 </ul>
-
-<h2 id="2018-07-04">2018-07-04</h2>
-
+<h2 id="20180704">2018-07-04</h2>
 <ul>
 <li>I verified that the autowire error indeed only occurs on Tomcat 8.5, but the application works fine on Tomcat 7</li>
-<li>I have raised this in the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 compatibility ticket on Atmire&rsquo;s tracker</a></li>
+<li>I have raised this in the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 compatibility ticket on Atmire's tracker</a></li>
 <li>Abenet wants me to add &ldquo;United Kingdom government&rdquo; to the sponsors on CGSpace so I created a ticket to track it (<a href="https://github.com/ilri/DSpace/issues/381">#381</a>)</li>
 <li>Also, Udana wants me to add &ldquo;Enhancing Sustainability Across Agricultural Systems&rdquo; to the WLE Phase II research themes so I created a ticket to track that (<a href="https://github.com/ilri/DSpace/issues/382">#382</a>)</li>
 <li>I need to try to finish this DSpace 5.8 business first because I have too many branches with cherry-picks going on right now!</li>
 </ul>
-
-<h2 id="2018-07-06">2018-07-06</h2>
-
+<h2 id="20180706">2018-07-06</h2>
 <ul>
 <li>CCAFS want me to add &ldquo;PII-FP2_MSCCCAFS&rdquo; to their Phase II project tags on CGSpace (<a href="https://github.com/ilri/DSpace/issues/383">#383</a>)</li>
-<li>I&rsquo;ll do it in a batch with all the other metadata updates next week</li>
+<li>I'll do it in a batch with all the other metadata updates next week</li>
 </ul>
-
-<h2 id="2018-07-08">2018-07-08</h2>
-
+<h2 id="20180708">2018-07-08</h2>
 <ul>
-<li>I was tempted to do the Linode instance upgrade on CGSpace (linode18), but after looking closely at the system backups I noticed that Solr isn&rsquo;t being backed up to S3</li>
-<li>I apparently noticed this—and fixed it!—in <a href="/cgspace-notes/2016-07/">2016-07</a>, but it doesn&rsquo;t look like the backup has been updated since then!</li>
-<li>It looks like I added Solr to the <code>backup_to_s3.sh</code> script, but that script is not even being used (<code>s3cmd</code> is run directly from root&rsquo;s crontab)</li>
-
-<li><p>For now I have just initiated a manual S3 backup of the Solr data:</p>
-
+<li>I was tempted to do the Linode instance upgrade on CGSpace (linode18), but after looking closely at the system backups I noticed that Solr isn't being backed up to S3</li>
+<li>I apparently noticed this—and fixed it!—in <a href="/cgspace-notes/2016-07/">2016-07</a>, but it doesn't look like the backup has been updated since then!</li>
+<li>It looks like I added Solr to the <code>backup_to_s3.sh</code> script, but that script is not even being used (<code>s3cmd</code> is run directly from root's crontab)</li>
+<li>For now I have just initiated a manual S3 backup of the Solr data:</li>
+</ul>
 <pre><code># s3cmd sync --delete-removed /home/backup/solr/ s3://cgspace.cgiar.org/solr/
-</code></pre></li>
-
-<li><p>But I need to add this to cron!</p></li>
-
-<li><p>I wonder if I should convert some of the cron jobs to systemd services / timers&hellip;</p></li>
-
-<li><p>I sent a note to all our users on Yammer to ask them about possible maintenance on Sunday, July 14th</p></li>
-
-<li><p>Abenet wants to be able to search by journal title (dc.source) in the advanced Discovery search so I opened an issue for it (<a href="https://github.com/ilri/DSpace/issues/384">#384</a>)</p></li>
-
-<li><p>I regenerated the list of names for all our ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</p>
-
+</code></pre><ul>
+<li>But I need to add this to cron!</li>
+<li>I wonder if I should convert some of the cron jobs to systemd services / timers&hellip;</li>
+<li>I sent a note to all our users on Yammer to ask them about possible maintenance on Sunday, July 14th</li>
+<li>Abenet wants to be able to search by journal title (dc.source) in the advanced Discovery search so I opened an issue for it (<a href="https://github.com/ilri/DSpace/issues/384">#384</a>)</li>
+<li>I regenerated the list of names for all our ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
+</ul>
 <pre><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; /tmp/2018-07-08-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2018-07-08-orcids.txt -o /tmp/2018-07-08-names.txt -d
-</code></pre></li>
-
-<li><p>But after comparing to the existing list of names I didn&rsquo;t see much change, so I just ignored it</p></li>
+</code></pre><ul>
+<li>But after comparing to the existing list of names I didn't see much change, so I just ignored it</li>
 </ul>
-
-<h2 id="2018-07-09">2018-07-09</h2>
-
+<h2 id="20180709">2018-07-09</h2>
 <ul>
-<li>Uptime Robot said that CGSpace was down for two minutes early this morning but I don&rsquo;t see anything in Tomcat logs or dmesg</li>
-
-<li><p>Uptime Robot said that CGSpace was down for two minutes again later in the day, and this time I saw a memory error in Tomcat&rsquo;s <code>catalina.out</code>:</p>
-
+<li>Uptime Robot said that CGSpace was down for two minutes early this morning but I don't see anything in Tomcat logs or dmesg</li>
+<li>Uptime Robot said that CGSpace was down for two minutes again later in the day, and this time I saw a memory error in Tomcat's <code>catalina.out</code>:</li>
+</ul>
 <pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-557&quot; java.lang.OutOfMemoryError: Java heap space
-</code></pre></li>
-
-<li><p>I&rsquo;m not sure if it&rsquo;s the same error, but I see this in DSpace&rsquo;s <code>solr.log</code>:</p>
-
+</code></pre><ul>
+<li>I'm not sure if it's the same error, but I see this in DSpace's <code>solr.log</code>:</li>
+</ul>
 <pre><code>2018-07-09 06:25:09,913 ERROR org.apache.solr.servlet.SolrDispatchFilter @ null:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
-</code></pre></li>
-
-<li><p>I see a strange error around that time in <code>dspace.log.2018-07-08</code>:</p>
-
+</code></pre><ul>
+<li>I see a strange error around that time in <code>dspace.log.2018-07-08</code>:</li>
+</ul>
 <pre><code>2018-07-09 06:23:43,510 ERROR com.atmire.statistics.SolrLogThread @ IOException occured when talking to server at: http://localhost:8081/solr/statistics
 org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr/statistics
-</code></pre></li>
-
-<li><p>But not sure what caused that&hellip;</p></li>
-
-<li><p>I got a message from Linode tonight that CPU usage was high on CGSpace for the past few hours around 8PM GMT</p></li>
-
-<li><p>Looking in the nginx logs I see the top ten IP addresses active today:</p>
-
+</code></pre><ul>
+<li>But not sure what caused that&hellip;</li>
+<li>I got a message from Linode tonight that CPU usage was high on CGSpace for the past few hours around 8PM GMT</li>
+<li>Looking in the nginx logs I see the top ten IP addresses active today:</li>
+</ul>
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;09/Jul/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-1691 40.77.167.84
-1701 40.77.167.69
-1718 50.116.102.77
-1872 137.108.70.6
-2172 157.55.39.234
-2190 207.46.13.47
-2848 178.154.200.38
-4367 35.227.26.162
-4387 70.32.83.92
-4738 95.108.181.88
-</code></pre></li>
-
-<li><p>Of those, <em>all</em> except <code>70.32.83.92</code> and <code>50.116.102.77</code> are <em>NOT</em> re-using their Tomcat sessions, for example from the XMLUI logs:</p>
-
+   1691 40.77.167.84
+   1701 40.77.167.69
+   1718 50.116.102.77
+   1872 137.108.70.6
+   2172 157.55.39.234
+   2190 207.46.13.47
+   2848 178.154.200.38
+   4367 35.227.26.162
+   4387 70.32.83.92
+   4738 95.108.181.88
+</code></pre><ul>
+<li>Of those, <em>all</em> except <code>70.32.83.92</code> and <code>50.116.102.77</code> are <em>NOT</em> re-using their Tomcat sessions, for example from the XMLUI logs:</li>
+</ul>
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2018-07-09
 4435
-</code></pre></li>
-
-<li><p><code>95.108.181.88</code> appears to be Yandex, so I dunno why it&rsquo;s creating so many sessions, as its user agent should match Tomcat&rsquo;s Crawler Session Manager Valve</p></li>
-
-<li><p><code>70.32.83.92</code> is on MediaTemple but I&rsquo;m not sure who it is. They are mostly hitting REST so I guess that&rsquo;s fine</p></li>
-
-<li><p><code>35.227.26.162</code> doesn&rsquo;t declare a user agent and is on Google Cloud, so I should probably mark them as a bot in nginx</p></li>
-
-<li><p><code>178.154.200.38</code> is Yandex again</p></li>
-
-<li><p><code>207.46.13.47</code> is Bing</p></li>
-
-<li><p><code>157.55.39.234</code> is Bing</p></li>
-
-<li><p><code>137.108.70.6</code> is our old friend CORE bot</p></li>
-
-<li><p><code>50.116.102.77</code> doesn&rsquo;t declare a user agent and lives on HostGator, but mostly just hits the REST API so I guess that&rsquo;s fine</p></li>
-
-<li><p><code>40.77.167.84</code> is Bing again</p></li>
-
-<li><p>Interestingly, the first time that I see <code>35.227.26.162</code> was on 2018-06-08</p></li>
-
-<li><p>I&rsquo;ve added <code>35.227.26.162</code> to the bot tagging logic in the nginx vhost</p></li>
+</code></pre><ul>
+<li><code>95.108.181.88</code> appears to be Yandex, so I dunno why it's creating so many sessions, as its user agent should match Tomcat's Crawler Session Manager Valve</li>
+<li><code>70.32.83.92</code> is on MediaTemple but I'm not sure who it is. They are mostly hitting REST so I guess that's fine</li>
+<li><code>35.227.26.162</code> doesn't declare a user agent and is on Google Cloud, so I should probably mark them as a bot in nginx</li>
+<li><code>178.154.200.38</code> is Yandex again</li>
+<li><code>207.46.13.47</code> is Bing</li>
+<li><code>157.55.39.234</code> is Bing</li>
+<li><code>137.108.70.6</code> is our old friend CORE bot</li>
+<li><code>50.116.102.77</code> doesn't declare a user agent and lives on HostGator, but mostly just hits the REST API so I guess that's fine</li>
+<li><code>40.77.167.84</code> is Bing again</li>
+<li>Interestingly, the first time that I see <code>35.227.26.162</code> was on 2018-06-08</li>
+<li>I've added <code>35.227.26.162</code> to the bot tagging logic in the nginx vhost</li>
 </ul>
-
-<h2 id="2018-07-10">2018-07-10</h2>
-
+<h2 id="20180710">2018-07-10</h2>
 <ul>
 <li>Add &ldquo;United Kingdom government&rdquo; to sponsors (<a href="https://github.com/ilri/DSpace/issues/381">#381</a>)</li>
 <li>Add &ldquo;Enhancing Sustainability Across Agricultural Systems&rdquo; to WLE Phase II Research Themes (<a href="https://github.com/ilri/DSpace/issues/382">#382</a>)</li>
 <li>Add &ldquo;PII-FP2_MSCCCAFS&rdquo; to CCAFS Phase II Project Tags (<a href="https://github.com/ilri/DSpace/issues/383">#383</a>)</li>
 <li>Add journal title (dc.source) to Discovery search filters (<a href="https://github.com/ilri/DSpace/issues/384">#384</a>)</li>
 <li>All were tested and merged to the <code>5_x-prod</code> branch and will be deployed on CGSpace this coming weekend when I do the Linode server upgrade</li>
-<li>I need to get them onto the 5.8 testing branch too, either via cherry-picking or by rebasing after we finish testing Atmire&rsquo;s 5.8 pull request (<a href="https://github.com/ilri/DSpace/pull/378">#378</a>)</li>
+<li>I need to get them onto the 5.8 testing branch too, either via cherry-picking or by rebasing after we finish testing Atmire's 5.8 pull request (<a href="https://github.com/ilri/DSpace/pull/378">#378</a>)</li>
 <li>Linode sent an alert about CPU usage on CGSpace again, about 13:00UTC</li>
-
-<li><p>These are the top ten users in the last two hours:</p>
-
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Jul/2018:(11|12|13)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
- 81 193.95.22.113
- 82 50.116.102.77
-112 40.77.167.90
-117 196.190.95.98
-120 178.154.200.38
-215 40.77.167.96
-243 41.204.190.40
-415 95.108.181.88
-695 35.227.26.162
-697 213.139.52.250
-</code></pre></li>
-
-<li><p>Looks like <code>213.139.52.250</code> is Moayad testing his new CGSpace vizualization thing:</p>
-
-<pre><code>213.139.52.250 - - [10/Jul/2018:13:39:41 +0000] &quot;GET /bitstream/handle/10568/75668/dryad.png HTTP/2.0&quot; 200 53750 &quot;http://localhost:4200/&quot; &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36&quot;
-</code></pre></li>
-
-<li><p>He said there was a bug that caused his app to request a bunch of invalid URLs</p></li>
-
-<li><p>I&rsquo;ll have to keep and eye on this and see how their platform evolves</p></li>
+<li>These are the top ten users in the last two hours:</li>
 </ul>
-
-<h2 id="2018-07-11">2018-07-11</h2>
-
+<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Jul/2018:(11|12|13)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     81 193.95.22.113
+     82 50.116.102.77
+    112 40.77.167.90
+    117 196.190.95.98
+    120 178.154.200.38
+    215 40.77.167.96
+    243 41.204.190.40
+    415 95.108.181.88
+    695 35.227.26.162
+    697 213.139.52.250
+</code></pre><ul>
+<li>Looks like <code>213.139.52.250</code> is Moayad testing his new CGSpace vizualization thing:</li>
+</ul>
+<pre><code>213.139.52.250 - - [10/Jul/2018:13:39:41 +0000] &quot;GET /bitstream/handle/10568/75668/dryad.png HTTP/2.0&quot; 200 53750 &quot;http://localhost:4200/&quot; &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36&quot;
+</code></pre><ul>
+<li>He said there was a bug that caused his app to request a bunch of invalid URLs</li>
+<li>I'll have to keep and eye on this and see how their platform evolves</li>
+</ul>
+<h2 id="20180711">2018-07-11</h2>
 <ul>
 <li>Skype meeting with Peter and Addis CGSpace team
-
 <ul>
 <li>We need to look at doing the <code>dc.rights</code> stuff again, which we last worked on in 2018-01 and 2018-02</li>
 <li>Abenet suggested that we do a controlled vocabulary for the authors, perhaps with the top 1,500 or so on CGSpace?</li>
 <li>Peter told Sisay to test this controlled vocabulary</li>
 <li>Discuss meeting in Nairobi in October</li>
-</ul></li>
 </ul>
-
-<h2 id="2018-07-12">2018-07-12</h2>
-
+</li>
+</ul>
+<h2 id="20180712">2018-07-12</h2>
 <ul>
 <li>Uptime Robot said that CGSpace went down a few times last night, around 10:45 PM and 12:30 AM</li>
-
-<li><p>Here are the top ten IPs from last night and this morning:</p>
-
+<li>Here are the top ten IPs from last night and this morning:</li>
+</ul>
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;11/Jul/2018:22&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
- 48 66.249.64.91
- 50 35.227.26.162
- 57 157.55.39.234
- 59 157.55.39.71
- 62 147.99.27.190
- 82 95.108.181.88
- 92 40.77.167.90
- 97 183.128.40.185
- 97 240e:f0:44:fa53:745a:8afe:d221:1232
-3634 208.110.72.10
+     48 66.249.64.91
+     50 35.227.26.162
+     57 157.55.39.234
+     59 157.55.39.71
+     62 147.99.27.190
+     82 95.108.181.88
+     92 40.77.167.90
+     97 183.128.40.185
+     97 240e:f0:44:fa53:745a:8afe:d221:1232
+   3634 208.110.72.10
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;12/Jul/2018:00&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
- 25 216.244.66.198
- 38 40.77.167.185
- 46 66.249.64.93
- 56 157.55.39.71
- 60 35.227.26.162
- 65 157.55.39.234
- 83 95.108.181.88
- 87 66.249.64.91
- 96 40.77.167.90
-7075 208.110.72.10
-</code></pre></li>
-
-<li><p>We have never seen <code>208.110.72.10</code> before&hellip; so that&rsquo;s interesting!</p></li>
-
-<li><p>The user agent for these requests is: Pcore-HTTP/v0.44.0</p></li>
-
-<li><p>A brief Google search doesn&rsquo;t turn up any information about what this bot is, but lots of users complaining about it</p></li>
-
-<li><p>This bot does make a lot of requests all through the day, although it seems to re-use its Tomcat session:</p>
-
+     25 216.244.66.198
+     38 40.77.167.185
+     46 66.249.64.93
+     56 157.55.39.71
+     60 35.227.26.162
+     65 157.55.39.234
+     83 95.108.181.88
+     87 66.249.64.91
+     96 40.77.167.90
+   7075 208.110.72.10
+</code></pre><ul>
+<li>We have never seen <code>208.110.72.10</code> before&hellip; so that's interesting!</li>
+<li>The user agent for these requests is: Pcore-HTTP/v0.44.0</li>
+<li>A brief Google search doesn't turn up any information about what this bot is, but lots of users complaining about it</li>
+<li>This bot does make a lot of requests all through the day, although it seems to re-use its Tomcat session:</li>
+</ul>
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-17098 208.110.72.10
+  17098 208.110.72.10
 # grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=208.110.72.10' dspace.log.2018-07-11
 1161
 # grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=208.110.72.10' dspace.log.2018-07-12
 1885
-</code></pre></li>
-
-<li><p>I think the problem is that, despite the bot requesting <code>robots.txt</code>, it almost exlusively requests dynamic pages from <code>/discover</code>:</p>
-
+</code></pre><ul>
+<li>I think the problem is that, despite the bot requesting <code>robots.txt</code>, it almost exlusively requests dynamic pages from <code>/discover</code>:</li>
+</ul>
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | grep -o -E &quot;GET /(browse|discover|search-filter)&quot; | sort -n | uniq -c | sort -rn
-13364 GET /discover
-993 GET /search-filter
-804 GET /browse
+  13364 GET /discover
+    993 GET /search-filter
+    804 GET /browse
 # zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | grep robots
 208.110.72.10 - - [12/Jul/2018:00:22:28 +0000] &quot;GET /robots.txt HTTP/1.1&quot; 200 1301 &quot;https://cgspace.cgiar.org/robots.txt&quot; &quot;Pcore-HTTP/v0.44.0&quot;
-</code></pre></li>
-
-<li><p>So this bot is just like Baiduspider, and I need to add it to the nginx rate limiting</p></li>
-
-<li><p>I&rsquo;ll also add it to Tomcat&rsquo;s Crawler Session Manager Valve to force the re-use of a common Tomcat sesssion for all crawlers just in case</p></li>
-
-<li><p>Generate a list of all affiliations in CGSpace to send to Mohamed Salem to compare with the list on MEL (sorting the list by most occurrences):</p>
-
+</code></pre><ul>
+<li>So this bot is just like Baiduspider, and I need to add it to the nginx rate limiting</li>
+<li>I'll also add it to Tomcat's Crawler Session Manager Valve to force the re-use of a common Tomcat sesssion for all crawlers just in case</li>
+<li>Generate a list of all affiliations in CGSpace to send to Mohamed Salem to compare with the list on MEL (sorting the list by most occurrences):</li>
+</ul>
 <pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv header
 COPY 4518
 dspace=# \q
 $ csvcut -c 1 &lt; /tmp/affiliations.csv &gt; /tmp/affiliations-1.csv
-</code></pre></li>
-
-<li><p>We also need to discuss standardizing our countries and comparing our ORCID iDs</p></li>
+</code></pre><ul>
+<li>We also need to discuss standardizing our countries and comparing our ORCID iDs</li>
 </ul>
-
-<h2 id="2018-07-13">2018-07-13</h2>
-
+<h2 id="20180713">2018-07-13</h2>
 <ul>
-<li><p>Generate a list of affiliations for Peter and Abenet to go over so we can batch correct them before we deploy the new data visualization dashboard:</p>
-
+<li>Generate a list of affiliations for Peter and Abenet to go over so we can batch correct them before we deploy the new data visualization dashboard:</li>
+</ul>
 <pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv header;
 COPY 4518
-</code></pre></li>
-</ul>
-
-<h2 id="2018-07-15">2018-07-15</h2>
-
+</code></pre><h2 id="20180715">2018-07-15</h2>
 <ul>
 <li>Run all system updates on CGSpace, add latest metadata changes from last week, and start the Linode instance upgrade</li>
-<li>After the upgrade I see we have more disk space available in the instance&rsquo;s dashboard, so I shut the instance down and resized it from 392GB to 650GB</li>
+<li>After the upgrade I see we have more disk space available in the instance's dashboard, so I shut the instance down and resized it from 392GB to 650GB</li>
 <li>The resize was very quick (less than one minute) and after booting the instance back up I now have 631GB for the root filesystem (with 267GB available)!</li>
 <li>Peter had asked a question about how mapped items are displayed in the Altmetric dashboard</li>
-<li>For example, <a href="10568/82810"><sup>10568</sup>&frasl;<sub>82810</sub></a> is mapped to four collections, but only shows up in one &ldquo;department&rdquo; in their dashboard</li>
+<li>For example, <a href="10568/82810">10568/82810</a> is mapped to four collections, but only shows up in one &ldquo;department&rdquo; in their dashboard</li>
 <li>Altmetric help said that <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:cgspace.cgiar.org:10568/82810">according to OAI that item is only in one department</a></li>
-
-<li><p>I noticed that indeed there was only one collection listed, so I forced an OAI re-import on CGSpace:</p>
-
+<li>I noticed that indeed there was only one collection listed, so I forced an OAI re-import on CGSpace:</li>
+</ul>
 <pre><code>$ dspace oai import -c
 OAI 2.0 manager action started
 Clearing index
@@ -507,60 +425,47 @@ Full import
 Total: 73925 items
 Purging cached OAI responses.
 OAI 2.0 manager action ended. It took 697 seconds.
-</code></pre></li>
-
-<li><p>Now I see four colletions in OAI for that item!</p></li>
-
-<li><p>I need to ask the dspace-tech mailing list if the nightly OAI import catches the case of old items that have had metadata or mappings change</p></li>
-
-<li><p>ICARDA sent me a list of the ORCID iDs they have in the MEL system and it looks like almost 150 are new and unique to us!</p>
-
+</code></pre><ul>
+<li>Now I see four colletions in OAI for that item!</li>
+<li>I need to ask the dspace-tech mailing list if the nightly OAI import catches the case of old items that have had metadata or mappings change</li>
+<li>ICARDA sent me a list of the ORCID iDs they have in the MEL system and it looks like almost 150 are new and unique to us!</li>
+</ul>
 <pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
 1020
 $ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
 1158
-</code></pre></li>
-
-<li><p>I combined the two lists and regenerated the names for all our the ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</p>
-
+</code></pre><ul>
+<li>I combined the two lists and regenerated the names for all our the ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
+</ul>
 <pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2018-07-15-orcid-ids.txt
 $ ./resolve-orcids.py -i /tmp/2018-07-15-orcid-ids.txt -o /tmp/2018-07-15-resolved-orcids.txt -d
-</code></pre></li>
-
-<li><p>Then I added the XML formatting for controlled vocabularies, sorted the list with GNU sort in vim via <code>% !sort</code> and then checked the formatting with tidy:</p>
-
-<pre><code>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
-</code></pre></li>
-
-<li><p>I will check with the CGSpace team to see if they want me to add these to CGSpace</p></li>
-
-<li><p>Help Udana from WLE understand some Altmetrics concepts</p></li>
+</code></pre><ul>
+<li>Then I added the XML formatting for controlled vocabularies, sorted the list with GNU sort in vim via <code>% !sort</code> and then checked the formatting with tidy:</li>
 </ul>
-
-<h2 id="2018-07-18">2018-07-18</h2>
-
+<pre><code>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+</code></pre><ul>
+<li>I will check with the CGSpace team to see if they want me to add these to CGSpace</li>
+<li>Help Udana from WLE understand some Altmetrics concepts</li>
+</ul>
+<h2 id="20180718">2018-07-18</h2>
 <ul>
 <li>ICARDA sent me another refined list of ORCID iDs so I sorted and formatted them into our controlled vocabulary again</li>
 <li>Participate in call with IWMI and WLE to discuss Altmetric, CGSpace, and social media</li>
-<li>I told them that they should try to be including the Handle link on their social media shares because that&rsquo;s the only way to get Altmetric to notice them and associate them with their DOIs</li>
+<li>I told them that they should try to be including the Handle link on their social media shares because that's the only way to get Altmetric to notice them and associate them with their DOIs</li>
 <li>I suggested that we should have a wider meeting about this, and that I would post that on Yammer</li>
-<li>I was curious about how and when Altmetric harvests the OAI, so I looked in nginx&rsquo;s OAI log</li>
+<li>I was curious about how and when Altmetric harvests the OAI, so I looked in nginx's OAI log</li>
 <li>For every day in the past week I only see about 50 to 100 requests per day, but then about nine days ago I see 1500 requsts</li>
-
-<li><p>In there I see two bots making about 750 requests each, and this one is probably Altmetric:</p>
-
+<li>In there I see two bots making about 750 requests each, and this one is probably Altmetric:</li>
+</ul>
 <pre><code>178.33.237.157 - - [09/Jul/2018:17:00:46 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100 HTTP/1.1&quot; 200 58653 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
 178.33.237.157 - - [09/Jul/2018:17:01:11 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////200 HTTP/1.1&quot; 200 67950 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
 ...
 178.33.237.157 - - [09/Jul/2018:22:10:39 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////73900 HTTP/1.1&quot; 20 0 25049 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
-</code></pre></li>
-
-<li><p>So if they are getting 100 records per OAI request it would take them 739 requests</p></li>
-
-<li><p>I wonder if I should add this user agent to the Tomcat Crawler Session Manager valve&hellip; does OAI use Tomcat sessions?</p></li>
-
-<li><p>Appears not:</p>
-
+</code></pre><ul>
+<li>So if they are getting 100 records per OAI request it would take them 739 requests</li>
+<li>I wonder if I should add this user agent to the Tomcat Crawler Session Manager valve&hellip; does OAI use Tomcat sessions?</li>
+<li>Appears not:</li>
+</ul>
 <pre><code>$ http --print Hh 'https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100'
 GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100 HTTP/1.1
 Accept: */*
@@ -581,81 +486,61 @@ Vary: Accept-Encoding
 X-Content-Type-Options: nosniff
 X-Frame-Options: SAMEORIGIN
 X-XSS-Protection: 1; mode=block
-</code></pre></li>
-</ul>
-
-<h2 id="2018-07-19">2018-07-19</h2>
-
+</code></pre><h2 id="20180719">2018-07-19</h2>
 <ul>
 <li>I tested a submission via SAF bundle to DSpace 5.8 and it worked fine</li>
 <li>In addition to testing DSpace 5.8, I specifically wanted to see if the issue with specifying collections in metadata instead of on the command line would work (<a href="https://jira.duraspace.org/browse/DS-3583">DS-3583</a>)</li>
 <li>Post a note on Yammer about Altmetric and Handle best practices</li>
 <li>Update PostgreSQL JDBC jar from 42.2.2 to 42.2.4 in the <a href="https://github.com/ilri/rmg-ansible-public">RMG Ansible playbooks</a></li>
 <li>IWMI asked why all the dates in their <a href="https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;rpp=100&amp;format=rss">OpenSearch RSS feed</a> show up as January 01, 2018</li>
-<li>On closer inspection I notice that many of their items use &ldquo;2018&rdquo; as their <code>dc.date.issued</code>, which is a valid ISO 8601 date but it&rsquo;s not very specific so DSpace assumes it is January 01, 2018 00:00:00&hellip;</li>
+<li>On closer inspection I notice that many of their items use &ldquo;2018&rdquo; as their <code>dc.date.issued</code>, which is a valid ISO 8601 date but it's not very specific so DSpace assumes it is January 01, 2018 00:00:00&hellip;</li>
 <li>I told her that they need to start using more accurate dates for their issue dates</li>
 <li>In the example item I looked at the DOI has a publish date of 2018-03-16, so they should really try to capture that</li>
 </ul>
-
-<h2 id="2018-07-22">2018-07-22</h2>
-
+<h2 id="20180722">2018-07-22</h2>
 <ul>
 <li>I told the IWMI people that they can use <code>sort_by=3</code> in their OpenSearch query to sort the results by <code>dc.date.accessioned</code> instead of <code>dc.date.issued</code></li>
 <li>They say that it is a burden for them to capture the issue dates, so I cautioned them that this is in their own benefit for future posterity and that everyone else on CGSpace manages to capture the issue dates!</li>
-
-<li><p>For future reference, as I had previously noted in <a href="/cgspace-notes/2018-04/">2018-04</a>, sort options are configured in <code>dspace.cfg</code>, for example:</p>
-
-<pre><code>webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
-</code></pre></li>
-
-<li><p>Just because I was curious I made sure that these options are working as expected in DSpace 5.8 on DSpace Test (they are)</p></li>
-
-<li><p>I tested the Atmire Listings and Reports (L&amp;R) module one last time on my local test environment with a new snapshot of CGSpace&rsquo;s database and re-generated Discovery index and it worked fine</p></li>
-
-<li><p>I finally informed Atmire that we&rsquo;re ready to proceed with deploying this to CGSpace and that they should advise whether we should wait about the SNAPSHOT versions in <code>pom.xml</code></p></li>
-
-<li><p>There is no word on the issue I reported with Tomcat 8.5.32 yet, though&hellip;</p></li>
+<li>For future reference, as I had previously noted in <a href="/cgspace-notes/2018-04/">2018-04</a>, sort options are configured in <code>dspace.cfg</code>, for example:</li>
 </ul>
-
-<h2 id="2018-07-23">2018-07-23</h2>
-
+<pre><code>webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
+</code></pre><ul>
+<li>Just because I was curious I made sure that these options are working as expected in DSpace 5.8 on DSpace Test (they are)</li>
+<li>I tested the Atmire Listings and Reports (L&amp;R) module one last time on my local test environment with a new snapshot of CGSpace's database and re-generated Discovery index and it worked fine</li>
+<li>I finally informed Atmire that we're ready to proceed with deploying this to CGSpace and that they should advise whether we should wait about the SNAPSHOT versions in <code>pom.xml</code></li>
+<li>There is no word on the issue I reported with Tomcat 8.5.32 yet, though&hellip;</li>
+</ul>
+<h2 id="20180723">2018-07-23</h2>
 <ul>
 <li>Still discussing dates with IWMI</li>
-
-<li><p>I looked in the database to see the breakdown of date formats used in <code>dc.date.issued</code>, ie YYYY, YYYY-MM, or YYYY-MM-DD:</p>
-
+<li>I looked in the database to see the breakdown of date formats used in <code>dc.date.issued</code>, ie YYYY, YYYY-MM, or YYYY-MM-DD:</li>
+</ul>
 <pre><code>dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=15 and text_value ~ '^[0-9]{4}$';
-count
+ count
 -------
-53292
+ 53292
 (1 row)
 dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=15 and text_value ~ '^[0-9]{4}-[0-9]{2}$';
-count
+ count
 -------
-3818
+  3818
 (1 row)
 dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=15 and text_value ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$';
-count
+ count
 -------
-17357
-</code></pre></li>
-
-<li><p>So it looks like YYYY is the most numerious, followed by YYYY-MM-DD, then YYYY-MM</p></li>
+ 17357
+</code></pre><ul>
+<li>So it looks like YYYY is the most numerious, followed by YYYY-MM-DD, then YYYY-MM</li>
 </ul>
-
-<h2 id="2018-07-26">2018-07-26</h2>
-
+<h2 id="20180726">2018-07-26</h2>
 <ul>
 <li>Run system updates on DSpace Test (linode19) and reboot the server</li>
 </ul>
-
-<h2 id="2018-07-27">2018-07-27</h2>
-
+<h2 id="20180727">2018-07-27</h2>
 <ul>
-<li>Follow up with Atmire again about the SNAPSHOT versions in our <code>pom.xml</code> because I want to finalize the DSpace 5.8 upgrade soon and I haven&rsquo;t heard from them in a month (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">ticket 560</a>)</li>
+<li>Follow up with Atmire again about the SNAPSHOT versions in our <code>pom.xml</code> because I want to finalize the DSpace 5.8 upgrade soon and I haven't heard from them in a month (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">ticket 560</a>)</li>
 </ul>
-
-<!-- vim: set sw=2 ts=2: -->
+<!-- raw HTML omitted -->
 
   
 

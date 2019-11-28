@@ -9,13 +9,12 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/posts/" />
-
 <meta property="og:updated_time" content="2019-11-04T12:20:30+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -100,18 +99,15 @@
 
 </p>
   </header>
-  <h2 id="2016-09-01">2016-09-01</h2>
-
+  <h2 id="20160901">2016-09-01</h2>
 <ul>
 <li>Discuss helping CCAFS with some batch tagging of ORCID IDs for their authors</li>
-<li>Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure will break our LDAP groups in DSpace</li>
+<li>Discuss how the migration of CGIAR's Active Directory to a flat structure will break our LDAP groups in DSpace</li>
 <li>We had been using <code>DC=ILRI</code> to determine whether a user was ILRI or not</li>
-
-<li><p>It looks like we might be able to use OUs now, instead of DCs:</p>
-
-<pre><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
-</code></pre></li>
+<li>It looks like we might be able to use OUs now, instead of DCs:</li>
 </ul>
+<pre><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2016-09/'>Read more →</a>
 </article> 
 
@@ -129,22 +125,19 @@
 
 </p>
   </header>
-  <h2 id="2016-08-01">2016-08-01</h2>
-
+  <h2 id="20160801">2016-08-01</h2>
 <ul>
 <li>Add updated distribution license from Sisay (<a href="https://github.com/ilri/DSpace/issues/259">#259</a>)</li>
 <li>Play with upgrading Mirage 2 dependencies in <code>bower.json</code> because most are several versions of out date</li>
 <li>Bootstrap is at 3.3.0 but upstream is at 3.3.7, and upgrading to anything beyond 3.3.1 breaks glyphicons and probably more</li>
 <li>bower stuff is a dead end, waste of time, too many issues</li>
 <li>Anything after Bootstrap 3.3.1 makes glyphicons disappear (HTTP 404 trying to access from incorrect path of <code>fonts</code>)</li>
-
-<li><p>Start working on DSpace 5.1 → 5.5 port:</p>
-
+<li>Start working on DSpace 5.1 → 5.5 port:</li>
+</ul>
 <pre><code>$ git checkout -b 55new 5_x-prod
 $ git reset --hard ilri/5_x-prod
 $ git rebase -i dspace-5.5
-</code></pre></li>
-</ul>
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2016-08/'>Read more →</a>
 </article> 
 
@@ -162,22 +155,19 @@ $ git rebase -i dspace-5.5
 
 </p>
   </header>
-  <h2 id="2016-07-01">2016-07-01</h2>
-
+  <h2 id="20160701">2016-07-01</h2>
 <ul>
 <li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
-
-<li><p>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</p>
-
+<li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</li>
+</ul>
 <pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
 UPDATE 95
 dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
-text_value
+ text_value
 ------------
 (0 rows)
-</code></pre></li>
-
-<li><p>In this case the select query was showing 95 results before the update</p></li>
+</code></pre><ul>
+<li>In this case the select query was showing 95 results before the update</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-07/'>Read more →</a>
 </article> 
@@ -196,11 +186,10 @@ text_value
 
 </p>
   </header>
-  <h2 id="2016-06-01">2016-06-01</h2>
-
+  <h2 id="20160601">2016-06-01</h2>
 <ul>
 <li>Experimenting with IFPRI OAI (we want to harvest their publications)</li>
-<li>After reading the <a href="https://www.oclc.org/support/services/contentdm/help/server-admin-help/oai-support.en.html">ContentDM documentation</a> I found IFPRI&rsquo;s OAI endpoint: <a href="http://ebrary.ifpri.org/oai/oai.php">http://ebrary.ifpri.org/oai/oai.php</a></li>
+<li>After reading the <a href="https://www.oclc.org/support/services/contentdm/help/server-admin-help/oai-support.en.html">ContentDM documentation</a> I found IFPRI's OAI endpoint: <a href="http://ebrary.ifpri.org/oai/oai.php">http://ebrary.ifpri.org/oai/oai.php</a></li>
 <li>After reading the <a href="https://www.openarchives.org/OAI/openarchivesprotocol.html">OAI documentation</a> and testing with an <a href="http://validator.oaipmh.com/">OAI validator</a> I found out how to get their publications</li>
 <li>This is their publications set: <a href="http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc">http://ebrary.ifpri.org/oai/oai.php?verb=ListRecords&amp;from=2016-01-01&amp;set=p15738coll2&amp;metadataPrefix=oai_dc</a></li>
 <li>You can see the others by using the OAI <code>ListSets</code> verb: <a href="http://ebrary.ifpri.org/oai/oai.php?verb=ListSets">http://ebrary.ifpri.org/oai/oai.php?verb=ListSets</a></li>
@@ -223,18 +212,15 @@ text_value
 
 </p>
   </header>
-  <h2 id="2016-05-01">2016-05-01</h2>
-
+  <h2 id="20160501">2016-05-01</h2>
 <ul>
 <li>Since yesterday there have been 10,000 REST errors and the site has been unstable again</li>
 <li>I have blocked access to the API now</li>
-
-<li><p>There are 3,000 IPs accessing the REST API in a 24-hour period!</p>
-
+<li>There are 3,000 IPs accessing the REST API in a 24-hour period!</li>
+</ul>
 <pre><code># awk '{print $1}' /var/log/nginx/rest.log  | uniq | wc -l
 3168
-</code></pre></li>
-</ul>
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2016-05/'>Read more →</a>
 </article> 
 
@@ -252,13 +238,12 @@ text_value
 
 </p>
   </header>
-  <h2 id="2016-04-04">2016-04-04</h2>
-
+  <h2 id="20160404">2016-04-04</h2>
 <ul>
 <li>Looking at log file use on CGSpace and notice that we need to work on our cron setup a bit</li>
 <li>We are backing up all logs in the log folder, including useless stuff like solr, cocoon, handle-plugin, etc</li>
-<li>After running DSpace for over five years I&rsquo;ve never needed to look in any other log file than dspace.log, leave alone one from last year!</li>
-<li>This will save us a few gigs of backup space we&rsquo;re paying for on S3</li>
+<li>After running DSpace for over five years I've never needed to look in any other log file than dspace.log, leave alone one from last year!</li>
+<li>This will save us a few gigs of backup space we're paying for on S3</li>
 <li>Also, I noticed the <code>checker</code> log has some errors we should pay attention to:</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-04/'>Read more →</a>
@@ -278,11 +263,10 @@ text_value
 
 </p>
   </header>
-  <h2 id="2016-03-02">2016-03-02</h2>
-
+  <h2 id="20160302">2016-03-02</h2>
 <ul>
 <li>Looking at issues with author authorities on CGSpace</li>
-<li>For some reason we still have the <code>index-lucene-update</code> cron job active on CGSpace, but I&rsquo;m pretty sure we don&rsquo;t need it as of the latest few versions of Atmire&rsquo;s Listings and Reports module</li>
+<li>For some reason we still have the <code>index-lucene-update</code> cron job active on CGSpace, but I'm pretty sure we don't need it as of the latest few versions of Atmire's Listings and Reports module</li>
 <li>Reinstall my local (Mac OS X) DSpace stack with Tomcat 7, PostgreSQL 9.3, and Java JDK 1.7 to match environment on CGSpace server</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2016-03/'>Read more →</a>
@@ -302,16 +286,13 @@ text_value
 
 </p>
   </header>
-  <h2 id="2016-02-05">2016-02-05</h2>
-
+  <h2 id="20160205">2016-02-05</h2>
 <ul>
 <li>Looking at some DAGRIS data for Abenet Yabowork</li>
 <li>Lots of issues with spaces, newlines, etc causing the import to fail</li>
 <li>I noticed we have a very <em>interesting</em> list of countries on CGSpace:</li>
 </ul>
-
-<p><img src="/cgspace-notes/2016/02/cgspace-countries.png" alt="CGSpace country list" /></p>
-
+<p><img src="/cgspace-notes/2016/02/cgspace-countries.png" alt="CGSpace country list"></p>
 <ul>
 <li>Not only are there 49,000 countries, we have some blanks (25)&hellip;</li>
 <li>Also, lots of things like &ldquo;COTE D`LVOIRE&rdquo; and &ldquo;COTE D IVOIRE&rdquo;</li>
@@ -333,8 +314,7 @@ text_value
 
 </p>
   </header>
-  <h2 id="2016-01-13">2016-01-13</h2>
-
+  <h2 id="20160113">2016-01-13</h2>
 <ul>
 <li>Move ILRI collection <code>10568/12503</code> from <code>10568/27869</code> to <code>10568/27629</code> using the <a href="https://gist.github.com/alanorth/392c4660e8b022d99dfa">move_collections.sh</a> script I wrote last year.</li>
 <li>I realized it is only necessary to clear the Cocoon cache after moving collections—rather than reindexing—as no metadata has changed, and therefore no search or browse indexes need to be updated.</li>
@@ -357,18 +337,16 @@ text_value
 
 </p>
   </header>
-  <h2 id="2015-12-02">2015-12-02</h2>
-
+  <h2 id="20151202">2015-12-02</h2>
 <ul>
-<li><p>Replace <code>lzop</code> with <code>xz</code> in log compression cron jobs on DSpace Test—it uses less space:</p>
-
+<li>Replace <code>lzop</code> with <code>xz</code> in log compression cron jobs on DSpace Test—it uses less space:</li>
+</ul>
 <pre><code># cd /home/dspacetest.cgiar.org/log
 # ls -lh dspace.log.2015-11-18*
 -rw-rw-r-- 1 tomcat7 tomcat7 2.0M Nov 18 23:59 dspace.log.2015-11-18
 -rw-rw-r-- 1 tomcat7 tomcat7 387K Nov 18 23:59 dspace.log.2015-11-18.lzo
 -rw-rw-r-- 1 tomcat7 tomcat7 169K Nov 18 23:59 dspace.log.2015-11-18.xz
-</code></pre></li>
-</ul>
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2015-12/'>Read more →</a>
 </article> 
 

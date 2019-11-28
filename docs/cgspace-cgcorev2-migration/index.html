@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGSpace CG Core v2 Migration"/>
 <meta name="twitter:description" content="Possible changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2."/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -100,71 +100,64 @@
 </p>
   </header>
   <p>Possible changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2.</p>
-
 <p>With reference to <a href="https://agriculturalsemantics.github.io/cg-core/cgcore.html">CG Core v2 draft standard</a> by Marie-Angélique as well as <a href="http://www.dublincore.org/specifications/dublin-core/dcmi-terms/">DCMI DCTERMS</a>.</p>
-
 <ul>
 <li><a href="#proposed-changes">Proposed Changes</a></li>
 <li><a href="#fields-to-create">Fields to Create</a></li>
 <li><a href="#fields-to-delete">Fields to Delete</a></li>
 <li><a href="#implementation-progress">Implementation Progress</a></li>
 </ul>
-
 <h2 id="proposed-changes">Proposed Changes</h2>
-
 <p>As of 2019-11-17 the scope of the changes includes the following fields:</p>
-
 <ul>
 <li>cg.creator.id→cg.creator.identifier
-
 <ul>
 <li>ORCID identifiers</li>
-</ul></li>
+</ul>
+</li>
 <li>dc.format.extent→dcterms.extent</li>
 <li>dc.date.issued→dcterms.issued</li>
 <li>dc.description.abstract→dcterms.abstract</li>
 <li>dc.description→dcterms.description</li>
 <li>dc.description.sponsorship→cg.contributor.donor
-
 <ul>
 <li>values from CrossRef or Grid.ac if possible</li>
-</ul></li>
+</ul>
+</li>
 <li>dc.description.version→cg.peer-reviewed</li>
 <li>cg.fulltextstatus→cg.howpublished
-
 <ul>
 <li>CGSpace uses values like &ldquo;Formally Published&rdquo; or &ldquo;Grey Literature&rdquo;</li>
-</ul></li>
+</ul>
+</li>
 <li>dc.identifier.citation→dcterms.bibliographicCitation</li>
 <li>cg.identifier.status→dcterms.accessRights
-
 <ul>
 <li>current values are &ldquo;Open Access&rdquo; and &ldquo;Limited Access&rdquo;</li>
 <li>future values are possibly &ldquo;Open&rdquo; and &ldquo;Restricted&rdquo;?</li>
-</ul></li>
+</ul>
+</li>
 <li>dc.language.iso→dcterms.language
-
 <ul>
 <li>current values are ISO 639-1 (aka Alpha 2)</li>
 <li>future values are possibly ISO 639-3 (aka Alpha 3)?</li>
-</ul></li>
+</ul>
+</li>
 <li>cg.link.reference→dcterms.relation</li>
 <li>dc.publisher→dcterms.publisher</li>
 <li>dc.relation.ispartofseries→dcterms.isPartOf</li>
 <li>dc.rights→dcterms.license
-
 <ul>
 <li>Using <a href="https://spdx.org/licenses/">SPDX license identifiers</a> if possible</li>
-</ul></li>
+</ul>
+</li>
 <li>dc.source→cg.journal</li>
 <li>dc.subject→dcterms.subject</li>
 <li>dc.type→dcterms.type</li>
 <li>dc.identifier.isbn→cg.isbn</li>
 <li>dc.identifier.issn→cg.issn</li>
 </ul>
-
 <p>The following fields are currently out of the scope of this migration because they are used internally by DSpace 5.x/6.x and would be difficult to change without significant modifications to the core of the code:</p>
-
 <ul>
 <li>dc.title (<code>IncludePageMeta.java</code> only considers DC when building pageMeta, which we rely on in XMLUI because of XSLT from DRI)</li>
 <li>dc.title.alternative</li>
@@ -174,36 +167,27 @@
 <li>dc.description.provenance</li>
 <li>dc.contributor.author (<code>IncludePageMeta.java</code> only considers DC when building pageMeta, which we rely on in XMLUI because of XSLT from DRI)</li>
 </ul>
-
 <h2 id="fields-to-create">Fields to Create</h2>
-
 <p>Make sure the following fields exist:</p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.creator.identifier (242)</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.contributor.donor (243)</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.peer-reviewed (244)</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.howpublished (245)</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.journal (246)</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.isbn (247)</label></li>
-<li><label><input type="checkbox" checked disabled class="task-list-item"> cg.issn (248)</label></li>
+<ul>
+<li><input checked="" disabled="" type="checkbox">cg.creator.identifier (242)</li>
+<li><input checked="" disabled="" type="checkbox">cg.contributor.donor (243)</li>
+<li><input checked="" disabled="" type="checkbox">cg.peer-reviewed (244)</li>
+<li><input checked="" disabled="" type="checkbox">cg.howpublished (245)</li>
+<li><input checked="" disabled="" type="checkbox">cg.journal (246)</li>
+<li><input checked="" disabled="" type="checkbox">cg.isbn (247)</li>
+<li><input checked="" disabled="" type="checkbox">cg.issn (248)</li>
 </ul>
-
 <h2 id="fields-to-delete">Fields to delete</h2>
-
 <p>Fields to delete after migration:</p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" disabled class="task-list-item"> cg.creator.id</label></li>
-<li><label><input type="checkbox" disabled class="task-list-item"> cg.fulltextstatus</label></li>
-<li><label><input type="checkbox" disabled class="task-list-item"> cg.identifier.status</label></li>
-<li><label><input type="checkbox" disabled class="task-list-item"> cg.link.reference</label></li>
+<ul>
+<li><input disabled="" type="checkbox">cg.creator.id</li>
+<li><input disabled="" type="checkbox">cg.fulltextstatus</li>
+<li><input disabled="" type="checkbox">cg.identifier.status</li>
+<li><input disabled="" type="checkbox">cg.link.reference</li>
 </ul>
-
 <h2 id="implementation-progress">Implementation Progress</h2>
-
 <p>Tally of the status of the implementation of the new fields in the CGSpace <code>5_x-cgcorev2</code> branch.</p>
-
 <table>
 <thead>
 <tr>
@@ -217,7 +201,6 @@
 <th align="center">Crosswalks</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>cg.creator.identifier</td>
@@ -229,7 +212,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.extent</td>
 <td align="center">✓</td>
@@ -240,7 +222,6 @@
 <td align="center">-</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.issued</td>
 <td align="center">✓</td>
@@ -251,7 +232,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.abstract</td>
 <td align="center">✓</td>
@@ -262,7 +242,6 @@
 <td align="center">-</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.description</td>
 <td align="center">✓</td>
@@ -273,7 +252,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>cg.contributor.donor</td>
 <td align="center">✓</td>
@@ -284,7 +262,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>cg.peer-reviewed</td>
 <td align="center">✓</td>
@@ -295,7 +272,6 @@
 <td align="center">-</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>cg.howpublished</td>
 <td align="center">✓</td>
@@ -306,7 +282,6 @@
 <td align="center">-</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.bibliographicCitation</td>
 <td align="center">✓</td>
@@ -317,7 +292,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.accessRights</td>
 <td align="center">✓</td>
@@ -328,7 +302,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.language</td>
 <td align="center">✓</td>
@@ -339,7 +312,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.relation</td>
 <td align="center">✓</td>
@@ -350,7 +322,6 @@
 <td align="center">-</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.publisher</td>
 <td align="center">✓</td>
@@ -361,7 +332,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.isPartOf</td>
 <td align="center">✓</td>
@@ -372,7 +342,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.license</td>
 <td align="center">✓</td>
@@ -383,7 +352,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>cg.journal</td>
 <td align="center">✓</td>
@@ -394,7 +362,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.subject</td>
 <td align="center">✓</td>
@@ -405,7 +372,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>dcterms.type</td>
 <td align="center">✓</td>
@@ -416,7 +382,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>cg.isbn</td>
 <td align="center">✓</td>
@@ -427,7 +392,6 @@
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-
 <tr>
 <td>cg.issn</td>
 <td align="center">✓</td>
@@ -440,19 +404,14 @@
 </tr>
 </tbody>
 </table>
-
 <p>There are a few things that I need to check once I get a deployment of this code up and running:</p>
-
 <ul>
 <li>Assess the XSL changes to see if things like <code>not(@qualifier)]</code> still make sense after we move fields from DC to DCTERMS, as some fields will no longer have qualifiers</li>
 <li>Do I need to edit crosswalks that we are not using, like <a href="https://wiki.duraspace.org/display/DSDOC5x/DSpace+AIP+Format#DSpaceAIPFormat-MODSSchema">MODS</a>?</li>
 <li>There is potentially a lot of work in the OAI metadata formats like DIM, METS, and QDC (see <code>dspace/config/crosswalks/oai/*.xsl</code>)</li>
 </ul>
-
-<hr />
-
-<p>¹ Not committed yet because I don&rsquo;t want to have to make minor adjustments in multiple commits. Re-apply the gauntlet of fixes with the sed script:</p>
-
+<hr>
+<p>¹ Not committed yet because I don't want to have to make minor adjustments in multiple commits. Re-apply the gauntlet of fixes with the sed script:</p>
 <pre><code>$ find dspace/modules/xmlui-mirage2/src/main/webapp/themes -iname &quot;*.xsl&quot; -exec sed -i -f ./cgcore-xsl-replacements.sed {} \;
 </code></pre>
 

@@ -8,15 +8,12 @@
 <meta property="og:title" content="May, 2016" />
 <meta property="og:description" content="2016-05-01
 
-
 Since yesterday there have been 10,000 REST errors and the site has been unstable again
 I have blocked access to the API now
-
 There are 3,000 IPs accessing the REST API in a 24-hour period!
 
 # awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | uniq | wc -l
 3168
-
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2016-05/" />
@@ -27,17 +24,14 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 <meta name="twitter:title" content="May, 2016"/>
 <meta name="twitter:description" content="2016-05-01
 
-
 Since yesterday there have been 10,000 REST errors and the site has been unstable again
 I have blocked access to the API now
-
 There are 3,000 IPs accessing the REST API in a 24-hour period!
 
 # awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | uniq | wc -l
 3168
-
 "/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -118,52 +112,38 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 
 </p>
   </header>
-  <h2 id="2016-05-01">2016-05-01</h2>
-
+  <h2 id="20160501">2016-05-01</h2>
 <ul>
 <li>Since yesterday there have been 10,000 REST errors and the site has been unstable again</li>
 <li>I have blocked access to the API now</li>
-
-<li><p>There are 3,000 IPs accessing the REST API in a 24-hour period!</p>
-
+<li>There are 3,000 IPs accessing the REST API in a 24-hour period!</li>
+</ul>
 <pre><code># awk '{print $1}' /var/log/nginx/rest.log  | uniq | wc -l
 3168
-</code></pre></li>
-</ul>
-
-<ul>
+</code></pre><ul>
 <li>The two most often requesters are in Ethiopia and Colombia: 213.55.99.121 and 181.118.144.29</li>
-
-<li><p>100% of the requests coming from Ethiopia are like this and result in an HTTP 500:</p>
-
-<pre><code>GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1
-</code></pre></li>
-
-<li><p>For now I&rsquo;ll block just the Ethiopian IP</p></li>
-
-<li><p>The owner of that application has said that the <code>NaN</code> (not a number) is an error in his code and he&rsquo;ll fix it</p></li>
+<li>100% of the requests coming from Ethiopia are like this and result in an HTTP 500:</li>
 </ul>
-
-<h2 id="2016-05-03">2016-05-03</h2>
-
+<pre><code>GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1
+</code></pre><ul>
+<li>For now I'll block just the Ethiopian IP</li>
+<li>The owner of that application has said that the <code>NaN</code> (not a number) is an error in his code and he'll fix it</li>
+</ul>
+<h2 id="20160503">2016-05-03</h2>
 <ul>
 <li>Update nginx to 1.10.x branch on CGSpace</li>
 <li>Fix a reference to <code>dc.type.output</code> in Discovery that I had missed when we migrated to <code>dc.type</code> last month (<a href="https://github.com/ilri/DSpace/pull/223">#223</a>)</li>
 </ul>
-
-<p><img src="/cgspace-notes/2016/05/discovery-types.png" alt="Item type in Discovery results" /></p>
-
-<h2 id="2016-05-06">2016-05-06</h2>
-
+<p><img src="/cgspace-notes/2016/05/discovery-types.png" alt="Item type in Discovery results"></p>
+<h2 id="20160506">2016-05-06</h2>
 <ul>
 <li>DSpace Test is down, <code>catalina.out</code> has lots of messages about heap space from some time yesterday (!)</li>
 <li>It looks like Sisay was doing some batch imports</li>
 <li>Hmm, also disk space is full</li>
-<li>I decided to blow away the solr indexes, since they are 50GB and we don&rsquo;t really need all the Atmire stuff there right now</li>
+<li>I decided to blow away the solr indexes, since they are 50GB and we don't really need all the Atmire stuff there right now</li>
 <li>I will re-generate the Discovery indexes after re-deploying</li>
-
-<li><p>Testing <code>renew-letsencrypt.sh</code> script for nginx</p>
-
+<li>Testing <code>renew-letsencrypt.sh</code> script for nginx</li>
+</ul>
 <pre><code>#!/usr/bin/env bash
 
 readonly SERVICE_BIN=/usr/sbin/service
@@ -179,37 +159,32 @@ LE_RESULT=$?
 $SERVICE_BIN nginx start
 
 if [[ &quot;$LE_RESULT&quot; != 0 ]]; then
-echo 'Automated renewal failed:'
+    echo 'Automated renewal failed:'
 
-cat /var/log/letsencrypt/renew.log
+    cat /var/log/letsencrypt/renew.log
 
-exit 1
+    exit 1
 fi
-</code></pre></li>
-
-<li><p>Seems to work well</p></li>
+</code></pre><ul>
+<li>Seems to work well</li>
 </ul>
-
-<h2 id="2016-05-10">2016-05-10</h2>
-
+<h2 id="20160510">2016-05-10</h2>
 <ul>
 <li>Start looking at more metadata migrations</li>
 <li>There are lots of fields in <code>dcterms</code> namespace that look interesting, like:
-
 <ul>
 <li>dcterms.type</li>
 <li>dcterms.spatial</li>
-</ul></li>
+</ul>
+</li>
 <li>Not sure what <code>dcterms</code> is&hellip;</li>
 <li>Looks like these were <a href="https://wiki.duraspace.org/display/DSDOC5x/Metadata+and+Bitstream+Format+Registries#MetadataandBitstreamFormatRegistries-DublinCoreTermsRegistry(DCTERMS)">added in DSpace 4</a> to allow for future work to make DSpace more flexible</li>
-<li>CGSpace&rsquo;s <code>dc</code> registry has 96 items, and the default DSpace one has 73.</li>
+<li>CGSpace's <code>dc</code> registry has 96 items, and the default DSpace one has 73.</li>
 </ul>
-
-<h2 id="2016-05-11">2016-05-11</h2>
-
+<h2 id="20160511">2016-05-11</h2>
 <ul>
-<li><p>Identify and propose the next phase of CGSpace fields to migrate:</p>
-
+<li>
+<p>Identify and propose the next phase of CGSpace fields to migrate:</p>
 <ul>
 <li>dc.title.jtitle      → cg.title.journal</li>
 <li>dc.identifier.status → cg.identifier.status</li>
@@ -219,182 +194,138 @@ fi
 <li>dc.fulltextstatus    → cg.fulltextstatus</li>
 <li>dc.editon            → cg.edition</li>
 <li>dc.isijournal        → cg.isijournal</li>
-</ul></li>
-
-<li><p>Start a test rebase of the <code>5_x-prod</code> branch on top of the <code>dspace-5.5</code> tag</p></li>
-
-<li><p>There were a handful of conflicts that I didn&rsquo;t understand</p></li>
-
-<li><p>After completing the rebase I tried to build with the module versions Atmire had indicated as being 5.5 ready but I got this error:</p>
-
-<pre><code>[ERROR] Failed to execute goal on project additions: Could not resolve dependencies for project org.dspace.modules:additions:jar:5.5: Could not find artifact com.atmire:atmire-metadata-quality-api:jar:5.5-2.10.1-0 in sonatype-releases (https://oss.sonatype.org/content/repositories/releases/) -&gt; [Help 1]
-</code></pre></li>
-
-<li><p>I&rsquo;ve sent them a question about it</p></li>
-
-<li><p>A user mentioned having problems with uploading a 33 MB PDF</p></li>
-
-<li><p>I told her I would increase the limit temporarily tomorrow morning</p></li>
-
-<li><p>Turns out she was able to decrease the size of the PDF so we didn&rsquo;t have to do anything</p></li>
 </ul>
-
-<h2 id="2016-05-12">2016-05-12</h2>
-
+</li>
+<li>
+<p>Start a test rebase of the <code>5_x-prod</code> branch on top of the <code>dspace-5.5</code> tag</p>
+</li>
+<li>
+<p>There were a handful of conflicts that I didn't understand</p>
+</li>
+<li>
+<p>After completing the rebase I tried to build with the module versions Atmire had indicated as being 5.5 ready but I got this error:</p>
+</li>
+</ul>
+<pre><code>[ERROR] Failed to execute goal on project additions: Could not resolve dependencies for project org.dspace.modules:additions:jar:5.5: Could not find artifact com.atmire:atmire-metadata-quality-api:jar:5.5-2.10.1-0 in sonatype-releases (https://oss.sonatype.org/content/repositories/releases/) -&gt; [Help 1]
+</code></pre><ul>
+<li>I've sent them a question about it</li>
+<li>A user mentioned having problems with uploading a 33 MB PDF</li>
+<li>I told her I would increase the limit temporarily tomorrow morning</li>
+<li>Turns out she was able to decrease the size of the PDF so we didn't have to do anything</li>
+</ul>
+<h2 id="20160512">2016-05-12</h2>
 <ul>
 <li>Looks like the issue that Abenet was having a few days ago with &ldquo;Connection Reset&rdquo; in Firefox might be due to a Firefox 46 issue: <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1268775">https://bugzilla.mozilla.org/show_bug.cgi?id=1268775</a></li>
 <li>I finally found a copy of the latest CG Core metadata guidelines and it looks like we can add a few more fields to our next migration:
-
 <ul>
 <li>dc.rplace.region  → cg.coverage.region</li>
 <li>dc.cplace.country → cg.coverage.country</li>
-</ul></li>
+</ul>
+</li>
 <li>Questions for CG people:
-
 <ul>
 <li>Our <code>dc.place</code> and <code>dc.srplace.subregion</code> could both map to <code>cg.coverage.admin-unit</code>?</li>
 <li>Should we use <code>dc.contributor.crp</code> or <code>cg.contributor.crp</code> for the CRP (ours is <code>dc.crsubject.crpsubject</code>)?</li>
-<li>Our <code>dc.contributor.affiliation</code> and <code>dc.contributor.corporate</code> could both map to <code>dc.contributor</code> and possibly <code>dc.contributor.center</code> depending on if it&rsquo;s a CG center or not</li>
+<li>Our <code>dc.contributor.affiliation</code> and <code>dc.contributor.corporate</code> could both map to <code>dc.contributor</code> and possibly <code>dc.contributor.center</code> depending on if it's a CG center or not</li>
 <li><code>dc.title.jtitle</code> could either map to <code>dc.publisher</code> or <code>dc.source</code> depending on how you read things</li>
-</ul></li>
-
-<li><p>Found ~200 messed up CIAT values in <code>dc.publisher</code>:</p>
-
-<pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=39 and text_value similar to &quot;%  %&quot;;
-</code></pre></li>
 </ul>
-
-<h2 id="2016-05-13">2016-05-13</h2>
-
+</li>
+<li>Found ~200 messed up CIAT values in <code>dc.publisher</code>:</li>
+</ul>
+<pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=39 and text_value similar to &quot;%  %&quot;;
+</code></pre><h2 id="20160513">2016-05-13</h2>
 <ul>
 <li>More theorizing about CGcore</li>
 <li>Add two new fields:
-
 <ul>
 <li>dc.srplace.subregion → cg.coverage.admin-unit</li>
 <li>dc.place → cg.place</li>
-</ul></li>
-<li><code>dc.place</code> is our own field, so it&rsquo;s easy to move</li>
-<li>I&rsquo;ve removed <code>dc.title.jtitle</code> from the list for now because there&rsquo;s no use moving it out of DC until we know where it will go (see discussion yesterday)</li>
 </ul>
-
-<h2 id="2016-05-18">2016-05-18</h2>
-
+</li>
+<li><code>dc.place</code> is our own field, so it's easy to move</li>
+<li>I've removed <code>dc.title.jtitle</code> from the list for now because there's no use moving it out of DC until we know where it will go (see discussion yesterday)</li>
+</ul>
+<h2 id="20160518">2016-05-18</h2>
 <ul>
 <li>Work on 707 CCAFS records</li>
 <li>They have thumbnails on Flickr and elsewhere</li>
-
-<li><p>In OpenRefine I created a new <code>filename</code> column based on the <code>thumbnail</code> column with the following GREL:</p>
-
+<li>In OpenRefine I created a new <code>filename</code> column based on the <code>thumbnail</code> column with the following GREL:</li>
+</ul>
 <pre><code>if(cells['thumbnails'].value.contains('hqdefault'), cells['thumbnails'].value.split('/')[-2] + '.jpg', cells['thumbnails'].value.split('/')[-1])
-</code></pre></li>
-
-<li><p>Because ~400 records had the same filename on Flickr (hqdefault.jpg) but different UUIDs in the URL</p></li>
-
-<li><p>So for the <code>hqdefault.jpg</code> ones I just take the UUID (-2) and use it as the filename</p></li>
-
-<li><p>Before importing with SAFBuilder I tested adding &ldquo;__bundle:THUMBNAIL&rdquo; to the <code>filename</code> column and it works fine</p></li>
+</code></pre><ul>
+<li>Because ~400 records had the same filename on Flickr (hqdefault.jpg) but different UUIDs in the URL</li>
+<li>So for the <code>hqdefault.jpg</code> ones I just take the UUID (-2) and use it as the filename</li>
+<li>Before importing with SAFBuilder I tested adding &ldquo;__bundle:THUMBNAIL&rdquo; to the <code>filename</code> column and it works fine</li>
 </ul>
-
-<h2 id="2016-05-19">2016-05-19</h2>
-
+<h2 id="20160519">2016-05-19</h2>
 <ul>
-<li><p>More quality control on <code>filename</code> field of CCAFS records to make processing in shell and SAFBuilder more reliable:</p>
-
+<li>More quality control on <code>filename</code> field of CCAFS records to make processing in shell and SAFBuilder more reliable:</li>
+</ul>
 <pre><code>value.replace('_','').replace('-','')
-</code></pre></li>
-
-<li><p>We need to hold off on moving <code>dc.Species</code> to <code>cg.species</code> because it is only used for plants, and might be better to move it to something like <code>cg.species.plant</code></p></li>
-
-<li><p>And <code>dc.identifier.fund</code> is MOSTLY used for CPWF project identifier but has some other sponsorship things</p>
-
+</code></pre><ul>
+<li>We need to hold off on moving <code>dc.Species</code> to <code>cg.species</code> because it is only used for plants, and might be better to move it to something like <code>cg.species.plant</code></li>
+<li>And <code>dc.identifier.fund</code> is MOSTLY used for CPWF project identifier but has some other sponsorship things
 <ul>
-<li>We should move PN<em>, SG</em>, CBA, IA, and PHASE* values to <code>cg.identifier.cpwfproject</code></li>
+<li>We should move PN*, SG*, CBA, IA, and PHASE* values to <code>cg.identifier.cpwfproject</code></li>
 <li>The rest, like BMGF and USAID etc, might have to go to either <code>dc.description.sponsorship</code> or <code>cg.identifier.fund</code> (not sure yet)</li>
-<li>There are also some mistakes in CPWF&rsquo;s things, like &ldquo;PN 47&rdquo;</li>
-
-<li><p>This ought to catch all the CPWF values (there don&rsquo;t appear to be and SG* values):</p>
-
-<pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA');
-</code></pre></li>
-</ul></li>
+<li>There are also some mistakes in CPWF's things, like &ldquo;PN 47&rdquo;</li>
+<li>This ought to catch all the CPWF values (there don't appear to be and SG* values):</li>
 </ul>
-
-<h2 id="2016-05-20">2016-05-20</h2>
-
+</li>
+</ul>
+<pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA');
+</code></pre><h2 id="20160520">2016-05-20</h2>
 <ul>
 <li>More work on CCAFS Video and Images records</li>
-
-<li><p>For SAFBuilder we need to modify filename column to have the thumbnail bundle:</p>
-
-<pre><code>value + &quot;__bundle:THUMBNAIL&quot;
-</code></pre></li>
-
-<li><p>Also, I fixed some weird characters using OpenRefine&rsquo;s transform with the following GREL:</p>
-
-<pre><code>value.replace(/\u0081/,'')
-</code></pre></li>
-
-<li><p>Write shell script to resize thumbnails with height larger than 400: <a href="https://gist.github.com/alanorth/131401dcd39d00e0ce12e1be3ed13256">https://gist.github.com/alanorth/131401dcd39d00e0ce12e1be3ed13256</a></p></li>
-
-<li><p>Upload 707 CCAFS records to DSpace Test</p></li>
-
-<li><p>A few miscellaneous fixes for XMLUI display niggles (spaces in item lists and link target <code>_black</code>): <a href="https://github.com/ilri/DSpace/pull/224">#224</a></p></li>
-
-<li><p>Work on configuration changes for Phase 2 metadata migrations</p></li>
+<li>For SAFBuilder we need to modify filename column to have the thumbnail bundle:</li>
 </ul>
-
-<h2 id="2016-05-23">2016-05-23</h2>
-
+<pre><code>value + &quot;__bundle:THUMBNAIL&quot;
+</code></pre><ul>
+<li>Also, I fixed some weird characters using OpenRefine's transform with the following GREL:</li>
+</ul>
+<pre><code>value.replace(/\u0081/,'')
+</code></pre><ul>
+<li>Write shell script to resize thumbnails with height larger than 400: <a href="https://gist.github.com/alanorth/131401dcd39d00e0ce12e1be3ed13256">https://gist.github.com/alanorth/131401dcd39d00e0ce12e1be3ed13256</a></li>
+<li>Upload 707 CCAFS records to DSpace Test</li>
+<li>A few miscellaneous fixes for XMLUI display niggles (spaces in item lists and link target <code>_black</code>): <a href="https://github.com/ilri/DSpace/pull/224">#224</a></li>
+<li>Work on configuration changes for Phase 2 metadata migrations</li>
+</ul>
+<h2 id="20160523">2016-05-23</h2>
 <ul>
 <li>Try to import the CCAFS Images and Videos to CGSpace but had some issues with LibreOffice and OpenRefine</li>
 <li>LibreOffice excludes empty cells when it exports and all the fields shift over to the left and cause URLs to go to Subjects, etc.</li>
-<li>Google Docs does this better, but somehow reorders the rows and when I paste the thumbnail/filename row in they don&rsquo;t match!</li>
+<li>Google Docs does this better, but somehow reorders the rows and when I paste the thumbnail/filename row in they don't match!</li>
 <li>I will have to try later</li>
 </ul>
-
-<h2 id="2016-05-30">2016-05-30</h2>
-
+<h2 id="20160530">2016-05-30</h2>
 <ul>
-<li><p>Export CCAFS video and image records from DSpace Test using the migrate option (<code>-m</code>):</p>
-
+<li>Export CCAFS video and image records from DSpace Test using the migrate option (<code>-m</code>):</li>
+</ul>
 <pre><code>$ mkdir ~/ccafs-images
 $ /home/dspacetest.cgiar.org/bin/dspace export -t COLLECTION -i 10568/79355 -d ~/ccafs-images -n 0 -m
-</code></pre></li>
-
-<li><p>And then import to CGSpace:</p>
-
+</code></pre><ul>
+<li>And then import to CGSpace:</li>
+</ul>
 <pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/70974 --source /tmp/ccafs-images --mapfile=/tmp/ccafs-images-may30.map &amp;&gt; /tmp/ccafs-images-may30.log
-</code></pre></li>
-
-<li><p>But now we have double authors for &ldquo;CGIAR Research Program on Climate Change, Agriculture and Food Security&rdquo; in the authority</p></li>
-
-<li><p>I&rsquo;m trying to do a Discovery index before messing with the authority index</p></li>
-
-<li><p>Looks like we are missing the <code>index-authority</code> cron job, so who knows what&rsquo;s up with our authority index</p></li>
-
-<li><p>Run system updates on DSpace Test, re-deploy code, and reboot the server</p></li>
-
-<li><p>Clean up and import ~200 CTA records to CGSpace via CSV like:</p>
-
+</code></pre><ul>
+<li>But now we have double authors for &ldquo;CGIAR Research Program on Climate Change, Agriculture and Food Security&rdquo; in the authority</li>
+<li>I'm trying to do a Discovery index before messing with the authority index</li>
+<li>Looks like we are missing the <code>index-authority</code> cron job, so who knows what's up with our authority index</li>
+<li>Run system updates on DSpace Test, re-deploy code, and reboot the server</li>
+<li>Clean up and import ~200 CTA records to CGSpace via CSV like:</li>
+</ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot;
 $ /home/cgspace.cgiar.org/bin/dspace metadata-import -e aorth@mjanja.ch -f ~/CTA-May30/CTA-42229.csv &amp;&gt; ~/CTA-May30/CTA-42229.log
-</code></pre></li>
-
-<li><p>Discovery indexing took a few hours for some reason, and after that I started the <code>index-authority</code> script</p>
-
-<pre><code>$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace index-authority
-</code></pre></li>
+</code></pre><ul>
+<li>Discovery indexing took a few hours for some reason, and after that I started the <code>index-authority</code> script</li>
 </ul>
-
-<h2 id="2016-05-31">2016-05-31</h2>
-
+<pre><code>$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace index-authority
+</code></pre><h2 id="20160531">2016-05-31</h2>
 <ul>
 <li>The <code>index-authority</code> script ran over night and was finished in the morning</li>
-<li>Hopefully this was because we haven&rsquo;t been running it regularly and it will speed up next time</li>
-
-<li><p>I am running it again with a timer to see:</p>
-
+<li>Hopefully this was because we haven't been running it regularly and it will speed up next time</li>
+<li>I am running it again with a timer to see:</li>
+</ul>
 <pre><code>$ time /home/cgspace.cgiar.org/bin/dspace index-authority
 Retrieving all data
 Initialize org.dspace.authority.indexer.DSpaceAuthorityIndexer
@@ -405,17 +336,12 @@ All done !
 real    37m26.538s
 user    2m24.627s
 sys     0m20.540s
-</code></pre></li>
-
-<li><p>Update <code>tomcat7</code> crontab on CGSpace and DSpace Test to have the <code>index-authority</code> script that we were missing</p></li>
-
-<li><p>Add new ILRI subject and CCAFS project tags to <code>input-forms.xml</code> (<a href="https://github.com/ilri/DSpace/pull/226">#226</a>, <a href="https://github.com/ilri/DSpace/pull/225">#225</a>)</p></li>
-
-<li><p>Manually mapped the authors of a few old CCAFS records to the new CCAFS authority UUID and re-indexed authority indexes to see if it helps correct those items.</p></li>
-
-<li><p>Re-sync DSpace Test data with CGSpace</p></li>
-
-<li><p>Clean up and import ~65 more CTA items into CGSpace</p></li>
+</code></pre><ul>
+<li>Update <code>tomcat7</code> crontab on CGSpace and DSpace Test to have the <code>index-authority</code> script that we were missing</li>
+<li>Add new ILRI subject and CCAFS project tags to <code>input-forms.xml</code> (<a href="https://github.com/ilri/DSpace/pull/226">#226</a>, <a href="https://github.com/ilri/DSpace/pull/225">#225</a>)</li>
+<li>Manually mapped the authors of a few old CCAFS records to the new CCAFS authority UUID and re-indexed authority indexes to see if it helps correct those items.</li>
+<li>Re-sync DSpace Test data with CGSpace</li>
+<li>Clean up and import ~65 more CTA items into CGSpace</li>
 </ul>
 
   

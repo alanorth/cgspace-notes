@@ -9,13 +9,12 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/categories/notes/" />
-
 <meta property="og:updated_time" content="2019-11-04T12:20:30+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -85,31 +84,27 @@
 
 </p>
   </header>
-  <h2 id="2019-11-04">2019-11-04</h2>
-
+  <h2 id="20191104">2019-11-04</h2>
 <ul>
-<li><p>Peter noticed that there were 5.2 million hits on CGSpace in 2019-10 according to the Atmire usage statistics</p>
-
+<li>Peter noticed that there were 5.2 million hits on CGSpace in 2019-10 according to the Atmire usage statistics
 <ul>
-<li><p>I looked in the nginx logs and see 4.6 million in the access logs, and 1.2 million in the API logs:</p>
-
+<li>I looked in the nginx logs and see 4.6 million in the access logs, and 1.2 million in the API logs:</li>
+</ul>
+</li>
+</ul>
 <pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
 4671942
 # zcat --force /var/log/nginx/{rest,oai,statistics}.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
 1277694
-</code></pre></li>
-</ul></li>
-
-<li><p>So 4.6 million from XMLUI and another 1.2 million from API requests</p></li>
-
-<li><p>Let&rsquo;s see how many of the REST API requests were for bitstreams (because they are counted in Solr stats):</p>
-
+</code></pre><ul>
+<li>So 4.6 million from XMLUI and another 1.2 million from API requests</li>
+<li>Let's see how many of the REST API requests were for bitstreams (because they are counted in Solr stats):</li>
+</ul>
 <pre><code># zcat --force /var/log/nginx/rest.log.*.gz | grep -c -E &quot;[0-9]{1,2}/Oct/2019&quot;
 1183456 
 # zcat --force /var/log/nginx/rest.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E &quot;/rest/bitstreams&quot;
 106781
-</code></pre></li>
-</ul>
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2019-11/'>Read more →</a>
 </article> 
 
@@ -130,7 +125,6 @@
 </p>
   </header>
   <p>Possible changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2.</p>
-
 <p>With reference to <a href="https://agriculturalsemantics.github.io/cg-core/cgcore.html">CG Core v2 draft standard</a> by Marie-Angélique as well as <a href="http://www.dublincore.org/specifications/dublin-core/dcmi-terms/">DCMI DCTERMS</a>.</p>
   <a href='https://alanorth.github.io/cgspace-notes/cgspace-cgcorev2-migration/'>Read more →</a>
 </article> 
@@ -149,8 +143,7 @@
 
 </p>
   </header>
-  2019-10-01  Udana from IWMI asked me for a CSV export of their community on CGSpace
- I exported it, but a quick run through the csv-metadata-quality tool shows that there are some low-hanging fruits we can fix before I send him the data I will limit the scope to the titles, regions, subregions, and river basins for now to manually fix some non-breaking spaces (U+00A0) there that would otherwise be removed by the csv-metadata-quality script&rsquo;s &ldquo;unneccesary Unicode&rdquo; fix:
+  2019-10-01  Udana from IWMI asked me for a CSV export of their community on CGSpace  I exported it, but a quick run through the csv-metadata-quality tool shows that there are some low-hanging fruits we can fix before I send him the data I will limit the scope to the titles, regions, subregions, and river basins for now to manually fix some non-breaking spaces (U+00A0) there that would otherwise be removed by the csv-metadata-quality script's &ldquo;unneccesary Unicode&rdquo; fix:    $ csvcut -c 'id,dc.
   <a href='https://alanorth.github.io/cgspace-notes/2019-10/'>Read more →</a>
 </article> 
 
@@ -168,37 +161,34 @@
 
 </p>
   </header>
-  <h2 id="2019-09-01">2019-09-01</h2>
-
+  <h2 id="20190901">2019-09-01</h2>
 <ul>
 <li>Linode emailed to say that CGSpace (linode18) had a high rate of outbound traffic for several hours this morning</li>
-
-<li><p>Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:</p>
-
-<pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;01/Sep/2019:0&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
-440 17.58.101.255
-441 157.55.39.101
-485 207.46.13.43
-728 169.60.128.125
-730 207.46.13.108
-758 157.55.39.9
-808 66.160.140.179
-814 207.46.13.212
-2472 163.172.71.23
-6092 3.94.211.189
-# zcat --force /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;01/Sep/2019:0&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
- 33 2a01:7e00::f03c:91ff:fe16:fcb
- 57 3.83.192.124
- 57 3.87.77.25
- 57 54.82.1.8
-822 2a01:9cc0:47:1:1a:4:0:2
-1223 45.5.184.72
-1633 172.104.229.92
-5112 205.186.128.185
-7249 2a01:7e00::f03c:91ff:fe18:7396
-9124 45.5.186.2
-</code></pre></li>
+<li>Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:</li>
 </ul>
+<pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;01/Sep/2019:0&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+    440 17.58.101.255
+    441 157.55.39.101
+    485 207.46.13.43
+    728 169.60.128.125
+    730 207.46.13.108
+    758 157.55.39.9
+    808 66.160.140.179
+    814 207.46.13.212
+   2472 163.172.71.23
+   6092 3.94.211.189
+# zcat --force /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;01/Sep/2019:0&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+     33 2a01:7e00::f03c:91ff:fe16:fcb
+     57 3.83.192.124
+     57 3.87.77.25
+     57 54.82.1.8
+    822 2a01:9cc0:47:1:1a:4:0:2
+   1223 45.5.184.72
+   1633 172.104.229.92
+   5112 205.186.128.185
+   7249 2a01:7e00::f03c:91ff:fe18:7396
+   9124 45.5.186.2
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2019-09/'>Read more →</a>
 </article> 
 
@@ -216,22 +206,19 @@
 
 </p>
   </header>
-  <h2 id="2019-08-03">2019-08-03</h2>
-
+  <h2 id="20190803">2019-08-03</h2>
 <ul>
-<li>Look at Bioversity&rsquo;s latest migration CSV and now I see that Francesco has cleaned up the extra columns and the newline at the end of the file, but many of the column headers have an extra space in the name&hellip;</li>
+<li>Look at Bioversity's latest migration CSV and now I see that Francesco has cleaned up the extra columns and the newline at the end of the file, but many of the column headers have an extra space in the name&hellip;</li>
 </ul>
-
-<h2 id="2019-08-04">2019-08-04</h2>
-
+<h2 id="20190804">2019-08-04</h2>
 <ul>
 <li>Deploy ORCID identifier updates requested by Bioversity to CGSpace</li>
 <li>Run system updates on CGSpace (linode18) and reboot it
-
 <ul>
 <li>Before updating it I checked Solr and verified that all statistics cores were loaded properly&hellip;</li>
-<li>After rebooting, all statistics cores were loaded&hellip; wow, that&rsquo;s lucky.</li>
-</ul></li>
+<li>After rebooting, all statistics cores were loaded&hellip; wow, that's lucky.</li>
+</ul>
+</li>
 <li>Run system updates on DSpace Test (linode19) and reboot it</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2019-08/'>Read more →</a>
@@ -251,16 +238,15 @@
 
 </p>
   </header>
-  <h2 id="2019-07-01">2019-07-01</h2>
-
+  <h2 id="20190701">2019-07-01</h2>
 <ul>
 <li>Create an &ldquo;AfricaRice books and book chapters&rdquo; collection on CGSpace for AfricaRice</li>
 <li>Last month Sisay asked why the following &ldquo;most popular&rdquo; statistics link for a range of months in 2018 works for the CIAT community on DSpace Test, but not on CGSpace:
-
 <ul>
 <li><a href="https://dspacetest.cgiar.org/handle/10568/35697/most-popular/item#simplefilter=custom&amp;time_filter_end_date=01%2F12%2F2018">DSpace Test</a></li>
 <li><a href="https://cgspace.cgiar.org/handle/10568/35697/most-popular/item#simplefilter=custom&amp;time_filter_end_date=01%2F12%2F2018">CGSpace</a></li>
-</ul></li>
+</ul>
+</li>
 <li>Abenet had another similar issue a few days ago when trying to find the stats for 2018 in the RTB community</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2019-07/'>Read more →</a>
@@ -280,15 +266,12 @@
 
 </p>
   </header>
-  <h2 id="2019-06-02">2019-06-02</h2>
-
+  <h2 id="20190602">2019-06-02</h2>
 <ul>
 <li>Merge the <a href="https://github.com/ilri/DSpace/pull/425">Solr filterCache</a> and <a href="https://github.com/ilri/DSpace/pull/426">XMLUI ISI journal</a> changes to the <code>5_x-prod</code> branch and deploy on CGSpace</li>
 <li>Run system updates on CGSpace (linode18) and reboot it</li>
 </ul>
-
-<h2 id="2019-06-03">2019-06-03</h2>
-
+<h2 id="20190603">2019-06-03</h2>
 <ul>
 <li>Skype with Marie-Angélique and Abenet about <a href="https://agriculturalsemantics.github.io/cg-core/cgcore.html">CG Core v2</a></li>
 </ul>
@@ -309,24 +292,21 @@
 
 </p>
   </header>
-  <h2 id="2019-05-01">2019-05-01</h2>
-
+  <h2 id="20190501">2019-05-01</h2>
 <ul>
 <li>Help CCAFS with regenerating some item thumbnails after they uploaded new PDFs to some items on CGSpace</li>
 <li>A user on the dspace-tech mailing list offered some suggestions for troubleshooting the problem with the inability to delete certain items
-
 <ul>
 <li>Apparently if the item is in the <code>workflowitem</code> table it is submitted to a workflow</li>
 <li>And if it is in the <code>workspaceitem</code> table it is in the pre-submitted state</li>
-</ul></li>
-
-<li><p>The item seems to be in a pre-submitted state, so I tried to delete it from there:</p>
-
+</ul>
+</li>
+<li>The item seems to be in a pre-submitted state, so I tried to delete it from there:</li>
+</ul>
 <pre><code>dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 DELETE 1
-</code></pre></li>
-
-<li><p>But after this I tried to delete the item from the XMLUI and it is <em>still</em> present&hellip;</p></li>
+</code></pre><ul>
+<li>But after this I tried to delete the item from the XMLUI and it is <em>still</em> present&hellip;</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2019-05/'>Read more →</a>
 </article> 
@@ -345,35 +325,30 @@ DELETE 1
 
 </p>
   </header>
-  <h2 id="2019-04-01">2019-04-01</h2>
-
+  <h2 id="20190401">2019-04-01</h2>
 <ul>
 <li>Meeting with AgroKnow to discuss CGSpace, ILRI data, AReS, GARDIAN, etc
-
 <ul>
 <li>They asked if we had plans to enable RDF support in CGSpace</li>
-</ul></li>
-
-<li><p>There have been 4,400 more downloads of the CTA Spore publication from those strange Amazon IP addresses today</p>
-
+</ul>
+</li>
+<li>There have been 4,400 more downloads of the CTA Spore publication from those strange Amazon IP addresses today
 <ul>
-<li><p>I suspected that some might not be successful, because the stats show less, but today they were all HTTP 200!</p>
-
+<li>I suspected that some might not be successful, because the stats show less, but today they were all HTTP 200!</li>
+</ul>
+</li>
+</ul>
 <pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep 'Spore-192-EN-web.pdf' | grep -E '(18.196.196.108|18.195.78.144|18.195.218.6)' | awk '{print $9}' | sort | uniq -c | sort -n | tail -n 5
-4432 200
-</code></pre></li>
-</ul></li>
-
-<li><p>In the last two weeks there have been 47,000 downloads of this <em>same exact PDF</em> by these three IP addresses</p></li>
-
-<li><p>Apply country and region corrections and deletions on DSpace Test and CGSpace:</p>
-
+   4432 200
+</code></pre><ul>
+<li>In the last two weeks there have been 47,000 downloads of this <em>same exact PDF</em> by these three IP addresses</li>
+<li>Apply country and region corrections and deletions on DSpace Test and CGSpace:</li>
+</ul>
 <pre><code>$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p 'fuuu' -f cg.coverage.country -m 228 -t ACTION -d
 $ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u dspace -p 'fuuu' -f cg.coverage.region -m 231 -t action -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p 'fuuu' -m 228 -f cg.coverage.country -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p 'fuuu' -m 231 -f cg.coverage.region -d
-</code></pre></li>
-</ul>
+</code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2019-04/'>Read more →</a>
 </article> 
 
@@ -391,20 +366,19 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 
 </p>
   </header>
-  <h2 id="2019-03-01">2019-03-01</h2>
-
+  <h2 id="20190301">2019-03-01</h2>
 <ul>
-<li>I checked IITA&rsquo;s 259 Feb 14 records from last month for duplicates using Atmire&rsquo;s Duplicate Checker on a fresh snapshot of CGSpace on my local machine and everything looks good</li>
+<li>I checked IITA's 259 Feb 14 records from last month for duplicates using Atmire's Duplicate Checker on a fresh snapshot of CGSpace on my local machine and everything looks good</li>
 <li>I am now only waiting to hear from her about where the items should go, though I assume Journal Articles go to IITA Journal Articles collection, etc&hellip;</li>
-<li>Looking at the other half of Udana&rsquo;s WLE records from 2018-11
-
+<li>Looking at the other half of Udana's WLE records from 2018-11
 <ul>
 <li>I finished the ones for Restoring Degraded Landscapes (RDL), but these are for Variability, Risks and Competing Uses (VRC)</li>
 <li>I did the usual cleanups for whitespace, added regions where they made sense for certain countries, cleaned up the DOI link formats, added rights information based on the publications page for a few items</li>
 <li>Most worryingly, there are encoding errors in the abstracts for eleven items, for example:</li>
 <li>68.15% � 9.45 instead of 68.15% ± 9.45</li>
 <li>2003�2013 instead of 2003–2013</li>
-</ul></li>
+</ul>
+</li>
 <li>I think I will need to ask Udana to re-copy and paste the abstracts with more care using Google Docs</li>
 </ul>
   <a href='https://alanorth.github.io/cgspace-notes/2019-03/'>Read more →</a>

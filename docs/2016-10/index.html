@@ -8,19 +8,16 @@
 <meta property="og:title" content="October, 2016" />
 <meta property="og:description" content="2016-10-03
 
-
 Testing adding ORCIDs to a CSV file for a single item to see if the author orders get messed up
 Need to test the following scenarios to see how author order is affected:
-
 
 ORCIDs only
 ORCIDs plus normal authors
 
 
-I exported a random item&rsquo;s metadata as CSV, deleted all columns except id and collection, and made a new coloum called ORCID:dc.contributor.author with the following random ORCIDs from the ORCID registry:
+I exported a random item&#39;s metadata as CSV, deleted all columns except id and collection, and made a new coloum called ORCID:dc.contributor.author with the following random ORCIDs from the ORCID registry:
 
 0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
-
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2016-10/" />
@@ -31,21 +28,18 @@ I exported a random item&rsquo;s metadata as CSV, deleted all columns except id 
 <meta name="twitter:title" content="October, 2016"/>
 <meta name="twitter:description" content="2016-10-03
 
-
 Testing adding ORCIDs to a CSV file for a single item to see if the author orders get messed up
 Need to test the following scenarios to see how author order is affected:
-
 
 ORCIDs only
 ORCIDs plus normal authors
 
 
-I exported a random item&rsquo;s metadata as CSV, deleted all columns except id and collection, and made a new coloum called ORCID:dc.contributor.author with the following random ORCIDs from the ORCID registry:
+I exported a random item&#39;s metadata as CSV, deleted all columns except id and collection, and made a new coloum called ORCID:dc.contributor.author with the following random ORCIDs from the ORCID registry:
 
 0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
-
 "/>
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.60.0" />
 
 
     
@@ -126,196 +120,144 @@ I exported a random item&rsquo;s metadata as CSV, deleted all columns except id 
 
 </p>
   </header>
-  <h2 id="2016-10-03">2016-10-03</h2>
-
+  <h2 id="20161003">2016-10-03</h2>
 <ul>
 <li>Testing adding <a href="https://wiki.duraspace.org/display/DSDOC5x/ORCID+Integration#ORCIDIntegration-EditingexistingitemsusingBatchCSVEditing">ORCIDs to a CSV</a> file for a single item to see if the author orders get messed up</li>
 <li>Need to test the following scenarios to see how author order is affected:
-
 <ul>
 <li>ORCIDs only</li>
 <li>ORCIDs plus normal authors</li>
-</ul></li>
-
-<li><p>I exported a random item&rsquo;s metadata as CSV, deleted <em>all columns</em> except id and collection, and made a new coloum called <code>ORCID:dc.contributor.author</code> with the following random ORCIDs from the ORCID registry:</p>
-
+</ul>
+</li>
+<li>I exported a random item's metadata as CSV, deleted <em>all columns</em> except id and collection, and made a new coloum called <code>ORCID:dc.contributor.author</code> with the following random ORCIDs from the ORCID registry:</li>
+</ul>
 <pre><code>0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
-</code></pre></li>
-</ul>
-
-<ul>
-<li>Hmm, with the <code>dc.contributor.author</code> column removed, DSpace doesn&rsquo;t detect any changes</li>
+</code></pre><ul>
+<li>Hmm, with the <code>dc.contributor.author</code> column removed, DSpace doesn't detect any changes</li>
 <li>With a blank <code>dc.contributor.author</code> column, DSpace wants to remove all non-ORCID authors and add the new ORCID authors</li>
-<li>I added the <a href="https://github.com/ilri/DSpace/issues/234">disclaimer text</a> to the About page, then added a footer link to the disclaimer&rsquo;s ID, but there is a Bootstrap issue that causes the page content to disappear when using in-page anchors: <a href="https://github.com/twbs/bootstrap/issues/1768">https://github.com/twbs/bootstrap/issues/1768</a></li>
+<li>I added the <a href="https://github.com/ilri/DSpace/issues/234">disclaimer text</a> to the About page, then added a footer link to the disclaimer's ID, but there is a Bootstrap issue that causes the page content to disappear when using in-page anchors: <a href="https://github.com/twbs/bootstrap/issues/1768">https://github.com/twbs/bootstrap/issues/1768</a></li>
 </ul>
-
-<p><img src="/cgspace-notes/2016/10/bootstrap-issue.png" alt="Bootstrap issue with in-page anchors" /></p>
-
+<p><img src="/cgspace-notes/2016/10/bootstrap-issue.png" alt="Bootstrap issue with in-page anchors"></p>
 <ul>
-<li>Looks like we&rsquo;ll just have to add the text to the About page (without a link) or add a separate page</li>
+<li>Looks like we'll just have to add the text to the About page (without a link) or add a separate page</li>
 </ul>
-
-<h2 id="2016-10-04">2016-10-04</h2>
-
+<h2 id="20161004">2016-10-04</h2>
 <ul>
 <li>Start testing cleanups of authors that Peter sent last week</li>
 <li>Out of 40,000+ rows, Peter had indicated corrections for ~3,200 of them—too many to look through carefully, so I did some basic quality checking:
-
 <ul>
 <li>Trim leading/trailing whitespace</li>
 <li>Find invalid characters</li>
 <li>Cluster values to merge obvious authors</li>
-</ul></li>
-
-<li><p>That left us with 3,180 valid corrections and 3 deletions:</p>
-
+</ul>
+</li>
+<li>That left us with 3,180 valid corrections and 3 deletions:</li>
+</ul>
 <pre><code>$ ./fix-metadata-values.py -i authors-fix-3180.csv -f dc.contributor.author -t correct -m 3 -d dspacetest -u dspacetest -p fuuu
 $ ./delete-metadata-values.py -i authors-delete-3.csv -f dc.contributor.author -m 3 -d dspacetest -u dspacetest -p fuuu
-</code></pre></li>
-
-<li><p>Remove old about page (<a href="https://github.com/ilri/DSpace/pull/284">#284</a>)</p></li>
-
-<li><p>CGSpace crashed a few times today</p></li>
-
-<li><p>Generate list of unique authors in CCAFS collections:</p>
-
-<pre><code>dspacetest=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/32729', '10568/5472', '10568/5473', '10568/10288', '10568/70974', '10568/3547', '10568/3549', '10568/3531','10568/16890','10568/5470','10568/3546', '10568/36024', '10568/66581', '10568/21789', '10568/5469', '10568/5468', '10568/3548', '10568/71053', '10568/25167'))) group by text_value order by count desc) to /tmp/ccafs-authors.csv with csv;
-</code></pre></li>
+</code></pre><ul>
+<li>Remove old about page (<a href="https://github.com/ilri/DSpace/pull/284">#284</a>)</li>
+<li>CGSpace crashed a few times today</li>
+<li>Generate list of unique authors in CCAFS collections:</li>
 </ul>
-
-<h2 id="2016-10-05">2016-10-05</h2>
-
+<pre><code>dspacetest=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/32729', '10568/5472', '10568/5473', '10568/10288', '10568/70974', '10568/3547', '10568/3549', '10568/3531','10568/16890','10568/5470','10568/3546', '10568/36024', '10568/66581', '10568/21789', '10568/5469', '10568/5468', '10568/3548', '10568/71053', '10568/25167'))) group by text_value order by count desc) to /tmp/ccafs-authors.csv with csv;
+</code></pre><h2 id="20161005">2016-10-05</h2>
 <ul>
 <li>Work on more infrastructure cleanups for Ansible DSpace role</li>
-<li>Clean up Let&rsquo;s Encrypt plumbing and submit pull request for rmg-ansible-public (<a href="https://github.com/ilri/rmg-ansible-public/pull/60">#60</a>)</li>
+<li>Clean up Let's Encrypt plumbing and submit pull request for rmg-ansible-public (<a href="https://github.com/ilri/rmg-ansible-public/pull/60">#60</a>)</li>
 </ul>
-
-<h2 id="2016-10-06">2016-10-06</h2>
-
+<h2 id="20161006">2016-10-06</h2>
 <ul>
 <li>Nice! DSpace Test (linode02) is now having <code>java.lang.OutOfMemoryError: Java heap space</code> errors&hellip;</li>
-<li>Heap space is 2048m, and we have 5GB of RAM being used for OS cache (Solr!) so let&rsquo;s just bump the memory to 3072m</li>
+<li>Heap space is 2048m, and we have 5GB of RAM being used for OS cache (Solr!) so let's just bump the memory to 3072m</li>
 <li>Magdalena from CCAFS asked why the colors in the thumbnails for these <a href="https://cgspace.cgiar.org/handle/10568/71249">two</a> <a href="https://cgspace.cgiar.org/handle/10568/71259">items</a> look different, even though they are the same in the PDF itself</li>
 </ul>
-
-<p><img src="/cgspace-notes/2016/10/cmyk-vs-srgb.jpg" alt="CMYK vs sRGB colors" /></p>
-
+<p><img src="/cgspace-notes/2016/10/cmyk-vs-srgb.jpg" alt="CMYK vs sRGB colors"></p>
 <ul>
 <li>Turns out the first PDF was exported from InDesign using CMYK and the second one was using sRGB</li>
 <li>Run all system updates on DSpace Test and reboot it</li>
 </ul>
-
-<h2 id="2016-10-08">2016-10-08</h2>
-
+<h2 id="20161008">2016-10-08</h2>
 <ul>
 <li>Re-deploy CGSpace with latest changes from late September and early October</li>
-
-<li><p>Run fixes for ILRI subjects and delete blank metadata values:</p>
-
+<li>Run fixes for ILRI subjects and delete blank metadata values:</li>
+</ul>
 <pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 DELETE 11
-</code></pre></li>
-
-<li><p>Run all system updates and reboot CGSpace</p></li>
-
-<li><p>Delete ten gigs of old 2015 Tomcat logs that never got rotated (WTF?):</p>
-
+</code></pre><ul>
+<li>Run all system updates and reboot CGSpace</li>
+<li>Delete ten gigs of old 2015 Tomcat logs that never got rotated (WTF?):</li>
+</ul>
 <pre><code>root@linode01:~# ls -lh /var/log/tomcat7/localhost_access_log.2015* | wc -l
 47
-</code></pre></li>
-
-<li><p>Delete 2GB <code>cron-filter-media.log</code> file, as it is just a log from a cron job and it doesn&rsquo;t get rotated like normal log files (almost a year now maybe)</p></li>
+</code></pre><ul>
+<li>Delete 2GB <code>cron-filter-media.log</code> file, as it is just a log from a cron job and it doesn't get rotated like normal log files (almost a year now maybe)</li>
 </ul>
-
-<h2 id="2016-10-14">2016-10-14</h2>
-
+<h2 id="20161014">2016-10-14</h2>
 <ul>
 <li>Run all system updates on DSpace Test and reboot server</li>
-<li>Looking into some issues with Discovery filters in Atmire&rsquo;s content and usage analysis module after adjusting the filter class</li>
+<li>Looking into some issues with Discovery filters in Atmire's content and usage analysis module after adjusting the filter class</li>
 <li>Looks like changing the filters from <code>configuration.DiscoverySearchFilterFacet</code> to <code>configuration.DiscoverySearchFilter</code> breaks them in Atmire CUA module</li>
 </ul>
-
-<h2 id="2016-10-17">2016-10-17</h2>
-
+<h2 id="20161017">2016-10-17</h2>
 <ul>
-<li><p>A bit more cleanup on the CCAFS authors, and run the corrections on DSpace Test:</p>
-
-<pre><code>$ ./fix-metadata-values.py -i ccafs-authors-oct-16.csv -f dc.contributor.author -t 'correct name' -m 3 -d dspace -u dspace -p fuuu
-</code></pre></li>
-
-<li><p>One observation is that there are still some old versions of names in the author lookup because authors appear in other communities (as we only corrected authors from CCAFS for this round)</p></li>
+<li>A bit more cleanup on the CCAFS authors, and run the corrections on DSpace Test:</li>
 </ul>
-
-<h2 id="2016-10-18">2016-10-18</h2>
-
+<pre><code>$ ./fix-metadata-values.py -i ccafs-authors-oct-16.csv -f dc.contributor.author -t 'correct name' -m 3 -d dspace -u dspace -p fuuu
+</code></pre><ul>
+<li>One observation is that there are still some old versions of names in the author lookup because authors appear in other communities (as we only corrected authors from CCAFS for this round)</li>
+</ul>
+<h2 id="20161018">2016-10-18</h2>
 <ul>
-<li><p>Start working on DSpace 5.5 porting work again:</p>
-
+<li>Start working on DSpace 5.5 porting work again:</li>
+</ul>
 <pre><code>$ git checkout -b 5_x-55 5_x-prod
 $ git rebase -i dspace-5.5
-</code></pre></li>
-
-<li><p>Have to fix about ten merge conflicts, mostly in the SCSS for the CGIAR theme</p></li>
-
-<li><p>Skip 1e34751b8cf17021f45d4cf2b9a5800c93fb4cb2 in lieu of upstream&rsquo;s 55e623d1c2b8b7b1fa45db6728e172e06bfa8598 (fixes X-Forwarded-For header) because I had made the same fix myself and it&rsquo;s better to use the upstream one</p></li>
-
-<li><p>I notice this rebase gets rid of GitHub merge commits&hellip; which actually might be fine because merges are fucking annoying to deal with when remote people merge without pulling and rebasing their branch first</p></li>
-
-<li><p>Finished up applying the 5.5 sitemap changes to all themes</p></li>
-
-<li><p>Merge the <code>discovery.xml</code> cleanups (<a href="https://github.com/ilri/DSpace/pull/278">#278</a>)</p></li>
-
-<li><p>Merge some minor edits to the distribution license (<a href="https://github.com/ilri/DSpace/pull/285">#285</a>)</p></li>
+</code></pre><ul>
+<li>Have to fix about ten merge conflicts, mostly in the SCSS for the CGIAR theme</li>
+<li>Skip 1e34751b8cf17021f45d4cf2b9a5800c93fb4cb2 in lieu of upstream's 55e623d1c2b8b7b1fa45db6728e172e06bfa8598 (fixes X-Forwarded-For header) because I had made the same fix myself and it's better to use the upstream one</li>
+<li>I notice this rebase gets rid of GitHub merge commits&hellip; which actually might be fine because merges are fucking annoying to deal with when remote people merge without pulling and rebasing their branch first</li>
+<li>Finished up applying the 5.5 sitemap changes to all themes</li>
+<li>Merge the <code>discovery.xml</code> cleanups (<a href="https://github.com/ilri/DSpace/pull/278">#278</a>)</li>
+<li>Merge some minor edits to the distribution license (<a href="https://github.com/ilri/DSpace/pull/285">#285</a>)</li>
 </ul>
-
-<h2 id="2016-10-19">2016-10-19</h2>
-
+<h2 id="20161019">2016-10-19</h2>
 <ul>
 <li>When we move to DSpace 5.5 we should also cherry pick some patches from 5.6 branch:
-
 <ul>
 <li><a href="https://jira.duraspace.org/browse/DS-3246">memory cleanup</a>: 9f0f5940e7921765c6a22e85337331656b18a403</li>
 <li>sql injection: c6fda557f731dbc200d7d58b8b61563f86fe6d06</li>
 <li>pdfbox security issue: b5330b78153b2052ed3dc2fd65917ccdbfcc0439</li>
-</ul></li>
 </ul>
-
-<h2 id="2016-10-20">2016-10-20</h2>
-
+</li>
+</ul>
+<h2 id="20161020">2016-10-20</h2>
 <ul>
 <li>Run CCAFS author corrections on CGSpace</li>
 <li>Discovery reindexing took forever and kinda caused CGSpace to crash, so I ran all system updates and rebooted the server</li>
 </ul>
-
-<h2 id="2016-10-25">2016-10-25</h2>
-
+<h2 id="20161025">2016-10-25</h2>
 <ul>
-<li><p>Move the LIVES community from the top level to the ILRI projects community</p>
-
+<li>Move the LIVES community from the top level to the ILRI projects community</li>
+</ul>
 <pre><code>$ /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/27629 --child=10568/25101
-</code></pre></li>
-
-<li><p>Start testing some things for DSpace 5.5, like command line metadata import, PDF media filter, and Atmire CUA</p></li>
-
-<li><p>Start looking at batch fixing of &ldquo;old&rdquo; ILRI website links without www or https, for example:</p>
-
+</code></pre><ul>
+<li>Start testing some things for DSpace 5.5, like command line metadata import, PDF media filter, and Atmire CUA</li>
+<li>Start looking at batch fixing of &ldquo;old&rdquo; ILRI website links without www or https, for example:</li>
+</ul>
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and text_value like 'http://ilri.org%';
-</code></pre></li>
-
-<li><p>Also CCAFS has HTTPS and their links should use it where possible:</p>
-
+</code></pre><ul>
+<li>Also CCAFS has HTTPS and their links should use it where possible:</li>
+</ul>
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and text_value like 'http://ccafs.cgiar.org%';
-</code></pre></li>
-
-<li><p>And this will find community and collection HTML text that is using the old style PNG/JPG icons for RSS and email (we should be using Font Awesome icons instead):</p>
-
+</code></pre><ul>
+<li>And this will find community and collection HTML text that is using the old style PNG/JPG icons for RSS and email (we should be using Font Awesome icons instead):</li>
+</ul>
 <pre><code>dspace=# select text_value from metadatavalue where resource_type_id in (3,4) and text_value like '%Iconrss2.png%';
-</code></pre></li>
-
-<li><p>Turns out there are shit tons of varieties of this, like with http, https, www, separate <code>&lt;/img&gt;</code> tags, alignments, etc</p></li>
-
-<li><p>Had to find all variations and replace them individually:</p>
-
+</code></pre><ul>
+<li>Turns out there are shit tons of varieties of this, like with http, https, www, separate <code>&lt;/img&gt;</code> tags, alignments, etc</li>
+<li>Had to find all variations and replace them individually:</li>
+</ul>
 <pre><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;/&gt;','&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;%';
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
@@ -332,20 +274,15 @@ dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;i
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;%';
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;/&gt;%';
-</code></pre></li>
-
-<li><p>Getting rid of these reduces the number of network requests each client makes on community/collection pages, and makes use of Font Awesome icons (which they are already loading anyways!)</p></li>
-
-<li><p>And now that I start looking, I want to fix a bunch of links to popular sites that should be using HTTPS, like Twitter, Facebook, Google, Feed Burner, DOI, etc</p></li>
-
-<li><p>I should look to see if any of those domains is sending an HTTP 301 or setting HSTS headers to their HTTPS domains, then just replace them</p></li>
+</code></pre><ul>
+<li>Getting rid of these reduces the number of network requests each client makes on community/collection pages, and makes use of Font Awesome icons (which they are already loading anyways!)</li>
+<li>And now that I start looking, I want to fix a bunch of links to popular sites that should be using HTTPS, like Twitter, Facebook, Google, Feed Burner, DOI, etc</li>
+<li>I should look to see if any of those domains is sending an HTTP 301 or setting HSTS headers to their HTTPS domains, then just replace them</li>
 </ul>
-
-<h2 id="2016-10-27">2016-10-27</h2>
-
+<h2 id="20161027">2016-10-27</h2>
 <ul>
-<li><p>Run Font Awesome fixes on DSpace Test:</p>
-
+<li>Run Font Awesome fixes on DSpace Test:</li>
+</ul>
 <pre><code>dspace=# \i /tmp/font-awesome-text-replace.sql
 UPDATE 17
 UPDATE 17
@@ -364,62 +301,48 @@ UPDATE 1
 UPDATE 1
 UPDATE 1
 UPDATE 0
-</code></pre></li>
-
-<li><p>Looks much better now:</p></li>
+</code></pre><ul>
+<li>Looks much better now:</li>
 </ul>
-
-<p><img src="/cgspace-notes/2016/10/cgspace-icons.png" alt="CGSpace with old icons" />
-<img src="/cgspace-notes/2016/10/dspacetest-fontawesome-icons.png" alt="DSpace Test with Font Awesome icons" /></p>
-
+<p><img src="/cgspace-notes/2016/10/cgspace-icons.png" alt="CGSpace with old icons">
+<img src="/cgspace-notes/2016/10/dspacetest-fontawesome-icons.png" alt="DSpace Test with Font Awesome icons"></p>
 <ul>
 <li>Run the same replacements on CGSpace</li>
 </ul>
-
-<h2 id="2016-10-30">2016-10-30</h2>
-
+<h2 id="20161030">2016-10-30</h2>
 <ul>
-<li><p>Fix some messed up authors on CGSpace:</p>
-
+<li>Fix some messed up authors on CGSpace:</li>
+</ul>
 <pre><code>dspace=# update metadatavalue set authority='799da1d8-22f3-43f5-8233-3d2ef5ebf8a8', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Charleston, B.%';
 UPDATE 10
 dspace=# update metadatavalue set authority='e936f5c5-343d-4c46-aa91-7a1fff6277ed', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Knight-Jones%';
 UPDATE 36
-</code></pre></li>
-
-<li><p>I updated the authority index but nothing seemed to change, so I&rsquo;ll wait and do it again after I update Discovery below</p></li>
-
-<li><p>Skype chat with Tsega about the <a href="https://github.com/ilri/ckm-cgspace-contentdm-bridge">IFPRI contentdm bridge</a></p></li>
-
-<li><p>We tested harvesting OAI in an example collection to see how it works</p></li>
-
-<li><p>Talk to Carlos Quiros about CG Core metadata in CGSpace</p></li>
-
-<li><p>Get a list of countries from CGSpace so I can do some batch corrections:</p>
-
+</code></pre><ul>
+<li>I updated the authority index but nothing seemed to change, so I'll wait and do it again after I update Discovery below</li>
+<li>Skype chat with Tsega about the <a href="https://github.com/ilri/ckm-cgspace-contentdm-bridge">IFPRI contentdm bridge</a></li>
+<li>We tested harvesting OAI in an example collection to see how it works</li>
+<li>Talk to Carlos Quiros about CG Core metadata in CGSpace</li>
+<li>Get a list of countries from CGSpace so I can do some batch corrections:</li>
+</ul>
 <pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=228 group by text_value order by count desc) to /tmp/countries.csv with csv;
-</code></pre></li>
-
-<li><p>Fix a bunch of countries in Open Refine and run the corrections on CGSpace:</p>
-
+</code></pre><ul>
+<li>Fix a bunch of countries in Open Refine and run the corrections on CGSpace:</li>
+</ul>
 <pre><code>$ ./fix-metadata-values.py -i countries-fix-18.csv -f dc.coverage.country -t 'correct' -m 228 -d dspace -u dspace -p fuuu
 $ ./delete-metadata-values.py -i countries-delete-2.csv -f dc.coverage.country -m 228 -d dspace -u dspace -p fuuu
-</code></pre></li>
-
-<li><p>Run a shit ton of author fixes from Peter Ballantyne that we&rsquo;ve been cleaning up for two months:</p>
-
+</code></pre><ul>
+<li>Run a shit ton of author fixes from Peter Ballantyne that we've been cleaning up for two months:</li>
+</ul>
 <pre><code>$ ./fix-metadata-values.py -i /tmp/authors-fix-pb2.csv -f dc.contributor.author -t correct -m 3 -u dspace -d dspace -p fuuu
-</code></pre></li>
-
-<li><p>Run a few URL corrections for ilri.org and doi.org, etc:</p>
-
+</code></pre><ul>
+<li>Run a few URL corrections for ilri.org and doi.org, etc:</li>
+</ul>
 <pre><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://www.ilri.org','https://www.ilri.org') where resource_type_id=2 and text_value like '%http://www.ilri.org%';
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://mahider.ilri.org', 'https://cgspace.cgiar.org') where resource_type_id=2 and text_value like '%http://mahider.%.org%' and metadata_field_id not in (28);
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://dx.doi.org', 'https://dx.doi.org') where resource_type_id=2 and text_value like '%http://dx.doi.org%' and metadata_field_id not in (18,26,28,111);
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://doi.org', 'https://dx.doi.org') where resource_type_id=2 and text_value like '%http://doi.org%' and metadata_field_id not in (18,26,28,111);
-</code></pre></li>
-
-<li><p>I skipped metadata fields like citation and description</p></li>
+</code></pre><ul>
+<li>I skipped metadata fields like citation and description</li>
 </ul>
 
   
