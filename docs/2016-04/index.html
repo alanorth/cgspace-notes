@@ -29,7 +29,7 @@ After running DSpace for over five years I&#39;ve never needed to look in any ot
 This will save us a few gigs of backup space we&#39;re paying for on S3
 Also, I noticed the checker log has some errors we should pay attention to:
 "/>
-<meta name="generator" content="Hugo 0.60.1" />
+<meta name="generator" content="Hugo 0.61.0" />
 
 
     
@@ -110,7 +110,7 @@ Also, I noticed the checker log has some errors we should pay attention to:
 
 </p>
   </header>
-  <h2 id="20160404">2016-04-04</h2>
+  <h2 id="2016-04-04">2016-04-04</h2>
 <ul>
 <li>Looking at log file use on CGSpace and notice that we need to work on our cron setup a bit</li>
 <li>We are backing up all logs in the log folder, including useless stuff like solr, cocoon, handle-plugin, etc</li>
@@ -146,7 +146,7 @@ java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290
 <li>Looks like cron will read limits from <code>/etc/security/limits.*</code> so we can do something for the tomcat7 user there</li>
 <li>Submit pull request for Tomcat 7 limits in Ansible dspace role (<a href="https://github.com/ilri/rmg-ansible-public/pull/30">#30</a>)</li>
 </ul>
-<h2 id="20160405">2016-04-05</h2>
+<h2 id="2016-04-05">2016-04-05</h2>
 <ul>
 <li>Reduce Amazon S3 storage used for logs from 46 GB to 6GB by deleting a bunch of logs we don't need!</li>
 </ul>
@@ -159,7 +159,7 @@ java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290
 <li>Also, adjust the cron jobs for backups so they only backup <code>dspace.log</code> and some stats files (.dat)</li>
 <li>Try to do some metadata field migrations using the Atmire batch UI (<code>dc.Species</code> → <code>cg.species</code>) but it took several hours and even missed a few records</li>
 </ul>
-<h2 id="20160406">2016-04-06</h2>
+<h2 id="2016-04-06">2016-04-06</h2>
 <ul>
 <li>A better way to move metadata on this scale is via SQL, for example <code>dc.type.output</code> → <code>dc.type</code> (their IDs in the metadatafieldregistry are 66 and 109, respectively):</li>
 </ul>
@@ -169,7 +169,7 @@ UPDATE 40852
 <li>After that an <code>index-discovery -bf</code> is required</li>
 <li>Start working on metadata migrations, add 25 or so new metadata fields to CGSpace</li>
 </ul>
-<h2 id="20160407">2016-04-07</h2>
+<h2 id="2016-04-07">2016-04-07</h2>
 <ul>
 <li>Write shell script to do the migration of fields: <a href="https://gist.github.com/alanorth/72a70aca856d76f24c127a6e67b3342b">https://gist.github.com/alanorth/72a70aca856d76f24c127a6e67b3342b</a></li>
 <li>Testing with a few fields it seems to work well:</li>
@@ -181,12 +181,12 @@ UPDATE metadatavalue SET metadata_field_id=202 WHERE metadata_field_id=72
 UPDATE 21420
 UPDATE metadatavalue SET metadata_field_id=203 WHERE metadata_field_id=76
 UPDATE 51258
-</code></pre><h2 id="20160408">2016-04-08</h2>
+</code></pre><h2 id="2016-04-08">2016-04-08</h2>
 <ul>
 <li>Discuss metadata renaming with Abenet, we decided it's better to start with the center-specific subjects like ILRI, CIFOR, CCAFS, IWMI, and CPWF</li>
 <li>I've e-mailed CCAFS and CPWF people to ask them how much time it will take for them to update their systems to cope with this change</li>
 </ul>
-<h2 id="20160410">2016-04-10</h2>
+<h2 id="2016-04-10">2016-04-10</h2>
 <ul>
 <li>Looking at the DOI issue <a href="https://www.yammer.com/dspacedevelopers/#/Threads/show?threadId=678507860">reported by Leroy from CIAT a few weeks ago</a></li>
 <li>It seems the <code>dx.doi.org</code> URLs are much more proper in our repository!</li>
@@ -204,12 +204,12 @@ dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and t
 </code></pre><ul>
 <li>I will manually edit the <code>dc.identifier.doi</code> in <a href="https://cgspace.cgiar.org/handle/10568/72509?show=full">10568/72509</a> and tweet the link, then check back in a week to see if the donut gets updated</li>
 </ul>
-<h2 id="20160411">2016-04-11</h2>
+<h2 id="2016-04-11">2016-04-11</h2>
 <ul>
 <li>The donut is already updated and shows the correct number now</li>
 <li>CCAFS people say it will only take them an hour to update their code for the metadata renames, so I proposed we'd do it tentatively on Monday the 18th.</li>
 </ul>
-<h2 id="20160412">2016-04-12</h2>
+<h2 id="2016-04-12">2016-04-12</h2>
 <ul>
 <li>Looking at quality of WLE data (<code>cg.subject.iwmi</code>) in SQL:</li>
 </ul>
@@ -235,17 +235,17 @@ DELETE 226
 <li>Unfortunately this isn't a very good solution, because Listings and Reports config should allow us to filter on <code>dc.type.*</code> but the documentation isn't very clear and I couldn't reach Atmire today</li>
 <li>We want to do the <code>dc.type.output</code> move on CGSpace anyways, but we should wait as it might affect other external people!</li>
 </ul>
-<h2 id="20160414">2016-04-14</h2>
+<h2 id="2016-04-14">2016-04-14</h2>
 <ul>
 <li>Communicate with Macaroni Bros again about <code>dc.type</code></li>
 <li>Help Sisay with some rsync and Linux stuff</li>
 <li>Notify CIAT people of metadata changes (I had forgotten them last week)</li>
 </ul>
-<h2 id="20160415">2016-04-15</h2>
+<h2 id="2016-04-15">2016-04-15</h2>
 <ul>
 <li>DSpace Test had crashed, so I ran all system updates, rebooted, and re-deployed DSpace code</li>
 </ul>
-<h2 id="20160418">2016-04-18</h2>
+<h2 id="2016-04-18">2016-04-18</h2>
 <ul>
 <li>Talk to CIAT people about their portal again</li>
 <li>Start looking more at the fields we want to delete</li>
@@ -316,7 +316,7 @@ javax.ws.rs.WebApplicationException
 <li>Everything else in the system looked normal (50GB disk space available, nothing weird in dmesg, etc)</li>
 <li>After restarting Tomcat a few more of these errors were logged but the application was up</li>
 </ul>
-<h2 id="20160419">2016-04-19</h2>
+<h2 id="2016-04-19">2016-04-19</h2>
 <ul>
 <li>Get handles for items that are using a given metadata field, ie <code>dc.Species.animal</code> (105):</li>
 </ul>
@@ -355,7 +355,7 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 </code></pre><ul>
 <li>And then remove them from the metadata registry</li>
 </ul>
-<h2 id="20160420">2016-04-20</h2>
+<h2 id="2016-04-20">2016-04-20</h2>
 <ul>
 <li>Re-deploy DSpace Test with the new subject and type fields, run all system updates, and reboot the server</li>
 <li>Migrate fields and re-deploy CGSpace with the new subject and type fields, run all system updates, and reboot the server</li>
@@ -386,16 +386,16 @@ UPDATE 46075
 <li>Looks like this issue was noted and fixed in DSpace 5.5 (we're on 5.1): <a href="https://jira.duraspace.org/browse/DS-2936">https://jira.duraspace.org/browse/DS-2936</a></li>
 <li>I've sent a message to Atmire asking about compatibility with DSpace 5.5</li>
 </ul>
-<h2 id="20160421">2016-04-21</h2>
+<h2 id="2016-04-21">2016-04-21</h2>
 <ul>
 <li>Fix a bunch of metadata consistency issues with IITA Journal Articles (Peer review, Formally published, messed up DOIs, etc)</li>
 <li>Atmire responded with DSpace 5.5 compatible versions for their modules, so I'll start testing those in a few weeks</li>
 </ul>
-<h2 id="20160422">2016-04-22</h2>
+<h2 id="2016-04-22">2016-04-22</h2>
 <ul>
 <li>Import 95 records into <a href="https://cgspace.cgiar.org/handle/10568/42219">CTA's Agrodok collection</a></li>
 </ul>
-<h2 id="20160426">2016-04-26</h2>
+<h2 id="2016-04-26">2016-04-26</h2>
 <ul>
 <li>Test embargo during item upload</li>
 <li>Seems to be working but the help text is misleading as to the date format</li>
@@ -409,7 +409,7 @@ UPDATE 46075
 </ul>
 </li>
 </ul>
-<h2 id="20160427">2016-04-27</h2>
+<h2 id="2016-04-27">2016-04-27</h2>
 <ul>
 <li>I woke up to ten or fifteen &ldquo;up&rdquo; and &ldquo;down&rdquo; emails from the monitoring website</li>
 <li>Looks like the last one was &ldquo;down&rdquo; from about four hours ago</li>
@@ -451,12 +451,12 @@ dspace.log.2016-04-27:7271
 <li>Currently running on DSpace Test, we'll give it a few days before we adjust CGSpace</li>
 <li>CGSpace down, restarted tomcat and it's back up</li>
 </ul>
-<h2 id="20160428">2016-04-28</h2>
+<h2 id="2016-04-28">2016-04-28</h2>
 <ul>
 <li>Problems with stability again. I've blocked access to <code>/rest</code> for now to see if the number of errors in the log files drop</li>
 <li>Later we could maybe start logging access to <code>/rest</code> and perhaps whitelist some IPs&hellip;</li>
 </ul>
-<h2 id="20160430">2016-04-30</h2>
+<h2 id="2016-04-30">2016-04-30</h2>
 <ul>
 <li>Logs for today and yesterday have zero references to this REST error, so I'm going to open back up the REST API but log all requests</li>
 </ul>

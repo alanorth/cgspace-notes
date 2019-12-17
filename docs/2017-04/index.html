@@ -37,7 +37,7 @@ Testing the CMYK patch on a collection with 650 items:
 
 $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
 "/>
-<meta name="generator" content="Hugo 0.60.1" />
+<meta name="generator" content="Hugo 0.61.0" />
 
 
     
@@ -118,7 +118,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 
 </p>
   </header>
-  <h2 id="20170402">2017-04-02</h2>
+  <h2 id="2017-04-02">2017-04-02</h2>
 <ul>
 <li>Merge one change to CCAFS flagships that I had forgotten to remove last month (&ldquo;MANAGING CLIMATE RISK&rdquo;): <a href="https://github.com/ilri/DSpace/pull/317">https://github.com/ilri/DSpace/pull/317</a></li>
 <li>Quick proof-of-concept hack to add <code>dc.rights</code> to the input form, including some inline instructions/hints:</li>
@@ -129,7 +129,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 <li>Testing the CMYK patch on a collection with 650 items:</li>
 </ul>
 <pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
-</code></pre><h2 id="20170403">2017-04-03</h2>
+</code></pre><h2 id="2017-04-03">2017-04-03</h2>
 <ul>
 <li>Continue testing the CMYK patch on more communities:</li>
 </ul>
@@ -150,7 +150,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 <li>Also, I'm noticing some weird outliers in <code>cg.coverage.region</code>, need to remember to go correct these later:</li>
 </ul>
 <pre><code>dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=227;
-</code></pre><h2 id="20170404">2017-04-04</h2>
+</code></pre><h2 id="2017-04-04">2017-04-04</h2>
 <ul>
 <li>The <code>filter-media</code> script has been running on more large communities and now there are many more CMYK PDFs that have been fixed:</li>
 </ul>
@@ -177,13 +177,13 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 <li>In that case it might just be better to see how many the user submitted (both <em>with</em> and <em>without</em> bitstreams):</li>
 </ul>
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^Submitted.*giampieri.*2016-.*';
-</code></pre><h2 id="20170405">2017-04-05</h2>
+</code></pre><h2 id="2017-04-05">2017-04-05</h2>
 <ul>
 <li>After doing a few more large communities it seems this is the final count of CMYK PDFs:</li>
 </ul>
 <pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
 2505
-</code></pre><h2 id="20170406">2017-04-06</h2>
+</code></pre><h2 id="2017-04-06">2017-04-06</h2>
 <ul>
 <li>After reading the <a href="https://wiki.duraspace.org/display/cmtygp/DCAT+Meeting+April+2017">notes for DCAT April 2017</a> I am testing some new settings for PostgreSQL on DSpace Test:
 <ul>
@@ -198,7 +198,7 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 <li>Sisay added their OAI as a source to a new collection, but using the Simple Dublin Core method, so many fields are unqualified and duplicated</li>
 <li>Looking at the <a href="https://wiki.duraspace.org/display/DSDOC5x/XMLUI+Configuration+and+Customization">documentation</a> it seems that we probably want to be using DSpace Intermediate Metadata</li>
 </ul>
-<h2 id="20170410">2017-04-10</h2>
+<h2 id="2017-04-10">2017-04-10</h2>
 <ul>
 <li>Adjust Linode CPU usage alerts on DSpace servers
 <ul>
@@ -216,12 +216,12 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 <li>I added <code>cg.subject.cifor</code> to the metadata registry and I'm waiting for the harvester to re-harvest to see if it picks up more data now</li>
 <li>Another possiblity is that we could use a cross walk&hellip; but I've never done it.</li>
 </ul>
-<h2 id="20170411">2017-04-11</h2>
+<h2 id="2017-04-11">2017-04-11</h2>
 <ul>
 <li>Looking at the item from CIFOR it hasn't been updated yet, maybe they aren't running the cron job</li>
 <li>I emailed Usman from CIFOR to ask if he's running the cron job</li>
 </ul>
-<h2 id="20170412">2017-04-12</h2>
+<h2 id="2017-04-12">2017-04-12</h2>
 <ul>
 <li>CIFOR says they have cleaned their OAI cache and that the cron job for OAI import is enabled</li>
 <li>Now I see updated fields, like <code>dc.date.issued</code> but none from the CG or CIFOR namespaces</li>
@@ -281,7 +281,7 @@ sys     1m29.310s
 <li>Perhaps I need to file a bug for this, or at least ask on the DSpace Test mailing list?</li>
 <li>I wonder if we could use a crosswalk to convert to a format that CG Core wants, like <code>&lt;date Type=&quot;Available&quot;&gt;</code></li>
 </ul>
-<h2 id="20170413">2017-04-13</h2>
+<h2 id="2017-04-13">2017-04-13</h2>
 <ul>
 <li>Checking the <a href="https://dspacetest.cgiar.org/handle/11463/947?show=full">CIFOR item on DSpace Test</a>, it still doesn't have the new metadata</li>
 <li>The collection status shows this message from the harvester:</li>
@@ -297,7 +297,7 @@ sys     1m29.310s
 <li>It seems like they have done a full metadata migration with <code>dc.date.issued</code> and <code>cg.coverage.country</code> etc</li>
 <li>Submit pull request to upstream DSpace for the PDF thumbnail bug (DS-3516): <a href="https://github.com/DSpace/DSpace/pull/1709">https://github.com/DSpace/DSpace/pull/1709</a></li>
 </ul>
-<h2 id="20170414">2017-04-14</h2>
+<h2 id="2017-04-14">2017-04-14</h2>
 <ul>
 <li>DSpace committers reviewed my patch for DS-3516 and proposed a simpler idea involving incorrect use of <code>SelfRegisteredInputFormats</code></li>
 <li>I tested the idea and it works, so I made a new patch: <a href="https://github.com/DSpace/DSpace/pull/1709">https://github.com/DSpace/DSpace/pull/1709</a></li>
@@ -311,7 +311,7 @@ sys     1m29.310s
 </li>
 <li>Reboot DSpace Test server to get new Linode kernel</li>
 </ul>
-<h2 id="20170417">2017-04-17</h2>
+<h2 id="2017-04-17">2017-04-17</h2>
 <ul>
 <li>CIFOR has now implemented a new &ldquo;cgiar&rdquo; context in their OAI that exposes CG fields, so I am re-harvesting that to see how it looks in the Discovery sidebars and searches</li>
 <li>See: <a href="https://data.cifor.org/dspace/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:data.cifor.org:11463/947">https://data.cifor.org/dspace/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:data.cifor.org:11463/947</a></li>
@@ -320,7 +320,7 @@ sys     1m29.310s
 </ul>
 <pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(435) is still referenced from table &quot;bundle&quot;.
-</code></pre><h2 id="20170418">2017-04-18</h2>
+</code></pre><h2 id="2017-04-18">2017-04-18</h2>
 <ul>
 <li>Helping Tsega test his new <a href="https://github.com/ilri/ckm-cgspace-rest-api">CGSpace REST API Rails app</a> on DSpace Test</li>
 <li>Setup and run with:</li>
@@ -340,7 +340,7 @@ $ rails -s
 <li>This is interesting for creating runnable commands from <code>bundle</code>:</li>
 </ul>
 <pre><code>$ bundle binstubs puma --path ./sbin
-</code></pre><h2 id="20170419">2017-04-19</h2>
+</code></pre><h2 id="2017-04-19">2017-04-19</h2>
 <ul>
 <li>Usman sent another link to their OAI interface, where the country names are now capitalized: <a href="https://data.cifor.org/dspace/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:data.cifor.org:11463/947">https://data.cifor.org/dspace/oai/cgiar?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:data.cifor.org:11463/947</a></li>
 <li>Looking at the same item in XMLUI, the countries are not capitalized: <a href="https://data.cifor.org/dspace/xmlui/handle/11463/947?show=full">https://data.cifor.org/dspace/xmlui/handle/11463/947?show=full</a></li>
@@ -366,7 +366,7 @@ $ rails -s
 <li>Also, we need to only use the PDF on the item corresponding with page 1, so we don't end up with literally hundreds of duplicate PDFs</li>
 <li>Alternatively, I could export each page to a standalone PDF&hellip;</li>
 </ul>
-<h2 id="20170420">2017-04-20</h2>
+<h2 id="2017-04-20">2017-04-20</h2>
 <ul>
 <li>Atmire responded about the Workflow Statistics, saying that it had been disabled because many environments needed customization to be useful</li>
 <li>I re-enabled it with a hidden config key <code>workflow.stats.enabled = true</code> on DSpace Test and will evaluate adding it on CGSpace</li>
@@ -403,14 +403,14 @@ $ wc -l /tmp/ciat
 </ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace filter-media -f -v -i 10568/71249 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
-</code></pre><h2 id="20170422">2017-04-22</h2>
+</code></pre><h2 id="2017-04-22">2017-04-22</h2>
 <ul>
 <li>Someone on the dspace-tech mailing list responded with a suggestion about the foreign key violation in the <code>cleanup</code> task</li>
 <li>The solution is to remove the ID (ie set to NULL) from the <code>primary_bitstream_id</code> column in the <code>bundle</code> table</li>
 <li>After doing that and running the <code>cleanup</code> task again I find more bitstreams that are affected and end up with a long list of IDs that need to be fixed:</li>
 </ul>
 <pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (435, 1136, 1132, 1220, 1236, 3002, 3255, 5322);
-</code></pre><h2 id="20170424">2017-04-24</h2>
+</code></pre><h2 id="2017-04-24">2017-04-24</h2>
 <ul>
 <li>Two users mentioned some items they recently approved not showing up in the search / XMLUI</li>
 <li>I looked at the logs from yesterday and it seems the Discovery indexing has been crashing:</li>
@@ -476,7 +476,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: this Index
 </code></pre><ul>
 <li>Now running the cleanup script on DSpace Test and already seeing 11GB freed from the assetstore—it's likely we haven't had a cleanup task complete successfully in years&hellip;</li>
 </ul>
-<h2 id="20170425">2017-04-25</h2>
+<h2 id="2017-04-25">2017-04-25</h2>
 <ul>
 <li>Finally finished running the PDF thumbnail re-processing on CGSpace, the final count of CMYK PDFs is about 2751</li>
 <li>Preparing to run the cleanup task on CGSpace, I want to see how many files are in the assetstore:</li>
@@ -544,7 +544,7 @@ Caused by: java.lang.ClassNotFoundException: org.dspace.statistics.content.DSpac
 <li>So that is 30,000 files, and about 7GB</li>
 <li>Add logging to the cleanup cron task</li>
 </ul>
-<h2 id="20170426">2017-04-26</h2>
+<h2 id="2017-04-26">2017-04-26</h2>
 <ul>
 <li>The size of the CGSpace database dump went from 111MB to 96MB, not sure about actual database size though</li>
 <li>Update RVM's Ruby from 2.3.0 to 2.4.0 on DSpace Test:</li>

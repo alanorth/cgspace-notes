@@ -55,7 +55,7 @@ Let&#39;s see how many of the REST API requests were for bitstreams (because the
 # zcat --force /var/log/nginx/rest.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E &quot;/rest/bitstreams&quot;
 106781
 "/>
-<meta name="generator" content="Hugo 0.60.1" />
+<meta name="generator" content="Hugo 0.61.0" />
 
 
     
@@ -136,7 +136,7 @@ Let&#39;s see how many of the REST API requests were for bitstreams (because the
 
 </p>
   </header>
-  <h2 id="20191104">2019-11-04</h2>
+  <h2 id="2019-11-04">2019-11-04</h2>
 <ul>
 <li>Peter noticed that there were 5.2 million hits on CGSpace in 2019-10 according to the Atmire usage statistics
 <ul>
@@ -251,7 +251,7 @@ $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/cs
 </ul>
 </li>
 </ul>
-<h2 id="20191105">2019-11-05</h2>
+<h2 id="2019-11-05">2019-11-05</h2>
 <ul>
 <li>I added &ldquo;alanfuu2&rdquo; to the example spiders file, restarted Tomcat, then made two requests to DSpace Test:</li>
 </ul>
@@ -271,7 +271,7 @@ $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:alanf
 <li>Even though the &ldquo;mark by user agent&rdquo; function is not working (see email to dspace-tech mailing list) DSpace will still not log Solr events from these user agents</li>
 </ul>
 </li>
-<li>I'm curious how the special character matching is in Solr, so I will test two requests: one with &ldquo;<a href="http://www.gnip.com">www.gnip.com</a>&rdquo; which is in the spider list, and one with &ldquo;<a href="http://www.gnyp.com">www.gnyp.com</a>&rdquo; which isn't:</li>
+<li>I'm curious how the special character matching is in Solr, so I will test two requests: one with &ldquo;<a href="http://www.gnip.com%22">www.gnip.com&quot;</a> which is in the spider list, and one with &ldquo;<a href="http://www.gnyp.com%22">www.gnyp.com&quot;</a> which isn't:</li>
 </ul>
 <pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnip.com&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnyp.com&quot;
@@ -286,7 +286,7 @@ $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:www.g
 </code></pre><ul>
 <li>So the blocking seems to be working because &ldquo;www.gnip.com&rdquo; is one of the new patterns added to the spiders file&hellip;</li>
 </ul>
-<h2 id="20191107">2019-11-07</h2>
+<h2 id="2019-11-07">2019-11-07</h2>
 <ul>
 <li>CCAFS finally confirmed that they do indeed need the confusing new project tag that looks like a duplicate
 <ul>
@@ -353,7 +353,7 @@ $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&a
 </code></pre><ul>
 <li>That answers Peter's question about why the stats jumped in October&hellip;</li>
 </ul>
-<h2 id="20191108">2019-11-08</h2>
+<h2 id="2019-11-08">2019-11-08</h2>
 <ul>
 <li>I saw a bunch of user agents that have the literal string <code>User-Agent</code> in their user agent HTTP header, for example:
 <ul>
@@ -367,7 +367,7 @@ $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&a
 </li>
 <li>I filed <a href="https://github.com/atmire/COUNTER-Robots/issues/27">an issue</a> on the COUNTER-Robots project to see if they agree to add <code>User-Agent:</code> to the list of robot user agents</li>
 </ul>
-<h2 id="20191109">2019-11-09</h2>
+<h2 id="2019-11-09">2019-11-09</h2>
 <ul>
 <li>Deploy the latest <code>5_x-prod</code> branch on CGSpace (linode19)
 <ul>
@@ -391,7 +391,7 @@ istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do 
 </code></pre><ul>
 <li>Open a <a href="https://github.com/atmire/COUNTER-Robots/pull/28">pull request</a> against COUNTER-Robots to remove unnecessary escaping of dashes</li>
 </ul>
-<h2 id="20191112">2019-11-12</h2>
+<h2 id="2019-11-12">2019-11-12</h2>
 <ul>
 <li>Udana and Chandima emailed me to ask why <a href="https://hdl.handle.net/10568/81236">one of their WLE items</a> that is mapped from IWMI only shows up in the IWMI &ldquo;department&rdquo; on the Altmetric dashboard
 <ul>
@@ -406,7 +406,7 @@ istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do 
 </ul>
 </li>
 </ul>
-<h2 id="20191113">2019-11-13</h2>
+<h2 id="2019-11-13">2019-11-13</h2>
 <ul>
 <li>The <a href="https://hdl.handle.net/10568/97087">item with a low Altmetric score for its Handle</a> that I tweeted yesterday still hasn't linked with the DOI's score
 <ul>
@@ -437,7 +437,7 @@ $ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo\/
 </code></pre><ul>
 <li>I updated the <code>check-spider-hits.sh</code> script to use the POST syntax, and I'm evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling</li>
 </ul>
-<h2 id="20191114">2019-11-14</h2>
+<h2 id="2019-11-14">2019-11-14</h2>
 <ul>
 <li>IWMI sent a few new ORCID identifiers for us to add to our controlled vocabulary</li>
 <li>I will merge them with our existing list and then resolve their names using my <code>resolve-orcids.py</code> script:</li>
@@ -459,7 +459,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<h2 id="20191115">2019-11-15</h2>
+<h2 id="2019-11-15">2019-11-15</h2>
 <ul>
 <li>Run the new version of <code>check-spider-hits.sh</code> on CGSpace's Solr statistics cores one by one, starting from the oldest just in case something goes wrong</li>
 <li>But then I noticed that some (all?) of the hits weren't actually getting purged, all of which were using regular expressions like:
@@ -509,7 +509,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </code></pre><ul>
 <li>Run system updates on DSpace Test and reboot the server</li>
 </ul>
-<h2 id="20191117">2019-11-17</h2>
+<h2 id="2019-11-17">2019-11-17</h2>
 <ul>
 <li>Altmetric support responded about our dashboard question, asking if the second &ldquo;department&rdquo; (aka WLE's collection) was added recently and might have not been in the last harvesting yet
 <ul>
@@ -529,13 +529,13 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </li>
 <li>Finally deploy <code>5_x-cgcorev2</code> branch on DSpace Test</li>
 </ul>
-<h2 id="20191118">2019-11-18</h2>
+<h2 id="2019-11-18">2019-11-18</h2>
 <ul>
 <li>I sent a mail to the CGSpace partners in Addis about the CG Core v2 changes on DSpace Test</li>
 <li>Then I filed an <a href="https://github.com/AgriculturalSemantics/cg-core/issues/11">issue on the CG Core GitHub</a> to let the metadata people know about our progress</li>
 <li>It seems like I will do a session about CG Core v2 implementation and limitations in DSpace for the data workshop in December in Nairobi (?)</li>
 </ul>
-<h2 id="20191119">2019-11-19</h2>
+<h2 id="2019-11-19">2019-11-19</h2>
 <ul>
 <li>Export IITA's community from CGSpace because they want to experiment with importing it into their internal DSpace for some testing or something
 <ul>
@@ -560,11 +560,11 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </code></pre><ul>
 <li>All in all that's about 85,000 more hits purged, in addition to the 3.4 million I purged last week</li>
 </ul>
-<h2 id="20191120">2019-11-20</h2>
+<h2 id="2019-11-20">2019-11-20</h2>
 <ul>
 <li>Email Usman Muchlish from CIFOR to see what he's doing with their DSpace lately</li>
 </ul>
-<h2 id="20191121">2019-11-21</h2>
+<h2 id="2019-11-21">2019-11-21</h2>
 <ul>
 <li>Discuss bugs and issues with AReS v2 that are limiting its adoption
 <ul>
@@ -583,7 +583,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </li>
 <li>We have a meeting about AReS future developments with Jane, Abenet, Peter, and Enrico tomorrow</li>
 </ul>
-<h2 id="20191122">2019-11-22</h2>
+<h2 id="2019-11-22">2019-11-22</h2>
 <ul>
 <li>Skype with Jane, Abenet, Peter, and Enrico about AReS v2 future development
 <ul>
@@ -594,7 +594,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<h2 id="20191124">2019-11-24</h2>
+<h2 id="2019-11-24">2019-11-24</h2>
 <ul>
 <li>I rebooted DSpace Test (linode19) and it kernel panicked at boot
 <ul>
@@ -609,7 +609,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<h2 id="20191125">2019-11-25</h2>
+<h2 id="2019-11-25">2019-11-25</h2>
 <ul>
 <li>The migration of DSpace Test from Fremont, CA (USA) to Frankfurt (DE) region completed
 <ul>
@@ -617,7 +617,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<h2 id="20191126">2019-11-26</h2>
+<h2 id="2019-11-26">2019-11-26</h2>
 <ul>
 <li>Visit CodeObia to discuss future of OpenRXV and AReS
 <ul>
@@ -627,7 +627,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<h2 id="20191127">2019-11-27</h2>
+<h2 id="2019-11-27">2019-11-27</h2>
 <ul>
 <li>Minor updates on the <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a>
 <ul>
@@ -652,7 +652,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<h2 id="20191128">2019-11-28</h2>
+<h2 id="2019-11-28">2019-11-28</h2>
 <ul>
 <li>File an issue with CG Core v2 project to ask Marie-Angelique about expanding the scope of <code>cg.peer-reviewed</code> to include other types of review, and possibly to change the field name to something more generic like <code>cg.review-status</code> (<a href="https://github.com/AgriculturalSemantics/cg-core/issues/14">#14</a>)</li>
 <li>More review of AReS feedback

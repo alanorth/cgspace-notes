@@ -31,7 +31,7 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 # awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | uniq | wc -l
 3168
 "/>
-<meta name="generator" content="Hugo 0.60.1" />
+<meta name="generator" content="Hugo 0.61.0" />
 
 
     
@@ -112,7 +112,7 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 
 </p>
   </header>
-  <h2 id="20160501">2016-05-01</h2>
+  <h2 id="2016-05-01">2016-05-01</h2>
 <ul>
 <li>Since yesterday there have been 10,000 REST errors and the site has been unstable again</li>
 <li>I have blocked access to the API now</li>
@@ -129,13 +129,13 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 <li>For now I'll block just the Ethiopian IP</li>
 <li>The owner of that application has said that the <code>NaN</code> (not a number) is an error in his code and he'll fix it</li>
 </ul>
-<h2 id="20160503">2016-05-03</h2>
+<h2 id="2016-05-03">2016-05-03</h2>
 <ul>
 <li>Update nginx to 1.10.x branch on CGSpace</li>
 <li>Fix a reference to <code>dc.type.output</code> in Discovery that I had missed when we migrated to <code>dc.type</code> last month (<a href="https://github.com/ilri/DSpace/pull/223">#223</a>)</li>
 </ul>
 <p><img src="/cgspace-notes/2016/05/discovery-types.png" alt="Item type in Discovery results"></p>
-<h2 id="20160506">2016-05-06</h2>
+<h2 id="2016-05-06">2016-05-06</h2>
 <ul>
 <li>DSpace Test is down, <code>catalina.out</code> has lots of messages about heap space from some time yesterday (!)</li>
 <li>It looks like Sisay was doing some batch imports</li>
@@ -168,7 +168,7 @@ fi
 </code></pre><ul>
 <li>Seems to work well</li>
 </ul>
-<h2 id="20160510">2016-05-10</h2>
+<h2 id="2016-05-10">2016-05-10</h2>
 <ul>
 <li>Start looking at more metadata migrations</li>
 <li>There are lots of fields in <code>dcterms</code> namespace that look interesting, like:
@@ -181,7 +181,7 @@ fi
 <li>Looks like these were <a href="https://wiki.duraspace.org/display/DSDOC5x/Metadata+and+Bitstream+Format+Registries#MetadataandBitstreamFormatRegistries-DublinCoreTermsRegistry(DCTERMS)">added in DSpace 4</a> to allow for future work to make DSpace more flexible</li>
 <li>CGSpace's <code>dc</code> registry has 96 items, and the default DSpace one has 73.</li>
 </ul>
-<h2 id="20160511">2016-05-11</h2>
+<h2 id="2016-05-11">2016-05-11</h2>
 <ul>
 <li>
 <p>Identify and propose the next phase of CGSpace fields to migrate:</p>
@@ -213,7 +213,7 @@ fi
 <li>I told her I would increase the limit temporarily tomorrow morning</li>
 <li>Turns out she was able to decrease the size of the PDF so we didn't have to do anything</li>
 </ul>
-<h2 id="20160512">2016-05-12</h2>
+<h2 id="2016-05-12">2016-05-12</h2>
 <ul>
 <li>Looks like the issue that Abenet was having a few days ago with &ldquo;Connection Reset&rdquo; in Firefox might be due to a Firefox 46 issue: <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1268775">https://bugzilla.mozilla.org/show_bug.cgi?id=1268775</a></li>
 <li>I finally found a copy of the latest CG Core metadata guidelines and it looks like we can add a few more fields to our next migration:
@@ -233,7 +233,7 @@ fi
 <li>Found ~200 messed up CIAT values in <code>dc.publisher</code>:</li>
 </ul>
 <pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=39 and text_value similar to &quot;%  %&quot;;
-</code></pre><h2 id="20160513">2016-05-13</h2>
+</code></pre><h2 id="2016-05-13">2016-05-13</h2>
 <ul>
 <li>More theorizing about CGcore</li>
 <li>Add two new fields:
@@ -245,7 +245,7 @@ fi
 <li><code>dc.place</code> is our own field, so it's easy to move</li>
 <li>I've removed <code>dc.title.jtitle</code> from the list for now because there's no use moving it out of DC until we know where it will go (see discussion yesterday)</li>
 </ul>
-<h2 id="20160518">2016-05-18</h2>
+<h2 id="2016-05-18">2016-05-18</h2>
 <ul>
 <li>Work on 707 CCAFS records</li>
 <li>They have thumbnails on Flickr and elsewhere</li>
@@ -257,7 +257,7 @@ fi
 <li>So for the <code>hqdefault.jpg</code> ones I just take the UUID (-2) and use it as the filename</li>
 <li>Before importing with SAFBuilder I tested adding &ldquo;__bundle:THUMBNAIL&rdquo; to the <code>filename</code> column and it works fine</li>
 </ul>
-<h2 id="20160519">2016-05-19</h2>
+<h2 id="2016-05-19">2016-05-19</h2>
 <ul>
 <li>More quality control on <code>filename</code> field of CCAFS records to make processing in shell and SAFBuilder more reliable:</li>
 </ul>
@@ -274,7 +274,7 @@ fi
 </li>
 </ul>
 <pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA');
-</code></pre><h2 id="20160520">2016-05-20</h2>
+</code></pre><h2 id="2016-05-20">2016-05-20</h2>
 <ul>
 <li>More work on CCAFS Video and Images records</li>
 <li>For SAFBuilder we need to modify filename column to have the thumbnail bundle:</li>
@@ -290,14 +290,14 @@ fi
 <li>A few miscellaneous fixes for XMLUI display niggles (spaces in item lists and link target <code>_black</code>): <a href="https://github.com/ilri/DSpace/pull/224">#224</a></li>
 <li>Work on configuration changes for Phase 2 metadata migrations</li>
 </ul>
-<h2 id="20160523">2016-05-23</h2>
+<h2 id="2016-05-23">2016-05-23</h2>
 <ul>
 <li>Try to import the CCAFS Images and Videos to CGSpace but had some issues with LibreOffice and OpenRefine</li>
 <li>LibreOffice excludes empty cells when it exports and all the fields shift over to the left and cause URLs to go to Subjects, etc.</li>
 <li>Google Docs does this better, but somehow reorders the rows and when I paste the thumbnail/filename row in they don't match!</li>
 <li>I will have to try later</li>
 </ul>
-<h2 id="20160530">2016-05-30</h2>
+<h2 id="2016-05-30">2016-05-30</h2>
 <ul>
 <li>Export CCAFS video and image records from DSpace Test using the migrate option (<code>-m</code>):</li>
 </ul>
@@ -320,7 +320,7 @@ $ /home/cgspace.cgiar.org/bin/dspace metadata-import -e aorth@mjanja.ch -f ~/CTA
 <li>Discovery indexing took a few hours for some reason, and after that I started the <code>index-authority</code> script</li>
 </ul>
 <pre><code>$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace index-authority
-</code></pre><h2 id="20160531">2016-05-31</h2>
+</code></pre><h2 id="2016-05-31">2016-05-31</h2>
 <ul>
 <li>The <code>index-authority</code> script ran over night and was finished in the morning</li>
 <li>Hopefully this was because we haven't been running it regularly and it will speed up next time</li>

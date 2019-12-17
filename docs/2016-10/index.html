@@ -39,7 +39,7 @@ I exported a random item&#39;s metadata as CSV, deleted all columns except id an
 
 0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
 "/>
-<meta name="generator" content="Hugo 0.60.1" />
+<meta name="generator" content="Hugo 0.61.0" />
 
 
     
@@ -120,7 +120,7 @@ I exported a random item&#39;s metadata as CSV, deleted all columns except id an
 
 </p>
   </header>
-  <h2 id="20161003">2016-10-03</h2>
+  <h2 id="2016-10-03">2016-10-03</h2>
 <ul>
 <li>Testing adding <a href="https://wiki.duraspace.org/display/DSDOC5x/ORCID+Integration#ORCIDIntegration-EditingexistingitemsusingBatchCSVEditing">ORCIDs to a CSV</a> file for a single item to see if the author orders get messed up</li>
 <li>Need to test the following scenarios to see how author order is affected:
@@ -141,7 +141,7 @@ I exported a random item&#39;s metadata as CSV, deleted all columns except id an
 <ul>
 <li>Looks like we'll just have to add the text to the About page (without a link) or add a separate page</li>
 </ul>
-<h2 id="20161004">2016-10-04</h2>
+<h2 id="2016-10-04">2016-10-04</h2>
 <ul>
 <li>Start testing cleanups of authors that Peter sent last week</li>
 <li>Out of 40,000+ rows, Peter had indicated corrections for ~3,200 of them—too many to look through carefully, so I did some basic quality checking:
@@ -161,12 +161,12 @@ $ ./delete-metadata-values.py -i authors-delete-3.csv -f dc.contributor.author -
 <li>Generate list of unique authors in CCAFS collections:</li>
 </ul>
 <pre><code>dspacetest=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/32729', '10568/5472', '10568/5473', '10568/10288', '10568/70974', '10568/3547', '10568/3549', '10568/3531','10568/16890','10568/5470','10568/3546', '10568/36024', '10568/66581', '10568/21789', '10568/5469', '10568/5468', '10568/3548', '10568/71053', '10568/25167'))) group by text_value order by count desc) to /tmp/ccafs-authors.csv with csv;
-</code></pre><h2 id="20161005">2016-10-05</h2>
+</code></pre><h2 id="2016-10-05">2016-10-05</h2>
 <ul>
 <li>Work on more infrastructure cleanups for Ansible DSpace role</li>
 <li>Clean up Let's Encrypt plumbing and submit pull request for rmg-ansible-public (<a href="https://github.com/ilri/rmg-ansible-public/pull/60">#60</a>)</li>
 </ul>
-<h2 id="20161006">2016-10-06</h2>
+<h2 id="2016-10-06">2016-10-06</h2>
 <ul>
 <li>Nice! DSpace Test (linode02) is now having <code>java.lang.OutOfMemoryError: Java heap space</code> errors&hellip;</li>
 <li>Heap space is 2048m, and we have 5GB of RAM being used for OS cache (Solr!) so let's just bump the memory to 3072m</li>
@@ -177,7 +177,7 @@ $ ./delete-metadata-values.py -i authors-delete-3.csv -f dc.contributor.author -
 <li>Turns out the first PDF was exported from InDesign using CMYK and the second one was using sRGB</li>
 <li>Run all system updates on DSpace Test and reboot it</li>
 </ul>
-<h2 id="20161008">2016-10-08</h2>
+<h2 id="2016-10-08">2016-10-08</h2>
 <ul>
 <li>Re-deploy CGSpace with latest changes from late September and early October</li>
 <li>Run fixes for ILRI subjects and delete blank metadata values:</li>
@@ -193,13 +193,13 @@ DELETE 11
 </code></pre><ul>
 <li>Delete 2GB <code>cron-filter-media.log</code> file, as it is just a log from a cron job and it doesn't get rotated like normal log files (almost a year now maybe)</li>
 </ul>
-<h2 id="20161014">2016-10-14</h2>
+<h2 id="2016-10-14">2016-10-14</h2>
 <ul>
 <li>Run all system updates on DSpace Test and reboot server</li>
 <li>Looking into some issues with Discovery filters in Atmire's content and usage analysis module after adjusting the filter class</li>
 <li>Looks like changing the filters from <code>configuration.DiscoverySearchFilterFacet</code> to <code>configuration.DiscoverySearchFilter</code> breaks them in Atmire CUA module</li>
 </ul>
-<h2 id="20161017">2016-10-17</h2>
+<h2 id="2016-10-17">2016-10-17</h2>
 <ul>
 <li>A bit more cleanup on the CCAFS authors, and run the corrections on DSpace Test:</li>
 </ul>
@@ -207,7 +207,7 @@ DELETE 11
 </code></pre><ul>
 <li>One observation is that there are still some old versions of names in the author lookup because authors appear in other communities (as we only corrected authors from CCAFS for this round)</li>
 </ul>
-<h2 id="20161018">2016-10-18</h2>
+<h2 id="2016-10-18">2016-10-18</h2>
 <ul>
 <li>Start working on DSpace 5.5 porting work again:</li>
 </ul>
@@ -221,7 +221,7 @@ $ git rebase -i dspace-5.5
 <li>Merge the <code>discovery.xml</code> cleanups (<a href="https://github.com/ilri/DSpace/pull/278">#278</a>)</li>
 <li>Merge some minor edits to the distribution license (<a href="https://github.com/ilri/DSpace/pull/285">#285</a>)</li>
 </ul>
-<h2 id="20161019">2016-10-19</h2>
+<h2 id="2016-10-19">2016-10-19</h2>
 <ul>
 <li>When we move to DSpace 5.5 we should also cherry pick some patches from 5.6 branch:
 <ul>
@@ -231,12 +231,12 @@ $ git rebase -i dspace-5.5
 </ul>
 </li>
 </ul>
-<h2 id="20161020">2016-10-20</h2>
+<h2 id="2016-10-20">2016-10-20</h2>
 <ul>
 <li>Run CCAFS author corrections on CGSpace</li>
 <li>Discovery reindexing took forever and kinda caused CGSpace to crash, so I ran all system updates and rebooted the server</li>
 </ul>
-<h2 id="20161025">2016-10-25</h2>
+<h2 id="2016-10-25">2016-10-25</h2>
 <ul>
 <li>Move the LIVES community from the top level to the ILRI projects community</li>
 </ul>
@@ -279,7 +279,7 @@ dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;i
 <li>And now that I start looking, I want to fix a bunch of links to popular sites that should be using HTTPS, like Twitter, Facebook, Google, Feed Burner, DOI, etc</li>
 <li>I should look to see if any of those domains is sending an HTTP 301 or setting HSTS headers to their HTTPS domains, then just replace them</li>
 </ul>
-<h2 id="20161027">2016-10-27</h2>
+<h2 id="2016-10-27">2016-10-27</h2>
 <ul>
 <li>Run Font Awesome fixes on DSpace Test:</li>
 </ul>
@@ -309,7 +309,7 @@ UPDATE 0
 <ul>
 <li>Run the same replacements on CGSpace</li>
 </ul>
-<h2 id="20161030">2016-10-30</h2>
+<h2 id="2016-10-30">2016-10-30</h2>
 <ul>
 <li>Fix some messed up authors on CGSpace:</li>
 </ul>
