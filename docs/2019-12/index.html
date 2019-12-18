@@ -24,7 +24,7 @@ Make sure all packages are up to date and the package manager is up to date, the
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-12/" />
 <meta property="article:published_time" content="2019-12-01T11:22:30+02:00" />
-<meta property="article:modified_time" content="2019-12-17T16:45:21+02:00" />
+<meta property="article:modified_time" content="2019-12-18T11:41:55+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2019"/>
@@ -53,9 +53,9 @@ Make sure all packages are up to date and the package manager is up to date, the
   "@type": "BlogPosting",
   "headline": "December, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-12\/",
-  "wordCount": "971",
+  "wordCount": "1096",
   "datePublished": "2019-12-01T11:22:30+02:00",
-  "dateModified": "2019-12-17T16:45:21+02:00",
+  "dateModified": "2019-12-18T11:41:55+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -288,7 +288,27 @@ COPY 643
 </ul>
 <pre><code>$ ./fix-metadata-values.py -i /tmp/2019-12-17-investors-fix-112.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
 $ ./delete-metadata-values.py -i /tmp/2019-12-17-investors-delete-68.csv -db dspace -u dspace -p 'fuuu' -m 29 -f dc.description.sponsorship -d
-</code></pre><!-- raw HTML omitted -->
+</code></pre><ul>
+<li>Peter asked about the &ldquo;Open Government Licence 3.0&rdquo; that is used by <a href="">some items</a>
+<ul>
+<li>I notice that it <a href="https://spdx.org/licenses/OGL-UK-3.0.html">exists in SPDX as <code>UGL-UK-3.0</code></a> so I created a GitHub issue to add this to our controlled vocabulary (<a href="https://github.com/ilri/DSpace/issues/439">#439</a>)</li>
+<li>I only see two in our database that use this for now, so I will update them:</li>
+</ul>
+</li>
+</ul>
+<pre><code>dspace=# SELECT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%Open%';
+         text_value          
+-----------------------------
+ Open Government License 3.0
+ Open Government License 3.0
+(2 rows)
+dspace=# UPDATE metadatavalue SET text_value='OGL-UK-3.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%Open Government License 3.0%';
+UPDATE 2
+</code></pre><ul>
+<li>I created a pull request to add the license and merged it to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/440">#440</a>)</li>
+<li>Add three new CCAFS Phase II project tags to CGSpace (<a href="https://github.com/ilri/DSpace/pull/441">#441</a>)</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
