@@ -30,7 +30,7 @@ As of 2019-11-17 the scope of the changes includes the following fields:
 - dc.description→dcterms.description
 - dc.description.sponsorship→cg.contributor.donor
   - values from CrossRef or Grid.ac if possible
-- dc.description.version→cg.peer-reviewed
+- dc.description.version→cg.review-status
 - cg.fulltextstatus→cg.howpublished
   - CGSpace uses values like "Formally Published" or "Grey Literature"
 - dc.identifier.citation→dcterms.bibliographicCitation
@@ -66,7 +66,7 @@ Make sure the following fields exist:
 
 - [x] cg.creator.identifier (242)
 - [x] cg.contributor.donor (243)
-- [x] cg.peer-reviewed (244)
+- [x] cg.review-status (244)
 - [x] cg.howpublished (245)
 - [x] cg.journal (246)
 - [x] cg.isbn (247)
@@ -91,7 +91,7 @@ dcterms.issued | ✓ | ✓ | ? | ✓ | ✓ | ✓ | |
 dcterms.abstract | ✓ | ✓ | ✓ | ✓ | ✓ | - | |
 dcterms.description | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
 cg.contributor.donor | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
-cg.peer-reviewed | ✓ | ✓ | ✓ | - | ✓ | - | |
+cg.review-status | ✓ | ✓ | ✓ | - | ✓ | - | |
 cg.howpublished | ✓ | ✓ | - | - | - | - | |
 dcterms.bibliographicCitation | ✓ | ✓ | ✓ | - | - | ✓ | |
 dcterms.accessRights | ✓ | ✓ | ✓ | - | ✓ | ✓ | |
