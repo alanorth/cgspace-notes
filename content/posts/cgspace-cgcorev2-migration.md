@@ -20,7 +20,7 @@ With reference to [CG Core v2 draft standard](https://agriculturalsemantics.gith
 - [Implementation Progress](#implementation-progress)
 
 ## Proposed Changes
-As of 2019-11-17 the scope of the changes includes the following fields:
+As of 2019-12-22 the scope of the changes includes the following fields:
 
 - cg.creator.id→cg.creator.identifier
   - ORCID identifiers
@@ -50,6 +50,7 @@ As of 2019-11-17 the scope of the changes includes the following fields:
 - dc.type→dcterms.type
 - dc.identifier.isbn→cg.isbn
 - dc.identifier.issn→cg.issn
+- cg.targetaudience→dcterms.audience
 
 The following fields are currently out of the scope of this migration because they are used internally by DSpace 5.x/6.x and would be difficult to change without significant modifications to the core of the code:
 
@@ -79,6 +80,7 @@ Fields to delete after migration:
 - [ ] cg.fulltextstatus
 - [ ] cg.identifier.status
 - [ ] cg.link.reference
+- [ ] cg.targetaudience
 
 ## Implementation Progress
 Tally of the status of the implementation of the new fields in the CGSpace `5_x-cgcorev2` branch.
@@ -105,6 +107,7 @@ dcterms.subject | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
 dcterms.type | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
 cg.isbn | ✓ | ✓ | - | - | - | ✓ | |
 cg.issn | ✓ | ✓ | - | - | - | ✓ | |
+dcterms.audience | ✓ | ✓ | - | - | - | ✓ | |
 
 There are a few things that I need to check once I get a deployment of this code up and running:
 
