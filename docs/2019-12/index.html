@@ -24,7 +24,7 @@ Make sure all packages are up to date and the package manager is up to date, the
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-12/" />
 <meta property="article:published_time" content="2019-12-01T11:22:30+02:00" />
-<meta property="article:modified_time" content="2019-12-18T19:05:09+02:00" />
+<meta property="article:modified_time" content="2019-12-18T22:03:36+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2019"/>
@@ -53,9 +53,9 @@ Make sure all packages are up to date and the package manager is up to date, the
   "@type": "BlogPosting",
   "headline": "December, 2019",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2019-12\/",
-  "wordCount": "1219",
+  "wordCount": "1387",
   "datePublished": "2019-12-01T11:22:30+02:00",
-  "dateModified": "2019-12-18T19:05:09+02:00",
+  "dateModified": "2019-12-18T22:03:36+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -323,6 +323,32 @@ UPDATE 2
 <li>The item was added six months ago&hellip;</li>
 <li>The DOI has an Altmetric score of 259, but for the Handle it is HTTP 404!</li>
 <li>I emailed Altmetric support</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-12-22">2019-12-22</h2>
+<ul>
+<li>I ran the <code>dspace cleanup</code> process on CGSpace (linode18) and had an error:</li>
+</ul>
+<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(179441) is still referenced from table &quot;bundle&quot;.
+</code></pre><ul>
+<li>The solution is to delete that bitstream manually:</li>
+</ul>
+<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (179441);'
+UPDATE 1
+</code></pre><ul>
+<li>Adjust <a href="/cgspace-notes/cgspace-cgcorev2-migration/">CG Core v2 migrataion notes</a> to use <code>cg.review-status</code> instead of <code>cg.peer-reviewed</code>
+<ul>
+<li>I had <a href="https://github.com/AgriculturalSemantics/cg-core/issues/14">raised the issue</a> with Marie-Angelique earlier this month</li>
+<li>It makes much more sense to use a wider scope here than a simple boolean</li>
+</ul>
+</li>
+<li>I also noticed another field that we should be using in DCTERMS instead of CG: <code>cg.targetaudience</code>
+<ul>
+<li><a href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2012-06-14/?v=terms#audience">DCTERMS says that <code>dcterms.audience</code> should be used to describe a A class of entity for whom the resource is intended or useful.&quot;</a></li>
+<li>I will update my notes for this so that we use that field instead</li>
+<li>I don't see &ldquo;audience&rdquo; on the <a href="https://github.com/AgriculturalSemantics/cg-core/">cg-core</a> repository so I filed <a href="https://github.com/AgriculturalSemantics/cg-core/issues/19">an issue</a> to raise it with Marie-Angelique</li>
 </ul>
 </li>
 </ul>
