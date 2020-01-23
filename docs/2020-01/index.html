@@ -29,7 +29,7 @@ I tweeted the CGSpace repository link
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-01/" />
 <meta property="article:published_time" content="2020-01-06T10:48:30+02:00" />
-<meta property="article:modified_time" content="2020-01-22T14:16:08+02:00" />
+<meta property="article:modified_time" content="2020-01-23T12:46:39+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="January, 2020"/>
@@ -63,9 +63,9 @@ I tweeted the CGSpace repository link
   "@type": "BlogPosting",
   "headline": "January, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-01\/",
-  "wordCount": "1905",
+  "wordCount": "2117",
   "datePublished": "2020-01-06T10:48:30+02:00",
-  "dateModified": "2020-01-22T14:16:08+02:00",
+  "dateModified": "2020-01-23T12:46:39+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -383,9 +383,23 @@ $ wc -l hung-nguyen-a*handles.txt
 <pre><code>$ convert -density 288 -filter lagrange -thumbnail 25% -background white -alpha remove -sampling-factor 1:1 -colorspace sRGB 10568-97925.pdf\[0\] 10568-97925.jpg
 </code></pre><ul>
 <li>Here I'm also explicitly setting the background to white and removing any alpha layers, but I could probably also just keep using <code>-flatten</code> like DSpace already does</li>
-<li>I wonder if I could hack this into DSpace code to get better thumbnails&hellip;</li>
+<li>I did some tests with a modified version of above that uses uses <code>-flatten</code> and drops the sampling-factor and colorspace, but bumps up the image size to 600px (default on CGSpace is currently 300):</li>
 </ul>
-<!-- raw HTML omitted -->
+<pre><code>$ convert -density 288 -filter lagrange -resize 25% -flatten 10568-97925.pdf\[0\] 10568-97925-d288-lagrange.pdf.jpg
+$ convert -flatten 10568-97925.pdf\[0\] 10568-97925.pdf.jpg
+$ convert -thumbnail x600 10568-97925-d288-lagrange.pdf.jpg 10568-97925-d288-lagrange-thumbnail.pdf.jpg
+$ convert -thumbnail x600 10568-97925.pdf.jpg 10568-97925-thumbnail.pdf.jpg
+</code></pre><ul>
+<li>This emulate's DSpace's method of generating a high-quality image from the PDF and then creating a thumbnail</li>
+<li>I put together a proof of concept of this by adding the extra options to dspace-api's <code>ImageMagickThumbnailFilter.java</code> and it works</li>
+<li>I need to run tests on a handful of PDFs to see if there are any side effects</li>
+<li>The file size is about double the old ones, but the quality is very good and the file size is nowhere near ilri.org's 400KiB PNG!</li>
+<li>Peter sent me the corrections and deletions for affiliations last night so I imported them into OpenRefine to work around the normal UTF-8 issue, ran them through csv-metadata-quality to make sure all Unicode values were normalized (NFC), then applied them on DSpace Test and CGSpace:</li>
+</ul>
+<pre><code>$ csv-metadata-quality -i ~/Downloads/2020-01-22-fix-1113-affiliations.csv -o /tmp/2020-01-22-fix-1113-affiliations.csv -u --exclude-fields 'dc.date.issued,dc.date.issued[],cg.contributor.affiliation'
+$ ./fix-metadata-values.py -i /tmp/2020-01-22-fix-1113-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct
+$ ./delete-metadata-values.py -i /tmp/2020-01-22-delete-36-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
+</code></pre><!-- raw HTML omitted -->
 
   
 
