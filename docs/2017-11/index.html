@@ -45,7 +45,7 @@ Generate list of authors on CGSpace for Peter to go through and correct:
 dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
 COPY 54701
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -75,7 +75,7 @@ COPY 54701
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -122,7 +122,7 @@ COPY 54701
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-11/">November, 2017</a></h2>
     <p class="blog-post-meta"><time datetime="2017-11-02T09:37:54&#43;02:00">Thu Nov 02, 2017</time> by Alan Orth in 
-<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
 
 
 </p>
@@ -160,15 +160,15 @@ COPY 54701
 <h2 id="2017-11-03">2017-11-03</h2>
 <ul>
 <li>Atmire got back to us to say that they estimate it will take two days of labor to implement the change to Listings and Reports</li>
-<li>I said I'd ask Abenet if she wants that feature</li>
+<li>I said I&rsquo;d ask Abenet if she wants that feature</li>
 </ul>
 <h2 id="2017-11-04">2017-11-04</h2>
 <ul>
-<li>I finished looking through Sisay's CIAT records for the &ldquo;Alianzas de Aprendizaje&rdquo; data</li>
+<li>I finished looking through Sisay&rsquo;s CIAT records for the &ldquo;Alianzas de Aprendizaje&rdquo; data</li>
 <li>I corrected about half of the authors to standardize them</li>
 <li>Linode emailed this morning to say that the CPU usage was high again, this time at 6:14AM</li>
-<li>It's the first time in a few days that this has happened</li>
-<li>I had a look to see what was going on, but it isn't the CORE bot:</li>
+<li>It&rsquo;s the first time in a few days that this has happened</li>
+<li>I had a look to see what was going on, but it isn&rsquo;t the CORE bot:</li>
 </ul>
 <pre><code># awk '{print $1}' /var/log/nginx/access.log | sort -n | uniq -c | sort -h | tail
     306 68.180.229.31
@@ -193,11 +193,11 @@ COPY 54701
 /var/log/nginx/access.log.5.gz:0
 /var/log/nginx/access.log.6.gz:0
 </code></pre><ul>
-<li>It's clearly a bot as it's making tens of thousands of requests, but it's using a &ldquo;normal&rdquo; user agent:</li>
+<li>It&rsquo;s clearly a bot as it&rsquo;s making tens of thousands of requests, but it&rsquo;s using a &ldquo;normal&rdquo; user agent:</li>
 </ul>
 <pre><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
 </code></pre><ul>
-<li>For now I don't know what this user is!</li>
+<li>For now I don&rsquo;t know what this user is!</li>
 </ul>
 <h2 id="2017-11-05">2017-11-05</h2>
 <ul>
@@ -222,8 +222,8 @@ COPY 54701
  International Livestock Research Institute | 8f3865dc-d056-4aec-90b7-77f49ab4735c |        500
 (8 rows)
 </code></pre><ul>
-<li>So I'm not sure if this is just a graphical glitch or if editors have to edit this metadata field prior to approval</li>
-<li>Looking at monitoring Tomcat's JVM heap with Prometheus, it looks like we need to use JMX + <a href="https://github.com/prometheus/jmx_exporter">jmx_exporter</a></li>
+<li>So I&rsquo;m not sure if this is just a graphical glitch or if editors have to edit this metadata field prior to approval</li>
+<li>Looking at monitoring Tomcat&rsquo;s JVM heap with Prometheus, it looks like we need to use JMX + <a href="https://github.com/prometheus/jmx_exporter">jmx_exporter</a></li>
 <li>This guide shows how to <a href="https://geekflare.com/enable-jmx-tomcat-to-monitor-administer/">enable JMX in Tomcat</a> by modifying <code>CATALINA_OPTS</code></li>
 <li>I was able to successfully connect to my local Tomcat with jconsole!</li>
 </ul>
@@ -268,8 +268,8 @@ $ grep 104.196.152.243 dspace.log.2017-11-03 | grep -o -E 'session_id=[A-Z0-9]{3
 $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 7051
 </code></pre><ul>
-<li>The worst thing is that this user never specifies a user agent string so we can't lump it in with the other bots using the Tomcat Session Crawler Manager Valve</li>
-<li>They don't request dynamic URLs like &ldquo;/discover&rdquo; but they seem to be fetching handles from XMLUI instead of REST (and some with <code>//handle</code>, note the regex below):</li>
+<li>The worst thing is that this user never specifies a user agent string so we can&rsquo;t lump it in with the other bots using the Tomcat Session Crawler Manager Valve</li>
+<li>They don&rsquo;t request dynamic URLs like &ldquo;/discover&rdquo; but they seem to be fetching handles from XMLUI instead of REST (and some with <code>//handle</code>, note the regex below):</li>
 </ul>
 <pre><code># grep -c 104.196.152.243 /var/log/nginx/access.log.1
 4681
@@ -277,7 +277,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 4618
 </code></pre><ul>
 <li>I just realized that <code>ciat.cgiar.org</code> points to 104.196.152.243, so I should contact Leroy from CIAT to see if we can change their scraping behavior</li>
-<li>The next IP (207.46.13.36) seem to be Microsoft's bingbot, but all its requests specify the &ldquo;bingbot&rdquo; user agent and there are no requests for dynamic URLs that are forbidden, like &ldquo;/discover&rdquo;:</li>
+<li>The next IP (207.46.13.36) seem to be Microsoft&rsquo;s bingbot, but all its requests specify the &ldquo;bingbot&rdquo; user agent and there are no requests for dynamic URLs that are forbidden, like &ldquo;/discover&rdquo;:</li>
 </ul>
 <pre><code>$ grep -c 207.46.13.36 /var/log/nginx/access.log.1 
 2034
@@ -328,18 +328,18 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li><code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)</code></li>
 </ul>
 </li>
-<li>I'll just keep an eye on that one for now, as it only made a few hundred requests to dynamic discovery URLs</li>
-<li>While it's not in the top ten, Baidu is one bot that seems to not give a fuck:</li>
+<li>I&rsquo;ll just keep an eye on that one for now, as it only made a few hundred requests to dynamic discovery URLs</li>
+<li>While it&rsquo;s not in the top ten, Baidu is one bot that seems to not give a fuck:</li>
 </ul>
 <pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;7/Nov/2017&quot; | grep -c Baiduspider
 8912
 # cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;7/Nov/2017&quot; | grep Baiduspider | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
 2521
 </code></pre><ul>
-<li>According to their documentation their bot <a href="http://www.baidu.com/search/robots_english.html">respects <code>robots.txt</code></a>, but I don't see this being the case</li>
+<li>According to their documentation their bot <a href="http://www.baidu.com/search/robots_english.html">respects <code>robots.txt</code></a>, but I don&rsquo;t see this being the case</li>
 <li>I think I will end up blocking Baidu as well&hellip;</li>
 <li>Next is for me to look and see what was happening specifically at 3AM and 7AM when the server crashed</li>
-<li>I should look in nginx access.log, rest.log, oai.log, and DSpace's dspace.log.2017-11-07</li>
+<li>I should look in nginx access.log, rest.log, oai.log, and DSpace&rsquo;s dspace.log.2017-11-07</li>
 <li>Here are the top IPs making requests to XMLUI from 2 to 8 AM:</li>
 </ul>
 <pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
@@ -389,8 +389,8 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
     462 ip_addr=104.196.152.243
     488 ip_addr=66.249.66.90
 </code></pre><ul>
-<li>These aren't actually very interesting, as the top few are Google, CIAT, Bingbot, and a few other unknown scrapers</li>
-<li>The number of requests isn't even that high to be honest</li>
+<li>These aren&rsquo;t actually very interesting, as the top few are Google, CIAT, Bingbot, and a few other unknown scrapers</li>
+<li>The number of requests isn&rsquo;t even that high to be honest</li>
 <li>As I was looking at these logs I noticed another heavy user (124.17.34.59) that was not active during this time period, but made many requests today alone:</li>
 </ul>
 <pre><code># zgrep -c 124.17.34.59 /var/log/nginx/access.log*
@@ -405,13 +405,13 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 /var/log/nginx/access.log.8.gz:0
 /var/log/nginx/access.log.9.gz:1
 </code></pre><ul>
-<li>The whois data shows the IP is from China, but the user agent doesn't really give any clues:</li>
+<li>The whois data shows the IP is from China, but the user agent doesn&rsquo;t really give any clues:</li>
 </ul>
 <pre><code># grep 124.17.34.59 /var/log/nginx/access.log | awk -F'&quot; ' '{print $3}' | sort | uniq -c | sort -h
     210 &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36&quot;
   22610 &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/7.0; LCTE)&quot;
 </code></pre><ul>
-<li>A Google search for &ldquo;LCTE bot&rdquo; doesn't return anything interesting, but this <a href="https://stackoverflow.com/questions/42500881/what-is-lcte-in-user-agent">Stack Overflow discussion</a> references the lack of information</li>
+<li>A Google search for &ldquo;LCTE bot&rdquo; doesn&rsquo;t return anything interesting, but this <a href="https://stackoverflow.com/questions/42500881/what-is-lcte-in-user-agent">Stack Overflow discussion</a> references the lack of information</li>
 <li>So basically after a few hours of looking at the log files I am not closer to understanding what is going on!</li>
 <li>I do know that we want to block Baidu, though, as it does not respect <code>robots.txt</code></li>
 <li>And as we speak Linode alerted that the outbound traffic rate is very high for the past two hours (about 12–14 hours)</li>
@@ -479,13 +479,13 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
 <pre><code>$ cat dspace.log.2017-11-07 dspace.log.2017-11-08 | grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=124.17.34.59' | sort | uniq | wc -l
 20733
 </code></pre><ul>
-<li>I'm getting really sick of this</li>
+<li>I&rsquo;m getting really sick of this</li>
 <li>Sisay re-uploaded the CIAT records that I had already corrected earlier this week, erasing all my corrections</li>
 <li>I had to re-correct all the publishers, places, names, dates, etc and apply the changes on DSpace Test</li>
 <li>Run system updates on DSpace Test and reboot the server</li>
 <li>Magdalena had written to say that two of their Phase II project tags were missing on CGSpace, so I added them (<a href="https://github.com/ilri/DSpace/pull/346">#346</a>)</li>
-<li>I figured out a way to use nginx's map function to assign a &ldquo;bot&rdquo; user agent to misbehaving clients who don't define a user agent</li>
-<li>Most bots are automatically lumped into one generic session by <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve">Tomcat's Crawler Session Manager Valve</a> but this only works if their user agent matches a pre-defined regular expression like <code>.*[bB]ot.*</code></li>
+<li>I figured out a way to use nginx&rsquo;s map function to assign a &ldquo;bot&rdquo; user agent to misbehaving clients who don&rsquo;t define a user agent</li>
+<li>Most bots are automatically lumped into one generic session by <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve">Tomcat&rsquo;s Crawler Session Manager Valve</a> but this only works if their user agent matches a pre-defined regular expression like <code>.*[bB]ot.*</code></li>
 <li>Some clients send thousands of requests without a user agent which ends up creating thousands of Tomcat sessions, wasting precious memory, CPU, and database resources in the process</li>
 <li>Basically, we modify the nginx config to add a mapping with a modified user agent <code>$ua</code>:</li>
 </ul>
@@ -495,15 +495,15 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
     default          $http_user_agent;
 }
 </code></pre><ul>
-<li>If the client's address matches then the user agent is set, otherwise the default <code>$http_user_agent</code> variable is used</li>
-<li>Then, in the server's <code>/</code> block we pass this header to Tomcat:</li>
+<li>If the client&rsquo;s address matches then the user agent is set, otherwise the default <code>$http_user_agent</code> variable is used</li>
+<li>Then, in the server&rsquo;s <code>/</code> block we pass this header to Tomcat:</li>
 </ul>
 <pre><code>proxy_pass http://tomcat_http;
 proxy_set_header User-Agent $ua;
 </code></pre><ul>
-<li>Note to self: the <code>$ua</code> variable won't show up in nginx access logs because the default <code>combined</code> log format doesn't show it, so don't run around pulling your hair out wondering with the modified user agents aren't showing in the logs!</li>
+<li>Note to self: the <code>$ua</code> variable won&rsquo;t show up in nginx access logs because the default <code>combined</code> log format doesn&rsquo;t show it, so don&rsquo;t run around pulling your hair out wondering with the modified user agents aren&rsquo;t showing in the logs!</li>
 <li>If a client matching one of these IPs connects without a session, it will be assigned one by the Crawler Session Manager Valve</li>
-<li>You can verify by cross referencing nginx's <code>access.log</code> and DSpace's <code>dspace.log.2017-11-08</code>, for example</li>
+<li>You can verify by cross referencing nginx&rsquo;s <code>access.log</code> and DSpace&rsquo;s <code>dspace.log.2017-11-08</code>, for example</li>
 <li>I will deploy this on CGSpace later this week</li>
 <li>I am interested to check how this affects the number of sessions used by the CIAT and Chinese bots (see above on <a href="#2017-11-07">2017-11-07</a> for example)</li>
 <li>I merged the clickable thumbnails code to <code>5_x-prod</code> (<a href="https://github.com/ilri/DSpace/pull/347">#347</a>) and will deploy it later along with the new bot mapping stuff (and re-run the Asible <code>nginx</code> and <code>tomcat</code> tags)</li>
@@ -522,7 +522,7 @@ proxy_set_header User-Agent $ua;
 1134
 </code></pre><ul>
 <li>I have been looking for a reason to ban Baidu and this is definitely a good one</li>
-<li>Disallowing <code>Baiduspider</code> in <code>robots.txt</code> probably won't work because this bot doesn't seem to respect the robot exclusion standard anyways!</li>
+<li>Disallowing <code>Baiduspider</code> in <code>robots.txt</code> probably won&rsquo;t work because this bot doesn&rsquo;t seem to respect the robot exclusion standard anyways!</li>
 <li>I will whip up something in nginx later</li>
 <li>Run system updates on CGSpace and reboot the server</li>
 <li>Re-deploy latest <code>5_x-prod</code> branch on CGSpace and DSpace Test (includes the clickable thumbnails, CCAFS phase II project tags, and updated news text)</li>
@@ -548,7 +548,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{3
 3506
 </code></pre><ul>
 <li>The number of sessions is over <em>ten times less</em>!</li>
-<li>This gets me thinking, I wonder if I can use something like nginx's rate limiter to automatically change the user agent of clients who make too many requests</li>
+<li>This gets me thinking, I wonder if I can use something like nginx&rsquo;s rate limiter to automatically change the user agent of clients who make too many requests</li>
 <li>Perhaps using a combination of geo and map, like illustrated here: <a href="https://www.nginx.com/blog/rate-limiting-nginx/">https://www.nginx.com/blog/rate-limiting-nginx/</a></li>
 </ul>
 <h2 id="2017-11-11">2017-11-11</h2>
@@ -560,7 +560,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{3
 <h2 id="2017-11-12">2017-11-12</h2>
 <ul>
 <li>Update the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure templates</a> to be a little more modular and flexible</li>
-<li>Looking at the top client IPs on CGSpace so far this morning, even though it's only been eight hours:</li>
+<li>Looking at the top client IPs on CGSpace so far this morning, even though it&rsquo;s only been eight hours:</li>
 </ul>
 <pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;12/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     243 5.83.120.111
@@ -579,7 +579,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{3
 <pre><code># grep 5.9.6.51 /var/log/nginx/access.log | tail -n 1
 5.9.6.51 - - [12/Nov/2017:08:13:13 +0000] &quot;GET /handle/10568/16515/recent-submissions HTTP/1.1&quot; 200 5097 &quot;-&quot; &quot;Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)&quot;
 </code></pre><ul>
-<li>What's amazing is that it seems to reuse its Java session across all requests:</li>
+<li>What&rsquo;s amazing is that it seems to reuse its Java session across all requests:</li>
 </ul>
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2017-11-12
 1558
@@ -587,7 +587,7 @@ $ grep 5.9.6.51 dspace.log.2017-11-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | s
 1
 </code></pre><ul>
 <li>Bravo to MegaIndex.ru!</li>
-<li>The same cannot be said for 95.108.181.88, which appears to be YandexBot, even though Tomcat's Crawler Session Manager valve regex should match &lsquo;YandexBot&rsquo;:</li>
+<li>The same cannot be said for 95.108.181.88, which appears to be YandexBot, even though Tomcat&rsquo;s Crawler Session Manager valve regex should match &lsquo;YandexBot&rsquo;:</li>
 </ul>
 <pre><code># grep 95.108.181.88 /var/log/nginx/access.log | tail -n 1
 95.108.181.88 - - [12/Nov/2017:08:33:17 +0000] &quot;GET /bitstream/handle/10568/57004/GenebankColombia_23Feb2015.pdf HTTP/1.1&quot; 200 972019 &quot;-&quot; &quot;Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&quot;
@@ -600,8 +600,8 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2017-11-
 10947/34   10947/1 10568/83389
 10947/2512 10947/1 10568/83389
 </code></pre><ul>
-<li>I explored nginx rate limits as a way to aggressively throttle Baidu bot which doesn't seem to respect disallowed URLs in robots.txt</li>
-<li>There's an interesting <a href="https://www.nginx.com/blog/rate-limiting-nginx/">blog post from Nginx's team about rate limiting</a> as well as a <a href="https://gist.github.com/arosenhagen/8aaf5d7f94171778c0e9">clever use of mapping with rate limits</a></li>
+<li>I explored nginx rate limits as a way to aggressively throttle Baidu bot which doesn&rsquo;t seem to respect disallowed URLs in robots.txt</li>
+<li>There&rsquo;s an interesting <a href="https://www.nginx.com/blog/rate-limiting-nginx/">blog post from Nginx&rsquo;s team about rate limiting</a> as well as a <a href="https://gist.github.com/arosenhagen/8aaf5d7f94171778c0e9">clever use of mapping with rate limits</a></li>
 <li>The solution <a href="https://github.com/ilri/rmg-ansible-public/commit/f0646991772660c505bea9c5ac586490e7c86156">I came up with</a> uses tricks from both of those</li>
 <li>I deployed the limit on CGSpace and DSpace Test and it seems to work well:</li>
 </ul>
@@ -664,7 +664,7 @@ Server: nginx
 <ul>
 <li>Deploy some nginx configuration updates to CGSpace</li>
 <li>They had been waiting on a branch for a few months and I think I just forgot about them</li>
-<li>I have been running them on DSpace Test for a few days and haven't seen any issues there</li>
+<li>I have been running them on DSpace Test for a few days and haven&rsquo;t seen any issues there</li>
 <li>Started testing DSpace 6.2 and a few things have changed</li>
 <li>Now PostgreSQL needs <code>pgcrypto</code>:</li>
 </ul>
@@ -672,21 +672,21 @@ Server: nginx
 dspace6=# CREATE EXTENSION pgcrypto;
 </code></pre><ul>
 <li>Also, local settings are no longer in <code>build.properties</code>, they are now in <code>local.cfg</code></li>
-<li>I'm not sure if we can use separate profiles like we did before with <code>mvn -Denv=blah</code> to use blah.properties</li>
+<li>I&rsquo;m not sure if we can use separate profiles like we did before with <code>mvn -Denv=blah</code> to use blah.properties</li>
 <li>It seems we need to use &ldquo;system properties&rdquo; to override settings, ie: <code>-Ddspace.dir=/Users/aorth/dspace6</code></li>
 </ul>
 <h2 id="2017-11-15">2017-11-15</h2>
 <ul>
 <li>Send Adam Hunt an invite to the DSpace Developers network on Yammer</li>
 <li>He is the new head of communications at WLE, since Michael left</li>
-<li>Merge changes to item view's wording of link metadata (<a href="https://github.com/ilri/DSpace/pull/348">#348</a>)</li>
+<li>Merge changes to item view&rsquo;s wording of link metadata (<a href="https://github.com/ilri/DSpace/pull/348">#348</a>)</li>
 </ul>
 <h2 id="2017-11-17">2017-11-17</h2>
 <ul>
 <li>Uptime Robot said that CGSpace went down today and I see lots of <code>Timeout waiting for idle object</code> errors in the DSpace logs</li>
 <li>I looked in PostgreSQL using <code>SELECT * FROM pg_stat_activity;</code> and saw that there were 73 active connections</li>
 <li>After a few minutes the connecitons went down to 44 and CGSpace was kinda back up, it seems like Tsega restarted Tomcat</li>
-<li>Looking at the REST and XMLUI log files, I don't see anything too crazy:</li>
+<li>Looking at the REST and XMLUI log files, I don&rsquo;t see anything too crazy:</li>
 </ul>
 <pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep &quot;17/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
      13 66.249.66.223
@@ -712,7 +712,7 @@ dspace6=# CREATE EXTENSION pgcrypto;
    2020 66.249.66.219
 </code></pre><ul>
 <li>I need to look into using JMX to analyze active sessions I think, rather than looking at log files</li>
-<li>After adding appropriate <a href="https://geekflare.com/enable-jmx-tomcat-to-monitor-administer/">JMX listener options to Tomcat's JAVA_OPTS</a> and restarting Tomcat, I can connect remotely using an SSH dynamic port forward (SOCKS) on port 7777 for example, and then start jconsole locally like:</li>
+<li>After adding appropriate <a href="https://geekflare.com/enable-jmx-tomcat-to-monitor-administer/">JMX listener options to Tomcat&rsquo;s JAVA_OPTS</a> and restarting Tomcat, I can connect remotely using an SSH dynamic port forward (SOCKS) on port 7777 for example, and then start jconsole locally like:</li>
 </ul>
 <pre><code>$ jconsole -J-DsocksProxyHost=localhost -J-DsocksProxyPort=7777 service:jmx:rmi:///jndi/rmi://localhost:9000/jmxrmi -J-DsocksNonProxyHosts=
 </code></pre><ul>
@@ -760,14 +760,14 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <pre><code>2017-11-19 03:00:32,806 INFO  org.apache.pdfbox.pdfparser.PDFParser @ Document is encrypted
 2017-11-19 03:00:32,807 ERROR org.apache.pdfbox.filter.FlateFilter @ FlateFilter: stop reading corrupt stream due to a DataFormatException
 </code></pre><ul>
-<li>It's been a few days since I enabled the G1GC on DSpace Test and the JVM graph definitely changed:</li>
+<li>It&rsquo;s been a few days since I enabled the G1GC on DSpace Test and the JVM graph definitely changed:</li>
 </ul>
 <p><img src="/cgspace-notes/2017/11/tomcat-jvm-g1gc.png" alt="Tomcat G1GC"></p>
 <h2 id="2017-11-20">2017-11-20</h2>
 <ul>
 <li>I found <a href="https://www.cakesolutions.net/teamblogs/low-pause-gc-on-the-jvm">an article about JVM tuning</a> that gives some pointers how to enable logging and tools to analyze logs for you</li>
 <li>Also notes on <a href="https://blog.gceasy.io/2016/11/15/rotating-gc-log-files/">rotating GC logs</a></li>
-<li>I decided to switch DSpace Test back to the CMS garbage collector because it is designed for low pauses and high throughput (like G1GC!) and because we haven't even tried to monitor or tune it</li>
+<li>I decided to switch DSpace Test back to the CMS garbage collector because it is designed for low pauses and high throughput (like G1GC!) and because we haven&rsquo;t even tried to monitor or tune it</li>
 </ul>
 <h2 id="2017-11-21">2017-11-21</h2>
 <ul>
@@ -777,7 +777,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 </code></pre><h2 id="2017-11-22">2017-11-22</h2>
 <ul>
 <li>Linode sent an alert that the CPU usage on the CGSpace server was very high around 4 to 6 AM</li>
-<li>The logs don't show anything particularly abnormal between those hours:</li>
+<li>The logs don&rsquo;t show anything particularly abnormal between those hours:</li>
 </ul>
 <pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;22/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     136 31.6.77.23
@@ -791,7 +791,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
     696 66.249.66.90
     707 104.196.152.243
 </code></pre><ul>
-<li>I haven't seen 54.144.57.183 before, it is apparently the CCBot from commoncrawl.org</li>
+<li>I haven&rsquo;t seen 54.144.57.183 before, it is apparently the CCBot from commoncrawl.org</li>
 <li>In other news, it looks like the JVM garbage collection pattern is back to its standard jigsaw pattern after switching back to CMS a few days ago:</li>
 </ul>
 <p><img src="/cgspace-notes/2017/11/tomcat-jvm-cms.png" alt="Tomcat JVM with CMS GC"></p>
@@ -826,22 +826,22 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
     942 45.5.184.196
    3995 70.32.83.92
 </code></pre><ul>
-<li>These IPs crawling the REST API don't specify user agents and I'd assume they are creating many Tomcat sessions</li>
+<li>These IPs crawling the REST API don&rsquo;t specify user agents and I&rsquo;d assume they are creating many Tomcat sessions</li>
 <li>I would catch them in nginx to assign a &ldquo;bot&rdquo; user agent to them so that the Tomcat Crawler Session Manager valve could deal with them, but they seem to create any really — at least not in the dspace.log:</li>
 </ul>
 <pre><code>$ grep 70.32.83.92 dspace.log.2017-11-23 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 2
 </code></pre><ul>
-<li>I'm wondering if REST works differently, or just doesn't log these sessions?</li>
+<li>I&rsquo;m wondering if REST works differently, or just doesn&rsquo;t log these sessions?</li>
 <li>I wonder if they are measurable via JMX MBeans?</li>
-<li>I did some tests locally and I don't see the sessionCounter incrementing after making requests to REST, but it does with XMLUI and OAI</li>
-<li>I came across some interesting PostgreSQL tuning advice for SSDs: https://amplitude.engineering/how-a-single-postgresql-config-change-improved-slow-query-performance-by-50x-85593b8991b0</li>
+<li>I did some tests locally and I don&rsquo;t see the sessionCounter incrementing after making requests to REST, but it does with XMLUI and OAI</li>
+<li>I came across some interesting PostgreSQL tuning advice for SSDs: <a href="https://amplitude.engineering/how-a-single-postgresql-config-change-improved-slow-query-performance-by-50x-85593b8991b0">https://amplitude.engineering/how-a-single-postgresql-config-change-improved-slow-query-performance-by-50x-85593b8991b0</a></li>
 <li>Apparently setting <code>random_page_cost</code> to 1 is &ldquo;common&rdquo; advice for systems running PostgreSQL on SSD (the default is 4)</li>
 <li>So I deployed this on DSpace Test and will check the Munin PostgreSQL graphs in a few days to see if anything changes</li>
 </ul>
 <h2 id="2017-11-24">2017-11-24</h2>
 <ul>
-<li>It's too early to tell for sure, but after I made the <code>random_page_cost</code> change on DSpace Test's PostgreSQL yesterday the number of connections dropped drastically:</li>
+<li>It&rsquo;s too early to tell for sure, but after I made the <code>random_page_cost</code> change on DSpace Test&rsquo;s PostgreSQL yesterday the number of connections dropped drastically:</li>
 </ul>
 <p><img src="/cgspace-notes/2017/11/postgres-connections-week.png" alt="PostgreSQL connections after tweak (week)"></p>
 <ul>
@@ -849,8 +849,8 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 </ul>
 <p><img src="/cgspace-notes/2017/11/postgres-connections-month.png" alt="PostgreSQL connections after tweak (month)"></p>
 <ul>
-<li>I just realized that we're not logging access requests to other vhosts on CGSpace, so it's possible I have no idea that we're getting slammed at 4AM on another domain that we're just silently redirecting to cgspace.cgiar.org</li>
-<li>I've enabled logging on the CGIAR Library on CGSpace so I can check to see if there are many requests there</li>
+<li>I just realized that we&rsquo;re not logging access requests to other vhosts on CGSpace, so it&rsquo;s possible I have no idea that we&rsquo;re getting slammed at 4AM on another domain that we&rsquo;re just silently redirecting to cgspace.cgiar.org</li>
+<li>I&rsquo;ve enabled logging on the CGIAR Library on CGSpace so I can check to see if there are many requests there</li>
 <li>In just a few seconds I already see a dozen requests from Googlebot (of course they get HTTP 301 redirects to cgspace.cgiar.org)</li>
 <li>I also noticed that CGNET appears to be monitoring the old domain every few minutes:</li>
 </ul>
@@ -893,29 +893,29 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
    6053 45.5.184.196
 </code></pre><ul>
 <li>PostgreSQL activity shows 69 connections</li>
-<li>I don't have time to troubleshoot more as I'm in Nairobi working on the HPC so I just restarted Tomcat for now</li>
+<li>I don&rsquo;t have time to troubleshoot more as I&rsquo;m in Nairobi working on the HPC so I just restarted Tomcat for now</li>
 <li>A few hours later Uptime Robot says the server is down again</li>
-<li>I don't see much activity in the logs but there are 87 PostgreSQL connections</li>
+<li>I don&rsquo;t see much activity in the logs but there are 87 PostgreSQL connections</li>
 <li>But shit, there were 10,000 unique Tomcat sessions today:</li>
 </ul>
 <pre><code>$ cat dspace.log.2017-11-29 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 10037
 </code></pre><ul>
-<li>Although maybe that's not much, as the previous two days had more:</li>
+<li>Although maybe that&rsquo;s not much, as the previous two days had more:</li>
 </ul>
 <pre><code>$ cat dspace.log.2017-11-27 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 12377
 $ cat dspace.log.2017-11-28 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 16984
 </code></pre><ul>
-<li>I think we just need start increasing the number of allowed PostgreSQL connections instead of fighting this, as it's the most common source of crashes we have</li>
-<li>I will bump DSpace's <code>db.maxconnections</code> from 60 to 90, and PostgreSQL's <code>max_connections</code> from 183 to 273 (which is using my loose formula of 90 * webapps + 3)</li>
+<li>I think we just need start increasing the number of allowed PostgreSQL connections instead of fighting this, as it&rsquo;s the most common source of crashes we have</li>
+<li>I will bump DSpace&rsquo;s <code>db.maxconnections</code> from 60 to 90, and PostgreSQL&rsquo;s <code>max_connections</code> from 183 to 273 (which is using my loose formula of 90 * webapps + 3)</li>
 <li>I really need to figure out how to get DSpace to use a PostgreSQL connection pool</li>
 </ul>
 <h2 id="2017-11-30">2017-11-30</h2>
 <ul>
 <li>Linode alerted about high CPU usage on CGSpace again around 6 to 8 AM</li>
-<li>Then Uptime Robot said CGSpace was down a few minutes later, but it resolved itself I think (or Tsega restarted Tomcat, I don't know)</li>
+<li>Then Uptime Robot said CGSpace was down a few minutes later, but it resolved itself I think (or Tsega restarted Tomcat, I don&rsquo;t know)</li>
 </ul>
 
   

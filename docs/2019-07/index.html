@@ -35,7 +35,7 @@ CGSpace
 
 Abenet had another similar issue a few days ago when trying to find the stats for 2018 in the RTB community
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -65,7 +65,7 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -112,7 +112,7 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2019-07/">July, 2019</a></h2>
     <p class="blog-post-meta"><time datetime="2019-07-01T12:13:51&#43;03:00">Mon Jul 01, 2019</time> by Alan Orth in 
-<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
 
 
 </p>
@@ -129,16 +129,16 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 <li>Abenet had another similar issue a few days ago when trying to find the stats for 2018 in the RTB community</li>
 </ul>
 <ul>
-<li>If I change the parameters to 2019 I see stats, so I'm really thinking it has something to do with the sharded yearly Solr statistics cores
+<li>If I change the parameters to 2019 I see stats, so I&rsquo;m really thinking it has something to do with the sharded yearly Solr statistics cores
 <ul>
-<li>I checked the Solr admin UI and I see all Solr cores loaded, so I don't know what it could be</li>
+<li>I checked the Solr admin UI and I see all Solr cores loaded, so I don&rsquo;t know what it could be</li>
 <li>When I check the Atmire content and usage module it seems obvious that there is a problem with the old cores because I dont have anything before 2019-01</li>
 </ul>
 </li>
 </ul>
 <p><img src="/cgspace-notes/2019/07/atmire-cua-2018-missing.png" alt="Atmire CUA 2018 stats missing"></p>
 <ul>
-<li>I don't see anyone logged in right now so I'm going to try to restart Tomcat and see if the stats are accessible after Solr comes back up</li>
+<li>I don&rsquo;t see anyone logged in right now so I&rsquo;m going to try to restart Tomcat and see if the stats are accessible after Solr comes back up</li>
 <li>I decided to run all system updates on the server (linode18) and reboot it
 <ul>
 <li>After rebooting Tomcat came back up, but the the Solr statistics cores were not all loaded</li>
@@ -166,24 +166,24 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 # find /dspace/solr/statistics* -iname &quot;*.lock&quot; -print -delete
 # systemctl start tomcat7
 </code></pre><ul>
-<li>But it still didn't work!</li>
+<li>But it still didn&rsquo;t work!</li>
 <li>I stopped Tomcat, deleted the old locks, and will try to use the &ldquo;simple&rdquo; lock file type in <code>solr/statistics/conf/solrconfig.xml</code>:</li>
 </ul>
 <pre><code>&lt;lockType&gt;${solr.lock.type:simple}&lt;/lockType&gt;
 </code></pre><ul>
-<li>And after restarting Tomcat it still doesn't work</li>
-<li>Now I'll try going back to &ldquo;native&rdquo; locking with <code>unlockAtStartup</code>:</li>
+<li>And after restarting Tomcat it still doesn&rsquo;t work</li>
+<li>Now I&rsquo;ll try going back to &ldquo;native&rdquo; locking with <code>unlockAtStartup</code>:</li>
 </ul>
 <pre><code>&lt;unlockOnStartup&gt;true&lt;/unlockOnStartup&gt;
 </code></pre><ul>
-<li>Now the cores seem to load, but I still see an error in the Solr Admin UI and I still can't access any stats before 2018</li>
-<li>I filed an <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=685">issue with Atmire</a>, so let's see if they can help</li>
-<li>And since I'm annoyed and it's been a few months, I'm going to move the JVM heap settings that I've been testing on DSpace Test to CGSpace</li>
+<li>Now the cores seem to load, but I still see an error in the Solr Admin UI and I still can&rsquo;t access any stats before 2018</li>
+<li>I filed an <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=685">issue with Atmire</a>, so let&rsquo;s see if they can help</li>
+<li>And since I&rsquo;m annoyed and it&rsquo;s been a few months, I&rsquo;m going to move the JVM heap settings that I&rsquo;ve been testing on DSpace Test to CGSpace</li>
 <li>The old ones were:</li>
 </ul>
 <pre><code>-Djava.awt.headless=true -Xms8192m -Xmx8192m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=5400 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
 </code></pre><ul>
-<li>And the new ones come from Solr 4.10.x's startup scripts:</li>
+<li>And the new ones come from Solr 4.10.x&rsquo;s startup scripts:</li>
 </ul>
 <pre><code>    -Djava.awt.headless=true
     -Xms8192m -Xmx8192m
@@ -253,7 +253,7 @@ $ ./resolve-orcids.py -i /tmp/2019-07-04-orcid-ids.txt -o 2019-07-04-orcid-names
 &quot;Mwungu: 0000-0001-6181-8445&quot;,&quot;Chris Miyinzi Mwungu: 0000-0001-6181-8445&quot;
 &quot;Mwungu: 0000-0003-1658-287X&quot;,&quot;Chris Miyinzi Mwungu: 0000-0003-1658-287X&quot;
 </code></pre><ul>
-<li>But when I ran <code>fix-metadata-values.py</code> I didn't see any changes:</li>
+<li>But when I ran <code>fix-metadata-values.py</code> I didn&rsquo;t see any changes:</li>
 </ul>
 <pre><code>$ ./fix-metadata-values.py -i 2019-07-04-update-orcids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -m 240 -t correct -d
 </code></pre><h2 id="2019-07-06">2019-07-06</h2>
@@ -328,7 +328,7 @@ dc.identifier.issn
 </ul>
 <pre><code>2019-07-10 11:50:27,433 INFO  org.dspace.submit.step.CompleteStep @ lewyllie@cta.int:session_id=A920730003BCAECE8A3B31DCDE11A97E:submission_complete:Completed submission with id=106658
 </code></pre><ul>
-<li>I'm assuming something happened in his browser (like a refresh) after the item was submitted&hellip;</li>
+<li>I&rsquo;m assuming something happened in his browser (like a refresh) after the item was submitted&hellip;</li>
 </ul>
 <h2 id="2019-07-12">2019-07-12</h2>
 <ul>
@@ -336,7 +336,7 @@ dc.identifier.issn
 <ul>
 <li>Unfortunately there is no concrete feedback yet</li>
 <li>I think we need to upgrade our DSpace Test server so we can fit all the Solr cores&hellip;</li>
-<li>Actually, I looked and there were over 40 GB free on DSpace Test so I copied the Solr statistics cores for the years 2017 to 2010 from CGSpace to DSpace Test because they weren't actually very large</li>
+<li>Actually, I looked and there were over 40 GB free on DSpace Test so I copied the Solr statistics cores for the years 2017 to 2010 from CGSpace to DSpace Test because they weren&rsquo;t actually very large</li>
 <li>I re-deployed DSpace for good measure, and I think all Solr cores are loading&hellip; I will do more tests later</li>
 </ul>
 </li>
@@ -353,7 +353,7 @@ $ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bits
 UPDATE 1
 </code></pre><h2 id="2019-07-16">2019-07-16</h2>
 <ul>
-<li>Completely reset the Podman configuration on my laptop because there were some layers that I couldn't delete and it had been some time since I did a cleanup:</li>
+<li>Completely reset the Podman configuration on my laptop because there were some layers that I couldn&rsquo;t delete and it had been some time since I did a cleanup:</li>
 </ul>
 <pre><code>$ podman system prune -a -f --volumes
 $ sudo rm -rf ~/.local/share/containers
@@ -376,7 +376,7 @@ $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-s
 <ul>
 <li>Talk to Moayad about the remaining issues for OpenRXV / AReS
 <ul>
-<li>He sent a pull request with some changes for the bar chart and documentation about configuration, and said he'd finish the export feature next week</li>
+<li>He sent a pull request with some changes for the bar chart and documentation about configuration, and said he&rsquo;d finish the export feature next week</li>
 </ul>
 </li>
 <li>Sisay said a user was having problems registering on CGSpace and it looks like the email account expired again:</li>
@@ -399,13 +399,13 @@ Please see the DSpace documentation for assistance.
 <ul>
 <li>ICT reset the password for the CGSpace support account and apparently removed the expiry requirement
 <ul>
-<li>I tested the account and it's working</li>
+<li>I tested the account and it&rsquo;s working</li>
 </ul>
 </li>
 </ul>
 <h2 id="2019-07-20">2019-07-20</h2>
 <ul>
-<li>Create an account for Lionelle Samnick on CGSpace because the registration isn't working for some reason:</li>
+<li>Create an account for Lionelle Samnick on CGSpace because the registration isn&rsquo;t working for some reason:</li>
 </ul>
 <pre><code>$ dspace user --add --givenname Lionelle --surname Samnick --email blah@blah.com --password 'blah'
 </code></pre><ul>
@@ -413,12 +413,12 @@ Please see the DSpace documentation for assistance.
 <li>Start looking at 1429 records for the Bioversity batch import
 <ul>
 <li>Multiple authors should be specified with multi-value separatator (||) instead of ;</li>
-<li>We don't use &ldquo;(eds)&rdquo; as an author</li>
+<li>We don&rsquo;t use &ldquo;(eds)&rdquo; as an author</li>
 <li>Same issue with dc.publisher using &ldquo;;&rdquo; for multiple values</li>
 <li>Some invalid ISSNs in dc.identifier.issn (they look like ISBNs)</li>
 <li>I see some ISSNs in the dc.identifier.isbn field</li>
 <li>I see some invalid ISBNs that look like Excel errors (9,78E+12)</li>
-<li>For DOI we just use the URL, not &ldquo;DOI: <a href="https://doi.org...%22">https://doi.org...&quot;</a></li>
+<li>For DOI we just use the URL, not &ldquo;DOI: <a href="https://doi.org">https://doi.org</a>&hellip;&rdquo;</li>
 <li>I see an invalid &ldquo;LEAVE BLANK&rdquo; in the cg.contributor.crp field</li>
 <li>Country field is using &ldquo;,&rdquo; for multiple values instead of &ldquo;||&rdquo;</li>
 <li>Region field is using &ldquo;,&rdquo; for multiple values instead of &ldquo;||&rdquo;</li>
@@ -462,7 +462,7 @@ Please see the DSpace documentation for assistance.
 <li>A few strange publishers after splitting multi-value cells, like &ldquo;(Belgium)&rdquo;</li>
 <li>Deleted four ISSNs that are actually ISBNs and are already present in the ISBN field</li>
 <li>Eight invalid ISBNs</li>
-<li>Convert all DOIs to &ldquo;<a href="https://doi.org%22">https://doi.org&quot;</a> format and fix one invalid DOI</li>
+<li>Convert all DOIs to &ldquo;<a href="https://doi.org">https://doi.org</a>&rdquo; format and fix one invalid DOI</li>
 <li>Fix a handful of incorrect CRPs that seem to have been split on comma &ldquo;,&rdquo;</li>
 <li>Lots of strange values in cg.link.reference, and I normalized all DOIs to <a href="https://doi.org">https://doi.org</a> format
 <ul>

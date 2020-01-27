@@ -37,7 +37,7 @@ Testing the CMYK patch on a collection with 650 items:
 
 $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -67,7 +67,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -115,7 +115,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-04/">April, 2017</a></h2>
     <p class="blog-post-meta"><time datetime="2017-04-02T17:08:52&#43;02:00">Sun Apr 02, 2017</time> by Alan Orth in 
 
-<i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
 
 </p>
   </header>
@@ -141,14 +141,14 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 <pre><code>$ grep -c profile /tmp/filter-media-cmyk.txt
 484
 </code></pre><ul>
-<li>Looking at the CG Core document again, I'll send some feedback to Peter and Abenet:
+<li>Looking at the CG Core document again, I&rsquo;ll send some feedback to Peter and Abenet:
 <ul>
 <li>We use cg.contributor.crp to indicate the CRP(s) affiliated with the item</li>
-<li>DSpace has dc.date.available, but this field isn't particularly meaningful other than as an automatic timestamp at the time of item accession (and is identical to dc.date.accessioned)</li>
-<li>dc.relation exists in CGSpace, but isn't used—rather dc.relation.ispartofseries, which is used ~5,000 times to Series name and number within that series</li>
+<li>DSpace has dc.date.available, but this field isn&rsquo;t particularly meaningful other than as an automatic timestamp at the time of item accession (and is identical to dc.date.accessioned)</li>
+<li>dc.relation exists in CGSpace, but isn&rsquo;t used—rather dc.relation.ispartofseries, which is used ~5,000 times to Series name and number within that series</li>
 </ul>
 </li>
-<li>Also, I'm noticing some weird outliers in <code>cg.coverage.region</code>, need to remember to go correct these later:</li>
+<li>Also, I&rsquo;m noticing some weird outliers in <code>cg.coverage.region</code>, need to remember to go correct these later:</li>
 </ul>
 <pre><code>dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=227;
 </code></pre><h2 id="2017-04-04">2017-04-04</h2>
@@ -159,7 +159,7 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 1584
 </code></pre><ul>
 <li>Trying to find a way to get the number of items submitted by a certain user in 2016</li>
-<li>It's not possible in the DSpace search / module interfaces, but might be able to be derived from <code>dc.description.provenance</code>, as that field contains the name and email of the submitter/approver, ie:</li>
+<li>It&rsquo;s not possible in the DSpace search / module interfaces, but might be able to be derived from <code>dc.description.provenance</code>, as that field contains the name and email of the submitter/approver, ie:</li>
 </ul>
 <pre><code>Submitted by Francesca Giampieri (fgiampieri) on 2016-01-19T13:56:43Z^M
 No. of bitstreams: 1^M
@@ -169,7 +169,7 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 </ul>
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
 </code></pre><ul>
-<li>Then this one does the same, but for fields that don't contain checksums (ie, there was no bitstream in the submission):</li>
+<li>Then this one does the same, but for fields that don&rsquo;t contain checksums (ie, there was no bitstream in the submission):</li>
 </ul>
 <pre><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*' and text_value !~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
 </code></pre><ul>
@@ -188,14 +188,14 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 <ul>
 <li>After reading the <a href="https://wiki.duraspace.org/display/cmtygp/DCAT+Meeting+April+2017">notes for DCAT April 2017</a> I am testing some new settings for PostgreSQL on DSpace Test:
 <ul>
-<li><code>db.maxconnections</code> 30→70 (the default PostgreSQL config allows 100 connections, so DSpace's default of 30 is quite low)</li>
+<li><code>db.maxconnections</code> 30→70 (the default PostgreSQL config allows 100 connections, so DSpace&rsquo;s default of 30 is quite low)</li>
 <li><code>db.maxwait</code> 5000→10000</li>
 <li><code>db.maxidle</code> 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier)</li>
 </ul>
 </li>
 <li>I need to look at the Munin graphs after a few days to see if the load has changed</li>
 <li>Run system updates on DSpace Test and reboot the server</li>
-<li>Discussing harvesting CIFOR's DSpace via OAI</li>
+<li>Discussing harvesting CIFOR&rsquo;s DSpace via OAI</li>
 <li>Sisay added their OAI as a source to a new collection, but using the Simple Dublin Core method, so many fields are unqualified and duplicated</li>
 <li>Looking at the <a href="https://wiki.duraspace.org/display/DSDOC5x/XMLUI+Configuration+and+Customization">documentation</a> it seems that we probably want to be using DSpace Intermediate Metadata</li>
 </ul>
@@ -212,44 +212,44 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 <li>Handle.net calls this <a href="https://www.handle.net/faq.html#4">&ldquo;derived prefixes&rdquo;</a> and it seems this would work with DSpace if we wanted to go that route</li>
 <li>CIFOR is starting to test aligning their metadata more with CGSpace/CG core</li>
 <li>They shared a <a href="https://data.cifor.org/dspace/xmlui/handle/11463/947?show=full">test item</a> which is using <code>cg.coverage.country</code>, <code>cg.subject.cifor</code>, <code>dc.subject</code>, and <code>dc.date.issued</code></li>
-<li>Looking at their OAI I'm not sure it has updated as I don't see the new fields: <a href="https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc///col_11463_6/900">https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc///col_11463_6/900</a></li>
-<li>Maybe they need to make sure they are running the OAI cache refresh cron job, or maybe OAI doesn't export these?</li>
-<li>I added <code>cg.subject.cifor</code> to the metadata registry and I'm waiting for the harvester to re-harvest to see if it picks up more data now</li>
-<li>Another possiblity is that we could use a cross walk&hellip; but I've never done it.</li>
+<li>Looking at their OAI I&rsquo;m not sure it has updated as I don&rsquo;t see the new fields: <a href="https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc///col_11463_6/900">https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc///col_11463_6/900</a></li>
+<li>Maybe they need to make sure they are running the OAI cache refresh cron job, or maybe OAI doesn&rsquo;t export these?</li>
+<li>I added <code>cg.subject.cifor</code> to the metadata registry and I&rsquo;m waiting for the harvester to re-harvest to see if it picks up more data now</li>
+<li>Another possiblity is that we could use a cross walk&hellip; but I&rsquo;ve never done it.</li>
 </ul>
 <h2 id="2017-04-11">2017-04-11</h2>
 <ul>
-<li>Looking at the item from CIFOR it hasn't been updated yet, maybe they aren't running the cron job</li>
-<li>I emailed Usman from CIFOR to ask if he's running the cron job</li>
+<li>Looking at the item from CIFOR it hasn&rsquo;t been updated yet, maybe they aren&rsquo;t running the cron job</li>
+<li>I emailed Usman from CIFOR to ask if he&rsquo;s running the cron job</li>
 </ul>
 <h2 id="2017-04-12">2017-04-12</h2>
 <ul>
 <li>CIFOR says they have cleaned their OAI cache and that the cron job for OAI import is enabled</li>
 <li>Now I see updated fields, like <code>dc.date.issued</code> but none from the CG or CIFOR namespaces</li>
-<li>Also, DSpace Test hasn't re-harvested this item yet, so I will wait one more day before forcing a re-harvest</li>
-<li>Looking at CIFOR's OAI using different metadata formats, like qualified Dublin Core and DSpace Intermediate Metadata:
+<li>Also, DSpace Test hasn&rsquo;t re-harvested this item yet, so I will wait one more day before forcing a re-harvest</li>
+<li>Looking at CIFOR&rsquo;s OAI using different metadata formats, like qualified Dublin Core and DSpace Intermediate Metadata:
 <ul>
 <li>QDC: <a href="https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=qdc///col_11463_6/900">https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=qdc///col_11463_6/900</a></li>
 <li>DIM: <a href="https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=dim///col_11463_6/900">https://data.cifor.org/dspace/oai/request?verb=ListRecords&amp;resumptionToken=dim///col_11463_6/900</a></li>
 </ul>
 </li>
-<li>Looking at one of CGSpace's items in OAI it doesn't seem that metadata fields other than those in the DC schema are exported:
+<li>Looking at one of CGSpace&rsquo;s items in OAI it doesn&rsquo;t seem that metadata fields other than those in the DC schema are exported:
 <ul>
 <li><a href="https://cgspace.cgiar.org/handle/10568/33346?show=full">https://cgspace.cgiar.org/handle/10568/33346?show=full</a></li>
 <li><a href="https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=dim&amp;set=col_10568_68619">https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=dim&amp;set=col_10568_68619</a></li>
 </ul>
 </li>
-<li>Side note: WTF, I just saw an item on CGSpace's OAI that is using <code>dc.cplace.country</code> and <code>dc.rplace.region</code>, which we stopped using in 2016 after the metadata migrations:</li>
+<li>Side note: WTF, I just saw an item on CGSpace&rsquo;s OAI that is using <code>dc.cplace.country</code> and <code>dc.rplace.region</code>, which we stopped using in 2016 after the metadata migrations:</li>
 </ul>
 <p><img src="/cgspace-notes/2017/04/cplace.png" alt="stale metadata in OAI"></p>
 <ul>
-<li>The particular item is <a href="http://hdl.handle.net/10568/6">10568/6</a> and, for what it's worth, the stale metadata only appears in the OAI view:
+<li>The particular item is <a href="http://hdl.handle.net/10568/6">10568/6</a> and, for what it&rsquo;s worth, the stale metadata only appears in the OAI view:
 <ul>
 <li>XMLUI: <a href="https://cgspace.cgiar.org/handle/10568/6?show=full">https://cgspace.cgiar.org/handle/10568/6?show=full</a></li>
 <li>OAI: <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6">https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=dim&amp;identifier=oai:cgspace.cgiar.org:10568/6</a></li>
 </ul>
 </li>
-<li>I don't see these fields anywhere in our source code or the database's metadata registry, so maybe it's just a cache issue</li>
+<li>I don&rsquo;t see these fields anywhere in our source code or the database&rsquo;s metadata registry, so maybe it&rsquo;s just a cache issue</li>
 <li>I will have to check the OAI cron scripts on DSpace Test, and then run them on CGSpace</li>
 <li>Running <code>dspace oai import</code> and <code>dspace oai clean-cache</code> have zero effect, but this seems to rebuild the cache from scratch:</li>
 </ul>
@@ -263,7 +263,7 @@ OAI 2.0 manager action ended. It took 829 seconds.
 </code></pre><ul>
 <li>After reading some threads on the DSpace mailing list, I see that <code>clean-cache</code> is actually only for caching <em>responses</em>, ie to client requests in the OAI web application</li>
 <li>These are stored in <code>[dspace]/var/oai/requests/</code></li>
-<li>The import command should theoretically catch situations like this where an item's metadata was updated, but in this case we changed the metadata schema and it doesn't seem to catch it (could be a bug!)</li>
+<li>The import command should theoretically catch situations like this where an item&rsquo;s metadata was updated, but in this case we changed the metadata schema and it doesn&rsquo;t seem to catch it (could be a bug!)</li>
 <li>Attempting a full rebuild of OAI on CGSpace:</li>
 </ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
@@ -284,15 +284,15 @@ sys     1m29.310s
 </ul>
 <h2 id="2017-04-13">2017-04-13</h2>
 <ul>
-<li>Checking the <a href="https://dspacetest.cgiar.org/handle/11463/947?show=full">CIFOR item on DSpace Test</a>, it still doesn't have the new metadata</li>
+<li>Checking the <a href="https://dspacetest.cgiar.org/handle/11463/947?show=full">CIFOR item on DSpace Test</a>, it still doesn&rsquo;t have the new metadata</li>
 <li>The collection status shows this message from the harvester:</li>
 </ul>
 <blockquote>
 <p>Last Harvest Result: OAI server did not contain any updates on 2017-04-13 02:19:47.964</p>
 </blockquote>
 <ul>
-<li>I don't know why there were no updates detected, so I will reset and reimport the collection</li>
-<li>Usman has set up a custom crosswalk called <code>dimcg</code> that now shows CG and CIFOR metadata namespaces, but we can't use it because DSpace can only harvest DIM by default (from the harvesting user interface)</li>
+<li>I don&rsquo;t know why there were no updates detected, so I will reset and reimport the collection</li>
+<li>Usman has set up a custom crosswalk called <code>dimcg</code> that now shows CG and CIFOR metadata namespaces, but we can&rsquo;t use it because DSpace can only harvest DIM by default (from the harvesting user interface)</li>
 <li>Also worth noting that the REST interface exposes all fields in the item, including CG and CIFOR fields: <a href="https://data.cifor.org/dspace/rest/items/944?expand=metadata">https://data.cifor.org/dspace/rest/items/944?expand=metadata</a></li>
 <li>After re-importing the CIFOR collection it looks <em>very</em> good!</li>
 <li>It seems like they have done a full metadata migration with <code>dc.date.issued</code> and <code>cg.coverage.country</code> etc</li>
@@ -347,10 +347,10 @@ $ rails -s
 <li>Looking at the same item in XMLUI, the countries are not capitalized: <a href="https://data.cifor.org/dspace/xmlui/handle/11463/947?show=full">https://data.cifor.org/dspace/xmlui/handle/11463/947?show=full</a></li>
 <li>So it seems he did it in the crosswalk!</li>
 <li>Keep working on Ansible stuff for deploying the CKM REST API</li>
-<li>We can use systemd's <code>Environment</code> stuff to pass the database parameters to Rails</li>
+<li>We can use systemd&rsquo;s <code>Environment</code> stuff to pass the database parameters to Rails</li>
 <li>Abenet noticed that the &ldquo;Workflow Statistics&rdquo; option is missing now, but we have screenshots from a presentation in 2016 when it was there</li>
 <li>I filed a ticket with Atmire</li>
-<li>Looking at 933 CIAT records from Sisay, he's having problems creating a SAF bundle to import to DSpace Test</li>
+<li>Looking at 933 CIAT records from Sisay, he&rsquo;s having problems creating a SAF bundle to import to DSpace Test</li>
 <li>I started by looking at his CSV in OpenRefine, and I see there a <em>bunch</em> of fields with whitespace issues that I cleaned up:</li>
 </ul>
 <pre><code>value.replace(&quot; ||&quot;,&quot;||&quot;).replace(&quot;|| &quot;,&quot;||&quot;).replace(&quot; || &quot;,&quot;||&quot;)
@@ -363,8 +363,8 @@ $ rails -s
 </ul>
 <pre><code>value.split('/')[-1].replace(/#.*$/,&quot;&quot;)
 </code></pre><ul>
-<li>The <code>replace</code> part is because some URLs have an anchor like <code>#page=14</code> which we obviously don't want on the filename</li>
-<li>Also, we need to only use the PDF on the item corresponding with page 1, so we don't end up with literally hundreds of duplicate PDFs</li>
+<li>The <code>replace</code> part is because some URLs have an anchor like <code>#page=14</code> which we obviously don&rsquo;t want on the filename</li>
+<li>Also, we need to only use the PDF on the item corresponding with page 1, so we don&rsquo;t end up with literally hundreds of duplicate PDFs</li>
 <li>Alternatively, I could export each page to a standalone PDF&hellip;</li>
 </ul>
 <h2 id="2017-04-20">2017-04-20</h2>
@@ -399,8 +399,8 @@ $ wc -l /tmp/ciat
 <li>Run system updates on CGSpace and reboot server</li>
 <li>This includes switching nginx to using upstream with keepalive instead of direct <code>proxy_pass</code></li>
 <li>Re-deploy CGSpace to latest <code>5_x-prod</code>, including the PABRA and RTB XMLUI themes, as well as the PDF processing and CMYK changes</li>
-<li>More work on Ansible infrastructure stuff for Tsega's CKM DSpace REST API</li>
-<li>I'm going to start re-processing all the PDF thumbnails on CGSpace, one community at a time:</li>
+<li>More work on Ansible infrastructure stuff for Tsega&rsquo;s CKM DSpace REST API</li>
+<li>I&rsquo;m going to start re-processing all the PDF thumbnails on CGSpace, one community at a time:</li>
 </ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace filter-media -f -v -i 10568/71249 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
@@ -471,11 +471,11 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: this Index
 <pre><code>[dspace]/bin/dspace index-discovery
 </code></pre><ul>
 <li>Now everything is ok</li>
-<li>Finally finished manually running the cleanup task over and over and null'ing the conflicting IDs:</li>
+<li>Finally finished manually running the cleanup task over and over and null&rsquo;ing the conflicting IDs:</li>
 </ul>
 <pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (435, 1132, 1136, 1220, 1236, 3002, 3255, 5322, 5098, 5982, 5897, 6245, 6184, 4927, 6070, 4925, 6888, 7368, 7136, 7294, 7698, 7864, 10799, 10839, 11765, 13241, 13634, 13642, 14127, 14146, 15582, 16116, 16254, 17136, 17486, 17824, 18098, 22091, 22149, 22206, 22449, 22548, 22559, 22454, 22253, 22553, 22897, 22941, 30262, 33657, 39796, 46943, 56561, 58237, 58739, 58734, 62020, 62535, 64149, 64672, 66988, 66919, 76005, 79780, 78545, 81078, 83620, 84492, 92513, 93915);
 </code></pre><ul>
-<li>Now running the cleanup script on DSpace Test and already seeing 11GB freed from the assetstore—it's likely we haven't had a cleanup task complete successfully in years&hellip;</li>
+<li>Now running the cleanup script on DSpace Test and already seeing 11GB freed from the assetstore—it&rsquo;s likely we haven&rsquo;t had a cleanup task complete successfully in years&hellip;</li>
 </ul>
 <h2 id="2017-04-25">2017-04-25</h2>
 <ul>
@@ -548,7 +548,7 @@ Caused by: java.lang.ClassNotFoundException: org.dspace.statistics.content.DSpac
 <h2 id="2017-04-26">2017-04-26</h2>
 <ul>
 <li>The size of the CGSpace database dump went from 111MB to 96MB, not sure about actual database size though</li>
-<li>Update RVM's Ruby from 2.3.0 to 2.4.0 on DSpace Test:</li>
+<li>Update RVM&rsquo;s Ruby from 2.3.0 to 2.4.0 on DSpace Test:</li>
 </ul>
 <pre><code>$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 $ \curl -sSL https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer | bash -s stable --ruby

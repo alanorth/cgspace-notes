@@ -33,7 +33,7 @@ During the mvn package stage on the 5.8 branch I kept getting issues with java r
 
 There is insufficient memory for the Java Runtime Environment to continue.
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -63,7 +63,7 @@ There is insufficient memory for the Java Runtime Environment to continue.
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -110,7 +110,7 @@ There is insufficient memory for the Java Runtime Environment to continue.
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-07/">July, 2018</a></h2>
     <p class="blog-post-meta"><time datetime="2018-07-01T12:56:54&#43;03:00">Sun Jul 01, 2018</time> by Alan Orth in 
-<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
 
 
 </p>
@@ -217,7 +217,7 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 <h2 id="2018-07-04">2018-07-04</h2>
 <ul>
 <li>I verified that the autowire error indeed only occurs on Tomcat 8.5, but the application works fine on Tomcat 7</li>
-<li>I have raised this in the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 compatibility ticket on Atmire's tracker</a></li>
+<li>I have raised this in the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 compatibility ticket on Atmire&rsquo;s tracker</a></li>
 <li>Abenet wants me to add &ldquo;United Kingdom government&rdquo; to the sponsors on CGSpace so I created a ticket to track it (<a href="https://github.com/ilri/DSpace/issues/381">#381</a>)</li>
 <li>Also, Udana wants me to add &ldquo;Enhancing Sustainability Across Agricultural Systems&rdquo; to the WLE Phase II research themes so I created a ticket to track that (<a href="https://github.com/ilri/DSpace/issues/382">#382</a>)</li>
 <li>I need to try to finish this DSpace 5.8 business first because I have too many branches with cherry-picks going on right now!</li>
@@ -225,13 +225,13 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 <h2 id="2018-07-06">2018-07-06</h2>
 <ul>
 <li>CCAFS want me to add &ldquo;PII-FP2_MSCCCAFS&rdquo; to their Phase II project tags on CGSpace (<a href="https://github.com/ilri/DSpace/issues/383">#383</a>)</li>
-<li>I'll do it in a batch with all the other metadata updates next week</li>
+<li>I&rsquo;ll do it in a batch with all the other metadata updates next week</li>
 </ul>
 <h2 id="2018-07-08">2018-07-08</h2>
 <ul>
-<li>I was tempted to do the Linode instance upgrade on CGSpace (linode18), but after looking closely at the system backups I noticed that Solr isn't being backed up to S3</li>
-<li>I apparently noticed this—and fixed it!—in <a href="/cgspace-notes/2016-07/">2016-07</a>, but it doesn't look like the backup has been updated since then!</li>
-<li>It looks like I added Solr to the <code>backup_to_s3.sh</code> script, but that script is not even being used (<code>s3cmd</code> is run directly from root's crontab)</li>
+<li>I was tempted to do the Linode instance upgrade on CGSpace (linode18), but after looking closely at the system backups I noticed that Solr isn&rsquo;t being backed up to S3</li>
+<li>I apparently noticed this—and fixed it!—in <a href="/cgspace-notes/2016-07/">2016-07</a>, but it doesn&rsquo;t look like the backup has been updated since then!</li>
+<li>It looks like I added Solr to the <code>backup_to_s3.sh</code> script, but that script is not even being used (<code>s3cmd</code> is run directly from root&rsquo;s crontab)</li>
 <li>For now I have just initiated a manual S3 backup of the Solr data:</li>
 </ul>
 <pre><code># s3cmd sync --delete-removed /home/backup/solr/ s3://cgspace.cgiar.org/solr/
@@ -245,16 +245,16 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 <pre><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; /tmp/2018-07-08-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2018-07-08-orcids.txt -o /tmp/2018-07-08-names.txt -d
 </code></pre><ul>
-<li>But after comparing to the existing list of names I didn't see much change, so I just ignored it</li>
+<li>But after comparing to the existing list of names I didn&rsquo;t see much change, so I just ignored it</li>
 </ul>
 <h2 id="2018-07-09">2018-07-09</h2>
 <ul>
-<li>Uptime Robot said that CGSpace was down for two minutes early this morning but I don't see anything in Tomcat logs or dmesg</li>
-<li>Uptime Robot said that CGSpace was down for two minutes again later in the day, and this time I saw a memory error in Tomcat's <code>catalina.out</code>:</li>
+<li>Uptime Robot said that CGSpace was down for two minutes early this morning but I don&rsquo;t see anything in Tomcat logs or dmesg</li>
+<li>Uptime Robot said that CGSpace was down for two minutes again later in the day, and this time I saw a memory error in Tomcat&rsquo;s <code>catalina.out</code>:</li>
 </ul>
 <pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-557&quot; java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
-<li>I'm not sure if it's the same error, but I see this in DSpace's <code>solr.log</code>:</li>
+<li>I&rsquo;m not sure if it&rsquo;s the same error, but I see this in DSpace&rsquo;s <code>solr.log</code>:</li>
 </ul>
 <pre><code>2018-07-09 06:25:09,913 ERROR org.apache.solr.servlet.SolrDispatchFilter @ null:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
@@ -284,17 +284,17 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2018-07-09
 4435
 </code></pre><ul>
-<li><code>95.108.181.88</code> appears to be Yandex, so I dunno why it's creating so many sessions, as its user agent should match Tomcat's Crawler Session Manager Valve</li>
-<li><code>70.32.83.92</code> is on MediaTemple but I'm not sure who it is. They are mostly hitting REST so I guess that's fine</li>
-<li><code>35.227.26.162</code> doesn't declare a user agent and is on Google Cloud, so I should probably mark them as a bot in nginx</li>
+<li><code>95.108.181.88</code> appears to be Yandex, so I dunno why it&rsquo;s creating so many sessions, as its user agent should match Tomcat&rsquo;s Crawler Session Manager Valve</li>
+<li><code>70.32.83.92</code> is on MediaTemple but I&rsquo;m not sure who it is. They are mostly hitting REST so I guess that&rsquo;s fine</li>
+<li><code>35.227.26.162</code> doesn&rsquo;t declare a user agent and is on Google Cloud, so I should probably mark them as a bot in nginx</li>
 <li><code>178.154.200.38</code> is Yandex again</li>
 <li><code>207.46.13.47</code> is Bing</li>
 <li><code>157.55.39.234</code> is Bing</li>
 <li><code>137.108.70.6</code> is our old friend CORE bot</li>
-<li><code>50.116.102.77</code> doesn't declare a user agent and lives on HostGator, but mostly just hits the REST API so I guess that's fine</li>
+<li><code>50.116.102.77</code> doesn&rsquo;t declare a user agent and lives on HostGator, but mostly just hits the REST API so I guess that&rsquo;s fine</li>
 <li><code>40.77.167.84</code> is Bing again</li>
 <li>Interestingly, the first time that I see <code>35.227.26.162</code> was on 2018-06-08</li>
-<li>I've added <code>35.227.26.162</code> to the bot tagging logic in the nginx vhost</li>
+<li>I&rsquo;ve added <code>35.227.26.162</code> to the bot tagging logic in the nginx vhost</li>
 </ul>
 <h2 id="2018-07-10">2018-07-10</h2>
 <ul>
@@ -303,7 +303,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <li>Add &ldquo;PII-FP2_MSCCCAFS&rdquo; to CCAFS Phase II Project Tags (<a href="https://github.com/ilri/DSpace/issues/383">#383</a>)</li>
 <li>Add journal title (dc.source) to Discovery search filters (<a href="https://github.com/ilri/DSpace/issues/384">#384</a>)</li>
 <li>All were tested and merged to the <code>5_x-prod</code> branch and will be deployed on CGSpace this coming weekend when I do the Linode server upgrade</li>
-<li>I need to get them onto the 5.8 testing branch too, either via cherry-picking or by rebasing after we finish testing Atmire's 5.8 pull request (<a href="https://github.com/ilri/DSpace/pull/378">#378</a>)</li>
+<li>I need to get them onto the 5.8 testing branch too, either via cherry-picking or by rebasing after we finish testing Atmire&rsquo;s 5.8 pull request (<a href="https://github.com/ilri/DSpace/pull/378">#378</a>)</li>
 <li>Linode sent an alert about CPU usage on CGSpace again, about 13:00UTC</li>
 <li>These are the top ten users in the last two hours:</li>
 </ul>
@@ -324,7 +324,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <pre><code>213.139.52.250 - - [10/Jul/2018:13:39:41 +0000] &quot;GET /bitstream/handle/10568/75668/dryad.png HTTP/2.0&quot; 200 53750 &quot;http://localhost:4200/&quot; &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36&quot;
 </code></pre><ul>
 <li>He said there was a bug that caused his app to request a bunch of invalid URLs</li>
-<li>I'll have to keep and eye on this and see how their platform evolves</li>
+<li>I&rsquo;ll have to keep and eye on this and see how their platform evolves</li>
 </ul>
 <h2 id="2018-07-11">2018-07-11</h2>
 <ul>
@@ -365,9 +365,9 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
      96 40.77.167.90
    7075 208.110.72.10
 </code></pre><ul>
-<li>We have never seen <code>208.110.72.10</code> before&hellip; so that's interesting!</li>
+<li>We have never seen <code>208.110.72.10</code> before&hellip; so that&rsquo;s interesting!</li>
 <li>The user agent for these requests is: Pcore-HTTP/v0.44.0</li>
-<li>A brief Google search doesn't turn up any information about what this bot is, but lots of users complaining about it</li>
+<li>A brief Google search doesn&rsquo;t turn up any information about what this bot is, but lots of users complaining about it</li>
 <li>This bot does make a lot of requests all through the day, although it seems to re-use its Tomcat session:</li>
 </ul>
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
@@ -387,7 +387,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 208.110.72.10 - - [12/Jul/2018:00:22:28 +0000] &quot;GET /robots.txt HTTP/1.1&quot; 200 1301 &quot;https://cgspace.cgiar.org/robots.txt&quot; &quot;Pcore-HTTP/v0.44.0&quot;
 </code></pre><ul>
 <li>So this bot is just like Baiduspider, and I need to add it to the nginx rate limiting</li>
-<li>I'll also add it to Tomcat's Crawler Session Manager Valve to force the re-use of a common Tomcat sesssion for all crawlers just in case</li>
+<li>I&rsquo;ll also add it to Tomcat&rsquo;s Crawler Session Manager Valve to force the re-use of a common Tomcat sesssion for all crawlers just in case</li>
 <li>Generate a list of all affiliations in CGSpace to send to Mohamed Salem to compare with the list on MEL (sorting the list by most occurrences):</li>
 </ul>
 <pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv header
@@ -406,7 +406,7 @@ COPY 4518
 </code></pre><h2 id="2018-07-15">2018-07-15</h2>
 <ul>
 <li>Run all system updates on CGSpace, add latest metadata changes from last week, and start the Linode instance upgrade</li>
-<li>After the upgrade I see we have more disk space available in the instance's dashboard, so I shut the instance down and resized it from 392GB to 650GB</li>
+<li>After the upgrade I see we have more disk space available in the instance&rsquo;s dashboard, so I shut the instance down and resized it from 392GB to 650GB</li>
 <li>The resize was very quick (less than one minute) and after booting the instance back up I now have 631GB for the root filesystem (with 267GB available)!</li>
 <li>Peter had asked a question about how mapped items are displayed in the Altmetric dashboard</li>
 <li>For example, <a href="10568/82810">10568/82810</a> is mapped to four collections, but only shows up in one &ldquo;department&rdquo; in their dashboard</li>
@@ -452,9 +452,9 @@ $ ./resolve-orcids.py -i /tmp/2018-07-15-orcid-ids.txt -o /tmp/2018-07-15-resolv
 <ul>
 <li>ICARDA sent me another refined list of ORCID iDs so I sorted and formatted them into our controlled vocabulary again</li>
 <li>Participate in call with IWMI and WLE to discuss Altmetric, CGSpace, and social media</li>
-<li>I told them that they should try to be including the Handle link on their social media shares because that's the only way to get Altmetric to notice them and associate them with their DOIs</li>
+<li>I told them that they should try to be including the Handle link on their social media shares because that&rsquo;s the only way to get Altmetric to notice them and associate them with their DOIs</li>
 <li>I suggested that we should have a wider meeting about this, and that I would post that on Yammer</li>
-<li>I was curious about how and when Altmetric harvests the OAI, so I looked in nginx's OAI log</li>
+<li>I was curious about how and when Altmetric harvests the OAI, so I looked in nginx&rsquo;s OAI log</li>
 <li>For every day in the past week I only see about 50 to 100 requests per day, but then about nine days ago I see 1500 requsts</li>
 <li>In there I see two bots making about 750 requests each, and this one is probably Altmetric:</li>
 </ul>
@@ -494,7 +494,7 @@ X-XSS-Protection: 1; mode=block
 <li>Post a note on Yammer about Altmetric and Handle best practices</li>
 <li>Update PostgreSQL JDBC jar from 42.2.2 to 42.2.4 in the <a href="https://github.com/ilri/rmg-ansible-public">RMG Ansible playbooks</a></li>
 <li>IWMI asked why all the dates in their <a href="https://cgspace.cgiar.org/open-search/discover?query=dateIssued:2018&amp;scope=10568/16814&amp;sort_by=2&amp;order=DESC&amp;rpp=100&amp;format=rss">OpenSearch RSS feed</a> show up as January 01, 2018</li>
-<li>On closer inspection I notice that many of their items use &ldquo;2018&rdquo; as their <code>dc.date.issued</code>, which is a valid ISO 8601 date but it's not very specific so DSpace assumes it is January 01, 2018 00:00:00&hellip;</li>
+<li>On closer inspection I notice that many of their items use &ldquo;2018&rdquo; as their <code>dc.date.issued</code>, which is a valid ISO 8601 date but it&rsquo;s not very specific so DSpace assumes it is January 01, 2018 00:00:00&hellip;</li>
 <li>I told her that they need to start using more accurate dates for their issue dates</li>
 <li>In the example item I looked at the DOI has a publish date of 2018-03-16, so they should really try to capture that</li>
 </ul>
@@ -507,8 +507,8 @@ X-XSS-Protection: 1; mode=block
 <pre><code>webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
 </code></pre><ul>
 <li>Just because I was curious I made sure that these options are working as expected in DSpace 5.8 on DSpace Test (they are)</li>
-<li>I tested the Atmire Listings and Reports (L&amp;R) module one last time on my local test environment with a new snapshot of CGSpace's database and re-generated Discovery index and it worked fine</li>
-<li>I finally informed Atmire that we're ready to proceed with deploying this to CGSpace and that they should advise whether we should wait about the SNAPSHOT versions in <code>pom.xml</code></li>
+<li>I tested the Atmire Listings and Reports (L&amp;R) module one last time on my local test environment with a new snapshot of CGSpace&rsquo;s database and re-generated Discovery index and it worked fine</li>
+<li>I finally informed Atmire that we&rsquo;re ready to proceed with deploying this to CGSpace and that they should advise whether we should wait about the SNAPSHOT versions in <code>pom.xml</code></li>
 <li>There is no word on the issue I reported with Tomcat 8.5.32 yet, though&hellip;</li>
 </ul>
 <h2 id="2018-07-23">2018-07-23</h2>
@@ -539,7 +539,7 @@ dspace=# select count(text_value) from metadatavalue where resource_type_id=2 an
 </ul>
 <h2 id="2018-07-27">2018-07-27</h2>
 <ul>
-<li>Follow up with Atmire again about the SNAPSHOT versions in our <code>pom.xml</code> because I want to finalize the DSpace 5.8 upgrade soon and I haven't heard from them in a month (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">ticket 560</a>)</li>
+<li>Follow up with Atmire again about the SNAPSHOT versions in our <code>pom.xml</code> because I want to finalize the DSpace 5.8 upgrade soon and I haven&rsquo;t heard from them in a month (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">ticket 560</a>)</li>
 </ul>
 <!-- raw HTML omitted -->
 

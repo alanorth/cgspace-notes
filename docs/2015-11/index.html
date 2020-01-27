@@ -31,7 +31,7 @@ Last week I had increased the limit from 30 to 60, which seemed to help, but now
 $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspace
 78
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -61,7 +61,7 @@ $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspac
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -109,7 +109,7 @@ $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspac
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2015-11/">November, 2015</a></h2>
     <p class="blog-post-meta"><time datetime="2015-11-23T17:00:57&#43;03:00">Mon Nov 23, 2015</time> by Alan Orth in 
 
-<i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
 
 </p>
   </header>
@@ -127,7 +127,7 @@ $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspac
 <h2 id="2015-11-24">2015-11-24</h2>
 <ul>
 <li>CGSpace went down again</li>
-<li>Getting emails from uptimeRobot and uptimeButler that it's down, and Google Webmaster Tools is sending emails that there is an increase in crawl errors</li>
+<li>Getting emails from uptimeRobot and uptimeButler that it&rsquo;s down, and Google Webmaster Tools is sending emails that there is an increase in crawl errors</li>
 <li>Looks like there are still a bunch of idle PostgreSQL connections:</li>
 </ul>
 <pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
@@ -145,9 +145,9 @@ location ~ /(themes|static|aspects/ReportingSuite) {
     try_files $uri @tomcat;
 ...
 </code></pre><ul>
-<li>The document root is relative to the xmlui app, so this gets a 404—I'm not sure why it doesn't pass to <code>@tomcat</code></li>
-<li>Anyways, I can't find any URIs with path <code>/static</code>, and the more important point is to handle all the static theme assets, so we can just remove <code>static</code> from the regex for now (who cares if we can't use nginx to send Etags for OAI CSS!)</li>
-<li>Also, I noticed we aren't setting CSP headers on the static assets, because in nginx headers are inherited in child blocks, but if you use <code>add_header</code> in a child block it doesn't inherit the others</li>
+<li>The document root is relative to the xmlui app, so this gets a 404—I&rsquo;m not sure why it doesn&rsquo;t pass to <code>@tomcat</code></li>
+<li>Anyways, I can&rsquo;t find any URIs with path <code>/static</code>, and the more important point is to handle all the static theme assets, so we can just remove <code>static</code> from the regex for now (who cares if we can&rsquo;t use nginx to send Etags for OAI CSS!)</li>
+<li>Also, I noticed we aren&rsquo;t setting CSP headers on the static assets, because in nginx headers are inherited in child blocks, but if you use <code>add_header</code> in a child block it doesn&rsquo;t inherit the others</li>
 <li>We simply need to add <code>include extra-security.conf;</code> to the above location block (but research and test first)</li>
 <li>We should add WOFF assets to the list of things to set expires for:</li>
 </ul>
@@ -157,7 +157,7 @@ location ~ /(themes|static|aspects/ReportingSuite) {
 </ul>
 <pre><code>location ~ /(themes|aspects/ReportingSuite|aspects/Statistics) {
 </code></pre><ul>
-<li>Need to check <code>/about</code> on CGSpace, as it's blank on my local test server and we might need to add something there</li>
+<li>Need to check <code>/about</code> on CGSpace, as it&rsquo;s blank on my local test server and we might need to add something there</li>
 <li>CGSpace has been up and down all day due to PostgreSQL idle connections (current DSpace pool is 90):</li>
 </ul>
 <pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
@@ -173,7 +173,7 @@ datid | datname  |  pid  | usesysid | usename  | application_name | client_addr 
 ...
 </code></pre><ul>
 <li>There is a relevant Jira issue about this: <a href="https://jira.duraspace.org/browse/DS-1458">https://jira.duraspace.org/browse/DS-1458</a></li>
-<li>It seems there is some sense changing DSpace's default <code>db.maxidle</code> from unlimited (-1) to something like 8 (Tomcat default) or 10 (Confluence default)</li>
+<li>It seems there is some sense changing DSpace&rsquo;s default <code>db.maxidle</code> from unlimited (-1) to something like 8 (Tomcat default) or 10 (Confluence default)</li>
 <li>Change <code>db.maxidle</code> from -1 to 10, reduce <code>db.maxconnections</code> from 90 to 50, and restart postgres and tomcat7</li>
 <li>Also redeploy DSpace Test with a clean sync of CGSpace and mirror these database settings there as well</li>
 <li>Also deploy the nginx fixes for the <code>try_files</code> location block as well as the expires block</li>
@@ -211,8 +211,8 @@ db.statementpool = true
 <pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
 49
 </code></pre><ul>
-<li>Perhaps I need to start drastically increasing the connection limits—like to 300—to see if DSpace's thirst can ever be quenched</li>
-<li>On another note, SUNScholar's notes suggest adjusting some other postgres variables: <a href="http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database">http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database</a></li>
+<li>Perhaps I need to start drastically increasing the connection limits—like to 300—to see if DSpace&rsquo;s thirst can ever be quenched</li>
+<li>On another note, SUNScholar&rsquo;s notes suggest adjusting some other postgres variables: <a href="http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database">http://wiki.lib.sun.ac.za/index.php/SUNScholar/Optimisations/Database</a></li>
 <li>This might help with REST API speed (which I mentioned above and still need to do real tests)</li>
 </ul>
 

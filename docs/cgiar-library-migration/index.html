@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGIAR Library Migration"/>
 <meta name="twitter:description" content="Notes on the migration of the CGIAR Library to CGSpace"/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -46,7 +46,7 @@
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -93,10 +93,10 @@
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/cgiar-library-migration/">CGIAR Library Migration</a></h2>
     <p class="blog-post-meta"><time datetime="2017-09-18T16:38:35&#43;03:00">Mon Sep 18, 2017</time> by Alan Orth in 
-<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
 
 
-<i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/migration" rel="tag">Migration</a>
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/migration" rel="tag">Migration</a>
 
 </p>
   </header>
@@ -122,8 +122,8 @@
 <li><code>SELECT * FROM pg_stat_activity;</code> seems to show ~6 extra connections used by the command line tools during import</li>
 </ul>
 </li>
-<li><input checked="" disabled="" type="checkbox">Temporarily disable nightly <code>index-discovery</code> cron job because the import process will be taking place during some of this time and I don't want them to be competing to update the Solr index</li>
-<li><input checked="" disabled="" type="checkbox">Copy HTTPS certificate key pair from CGIAR Library server's Tomcat keystore:</li>
+<li><input checked="" disabled="" type="checkbox">Temporarily disable nightly <code>index-discovery</code> cron job because the import process will be taking place during some of this time and I don&rsquo;t want them to be competing to update the Solr index</li>
+<li><input checked="" disabled="" type="checkbox">Copy HTTPS certificate key pair from CGIAR Library server&rsquo;s Tomcat keystore:</li>
 </ul>
 <pre><code>$ keytool -list -keystore tomcat.keystore
 $ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
@@ -172,7 +172,7 @@ $ for item in 10947-2527/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aor
 $ dspace packager -s -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83389 10947-1/10947-1.zip
 $ for collection in 10947-1/COLLECTION@10947-*; do dspace packager -s -o ignoreHandle=false -t AIP -e aorth@mjanja.ch -p 10947/1 $collection; done
 $ for item in 10947-1/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
-</code></pre><p>This submits AIP hierarchies recursively (-r) and suppresses errors when an item's parent collection hasn't been created yet—for example, if the item is mapped. The large historic archive (10947/1) is created in several steps because it requires a lot of memory and often crashes.</p>
+</code></pre><p>This submits AIP hierarchies recursively (-r) and suppresses errors when an item&rsquo;s parent collection hasn&rsquo;t been created yet—for example, if the item is mapped. The large historic archive (10947/1) is created in several steps because it requires a lot of memory and often crashes.</p>
 <p><strong>Create new subcommunities and collections for content we reorganized into new hierarchies from the original:</strong></p>
 <ul>
 <li><input checked="" disabled="" type="checkbox">Create <em>CGIAR System Management Board</em> sub-community: <code>10568/83536</code>
@@ -205,11 +205,11 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <pre><code>$ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
 </code></pre><h2 id="post-migration">Post Migration</h2>
 <ul>
-<li><input checked="" disabled="" type="checkbox">Shut down Tomcat and run <code>update-sequences.sql</code> as the system's <code>postgres</code> user</li>
+<li><input checked="" disabled="" type="checkbox">Shut down Tomcat and run <code>update-sequences.sql</code> as the system&rsquo;s <code>postgres</code> user</li>
 <li><input checked="" disabled="" type="checkbox">Remove ingestion overrides from <code>dspace.cfg</code></li>
 <li><input checked="" disabled="" type="checkbox">Reset PostgreSQL <code>max_connections</code> to 183</li>
 <li><input checked="" disabled="" type="checkbox">Enable nightly <code>index-discovery</code> cron job</li>
-<li><input checked="" disabled="" type="checkbox">Adjust CGSpace's <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</li>
+<li><input checked="" disabled="" type="checkbox">Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</li>
 </ul>
 <pre><code>&quot;server_admins&quot; = (
 &quot;300:0.NA/10568&quot;
@@ -225,7 +225,7 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
 )
-</code></pre><p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don't need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
+</code></pre><p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don&rsquo;t need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
 <ul>
 <li><input checked="" disabled="" type="checkbox">Update DNS records:
 <ul>
@@ -235,7 +235,7 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><input checked="" disabled="" type="checkbox">Re-deploy DSpace from freshly built <code>5_x-prod</code> branch</li>
 <li><input checked="" disabled="" type="checkbox">Merge <code>cgiar-library</code> branch to <code>master</code> and re-run ansible nginx templates</li>
 <li><input checked="" disabled="" type="checkbox">Run system updates and reboot server</li>
-<li><input checked="" disabled="" type="checkbox">Switch to Let's Encrypt HTTPS certificates (after DNS is updated and server isn't busy):</li>
+<li><input checked="" disabled="" type="checkbox">Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</li>
 </ul>
 <pre><code>$ sudo systemctl stop nginx
 $ /opt/certbot-auto certonly --standalone -d library.cgiar.org
@@ -251,7 +251,7 @@ $ sudo systemctl start nginx
 <p>After a few rounds of ingesting—possibly with failures—you might end up with inconsistent IDs in the database. In this case, during AIP ingest of a single collection in submit mode (-s):</p>
 <pre><code>org.dspace.content.packager.PackageValidationException: Exception while ingesting 10947-2527/10947-2527.zip, Reason: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;                                    
   Detail: Key (handle_id)=(86227) already exists.
-</code></pre><p>The normal solution is to run the <code>update-sequences.sql</code> script (with Tomcat shut down) but it doesn't seem to work in this case. Finding the maximum <code>handle_id</code> and manually updating the sequence seems to work:</p>
+</code></pre><p>The normal solution is to run the <code>update-sequences.sql</code> script (with Tomcat shut down) but it doesn&rsquo;t seem to work in this case. Finding the maximum <code>handle_id</code> and manually updating the sequence seems to work:</p>
 <pre><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
 dspace=# select setval('handle_seq',86873);
 </code></pre>

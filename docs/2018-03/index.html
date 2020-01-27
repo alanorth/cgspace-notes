@@ -21,7 +21,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
 
 Export a CSV of the IITA community metadata for Martin Mueller
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -51,7 +51,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -98,7 +98,7 @@ Export a CSV of the IITA community metadata for Martin Mueller
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-03/">March, 2018</a></h2>
     <p class="blog-post-meta"><time datetime="2018-03-02T16:07:54&#43;02:00">Fri Mar 02, 2018</time> by Alan Orth in 
-<i class="fa fa-folder" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes" rel="category tag">Notes</a>
 
 
 </p>
@@ -143,7 +143,7 @@ UPDATE 1
 <ul>
 <li>Add CIAT author Mauricio Efren Sotelo Cabrera to controlled vocabulary for ORCID identifiers (<a href="https://github.com/ilri/DSpace/pull/360">#360</a>)</li>
 <li>Help Sisay proof 200 IITA records on DSpace Test</li>
-<li>Finally import Udana's 24 items to <a href="https://cgspace.cgiar.org/handle/10568/36185">IWMI Journal Articles</a> on CGSpace</li>
+<li>Finally import Udana&rsquo;s 24 items to <a href="https://cgspace.cgiar.org/handle/10568/36185">IWMI Journal Articles</a> on CGSpace</li>
 <li>Skype with James Stapleton to discuss CGSpace, ILRI website, CKM staff issues, etc</li>
 </ul>
 <h2 id="2018-03-08">2018-03-08</h2>
@@ -189,14 +189,14 @@ dspacetest=# select distinct text_lang from metadatavalue where resource_type_id
  es
 (9 rows)
 </code></pre><ul>
-<li>On second inspection it looks like <code>dc.description.provenance</code> fields use the text_lang &ldquo;en&rdquo; so that's probably why there are over 100,000 fields changed&hellip;</li>
+<li>On second inspection it looks like <code>dc.description.provenance</code> fields use the text_lang &ldquo;en&rdquo; so that&rsquo;s probably why there are over 100,000 fields changed&hellip;</li>
 <li>If I skip that, there are about 2,000, which seems more reasonably like the amount of fields users have edited manually, or fucked up during CSV import, etc:</li>
 </ul>
 <pre><code>dspace=# update metadatavalue set text_lang='en_US' where resource_type_id=2 and text_lang in ('EN','En','en_','EN_US','en_U','eng');
 UPDATE 2309
 </code></pre><ul>
 <li>I will apply this on CGSpace right now</li>
-<li>In other news, I was playing with adding ORCID identifiers to a dump of CIAT's community via CSV in OpenRefine</li>
+<li>In other news, I was playing with adding ORCID identifiers to a dump of CIAT&rsquo;s community via CSV in OpenRefine</li>
 <li>Using a series of filters, flags, and GREL expressions to isolate items for a certain author, I figured out how to add ORCID identifiers to the <code>cg.creator.id</code> field</li>
 <li>For example, a GREL expression in a custom text facet to get all items with <code>dc.contributor.author[en_US]</code> of a certain author with several name variations (this is how you use a logical OR in OpenRefine):</li>
 </ul>
@@ -206,7 +206,7 @@ UPDATE 2309
 </ul>
 <pre><code>if(isBlank(value), &quot;Hernan Ceballos: 0000-0002-8744-7918&quot;, value + &quot;||Hernan Ceballos: 0000-0002-8744-7918&quot;)
 </code></pre><ul>
-<li>One thing that bothers me is that this won't honor author order</li>
+<li>One thing that bothers me is that this won&rsquo;t honor author order</li>
 <li>It might be better to do batches of these in PostgreSQL with a script that takes the <code>place</code> column of an author into account when setting the <code>cg.creator.id</code></li>
 <li>I wrote a Python script to read the author names and ORCID identifiers from CSV and create matching <code>cg.creator.id</code> fields: <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers-csv.py </a></li>
 <li>The CSV should have two columns: author name and ORCID identifier:</li>
@@ -215,13 +215,13 @@ UPDATE 2309
 &quot;Orth, Alan&quot;,Alan S. Orth: 0000-0002-1735-7458
 &quot;Orth, A.&quot;,Alan S. Orth: 0000-0002-1735-7458
 </code></pre><ul>
-<li>I didn't integrate the ORCID API lookup for author names in this script for now because I was only interested in &ldquo;tagging&rdquo; old items for a few given authors</li>
-<li>I added ORCID identifers for 187 items by CIAT's Hernan Ceballos, because that is what Elizabeth was trying to do manually!</li>
+<li>I didn&rsquo;t integrate the ORCID API lookup for author names in this script for now because I was only interested in &ldquo;tagging&rdquo; old items for a few given authors</li>
+<li>I added ORCID identifers for 187 items by CIAT&rsquo;s Hernan Ceballos, because that is what Elizabeth was trying to do manually!</li>
 <li>Also, I decided to add ORCID identifiers for all records from Peter, Abenet, and Sisay as well</li>
 </ul>
 <h2 id="2018-03-09">2018-03-09</h2>
 <ul>
-<li>Give James Stapleton input on Sisay's KRAs</li>
+<li>Give James Stapleton input on Sisay&rsquo;s KRAs</li>
 <li>Create a pull request to disable ORCID authority integration for <code>dc.contributor.author</code> in the submission forms and XMLUI display (<a href="https://github.com/ilri/DSpace/pull/363">#363</a>)</li>
 </ul>
 <h2 id="2018-03-11">2018-03-11</h2>
@@ -240,12 +240,12 @@ g/jspui/listings-and-reports
 
 org.apache.jasper.JasperException: java.lang.NullPointerException
 </code></pre><ul>
-<li>Looks like I needed to remove the Humidtropics subject from Listings and Reports because it was looking for the terms and couldn't find them</li>
-<li>I made a quick fix and it's working now (<a href="https://github.com/ilri/DSpace/pull/364">#364</a>)</li>
+<li>Looks like I needed to remove the Humidtropics subject from Listings and Reports because it was looking for the terms and couldn&rsquo;t find them</li>
+<li>I made a quick fix and it&rsquo;s working now (<a href="https://github.com/ilri/DSpace/pull/364">#364</a>)</li>
 </ul>
 <h2 id="2018-03-12">2018-03-12</h2>
 <ul>
-<li>Increase upload size on CGSpace's nginx config to 85MB so Sisay can upload some data</li>
+<li>Increase upload size on CGSpace&rsquo;s nginx config to 85MB so Sisay can upload some data</li>
 </ul>
 <h2 id="2018-03-13">2018-03-13</h2>
 <ul>
@@ -269,7 +269,7 @@ org.apache.jasper.JasperException: java.lang.NullPointerException
 <h2 id="2018-03-15">2018-03-15</h2>
 <ul>
 <li>Help Abenet troubleshoot the Listings and Reports issue again</li>
-<li>It looks like it's an issue with the layouts, if you create a new layout that only has one type (<code>dc.identifier.citation</code>):</li>
+<li>It looks like it&rsquo;s an issue with the layouts, if you create a new layout that only has one type (<code>dc.identifier.citation</code>):</li>
 </ul>
 <p><img src="/cgspace-notes/2018/03/layout-only-citation.png" alt="Listing and Reports layout"></p>
 <ul>
@@ -286,7 +286,7 @@ org.apache.jasper.JasperException: java.lang.NullPointerException
 <ul>
 <li>ICT made the DNS updates for dspacetest.cgiar.org late last night</li>
 <li>I have removed the old server (linode02 aka linode578611) in favor of linode19 aka linode6624164</li>
-<li>Looking at the CRP subjects on CGSpace I see there is one blank one so I'll just fix it:</li>
+<li>Looking at the CRP subjects on CGSpace I see there is one blank one so I&rsquo;ll just fix it:</li>
 </ul>
 <pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id=230 and text_value='';
 </code></pre><ul>
@@ -305,7 +305,7 @@ COPY 21
 <ul>
 <li>Tezira has been having problems accessing CGSpace from the ILRI Nairobi campus since last week</li>
 <li>She is getting an HTTPS error apparently</li>
-<li>It's working outside, and Ethiopian users seem to be having no issues so I've asked ICT to have a look</li>
+<li>It&rsquo;s working outside, and Ethiopian users seem to be having no issues so I&rsquo;ve asked ICT to have a look</li>
 <li>CGSpace crashed this morning for about seven minutes and Dani restarted Tomcat</li>
 <li>Around that time there were an increase of SQL errors:</li>
 </ul>
@@ -313,7 +313,7 @@ COPY 21
 ...
 2018-03-19 09:10:54,862 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL query singleTable Error -
 </code></pre><ul>
-<li>But these errors, I don't even know what they mean, because a handful of them happen every day:</li>
+<li>But these errors, I don&rsquo;t even know what they mean, because a handful of them happen every day:</li>
 </ul>
 <pre><code>$ grep -c 'ERROR org.dspace.storage.rdbms.DatabaseManager' dspace.log.2018-03-1*
 dspace.log.2018-03-10:13
@@ -327,7 +327,7 @@ dspace.log.2018-03-17:13
 dspace.log.2018-03-18:15
 dspace.log.2018-03-19:90
 </code></pre><ul>
-<li>There wasn't even a lot of traffic at the time (8–9 AM):</li>
+<li>There wasn&rsquo;t even a lot of traffic at the time (8–9 AM):</li>
 </ul>
 <pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Mar/2018:0[89]:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
      92 40.77.167.197
@@ -341,7 +341,7 @@ dspace.log.2018-03-19:90
     207 104.196.152.243
     294 54.198.169.202
 </code></pre><ul>
-<li>Well there is a hint in Tomcat's <code>catalina.out</code>:</li>
+<li>Well there is a hint in Tomcat&rsquo;s <code>catalina.out</code>:</li>
 </ul>
 <pre><code>Mon Mar 19 09:05:28 UTC 2018 | Query:id: 92032 AND type:2
 Exception in thread &quot;http-bio-127.0.0.1-8081-exec-280&quot; java.lang.OutOfMemoryError: Java heap space
@@ -354,7 +354,7 @@ Exception in thread &quot;http-bio-127.0.0.1-8081-exec-280&quot; java.lang.OutOf
 <li>Magdalena from CCAFS wrote to ask about one record that has a bunch of metadata missing in her Listings and Reports export</li>
 <li>It appears to be this one: <a href="https://cgspace.cgiar.org/handle/10568/83473?show=full">https://cgspace.cgiar.org/handle/10568/83473?show=full</a></li>
 <li>The title is &ldquo;Untitled&rdquo; and there is some metadata but indeed the citation is missing</li>
-<li>I don't know what would cause that</li>
+<li>I don&rsquo;t know what would cause that</li>
 </ul>
 <h2 id="2018-03-20">2018-03-20</h2>
 <ul>
@@ -367,7 +367,7 @@ org.springframework.web.util.NestedServletException: Handler processing failed; 
 </code></pre><ul>
 <li>I have no idea why it crashed</li>
 <li>I ran all system updates and rebooted it</li>
-<li>Abenet told me that one of Lance Robinson's ORCID iDs on CGSpace is incorrect</li>
+<li>Abenet told me that one of Lance Robinson&rsquo;s ORCID iDs on CGSpace is incorrect</li>
 <li>I will remove it from the controlled vocabulary (<a href="https://github.com/ilri/DSpace/pull/367">#367</a>) and update any items using the old one:</li>
 </ul>
 <pre><code>dspace=# update metadatavalue set text_value='Lance W. Robinson: 0000-0002-5224-8644' where resource_type_id=2 and metadata_field_id=240 and text_value like '%0000-0002-6344-195X%';
@@ -406,7 +406,7 @@ java.lang.IllegalArgumentException: No choices plugin was configured for  field 
 <ul>
 <li>Looks like the indexing gets confused that there is still data in the <code>authority</code> column</li>
 <li>Unfortunately this causes those items to simply not be indexed, which users noticed because item counts were cut in half and old items showed up in RSS!</li>
-<li>Since we've migrated the ORCID identifiers associated with the authority data to the <code>cg.creator.id</code> field we can nullify the authorities remaining in the database:</li>
+<li>Since we&rsquo;ve migrated the ORCID identifiers associated with the authority data to the <code>cg.creator.id</code> field we can nullify the authorities remaining in the database:</li>
 </ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">dspace<span style="color:#f92672">=</span><span style="color:#f92672">#</span> <span style="color:#66d9ef">UPDATE</span> metadatavalue <span style="color:#66d9ef">SET</span> authority<span style="color:#f92672">=</span><span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">WHERE</span> resource_type_id<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">AND</span> metadata_field_id<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">AND</span> authority <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>;
 <span style="color:#66d9ef">UPDATE</span> <span style="color:#ae81ff">195463</span>
@@ -417,8 +417,8 @@ java.lang.IllegalArgumentException: No choices plugin was configured for  field 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">dspace<span style="color:#f92672">=</span><span style="color:#f92672">#</span> <span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">copy</span> (<span style="color:#66d9ef">select</span> <span style="color:#66d9ef">distinct</span> text_value, <span style="color:#66d9ef">count</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">count</span> <span style="color:#66d9ef">from</span> metadatavalue <span style="color:#66d9ef">where</span> metadata_field_id <span style="color:#f92672">=</span> (<span style="color:#66d9ef">select</span> metadata_field_id <span style="color:#66d9ef">from</span> metadatafieldregistry <span style="color:#66d9ef">where</span> element <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">contributor</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">and</span> qualifier <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">author</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">AND</span> resource_type_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> text_value <span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> <span style="color:#66d9ef">count</span> <span style="color:#66d9ef">desc</span>) <span style="color:#66d9ef">to</span> <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>authors.csv <span style="color:#66d9ef">with</span> csv header;
 <span style="color:#66d9ef">COPY</span> <span style="color:#ae81ff">56156</span>
 </code></pre></div><ul>
-<li>Afterwards we'll want to do some batch tagging of ORCID identifiers to these names</li>
-<li>CGSpace crashed again this afternoon, I'm not sure of the cause but there are a lot of SQL errors in the DSpace log:</li>
+<li>Afterwards we&rsquo;ll want to do some batch tagging of ORCID identifiers to these names</li>
+<li>CGSpace crashed again this afternoon, I&rsquo;m not sure of the cause but there are a lot of SQL errors in the DSpace log:</li>
 </ul>
 <pre><code>2018-03-21 15:11:08,166 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error - 
 java.sql.SQLException: Connection has already been closed.
@@ -444,11 +444,11 @@ java.lang.OutOfMemoryError: Java heap space
 <pre><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
 319
 </code></pre><ul>
-<li>I guess we need to give it more RAM because it now has CGSpace's large Solr core</li>
+<li>I guess we need to give it more RAM because it now has CGSpace&rsquo;s large Solr core</li>
 <li>I will increase the memory from 3072m to 4096m</li>
 <li>Update <a href="https://github.com/ilri/rmg-ansible-public">Ansible playbooks</a> to use <a href="https://jdbc.postgresql.org/">PostgreSQL JBDC driver</a> 42.2.2</li>
 <li>Deploy the new JDBC driver on DSpace Test</li>
-<li>I'm also curious to see how long the <code>dspace index-discovery -b</code> takes on DSpace Test where the DSpace installation directory is on one of Linode's new block storage volumes</li>
+<li>I&rsquo;m also curious to see how long the <code>dspace index-discovery -b</code> takes on DSpace Test where the DSpace installation directory is on one of Linode&rsquo;s new block storage volumes</li>
 </ul>
 <pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
@@ -456,9 +456,9 @@ real    208m19.155s
 user    8m39.138s
 sys     2m45.135s
 </code></pre><ul>
-<li>So that's about three times as long as it took on CGSpace this morning</li>
+<li>So that&rsquo;s about three times as long as it took on CGSpace this morning</li>
 <li>I should also check the raw read speed with <code>hdparm -tT /dev/sdc</code></li>
-<li>Looking at Peter's author corrections there are some mistakes due to Windows 1252 encoding</li>
+<li>Looking at Peter&rsquo;s author corrections there are some mistakes due to Windows 1252 encoding</li>
 <li>I need to find a way to filter these easily with OpenRefine</li>
 <li>For example, Peter has inadvertantly introduced Unicode character 0xfffd into several fields</li>
 <li>I can search for Unicode values by their hex code in OpenRefine using the following GREL expression:</li>
@@ -475,16 +475,16 @@ sys     2m45.135s
 <h2 id="2018-03-24">2018-03-24</h2>
 <ul>
 <li>More work on the Ubuntu 18.04 readiness stuff for the <a href="https://github.com/ilri/rmg-ansible-public">Ansible playbooks</a></li>
-<li>The playbook now uses the system's Ruby and Node.js so I don't have to manually install RVM and NVM after</li>
+<li>The playbook now uses the system&rsquo;s Ruby and Node.js so I don&rsquo;t have to manually install RVM and NVM after</li>
 </ul>
 <h2 id="2018-03-25">2018-03-25</h2>
 <ul>
-<li>Looking at Peter's author corrections and trying to work out a way to find errors in OpenRefine easily</li>
+<li>Looking at Peter&rsquo;s author corrections and trying to work out a way to find errors in OpenRefine easily</li>
 <li>I can find all names that have acceptable characters using a GREL expression like:</li>
 </ul>
 <pre><code>isNotNull(value.match(/.*[a-zA-ZáÁéèïíñØøöóúü].*/))
 </code></pre><ul>
-<li>But it's probably better to just say which characters I know for sure are not valid (like parentheses, pipe, or weird Unicode characters):</li>
+<li>But it&rsquo;s probably better to just say which characters I know for sure are not valid (like parentheses, pipe, or weird Unicode characters):</li>
 </ul>
 <pre><code>or(
   isNotNull(value.match(/.*[(|)].*/)),
@@ -493,7 +493,7 @@ sys     2m45.135s
   isNotNull(value.match(/.*\u200A.*/))
 )
 </code></pre><ul>
-<li>And here's one combined GREL expression to check for items marked as to delete or check so I can flag them and export them to a separate CSV (though perhaps it's time to add delete support to my <code>fix-metadata-values.py</code> script:</li>
+<li>And here&rsquo;s one combined GREL expression to check for items marked as to delete or check so I can flag them and export them to a separate CSV (though perhaps it&rsquo;s time to add delete support to my <code>fix-metadata-values.py</code> script:</li>
 </ul>
 <pre><code>or(
   isNotNull(value.match(/.*delete.*/i)),
@@ -523,21 +523,21 @@ $ ./delete-metadata-values.py -i /tmp/Delete-8-Authors-2018-03-21.csv -f dc.cont
 </ul>
 <h2 id="2018-03-26">2018-03-26</h2>
 <ul>
-<li>Atmire got back to me about the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=589">Listings and Reports issue</a> and said it's caused by items that have missing <code>dc.identifier.citation</code> fields</li>
+<li>Atmire got back to me about the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=589">Listings and Reports issue</a> and said it&rsquo;s caused by items that have missing <code>dc.identifier.citation</code> fields</li>
 <li>The will send a fix</li>
 </ul>
 <h2 id="2018-03-27">2018-03-27</h2>
 <ul>
-<li>Atmire got back with an updated quote about the DSpace 5.8 compatibility so I've forwarded it to Peter</li>
+<li>Atmire got back with an updated quote about the DSpace 5.8 compatibility so I&rsquo;ve forwarded it to Peter</li>
 </ul>
 <h2 id="2018-03-28">2018-03-28</h2>
 <ul>
-<li>DSpace Test crashed due to heap space so I've increased it from 4096m to 5120m</li>
-<li>The error in Tomcat's <code>catalina.out</code> was:</li>
+<li>DSpace Test crashed due to heap space so I&rsquo;ve increased it from 4096m to 5120m</li>
+<li>The error in Tomcat&rsquo;s <code>catalina.out</code> was:</li>
 </ul>
 <pre><code>Exception in thread &quot;RMI TCP Connection(idle)&quot; java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
-<li>Add ISI Journal (cg.isijournal) as an option in Atmire's Listing and Reports layout (<a href="https://github.com/ilri/DSpace/pull/370">#370</a>) for Abenet</li>
+<li>Add ISI Journal (cg.isijournal) as an option in Atmire&rsquo;s Listing and Reports layout (<a href="https://github.com/ilri/DSpace/pull/370">#370</a>) for Abenet</li>
 <li>I noticed a few hundred CRPs using the old capitalized formatting so I corrected them:</li>
 </ul>
 <pre><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db cgspace -u cgspace -p 'fuuu'
@@ -552,7 +552,7 @@ Fixed 28 occurences of: GRAIN LEGUMES
 Fixed 3 occurences of: FORESTS, TREES AND AGROFORESTRY
 Fixed 5 occurences of: GENEBANKS
 </code></pre><ul>
-<li>That's weird because we just updated them last week&hellip;</li>
+<li>That&rsquo;s weird because we just updated them last week&hellip;</li>
 <li>Create a pull request to enable searching by ORCID identifier (<code>cg.creator.id</code>) in Discovery and Listings and Reports (<a href="https://github.com/ilri/DSpace/pull/371">#371</a>)</li>
 <li>I will test it on DSpace Test first!</li>
 <li>Fix one missing XMLUI string for &ldquo;Access Status&rdquo; (cg.identifier.status)</li>

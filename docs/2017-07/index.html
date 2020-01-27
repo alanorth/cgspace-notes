@@ -13,8 +13,8 @@ Run system updates and reboot DSpace Test
 2017-07-04
 
 Merge changes for WLE Phase II theme rename (#329)
-Looking at extracting the metadata registries from ICARDA&#39;s MEL DSpace database so we can compare fields with CGSpace
-We can use PostgreSQL&#39;s extended output format (-x) plus sed to format the output into quasi XML:
+Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace
+We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the output into quasi XML:
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-07/" />
@@ -30,10 +30,10 @@ Run system updates and reboot DSpace Test
 2017-07-04
 
 Merge changes for WLE Phase II theme rename (#329)
-Looking at extracting the metadata registries from ICARDA&#39;s MEL DSpace database so we can compare fields with CGSpace
-We can use PostgreSQL&#39;s extended output format (-x) plus sed to format the output into quasi XML:
+Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace
+We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the output into quasi XML:
 "/>
-<meta name="generator" content="Hugo 0.62.2" />
+<meta name="generator" content="Hugo 0.63.1" />
 
 
     
@@ -63,7 +63,7 @@ We can use PostgreSQL&#39;s extended output format (-x) plus sed to format the o
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.a20c1a4367639632cdb341d23c27ca44fedcc75b0f8b3cbea6203010da153d3c.css" rel="stylesheet" integrity="sha256-ogwaQ2djljLNs0HSPCfKRP7cx1sPizy&#43;piAwENoVPTw=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.23e2c3298bcc8c1136c19aba330c211ec94c36f7c4454ea15cf4d3548370042a.css" rel="stylesheet" integrity="sha256-I&#43;LDKYvMjBE2wZq6MwwhHslMNvfERU6hXPTTVINwBCo=" crossorigin="anonymous">
     
 
     <!-- RSS 2.0 feed -->
@@ -111,7 +111,7 @@ We can use PostgreSQL&#39;s extended output format (-x) plus sed to format the o
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-07/">July, 2017</a></h2>
     <p class="blog-post-meta"><time datetime="2017-07-01T18:03:52&#43;03:00">Sat Jul 01, 2017</time> by Alan Orth in 
 
-<i class="fa fa-tag" aria-hidden="true"></i>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes" rel="tag">Notes</a>
 
 </p>
   </header>
@@ -122,19 +122,19 @@ We can use PostgreSQL&#39;s extended output format (-x) plus sed to format the o
 <h2 id="2017-07-04">2017-07-04</h2>
 <ul>
 <li>Merge changes for WLE Phase II theme rename (<a href="https://github.com/ilri/DSpace/pull/329">#329</a>)</li>
-<li>Looking at extracting the metadata registries from ICARDA's MEL DSpace database so we can compare fields with CGSpace</li>
-<li>We can use PostgreSQL's extended output format (<code>-x</code>) plus <code>sed</code> to format the output into quasi XML:</li>
+<li>Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace</li>
+<li>We can use PostgreSQL&rsquo;s extended output format (<code>-x</code>) plus <code>sed</code> to format the output into quasi XML:</li>
 </ul>
 <pre><code>$ psql dspacenew -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=5 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::'
 </code></pre><ul>
 <li>The <code>sed</code> script is from a post on the <a href="https://www.postgresql.org/message-id/437E44A5.508%40ultimeth.com">PostgreSQL mailing list</a></li>
-<li>Abenet says the ILRI board wants to be able to have &ldquo;lead author&rdquo; for every item, so I've whipped up a WIP test in the <code>5_x-lead-author</code> branch</li>
-<li>It works but is still very rough and we haven't thought out the whole lifecycle yet</li>
+<li>Abenet says the ILRI board wants to be able to have &ldquo;lead author&rdquo; for every item, so I&rsquo;ve whipped up a WIP test in the <code>5_x-lead-author</code> branch</li>
+<li>It works but is still very rough and we haven&rsquo;t thought out the whole lifecycle yet</li>
 </ul>
 <p><img src="/cgspace-notes/2017/07/lead-author-test.png" alt="Testing lead author in submission form"></p>
 <ul>
 <li>I assume that &ldquo;lead author&rdquo; would actually be the first question on the item submission form</li>
-<li>We also need to check to see which ORCID authority core this uses, because it seems to be using an entirely new one rather than the one for <code>dc.contributor.author</code> (which makes sense of course, but fuck, all the author problems aren't bad enough?!)</li>
+<li>We also need to check to see which ORCID authority core this uses, because it seems to be using an entirely new one rather than the one for <code>dc.contributor.author</code> (which makes sense of course, but fuck, all the author problems aren&rsquo;t bad enough?!)</li>
 <li>Also would need to edit XMLUI item displays to incorporate this into authors list</li>
 <li>And fuck, then anyone consuming our data via REST / OAI will not notice that we have an author outside of <code>dc.contributor.authors</code>&hellip; ugh</li>
 <li>What if we modify the item submission form to use <a href="https://wiki.duraspace.org/display/DSDOC5x/Submission+User+Interface#SubmissionUserInterface-ItemtypeBasedMetadataCollection"><code>type-bind</code> fields to show/hide certain fields depending on the type</a>?</li>
@@ -152,8 +152,8 @@ We can use PostgreSQL&#39;s extended output format (-x) plus sed to format the o
 org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserved for non-replication superuser connections
 </code></pre><ul>
 <li>Looking at the <code>pg_stat_activity</code> table I saw there were indeed 98 active connections to PostgreSQL, and at this time the limit is 100, so that makes sense</li>
-<li>Tsega restarted Tomcat and it's working now</li>
-<li>Abenet said she was generating a report with Atmire's CUA module, so it could be due to that?</li>
+<li>Tsega restarted Tomcat and it&rsquo;s working now</li>
+<li>Abenet said she was generating a report with Atmire&rsquo;s CUA module, so it could be due to that?</li>
 <li>Looking in the logs I see this random error again that I should report to DSpace:</li>
 </ul>
 <pre><code>2017-07-05 13:50:07,196 ERROR org.dspace.statistics.SolrLogger @ COUNTRY ERROR: EU
@@ -171,7 +171,7 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 </ul>
 <h2 id="2017-07-14">2017-07-14</h2>
 <ul>
-<li>Sisay sent me a patch to add &ldquo;Photo Report&rdquo; to <code>dc.type</code> so I've added it to the <code>5_x-prod</code> branch</li>
+<li>Sisay sent me a patch to add &ldquo;Photo Report&rdquo; to <code>dc.type</code> so I&rsquo;ve added it to the <code>5_x-prod</code> branch</li>
 </ul>
 <h2 id="2017-07-17">2017-07-17</h2>
 <ul>
@@ -193,7 +193,7 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 </li>
 <li>Talk to Tsega and Danny about exporting/injesting the blog posts from Drupal into DSpace?</li>
 <li>Followup meeting on August 8/9?</li>
-<li>Sent Abenet the 2415 records from CGIAR Library's Historical Archive (10947/1) after cleaning up the author authorities and HTML entities in <code>dc.contributor.author</code> and <code>dc.description.abstract</code> using OpenRefine:
+<li>Sent Abenet the 2415 records from CGIAR Library&rsquo;s Historical Archive (10947/1) after cleaning up the author authorities and HTML entities in <code>dc.contributor.author</code> and <code>dc.description.abstract</code> using OpenRefine:
 <ul>
 <li>Authors: <code>value.replace(/::\w{8}-\w{4}-\w{4}-\w{4}-\w{12}::600/,&quot;&quot;)</code></li>
 <li>Abstracts: <code>replace(value,/&lt;\/?\w+((\s+\w+(\s*=\s*(?:&quot;.*?&quot;|'.*?'|[^'&quot;&gt;\s]+))?)+\s*|\s*)\/?&gt;/,'')</code></li>
@@ -210,10 +210,10 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 </ul>
 <h2 id="2017-07-27">2017-07-27</h2>
 <ul>
-<li>Help Sisay with some transforms to add descriptions to the <code>filename</code> column of some CIAT Presentations he's working on in OpenRefine</li>
+<li>Help Sisay with some transforms to add descriptions to the <code>filename</code> column of some CIAT Presentations he&rsquo;s working on in OpenRefine</li>
 <li>Marianne emailed a few days ago to ask why &ldquo;Integrating Ecosystem Solutions&rdquo; was not in the list of WLE Phase I Research Themes on the input form</li>
 <li>I told her that I only added the themes that I saw in the <a href="https://cgspace.cgiar.org/handle/10568/34508">WLE Phase I Research Themes</a> community</li>
-<li>Then Mia from WLE also emailed to ask where some WLE focal regions went, and I said I didn't understand what she was talking about, as all we did in our previous work was rename the old &ldquo;Research Themes&rdquo; subcommunity to &ldquo;WLE Phase I Research Themes&rdquo; and add a new subcommunity for &ldquo;WLE Phase II Research Themes&rdquo;.</li>
+<li>Then Mia from WLE also emailed to ask where some WLE focal regions went, and I said I didn&rsquo;t understand what she was talking about, as all we did in our previous work was rename the old &ldquo;Research Themes&rdquo; subcommunity to &ldquo;WLE Phase I Research Themes&rdquo; and add a new subcommunity for &ldquo;WLE Phase II Research Themes&rdquo;.</li>
 <li>Discuss some modifications to the CCAFS project tags in CGSpace submission form and in the database</li>
 </ul>
 <h2 id="2017-07-28">2017-07-28</h2>
@@ -228,7 +228,7 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 <h2 id="2017-07-30">2017-07-30</h2>
 <ul>
 <li>Start working on CCAFS project tag cleanup</li>
-<li>More questions about inconsistencies and spelling mistakes in their tags, so I've sent some questions for followup</li>
+<li>More questions about inconsistencies and spelling mistakes in their tags, so I&rsquo;ve sent some questions for followup</li>
 </ul>
 <h2 id="2017-07-31">2017-07-31</h2>
 <ul>
