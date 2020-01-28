@@ -63,7 +63,7 @@ I tweeted the CGSpace repository link
   "@type": "BlogPosting",
   "headline": "January, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-01\/",
-  "wordCount": "2754",
+  "wordCount": "2910",
   "datePublished": "2020-01-06T10:48:30+02:00",
   "dateModified": "2020-01-27T16:20:44+02:00",
   "author": {
@@ -443,6 +443,36 @@ org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError:
 <li>I changed the <code>maxBooleanClauses</code> for all Solr cores on DSpace Test from 1024 to 2048 and then she was able to see her communities&hellip;</li>
 <li>I made a <a href="https://github.com/ilri/DSpace/pull/443">pull request</a> and merged it to the <code>5_x-prod</code> branch and will deploy on CGSpace later tonight</li>
 <li>I am curious if anyone on the dspace-tech mailing list has run into this, so I will try to send a message about this there when I get a chance</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-01-28">2020-01-28</h2>
+<ul>
+<li>Generate a list of CIP subjects for Abenet:</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;cg.subject.cip&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 127 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-01-28-cip-subjects.csv WITH CSV HEADER;
+COPY 77
+</code></pre><ul>
+<li>Start looking over the IITA records from earlier this month (<a href="https://dspacetest.cgiar.org/handle/10568/106567">IITA_201907_Jan13</a>)
+<ul>
+<li>Delete one duplicate, map one item from ILRI community</li>
+<li>The following items are duplicates or something (there is not enough metadata to tell for sure):
+<ul>
+<li><a href="https://dspacetest.cgiar.org/handle/10568/106682">https://dspacetest.cgiar.org/handle/10568/106682</a></li>
+<li><a href="https://dspacetest.cgiar.org/handle/10568/106653">https://dspacetest.cgiar.org/handle/10568/106653</a></li>
+<li><a href="https://dspacetest.cgiar.org/handle/10568/106694">https://dspacetest.cgiar.org/handle/10568/106694</a></li>
+</ul>
+</li>
+<li>This item doesn&rsquo;t exist in the journal, and Weed Science volume 55 was published in 2007, not 2003:
+<ul>
+<li><a href="https://dspacetest.cgiar.org/handle/10568/106665">https://dspacetest.cgiar.org/handle/10568/106665</a></li>
+</ul>
+</li>
+<li>All items using <code>cg.journal.title</code> instead of <code>dc.source</code></li>
+<li>Several items were missing ISSN despite having a journal title</li>
+<li>Many items were missing DOIs, abstracts, etc</li>
+<li>I did some metadata enrichment by searching for the items and copying relevant data from journal pages</li>
+<li>I asked Bosede to try to do the same for the rest of the journal articles</li>
 </ul>
 </li>
 </ul>
