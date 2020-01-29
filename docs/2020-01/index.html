@@ -29,7 +29,7 @@ I tweeted the CGSpace repository link
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-01/" />
 <meta property="article:published_time" content="2020-01-06T10:48:30+02:00" />
-<meta property="article:modified_time" content="2020-01-27T16:20:44+02:00" />
+<meta property="article:modified_time" content="2020-01-28T17:37:27+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="January, 2020"/>
@@ -53,7 +53,7 @@ I tweeted the CGSpace repository link
 
 
 "/>
-<meta name="generator" content="Hugo 0.63.1" />
+<meta name="generator" content="Hugo 0.63.2" />
 
 
     
@@ -63,9 +63,9 @@ I tweeted the CGSpace repository link
   "@type": "BlogPosting",
   "headline": "January, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-01\/",
-  "wordCount": "2910",
+  "wordCount": "3328",
   "datePublished": "2020-01-06T10:48:30+02:00",
-  "dateModified": "2020-01-27T16:20:44+02:00",
+  "dateModified": "2020-01-28T17:37:27+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -476,7 +476,41 @@ COPY 77
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-01-29">2020-01-29</h2>
+<ul>
+<li>Normalize about 4,500 DOI, YouTube, and SlideShare links on CGSpace that are missing HTTPS or using old format:</li>
+</ul>
+<pre><code>UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'http://www.doi.org', 'https://doi.org') WHERE resource_type_id = 2 AND metadata_field_id = 220 AND text_value LIKE 'http://www.doi.org%';
+UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'http://doi.org', 'https://doi.org') WHERE resource_type_id = 2 AND metadata_field_id = 220 AND text_value LIKE 'http://doi.org%';
+UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'http://dx.doi.org', 'https://doi.org') WHERE resource_type_id = 2 AND metadata_field_id = 220 AND text_value LIKE 'http://dx.doi.org%';
+UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'https://dx.doi.org', 'https://doi.org') WHERE resource_type_id = 2 AND metadata_field_id = 220 AND text_value LIKE 'https://dx.doi.org%';
+UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'http://www.youtube.com', 'https://www.youtube.com') WHERE resource_type_id = 2 AND metadata_field_id = 219 AND text_value LIKE 'http://www.youtube.com%';
+UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'http://www.slideshare.net', 'https://www.slideshare.net') WHERE resource_type_id = 2 AND metadata_field_id = 219 AND text_value LIKE 'http://www.slideshare.net%';
+</code></pre><ul>
+<li>I exported a list of all of our ISSNs with item IDs so that I could fix them in OpenRefine and submit them with multi-value separators to DSpace metadata import:</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT resource_id as &quot;id&quot;, text_value as &quot;dc.identifier.issn&quot; FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 21) to /tmp/2020-01-29-issn.csv WITH CSV HEADER;
+COPY 23339
+</code></pre><ul>
+<li>Then, after spending two hours correcting 1,000 ISSNs I realized that I need to normalize the <code>text_lang</code> fields in the database first or else these will all look like changes due to the &ldquo;en_US&rdquo; and NULL, etc (for both ISSN and ISBN):</li>
+</ul>
+<pre><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id = 2 AND metadata_field_id IN (20,21);
+UPDATE 30454
+</code></pre><ul>
+<li>Then I realized that my initial PostgreSQL query wasn&rsquo;t so genius because if a field already has multiple values it will appear on separate lines with the same ID, so when <code>dspace metadata-import</code> sees it, the change will be removed and added, or added and removed, depending on the order it is seen!</li>
+<li>A better course of action is to select the distinct ones and then correct them using <code>fix-metadata-values.py</code>&hellip;</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;dc.identifier.issn[en_US]&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 21 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-01-29-issn-distinct.csv WITH CSV HEADER;
+COPY 2900
+</code></pre><ul>
+<li>I re-applied all my corrections, filtering out things like multi-value separators and values that are actually ISBNs so I can fix them later</li>
+<li>Then I applied 181 fixes for ISSNs using <code>fix-metadata-values.py</code> on DSpace Test and CGSpace (after testing locally):</li>
+</ul>
+<p>``
+$ ./fix-metadata-values.py -i /tmp/2020-01-29-ISSNs-Distinct.csv -db dspace -u dspace -p &lsquo;fuuu&rsquo; -f &lsquo;dc.identifier.issn[en_US]&rsquo; -m 21 -t correct -d</p>
+<pre><code>
+&lt;!-- vim: set sw=2 ts=2: --&gt;
+</code></pre>
 
   
 
