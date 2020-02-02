@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="February, 2020" />
+<meta property="og:description" content="2020-02-02
+
+Continue working on porting CGSpace&rsquo;s DSpace 5 code to DSpace 6.3 that I started yesterday
+
+Sign up for an account with MaxMind so I can get the GeoLite2-City.mmdb database
+I still need to wire up the API credentials and cron job into the Ansible infrastructure playbooks
+Fix some minor issues in the config and XMLUI themes, like removing Atmire stuff
+The code finally builds and runs with a fresh install
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
+<meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
+<meta property="article:modified_time" content="2020-02-02T11:56:30+02:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="February, 2020"/>
+<meta name="twitter:description" content="2020-02-02
+
+Continue working on porting CGSpace&rsquo;s DSpace 5 code to DSpace 6.3 that I started yesterday
+
+Sign up for an account with MaxMind so I can get the GeoLite2-City.mmdb database
+I still need to wire up the API credentials and cron job into the Ansible infrastructure playbooks
+Fix some minor issues in the config and XMLUI themes, like removing Atmire stuff
+The code finally builds and runs with a fresh install
+
+
+"/>
+<meta name="generator" content="Hugo 0.63.2" />
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "February, 2020",
+  "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
+  "wordCount": "550",
+  "datePublished": "2020-02-02T11:56:30+02:00",
+  "dateModified": "2020-02-02T11:56:30+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2020-02/">
+
+    <title>February, 2020 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.6da5c906cc7a8fbb93f31cd2316c5dbe3f19ac4aa6bfb066f1243045b8f6061e.css" rel="stylesheet" integrity="sha256-baXJBsx6j7uT8xzSMWxdvj8ZrEqmv7Bm8SQwRbj2Bh4=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.90e14c13cee52929ac33e1c21694a3cc95063a194eb22aad9f7976434e1a9125.js" integrity="sha256-kOFME87lKSmsM&#43;HCFpSjzJUGOhlOsiqtn3l2Q04akSU=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2020-02/">February, 2020</a></h2>
+    <p class="blog-post-meta"><time datetime="2020-02-02T11:56:30&#43;02:00">Sun Feb 02, 2020</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2020-02-02">2020-02-02</h2>
+<ul>
+<li>Continue working on porting CGSpace&rsquo;s DSpace 5 code to DSpace 6.3 that I started yesterday
+<ul>
+<li>Sign up for an account with MaxMind so I can get the GeoLite2-City.mmdb database</li>
+<li>I still need to wire up the API credentials and cron job into the Ansible infrastructure playbooks</li>
+<li>Fix some minor issues in the config and XMLUI themes, like removing Atmire stuff</li>
+<li>The code finally builds and runs with a fresh install</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Now we don&rsquo;t specify the build environment because site modification are in <code>local.cfg</code>, so we just build like this:</li>
+</ul>
+<pre><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false clean package
+</code></pre><ul>
+<li>And it seems that we need to enabled <code>pg_crypto</code> now (used for UUIDs):</li>
+</ul>
+<pre><code>$ psql -h localhost -U postgres dspace63
+dspace63=# CREATE EXTENSION pgcrypto;
+CREATE EXTENSION pgcrypto;
+</code></pre><ul>
+<li>I tried importing a PostgreSQL snapshot from CGSpace and had errors due to missing Atmire database migrations
+<ul>
+<li>If I try to run <code>dspace database migrate</code> I get the IDs of the migrations that are missing</li>
+<li>I delete them manually in psql:</li>
+</ul>
+</li>
+</ul>
+<pre><code>dspace63=# DELETE FROM schema_version WHERE version IN ('5.0.2015.01.27', '5.6.2015.12.03.2', '5.6.2016.08.08', '5.0.2017.04.28', '5.0.2017.09.25', '5.8.2015.12.03.3');
+</code></pre><ul>
+<li>Then I ran <code>dspace database migrate</code> and got an error:</li>
+</ul>
+<pre><code>$ ~/dspace63/bin/dspace database migrate
+
+Database URL: jdbc:postgresql://localhost:5432/dspace63?ApplicationName=dspaceCli
+Migrating database to latest version... (Check dspace logs for details)
+Migration exception:
+java.sql.SQLException: Flyway migration error occurred
+        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:673)
+        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:576)
+        at org.dspace.storage.rdbms.DatabaseUtils.main(DatabaseUtils.java:221)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: org.flywaydb.core.internal.dbsupport.FlywaySqlScriptException:
+Migration V6.0_2015.03.07__DS-2701_Hibernate_migration.sql failed
+-----------------------------------------------------------------
+SQL State  : 2BP01
+Error Code : 0
+Message    : ERROR: cannot drop table metadatavalue column resource_id because other objects depend on it
+  Detail: view eperson_metadata depends on table metadatavalue column resource_id
+  Hint: Use DROP ... CASCADE to drop the dependent objects too.
+Location   : org/dspace/storage/rdbms/sqlmigration/postgres/V6.0_2015.03.07__DS-2701_Hibernate_migration.sql (/home/aorth/src/git/DSpace-6.3/file:/home/aorth/dspace63/lib/dspace-api-6.3.jar!/org/dspace/storage/rdbms/sqlmigration/postgres/V6.0_2015.03.07__DS-2701_Hibernate_migration.sql)
+Line       : 391
+Statement  : ALTER TABLE metadatavalue DROP COLUMN IF EXISTS resource_id
+
+        at org.flywaydb.core.internal.dbsupport.SqlScript.execute(SqlScript.java:117)
+        at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:71)
+        at org.flywaydb.core.internal.command.DbMigrate.doMigrate(DbMigrate.java:352)
+        at org.flywaydb.core.internal.command.DbMigrate.access$1100(DbMigrate.java:47)
+        at org.flywaydb.core.internal.command.DbMigrate$4.doInTransaction(DbMigrate.java:308)
+        at org.flywaydb.core.internal.util.jdbc.TransactionTemplate.execute(TransactionTemplate.java:72)
+        at org.flywaydb.core.internal.command.DbMigrate.applyMigration(DbMigrate.java:305)
+        at org.flywaydb.core.internal.command.DbMigrate.access$1000(DbMigrate.java:47)
+        at org.flywaydb.core.internal.command.DbMigrate$2.doInTransaction(DbMigrate.java:230)
+        at org.flywaydb.core.internal.command.DbMigrate$2.doInTransaction(DbMigrate.java:173)
+        at org.flywaydb.core.internal.util.jdbc.TransactionTemplate.execute(TransactionTemplate.java:72)
+        at org.flywaydb.core.internal.command.DbMigrate.migrate(DbMigrate.java:173)
+        at org.flywaydb.core.Flyway$1.execute(Flyway.java:959)
+        at org.flywaydb.core.Flyway$1.execute(Flyway.java:917)
+        at org.flywaydb.core.Flyway.execute(Flyway.java:1373)
+        at org.flywaydb.core.Flyway.migrate(Flyway.java:917)
+        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:662)
+        ... 8 more
+Caused by: org.postgresql.util.PSQLException: ERROR: cannot drop table metadatavalue column resource_id because other objects depend on it
+  Detail: view eperson_metadata depends on table metadatavalue column resource_id
+  Hint: Use DROP ... CASCADE to drop the dependent objects too.
+        at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2422)
+        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2167)
+        at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:306)
+        at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:441)
+        at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:365)
+        at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:307)
+        at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:293)
+        at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:270)
+        at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:266)
+        at org.apache.commons.dbcp2.DelegatingStatement.execute(DelegatingStatement.java:291)
+        at org.apache.commons.dbcp2.DelegatingStatement.execute(DelegatingStatement.java:291)
+        at org.flywaydb.core.internal.dbsupport.JdbcTemplate.executeStatement(JdbcTemplate.java:238)
+        at org.flywaydb.core.internal.dbsupport.SqlScript.execute(SqlScript.java:114)
+        ... 24 more
+</code></pre><ul>
+<li>I think I might need to update the sequences first&hellip; nope</li>
+<li>Perhaps it&rsquo;s due to some missing bitstream IDs and I need to run <code>dspace cleanup</code> on CGSpace and take a new PostgreSQL dump&hellip; nope</li>
+<li>A thread on the dspace-tech mailing list regarding this migration noticed that his database had some views created that were using the <code>resource_id</code> column</li>
+<li>Our database had the same issue, where the <code>eperson_metadata</code> view was created by something (Atmire module?) but has no references in the vanilla DSpace code, so I dropped it and tried the migration again:</li>
+</ul>
+<pre><code>dspace63=# DROP VIEW eperson_metadata;
+DROP VIEW
+</code></pre><ul>
+<li>After that the migration was successful and DSpace starts up successfully and begins indexing
+<ul>
+<li>XMLUI, Solr, JSPUI, and OAI are working, but rest is not starting up</li>
+<li>I started diffing our themes against the Mirage 2 reference theme to capture the latest changes</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2020-02/">February, 2020</a></li>
+
+<li><a href="/cgspace-notes/2020-01/">January, 2020</a></li>
+
+<li><a href="/cgspace-notes/2019-12/">December, 2019</a></li>
+
+<li><a href="/cgspace-notes/2019-11/">November, 2019</a></li>
+
+<li><a href="/cgspace-notes/cgspace-cgcorev2-migration/">CGSpace CG Core v2 Migration</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>
