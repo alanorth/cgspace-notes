@@ -20,7 +20,7 @@ The code finally builds and runs with a fresh install
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
 <meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
-<meta property="article:modified_time" content="2020-02-04T08:44:50+02:00" />
+<meta property="article:modified_time" content="2020-02-04T13:09:24+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2020"/>
@@ -45,9 +45,9 @@ The code finally builds and runs with a fresh install
   "@type": "BlogPosting",
   "headline": "February, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
-  "wordCount": "1011",
+  "wordCount": "1230",
   "datePublished": "2020-02-02T11:56:30+02:00",
-  "dateModified": "2020-02-04T08:44:50+02:00",
+  "dateModified": "2020-02-04T13:09:24+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -290,6 +290,25 @@ $ ~/dspace63/bin/dspace database migrate
 <ul>
 <li>Once the indexing induced by touching <code>dspace/solr/search/conf/reindex.flag</code> has finished, subsequent manual invocations of <code>dspace index-discovery -b</code> work as expected</li>
 <li>Nevertheless, I sent a message to the dspace-tech mailing list describing the issue to see if anyone has any comments</li>
+</ul>
+</li>
+<li>I am seeing that the number of important commits on the unreleased DSpace 6.4 are really numerous and it might be better for us to target that version
+<ul>
+<li>I did a simple test and it&rsquo;s easy to rebase my current 6.3 branch on top of the upstream <code>dspace-6_x</code> branch:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ git checkout -b 6_x-dev64 6_x-dev
+$ git rebase -i upstream/dspace-6_x
+</code></pre><ul>
+<li>I finally understand why our themes show all the &ldquo;Browse by&rdquo; buttons on community and collection pages in DSpace 6.x
+<ul>
+<li>The code in <code>./dspace-xmlui/src/main/java/org/dspace/app/xmlui/aspect/browseArtifacts/CommunityBrowse.java</code> iterates over all the browse indexes and prints them when it is called</li>
+<li>The XMLUI theme code in <code>dspace/modules/xmlui-mirage2/src/main/webapp/themes/0_CGIAR/xsl/preprocess/browse.xsl</code> calls the template because the id of the div matches &ldquo;aspect.browseArtifacts.CommunityBrowse.list.community-browse&rdquo;</li>
+<li>I checked the DRI of a community page on my local 6.x and DSpace Test 5.x by appending <code>?XML</code> to the URL and I see the ID is missing on DSpace 5.x</li>
+<li>The issue is the same with the ordering of the &ldquo;My Account&rdquo; link, but in Navigation.java</li>
+<li>I tried modifying <code>preprocess/browse.xsl</code> but it always ends up printing some default list of browse by links&hellip;</li>
+<li>I&rsquo;m starting to wonder if Atmire&rsquo;s modules somehow override this, as I don&rsquo;t see how <code>CommunityBrowse.java</code> can behave like ours on DSpace 5.x unless they have overridden it (as the open source code is the same in 5.x and 6.x)</li>
 </ul>
 </li>
 </ul>
