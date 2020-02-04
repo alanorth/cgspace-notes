@@ -20,7 +20,7 @@ The code finally builds and runs with a fresh install
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
 <meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
-<meta property="article:modified_time" content="2020-02-02T17:15:48+02:00" />
+<meta property="article:modified_time" content="2020-02-02T18:03:43+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2020"/>
@@ -45,9 +45,9 @@ The code finally builds and runs with a fresh install
   "@type": "BlogPosting",
   "headline": "February, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
-  "wordCount": "572",
+  "wordCount": "949",
   "datePublished": "2020-02-02T11:56:30+02:00",
-  "dateModified": "2020-02-02T17:15:48+02:00",
+  "dateModified": "2020-02-02T18:03:43+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -227,8 +227,60 @@ DROP VIEW
 </code></pre><ul>
 <li>After that the migration was successful and DSpace starts up successfully and begins indexing
 <ul>
-<li>xmlui, solr, jspui, and oai are working, but rest is not starting up (turns out rest was working, but it was redirecting to HTTPS&hellip; I wonder why, because it wasn&rsquo;t doing that on DSpace 5!)</li>
+<li>xmlui, solr, jspui, rest, and oai are working (rest was redirecting to HTTPS, so I set the Tomcat connector to <code>secure=&quot;true&quot;</code> and it fixed it on localhost, but caused other issues so I disabled it for now)</li>
 <li>I started diffing our themes against the Mirage 2 reference theme to capture the latest changes</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-02-03">2020-02-03</h2>
+<ul>
+<li>Update DSpace mimetype fallback images from <a href="https://github.com/KDE/breeze-icons">KDE Breeze Icons</a> project
+<ul>
+<li>Our icons are four years old (see <a href="https://alanorth.github.io/dspace-bitstream-icons/">my bitstream icons demo</a>)</li>
+</ul>
+</li>
+<li>Issues remaining in the DSpace 6 port of our CGSpace 5.x code:
+<ul>
+<li><input disabled="" type="checkbox">Community and collection pages only show one recent submission (seems that there is only one item in Solr?)</li>
+<li><input disabled="" type="checkbox">Community and collection pages have tons of &ldquo;Browse&rdquo; buttons that we need to remove</li>
+<li><input disabled="" type="checkbox">Order of navigation elements in right side bar (&ldquo;My Account&rdquo; etc, compare to DSpace Test)</li>
+<li><input disabled="" type="checkbox">Home page trail says &ldquo;CGSpace Home&rdquo; instead of &ldquo;CGSpace Home / Community List&rdquo; (see DSpace Test)</li>
+</ul>
+</li>
+<li>There are lots of errors in the DSpace log, which might explain some of the issues with recent submissions / Solr:</li>
+</ul>
+<pre><code>2020-02-03 10:27:14,485 ERROR org.dspace.browse.ItemCountDAOSolr @ caught exception: 
+org.dspace.discovery.SearchServiceException: Invalid UUID string: 1
+2020-02-03 13:20:20,475 ERROR org.dspace.app.xmlui.aspect.discovery.AbstractRecentSubmissionTransformer @ Caught SearchServiceException while retrieving recent submission for: home page
+org.dspace.discovery.SearchServiceException: Invalid UUID string: 111210
+</code></pre><ul>
+<li>If I look in Solr&rsquo;s search core I do actually see items with integers for their resource ID, which I think are all supposed to be UUIDs now&hellip;</li>
+<li>I dropped all the documents in the search core:</li>
+</ul>
+<pre><code>$ http --print b 'http://localhost:8080/solr/search/update?stream.body=&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&amp;commit=true'
+</code></pre><ul>
+<li>Still didn&rsquo;t work, so I&rsquo;m going to try a clean database import and migration:</li>
+</ul>
+<pre><code>$ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspace63
+$ psql -h localhost -U postgres -c 'alter user dspacetest superuser;'
+$ pg_restore -h localhost -U postgres -d dspace63 -O --role=dspacetest -h localhost dspace_2020-01-27.backup
+$ psql -h localhost -U postgres -c 'alter user dspacetest nosuperuser;'
+$ psql -h localhost -U postgres dspace63                               
+dspace63=# CREATE EXTENSION pgcrypto;
+dspace63=# DELETE FROM schema_version WHERE version IN ('5.0.2015.01.27', '5.6.2015.12.03.2', '5.6.2016.08.08', '5.0.2017.04.28', '5.0.2017.09.25', '5.8.2015.12.03.3');
+dspace63=# DROP VIEW eperson_metadata;
+dspace63=# \q
+$ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspace63
+$ ~/dspace63/bin/dspace database migrate
+</code></pre><ul>
+<li>I notice that the indexing doesn&rsquo;t work correctly if I start it manually with <code>dspace index-discovery -b</code> (search.resourceid becomes an integer!)
+<ul>
+<li>If I induce an indexing by touching <code>dspace/solr/search/conf/reindex.flag</code> the search.resourceid are all UUIDs&hellip;</li>
+</ul>
+</li>
+<li>Speaking of database stuff, there was a performance-related update for the <a href="https://github.com/DSpace/DSpace/pull/1791/">indexes that we used in DSpace 5</a>
+<ul>
+<li>We might want to <a href="https://github.com/DSpace/DSpace/pull/1792">apply it in DSpace 6</a>, as it was never merged to 6.x, but it helped with the performance of <code>/submissions</code> in XMLUI for us in <a href="/cgspace-notes/2018-03/">2018-03</a></li>
 </ul>
 </li>
 </ul>
