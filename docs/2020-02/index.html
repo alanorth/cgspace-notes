@@ -20,7 +20,7 @@ The code finally builds and runs with a fresh install
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
 <meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
-<meta property="article:modified_time" content="2020-02-06T12:47:25+02:00" />
+<meta property="article:modified_time" content="2020-02-06T16:54:41+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2020"/>
@@ -45,9 +45,9 @@ The code finally builds and runs with a fresh install
   "@type": "BlogPosting",
   "headline": "February, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
-  "wordCount": "2069",
+  "wordCount": "2254",
   "datePublished": "2020-02-02T11:56:30+02:00",
-  "dateModified": "2020-02-06T12:47:25+02:00",
+  "dateModified": "2020-02-06T16:54:41+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -419,6 +419,46 @@ $ ./run.sh -s http://localhost:8080/solr/statistics-2019 -a import -o ~/Download
 <pre><code>$ ./run.sh -s http://localhost:8983/solr/statistics -a import -o ~/Downloads/statistics-2019-01.json -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
 </code></pre><ul>
 <li>OK that imported! I wonder if it works&hellip; maybe I&rsquo;ll try another day</li>
+</ul>
+<h2 id="2020-02-07">2020-02-07</h2>
+<ul>
+<li>I did some investigation into DSpace indexing performance using flame graphs
+<ul>
+<li>Excellent introduction: <a href="http://www.brendangregg.com/flamegraphs.html">http://www.brendangregg.com/flamegraphs.html</a></li>
+<li>Using flame graphs with java: <a href="https://netflixtechblog.com/java-in-flames-e763b3d32166">https://netflixtechblog.com/java-in-flames-e763b3d32166</a></li>
+<li>Fantastic wrapper scripts for doing perf on Java processes: <a href="https://github.com/jvm-profiling-tools/perf-map-agent">https://github.com/jvm-profiling-tools/perf-map-agent</a></li>
+</ul>
+</li>
+</ul>
+<pre><code>$ cd ~/src/git/perf-map-agent
+$ cmake     .
+$ make
+$ ./bin/create-links-in ~/.local/bin
+$ export FLAMEGRAPH_DIR=/home/aorth/src/git/FlameGraph
+$ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+$ export JAVA_OPTS=&quot;-XX:+PreserveFramePointer&quot;
+$ ~/dspace63/bin/dspace index-discovery -b &amp;
+# pid of tomcat java process
+$ perf-java-flames 4478
+# pid of java indexing process
+$ perf-java-flames 11359
+</code></pre><ul>
+<li>All Java processes need to have <code>-XX:+PreserveFramePointer</code> if you want to trace their methods</li>
+<li>I did the same tests against DSpace 5.8 and 6.4-SNAPSHOT&rsquo;s CLI indexing process and Tomcat process
+<ul>
+<li>For what it&rsquo;s worth, it appears all the Hibernate stuff is in the CLI processes, so we don&rsquo;t need to trace the Tomcat process</li>
+</ul>
+</li>
+<li>Here is the flame graph for DSpace 5.8&rsquo;s <code>dspace index-discovery -b</code> java process:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/02/flamegraph-java-cli-dspace58.svg" alt="DSpace 5.8 index-discovery flame graph"></p>
+<ul>
+<li>Here is the flame graph for DSpace 6.4-SNAPSHOT&rsquo;s <code>dspace index-discovery -b</code> java process:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/02/flamegraph-java-cli-dspace64-snapshot.svg" alt="DSpace 6.4-SNAPSHOT index-discovery flame graph"></p>
+<ul>
+<li>If the width of the stacks indicates time, then it&rsquo;s clear that Hibernate takes longer&hellip;</li>
+<li>Apparently there is a &ldquo;flame diff&rdquo; tool, I wonder if we can use that to compare!</li>
 </ul>
 <!-- raw HTML omitted -->
 
