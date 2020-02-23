@@ -20,7 +20,7 @@ The code finally builds and runs with a fresh install
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
 <meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
-<meta property="article:modified_time" content="2020-02-19T15:17:32+02:00" />
+<meta property="article:modified_time" content="2020-02-23T09:16:50+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2020"/>
@@ -35,7 +35,7 @@ The code finally builds and runs with a fresh install
 
 
 "/>
-<meta name="generator" content="Hugo 0.65.2" />
+<meta name="generator" content="Hugo 0.65.3" />
 
 
     
@@ -45,9 +45,9 @@ The code finally builds and runs with a fresh install
   "@type": "BlogPosting",
   "headline": "February, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
-  "wordCount": "3245",
+  "wordCount": "4210",
   "datePublished": "2020-02-02T11:56:30+02:00",
-  "dateModified": "2020-02-19T15:17:32+02:00",
+  "dateModified": "2020-02-23T09:16:50+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -613,6 +613,34 @@ UPDATE 26
 </code></pre><ul>
 <li>Another IP address (31.6.77.23) in the UK making a few hundred requests without a user agent</li>
 <li>I will add the IP addresses to the nginx badbots list</li>
+<li>31.6.77.23 is in the UK and judging by its DNS it belongs to a <a href="https://www.bronco.co.uk/">web marketing company called Bronco</a>
+<ul>
+<li>I looked for its DNS entry in Solr statistics and found a few hundred thousand over the years:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=dns:/squeeze3.bronco.co.uk./&amp;rows=0&quot;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;response&gt;
+&lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;4&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;dns:/squeeze3.bronco.co.uk./&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;86044&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
+&lt;/response&gt;
+</code></pre><ul>
+<li>The totals in each core are:
+<ul>
+<li>statistics: 86044</li>
+<li>statistics-2018: 65144</li>
+<li>statistics-2017: 79405</li>
+<li>statistics-2016: 121316</li>
+<li>statistics-2015: 30720</li>
+<li>statistics-2014: 4524</li>
+<li>&hellip; so about 387,000 hits!</li>
+</ul>
+</li>
+<li>I will purge them from each core one by one, ie:</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:squeeze3.bronco.co.uk.&lt;/query&gt;&lt;/delete&gt;&quot;
+$ curl -s &quot;http://localhost:8081/solr/statistics-2014/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:squeeze3.bronco.co.uk.&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
 <li>Deploy latest Tomcat and PostgreSQL JDBC driver changes on CGSpace (linode18)</li>
 <li>Deploy latest <code>5_x-prod</code> branch on CGSpace (linode18)</li>
 <li>Run all system updates on CGSpace (linode18) server and reboot it
@@ -621,6 +649,145 @@ UPDATE 26
 <li>Luckily after restarting Tomcat once more they all came back up</li>
 </ul>
 </li>
+<li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
+</ul>
+<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(183996) is still referenced from table &quot;bundle&quot;.
+</code></pre><ul>
+<li>The solution is, as always:</li>
+</ul>
+<pre><code># su - postgres
+$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (183996);'
+UPDATE 1
+</code></pre><ul>
+<li>Аdd one more new Bioversity ORCID iD to the controlled vocabulary on CGSpace</li>
+<li>Felix Shaw from Earlham emailed me to ask about his admin account on DSpace Test
+<ul>
+<li>His old one got lost when I re-sync&rsquo;d DSpace Test with CGSpace a few weeks ago</li>
+<li>I added a new account for him and added it to the Administrators group:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ dspace user -a -m wow@me.com -g Felix -s Shaw -p 'fuananaaa'
+</code></pre><ul>
+<li>For some reason the Atmire Content and Usage Analysis (CUA) module&rsquo;s Usage Statistics is drawing blank graphs
+<ul>
+<li>I looked in the dspace.log and see:</li>
+</ul>
+</li>
+</ul>
+<pre><code>2020-02-23 11:28:13,696 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.NoClassDefFoundError: Could not
+ initialize class org.jfree.chart.JFreeChart
+</code></pre><ul>
+<li>The same error happens on DSpace Test, but graphs are working on my local instance
+<ul>
+<li>The only thing I&rsquo;ve changed recently is the Tomcat version, but it&rsquo;s working locally&hellip;</li>
+<li>I see the following file on my local instance, CGSpace, and DSpace Test: <code>dspace/webapps/xmlui/WEB-INF/lib/jfreechart-1.0.5.jar</code></li>
+<li>I deployed Tomcat 7.0.99 on DSpace Test but the JFreeChart classs still can&rsquo;t be found&hellip;</li>
+<li>So it must be somthing with the library search path&hellip;</li>
+<li>Strange it works with Tomcat 7.0.100 on my local machine</li>
+</ul>
+</li>
+<li>I copied the <code>jfreechart-1.0.5.jar</code> file to the Tomcat lib folder and then there was a different error when I loaded Atmire CUA:</li>
+</ul>
+<pre><code>2020-02-23 16:25:10,841 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!  org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper
+</code></pre><ul>
+<li>Some search results suggested commenting out the following line in <code>/etc/java-8-openjdk/accessibility.properties</code>:</li>
+</ul>
+<pre><code>assistive_technologies=org.GNOME.Accessibility.AtkWrapper
+</code></pre><ul>
+<li>And removing the extra jfreechart library and restarting Tomcat I was able to load the usage statistics graph on DSpace Test&hellip;
+<ul>
+<li>Hmm, actually I think this is an Java bug, perhaps introduced or at <a href="https://bugs.openjdk.java.net/browse/JDK-8204862">least present in 18.04</a>, with lots of <a href="https://code-maven.com/slides/jenkins-intro/no-graph-error">references</a> to it <a href="https://issues.jenkins-ci.org/browse/JENKINS-39636">happening in other</a> configurations like Debian 9 with Jenkins, etc&hellip;</li>
+<li>Apparently if you use the <em>non-headless</em> version of openjdk this doesn&rsquo;t happen&hellip; but that pulls in X11 stuff so no thanks</li>
+<li>Also, I see dozens of occurences of this going back over one month (we have logs for about that period):</li>
+</ul>
+</li>
+</ul>
+<pre><code># grep -c 'initialize class org.jfree.chart.JFreeChart' dspace.log.2020-0*
+dspace.log.2020-01-12:4
+dspace.log.2020-01-13:66
+dspace.log.2020-01-14:4
+dspace.log.2020-01-15:36
+dspace.log.2020-01-16:88
+dspace.log.2020-01-17:4
+dspace.log.2020-01-18:4
+dspace.log.2020-01-19:4
+dspace.log.2020-01-20:4
+dspace.log.2020-01-21:4
+...
+</code></pre><ul>
+<li>I deployed the fix on CGSpace (linode18) and I was able to see the graphs in the Atmire CUA Usage Statistics&hellip;</li>
+<li>On an unrelated note there is something weird going on in that I see millions of hits from IP 34.218.226.147 in Solr statistics, but if I remember correctly that IP belongs to CodeObia&rsquo;s AReS explorer, but it should only be using REST and therefore no Solr statistics&hellip;?</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/select&quot; -d &quot;q=ip:34.218.226.147&amp;rows=0&quot;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;response&gt;
+&lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;811&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;ip:34.218.226.147&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;5536097&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
+&lt;/response&gt;
+</code></pre><ul>
+<li>And there are apparently two million from last month (2020-01):</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=ip:34.218.226.147&amp;fq=dateYearMonth:2020-01&amp;rows=0&quot;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;response&gt;
+&lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;248&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;ip:34.218.226.147&lt;/str&gt;&lt;str name=&quot;fq&quot;&gt;dateYearMonth:2020-01&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;2173455&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
+&lt;/response&gt;
+</code></pre><ul>
+<li>But when I look at the nginx access logs for the past month or so I only see 84,000, all of which are on <code>/rest</code> and none of which are to XMLUI:</li>
+</ul>
+<pre><code># zcat /var/log/nginx/*.log.*.gz | grep -c 34.218.226.147
+84322
+# zcat /var/log/nginx/*.log.*.gz | grep 34.218.226.147 | grep -c '/rest'
+84322
+</code></pre><ul>
+<li>Either the requests didn&rsquo;t get logged, or there is some mixup with the Solr documents (fuck!)
+<ul>
+<li>On second inspection, I <em>do</em> see lots of notes here about 34.218.226.147, including 150,000 on one day in October, 2018 alone&hellip;</li>
+</ul>
+</li>
+<li>To make matters worse, I see hits from REST in the regular nginx access log!
+<ul>
+<li>I did a few tests and I can&rsquo;t figure out, but it seems that hits appear in either (not both)</li>
+<li>Also, I see <em>zero</em> hits to <code>/rest</code> in the access.log on DSpace Test (linode19)</li>
+</ul>
+</li>
+<li>Anyways, I faceted by IP in 2020-01 and see:</li>
+</ul>
+<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=*:*&amp;fq=dateYearMonth:2020-01&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip'
+...
+        &quot;172.104.229.92&quot;,2686876,
+        &quot;34.218.226.147&quot;,2173455,
+        &quot;163.172.70.248&quot;,80945,
+        &quot;163.172.71.24&quot;,55211,
+        &quot;163.172.68.99&quot;,38427,
+</code></pre><ul>
+<li>Surprise surprise, the top two IPs are from AReS servers&hellip; wtf.</li>
+<li>The next three are from Online in France and they are all using this weird user agent and making tens of thousands of requests to Discovery:</li>
+</ul>
+<pre><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
+</code></pre><ul>
+<li>And all the same three are already inflating the statistics for 2020-02&hellip; hmmm.</li>
+<li>I need to see why AReS harvesting is inflating the stats, as it should only be making REST requests&hellip;</li>
+<li>Shiiiiit, I see 84,000 requests from the AReS IP today alone:</li>
+</ul>
+<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2020-02-22*+AND+ip:172.104.229.92&amp;rows=0&amp;wt=json&amp;indent=true'
+...
+  &quot;response&quot;:{&quot;numFound&quot;:84594,&quot;start&quot;:0,&quot;docs&quot;:[]
+</code></pre><ul>
+<li>Fuck! And of course the ILRI websites doing their daily REST harvesting are causing issues too, from today alone:</li>
+</ul>
+<pre><code>        &quot;2a01:7e00::f03c:91ff:fe9a:3a37&quot;,35512,
+        &quot;2a01:7e00::f03c:91ff:fe18:7396&quot;,26155,
+</code></pre><ul>
+<li>I need to try to make some requests for these URLs and observe if they make a statistics hit:
+<ul>
+<li><code>/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=50&amp;offset=82450</code></li>
+<li><code>/rest/handle/10568/28702?expand=all</code></li>
+</ul>
+</li>
+<li>Those are the requests AReS and ILRI servers are making&hellip; nearly 150,000 per day!</li>
 </ul>
 <!-- raw HTML omitted -->
 
