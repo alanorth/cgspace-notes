@@ -20,7 +20,7 @@ The code finally builds and runs with a fresh install
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
 <meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
-<meta property="article:modified_time" content="2020-02-24T19:15:05+02:00" />
+<meta property="article:modified_time" content="2020-02-25T09:14:30+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2020"/>
@@ -45,9 +45,9 @@ The code finally builds and runs with a fresh install
   "@type": "BlogPosting",
   "headline": "February, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
-  "wordCount": "6024",
+  "wordCount": "6499",
   "datePublished": "2020-02-02T11:56:30+02:00",
-  "dateModified": "2020-02-24T19:15:05+02:00",
+  "dateModified": "2020-02-25T09:14:30+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1055,12 +1055,108 @@ Total number of bot hits purged: 14110
 ecoweb (+https://search.ecointernet.org/)
 EcoInternet http://www.ecointernet.org/
 EcoInternet http://ecointernet.org/
-</code></pre><ul>
+</code></pre><h2 id="2020-02-25">2020-02-25</h2>
+<ul>
 <li>And what&rsquo;s the 950,000 hits from Online.net IPs with the following user agent:</li>
 </ul>
 <pre><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
 </code></pre><ul>
 <li>Over half of the requests were to Discover and Browse pages, and the rest were to actual item pages, but they were within seconds of each other, so I&rsquo;m purging them all</li>
+<li>I looked deeper in the Solr statistics and found a bunch more weird user agents:</li>
+</ul>
+<pre><code>LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/4.3
+EventMachine HttpClient
+ecolink (+https://search.ecointernet.org/)
+ecoweb (+https://search.ecointernet.org/)
+EcoInternet http://www.ecointernet.org/
+EcoInternet http://ecointernet.org/
+Biosphere EcoSearch http://search.ecointernet.org/
+Typhoeus - https://github.com/typhoeus/typhoeus
+Citoid (Wikimedia tool; learn more at https://www.mediawiki.org/wiki/Citoid)
+node-fetch/1.0 (+https://github.com/bitinn/node-fetch)
+7Siters/1.08 (+https://7ooo.ru/siters/)
+sqlmap/1.0-dev-nongit-20190527 (http://sqlmap.org)
+sqlmap/1.3.4.14#dev (http://sqlmap.org)
+lua-resty-http/0.10 (Lua) ngx_lua/10000
+omgili/0.5 +http://omgili.com
+IZaBEE/IZaBEE-1.01 (Buzzing Abound The Web; https://izabee.com; info at izabee dot com)
+Twurly v1.1 (https://twurly.org)
+okhttp/3.11.0
+okhttp/3.10.0
+Pattern/2.6 +http://www.clips.ua.ac.be/pattern
+Link Check; EPrints 3.3.x;
+CyotekWebCopy/1.7 CyotekHTTP/2.0
+Adestra Link Checker: http://www.adestra.co.uk
+HTTPie/1.0.2
+</code></pre><ul>
+<li>I notice that some of these would be matched by the COUNTER-Robots list when DSpace uses it in Java because there we have more robust (and case-insensitive) matching
+<ul>
+<li>I created a temporary file of some of the patterns and converted them to use capitalization so I could run them through <code>check-spider-hits.sh</code></li>
+</ul>
+</li>
+</ul>
+<pre><code>Link.?Check
+Http.?Client
+ecointernet
+</code></pre><ul>
+<li>That removes another 500,000 or so:</li>
+</ul>
+<pre><code>$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics -p
+Purging 253 hits from Jersey\/[0-9] in statistics
+Purging 7302 hits from Link.?Check in statistics
+Purging 85574 hits from Http.?Client in statistics
+Purging 495 hits from HTTPie\/[0-9] in statistics
+Purging 56726 hits from ecointernet in statistics
+
+Total number of bot hits purged: 150350
+$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics-2018 -p
+Purging 3442 hits from Link.?Check in statistics-2018
+Purging 21922 hits from Http.?Client in statistics-2018
+Purging 2120 hits from HTTPie\/[0-9] in statistics-2018
+Purging 10 hits from ecointernet in statistics-2018
+
+Total number of bot hits purged: 27494
+$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics-2017 -p
+Purging 6416 hits from Link.?Check in statistics-2017
+Purging 403402 hits from Http.?Client in statistics-2017
+Purging 12 hits from HTTPie\/[0-9] in statistics-2017
+Purging 6 hits from ecointernet in statistics-2017
+
+Total number of bot hits purged: 409836
+$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics-2016 -p
+Purging 2348 hits from Link.?Check in statistics-2016
+Purging 225664 hits from Http.?Client in statistics-2016
+Purging 15 hits from HTTPie\/[0-9] in statistics-2016
+
+Total number of bot hits purged: 228027
+$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics-2015 -p
+Purging 3459 hits from Link.?Check in statistics-2015
+Purging 263 hits from Http.?Client in statistics-2015
+Purging 15 hits from HTTPie\/[0-9] in statistics-2015
+
+Total number of bot hits purged: 3737
+$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics-2014 -p
+Purging 5 hits from Link.?Check in statistics-2014
+Purging 8 hits from Http.?Client in statistics-2014
+Purging 4 hits from HTTPie\/[0-9] in statistics-2014
+
+Total number of bot hits purged: 17
+$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics-2011 -p
+Purging 159 hits from Http.?Client in statistics-2011
+
+Total number of bot hits purged: 159
+</code></pre><ul>
+<li>Make pull requests for issues with user agents in the COUNTER-Robots repository:
+<ul>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/33">Fix okhttp</a></li>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/34">Add new bots</a></li>
+</ul>
+</li>
+<li>One benefit of all this is that the size of the statistics Solr core has reduced by 6GB since yesterday, though I can&rsquo;t remember how big it was before that
+<ul>
+<li>I wonder if the sharding process would work now&hellip;</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
