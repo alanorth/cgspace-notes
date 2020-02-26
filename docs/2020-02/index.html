@@ -20,7 +20,7 @@ The code finally builds and runs with a fresh install
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-02/" />
 <meta property="article:published_time" content="2020-02-02T11:56:30+02:00" />
-<meta property="article:modified_time" content="2020-02-25T09:14:30+02:00" />
+<meta property="article:modified_time" content="2020-02-25T21:05:22+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="February, 2020"/>
@@ -45,9 +45,9 @@ The code finally builds and runs with a fresh install
   "@type": "BlogPosting",
   "headline": "February, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-02\/",
-  "wordCount": "6499",
+  "wordCount": "6988",
   "datePublished": "2020-02-02T11:56:30+02:00",
-  "dateModified": "2020-02-25T09:14:30+02:00",
+  "dateModified": "2020-02-25T21:05:22+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -384,7 +384,7 @@ $ for year in 2018 2017 2016 2015; do ./check-spider-hits.sh -d -p -f /tmp/jerse
 <pre><code>ReactorNetty/0.9.2.RELEASE
 </code></pre><ul>
 <li>I made <a href="https://github.com/atmire/COUNTER-Robots/issues/31">an issue on the COUNTER-Robots repository</a></li>
-<li>I found a <a href="https://github.com/freedev/solr-import-export-json">nice tool for exporting and importing Solr records</a> and it seems to workfor exporting our 2019 stats from the large statistics core!</li>
+<li>I found a <a href="https://github.com/freedev/solr-import-export-json">nice tool for exporting and importing Solr records</a> and it seems to work for exporting our 2019 stats from the large statistics core!</li>
 </ul>
 <pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2019-01.json -f 'dateYearMonth:2019-01' -k uid
 $ ls -lh /tmp/statistics-2019-01.json
@@ -1152,11 +1152,80 @@ Total number of bot hits purged: 159
 <li><a href="https://github.com/atmire/COUNTER-Robots/pull/34">Add new bots</a></li>
 </ul>
 </li>
-<li>One benefit of all this is that the size of the statistics Solr core has reduced by 6GB since yesterday, though I can&rsquo;t remember how big it was before that
+<li>One benefit of all this is that the size of the statistics Solr core has reduced by 6GiB since yesterday, though I can&rsquo;t remember how big it was before that
 <ul>
+<li>According to my notes it was 43GiB in January when it failed the first time</li>
 <li>I wonder if the sharding process would work now&hellip;</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-02-26">2020-02-26</h2>
+<ul>
+<li>Bosede finally got back to me about the IITA records from earlier last month (<a href="https://dspacetest.cgiar.org/handle/10568/106567">IITA_201907_Jan13</a>)
+<ul>
+<li>She said she has added more information to fifty-three of the journal articles, as I had requested</li>
+</ul>
+</li>
+<li>I tried to migrate the 2019 Solr statistics again on CGSpace because the automatic sharding failed last month:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
+$ schedtool -D -e ionice -c2 -n7 dspace stats-util -s &gt;&gt; log/cron-stats-util.log.$(date --iso-8601)
+</code></pre><ul>
+<li>Interestingly I saw this in the Solr log:</li>
+</ul>
+<pre><code>2020-02-26 08:55:47,433 INFO  org.apache.solr.core.SolrCore @ [statistics-2019] Opening new SolrCore at [dspace]/solr/statistics/, dataDir=[dspace]/solr/statistics-2019/data/
+2020-02-26 08:55:47,511 INFO  org.apache.solr.servlet.SolrDispatchFilter @ [admin] webapp=null path=/admin/cores params={dataDir=[dspace]/solr/statistics-2019/data&amp;name=statistics-2019&amp;action=CREATE&amp;instanceDir=statistics&amp;wt=javabin&amp;version=2} status=0 QTime=590
+</code></pre><ul>
+<li>The process has been going for several hours now and I suspect it will fail eventually
+<ul>
+<li>I want to explore manually creating and migrating the core</li>
+</ul>
+</li>
+<li>Manually create a core in the DSpace 6.4-SNAPSHOT instance on my local environment:</li>
+</ul>
+<pre><code>$ curl 'http://localhost:8080/solr/admin/cores?action=CREATE&amp;name=statistics-2019&amp;instanceDir=/home/aorth/dspace63/solr/statistics&amp;dataDir=/home/aorth/dspace63/solr/statistics-2019/data'
+</code></pre><ul>
+<li>After that the <code>statistics-2019</code> core was immediately available in the Solr UI, but after restarting Tomcat it was gone
+<ul>
+<li>I wonder if I import some old statistics into the current <code>statistics</code> core and then let DSpace create the <code>statistics-2019</code> core itself using <code>dspace stats-util -s</code> will work&hellip;</li>
+</ul>
+</li>
+<li>First export a small slice of 2019 stats from the main CGSpace <code>statistics</code> core, skipping Atmire schema additions:</li>
+</ul>
+<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2019-01-16.json -f 'time:2019-01-16*' -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
+</code></pre><ul>
+<li>Then import into my local <code>statistics</code> core:</li>
+</ul>
+<pre><code>$ ./run.sh -s http://localhost:8080/solr/statistics -a import -o ~/Downloads/statistics-2019-01-16.json -k uid
+$ ~/dspace63/bin/dspace stats-util -s
+Moving: 21993 into core statistics-2019
+</code></pre><ul>
+<li>To my surprise, the <code>statistics-2019</code> core is created and the documents are immediately visible in the Solr UI!
+<ul>
+<li>Also, I am able to see the stats in DSpace&rsquo;s default &ldquo;View Usage Statistics&rdquo; screen</li>
+<li>Items appear with the words &ldquo;(legacy)&rdquo; at the end, ie &ldquo;Improving farming practices in flood-prone areas in the Solomon Islands(legacy)&rdquo;</li>
+<li>Interestingly, if I make a bunch of requests for that item they will not be recognized as the same item, showing up as &ldquo;Improving farming practices in flood-prone areas in the Solomon Islands&rdquo; without the the legacy identifier</li>
+<li>I need to remember to test out the <a href="https://wiki.lyrasis.org/display/DSDOC6x/SOLR+Statistics+Maintenance#SOLRStatisticsMaintenance-UpgradeLegacyDSpaceObjectIdentifiers(pre-6xstatistics)toDSpace6xUUIDIdentifiers">SolrUpgradePre6xStatistics tool</a></li>
+</ul>
+</li>
+<li>After restarting my local Tomcat on DSpace 6.4-SNAPSHOT the <code>statistics-2019</code> core loaded up&hellip;
+<ul>
+<li>I wonder what the difference is between the core I created vs the one created by <code>stats-util</code>?</li>
+<li>I&rsquo;m honestly considering just moving everything back into one core&hellip;</li>
+<li>Or perhaps I can export all the stats for 2019 by month, then delete everything, re-import each month, and migrate them with stats-util</li>
+</ul>
+</li>
+<li>Testing some <a href="https://wiki.lyrasis.org/display/DSPACE/DSpace+6.4+Release+Status">proposed patches for 6.4</a> in my local <code>6_x-dev64</code> branch</li>
+<li><a href="https://jira.lyrasis.org/browse/DS-4135">DS-4135 (citation author UTF-8)</a>
+<ul>
+<li>Testing <a href="https://hdl.handle.net/10568/106959">item 10568/106959</a> before and after:</li>
+</ul>
+</li>
+</ul>
+<pre><code>&lt;meta content=&quot;Thu hoạch v&amp;agrave; bảo quản c&amp;agrave; ph&amp;ecirc; ch&amp;egrave; đ&amp;uacute;ng kỹ thuật (Harvesting and storing Arabica coffee)&quot; name=&quot;citation_title&quot;&gt;
+&lt;meta name=&quot;citation_title&quot; content=&quot;Thu hoạch và bảo quản cà phê chè đúng kỹ thuật (Harvesting and storing Arabica coffee)&quot; /&gt;
+</code></pre><ul>
+<li><a href="https://jira.lyrasis.org/browse/DS-4397">DS-4397 controlled vocabulary loading speedup</a></li>
 </ul>
 <!-- raw HTML omitted -->
 
