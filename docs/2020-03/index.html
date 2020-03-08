@@ -22,7 +22,7 @@ You need to download this into the DSpace 6.x source and compile it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-03/" />
 <meta property="article:published_time" content="2020-03-02T12:31:30+02:00" />
-<meta property="article:modified_time" content="2020-03-02T12:38:10+02:00" />
+<meta property="article:modified_time" content="2020-03-04T18:02:54+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2020"/>
@@ -49,9 +49,9 @@ You need to download this into the DSpace 6.x source and compile it
   "@type": "BlogPosting",
   "headline": "March, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-03\/",
-  "wordCount": "162",
+  "wordCount": "358",
   "datePublished": "2020-03-02T12:31:30+02:00",
-  "dateModified": "2020-03-02T12:38:10+02:00",
+  "dateModified": "2020-03-04T18:02:54+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -161,6 +161,33 @@ $ ~/dspace63/bin/dspace solr-upgrade-statistics-6x
 </code></pre><ul>
 <li>But I have not run it on CGSpace yet because we want to ask Peter if he is sure about it&hellip;</li>
 <li>Send a message to Macaroni Bros to ask them about their Drupal module and its readiness for DSpace 6 UUIDs</li>
+</ul>
+<h2 id="2020-03-05">2020-03-05</h2>
+<ul>
+<li>I found a very <a href="https://lucene.apache.org/solr/guide/8_1/solr-system-requirements.html#lucene-solr-prior-to-7-0">interesting comment on the Solr 8.1 guide</a> about Java compatibility:</li>
+</ul>
+<blockquote>
+<p>Lucene/Solr 7.0 was the first version that successfully passed our tests using Java 9 and higher. You should avoid Java 9 or later for Lucene/Solr 6.x or earlier.</p>
+</blockquote>
+<h2 id="2020-03-08">2020-03-08</h2>
+<ul>
+<li>I want to try to consolidate our yearly Solr statistics cores back into one <code>statistics</code> core using the solr-import-export-json tool</li>
+<li>I will try it on DSpace test, doing one year at a time:</li>
+</ul>
+<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o /tmp/statistics-2010.json -k uid
+$ ./run.sh -s http://localhost:8081/solr/statistics -a import -o /tmp/statistics-2010.json -k uid
+$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;time:2010*&lt;/query&gt;&lt;/delete&gt;&quot;
+$ ./run.sh -s http://localhost:8081/solr/statistics-2011 -a export -o /tmp/statistics-2011.json -k uid
+$ ./run.sh -s http://localhost:8081/solr/statistics -a import -o /tmp/statistics-2011.json -k uid
+$ curl -s &quot;http://localhost:8081/solr/statistics-2011/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;time:2011*&lt;/query&gt;&lt;/delete&gt;&quot;
+$ ./run.sh -s http://localhost:8081/solr/statistics -a import -o /tmp/statistics-2012.json -k uid
+$ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2012*&amp;rows=0&amp;wt=json&amp;indent=true' | grep numFound
+  &quot;response&quot;:{&quot;numFound&quot;:3761989,&quot;start&quot;:0,&quot;docs&quot;:[]
+$ curl -s 'http://localhost:8081/solr/statistics-2012/select?q=time:2012*&amp;rows=0&amp;wt=json&amp;indent=true' | grep numFound
+  &quot;response&quot;:{&quot;numFound&quot;:3761989,&quot;start&quot;:0,&quot;docs&quot;:[]
+$ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;time:2012*&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>I will do this for as many cores as I can (disk space limited) and then monitor the effect on the system and JVM memory usage</li>
 </ul>
 <!-- raw HTML omitted -->
 
