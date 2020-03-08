@@ -22,7 +22,7 @@ You need to download this into the DSpace 6.x source and compile it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-03/" />
 <meta property="article:published_time" content="2020-03-02T12:31:30+02:00" />
-<meta property="article:modified_time" content="2020-03-08T13:34:56+02:00" />
+<meta property="article:modified_time" content="2020-03-08T14:28:39+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2020"/>
@@ -49,9 +49,9 @@ You need to download this into the DSpace 6.x source and compile it
   "@type": "BlogPosting",
   "headline": "March, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-03\/",
-  "wordCount": "385",
+  "wordCount": "480",
   "datePublished": "2020-03-02T12:31:30+02:00",
-  "dateModified": "2020-03-08T13:34:56+02:00",
+  "dateModified": "2020-03-08T14:28:39+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -194,6 +194,23 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=tru
 </li>
 </ul>
 <pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2014 -a export -o /tmp/statistics-2014-1.json -k uid -f 'time:/2014-0[1-6].*/'
+</code></pre><ul>
+<li>Upgrade PostgreSQL from 9.6 to 10 on DSpace Test (linode19)
+<ul>
+<li>I&rsquo;ve been running it for one month in my local environment, and others have reported on the dspace-tech mailing list that they are using 10 and 11</li>
+</ul>
+</li>
+</ul>
+<pre><code># apt install postgresql-10 postgresql-contrib-10
+# systemctl stop tomcat7
+# pg_ctlcluster 9.6 main stop
+# tar -cvzpf var-lib-postgresql-9.6.tar.gz /var/lib/postgresql/9.6
+# tar -cvzpf etc-postgresql-9.6.tar.gz /etc/postgresql/9.6
+# pg_ctlcluster 10 main stop
+# pg_dropcluster 10 main
+# pg_upgradecluster 9.6 main
+# pg_dropcluster 9.6 main
+# dpkg -l | grep postgresql | grep 9.6 | awk '{print $2}' | xargs dpkg -r
 </code></pre><!-- raw HTML omitted -->
 
   
