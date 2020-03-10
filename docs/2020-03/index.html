@@ -22,7 +22,7 @@ You need to download this into the DSpace 6.x source and compile it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-03/" />
 <meta property="article:published_time" content="2020-03-02T12:31:30+02:00" />
-<meta property="article:modified_time" content="2020-03-08T14:28:39+02:00" />
+<meta property="article:modified_time" content="2020-03-08T15:53:34+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2020"/>
@@ -49,9 +49,9 @@ You need to download this into the DSpace 6.x source and compile it
   "@type": "BlogPosting",
   "headline": "March, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-03\/",
-  "wordCount": "480",
+  "wordCount": "1102",
   "datePublished": "2020-03-02T12:31:30+02:00",
-  "dateModified": "2020-03-08T14:28:39+02:00",
+  "dateModified": "2020-03-08T15:53:34+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -211,6 +211,116 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=tru
 # pg_upgradecluster 9.6 main
 # pg_dropcluster 9.6 main
 # dpkg -l | grep postgresql | grep 9.6 | awk '{print $2}' | xargs dpkg -r
+</code></pre><h2 id="2020-03-09">2020-03-09</h2>
+<ul>
+<li>Peter noticed that the Solr stats were not showing anything before 2020
+<ul>
+<li>I had to restart Tomcat three times before all cores loaded properly&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-03-10">2020-03-10</h2>
+<ul>
+<li>Fix some logic issues in the nginx config
+<ul>
+<li>Use generic blocking of <code>[Bb]ot</code> and <code>[Cc]rawl</code> and <code>[Ss]pider</code> in the &ldquo;badbots&rdquo; rate limiting logic instead of trying to list them all one by one (bots should not be trying to index dynamic pages <em>no matter what</em> so we punish hard here)</li>
+<li>We were not properly forwarding the remote IP address to Tomcat in all nginx location blocks, which led some locations to log a hit from 127.0.0.1 (because we need to explicitly add the global proxy params when setting other headers in location blocks)</li>
+<li>Unfortunately this affected the REST API and there are a few hundred thousand requests from this user agent:</li>
+</ul>
+</li>
+</ul>
+<pre><code>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)
+</code></pre><ul>
+<li>It seems to only be a problem in the last week:</li>
+</ul>
+<pre><code># zgrep -c 64.225.40.66 /var/log/nginx/rest.log.{1..9}
+/var/log/nginx/rest.log.1:0
+/var/log/nginx/rest.log.2:0
+/var/log/nginx/rest.log.3:0
+/var/log/nginx/rest.log.4:3625
+/var/log/nginx/rest.log.5:27458
+/var/log/nginx/rest.log.6:0
+/var/log/nginx/rest.log.7:0
+/var/log/nginx/rest.log.8:0
+/var/log/nginx/rest.log.9:0
+</code></pre><ul>
+<li>In Solr the IP is 127.0.0.1, but in the nginx logs I can luckily see the real IP (64.225.40.66), which is on Digital Ocean</li>
+<li>I will purge them from Solr statistics:</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;userAgent:&quot;Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)&quot;&lt;/query&gt;&lt;/delete&gt;'
+</code></pre><ul>
+<li>Another user agent that seems to be a bot is:</li>
+</ul>
+<pre><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
+</code></pre><ul>
+<li>In Solr the IP is 127.0.0.1 because of the misconfiguration, but in nginx&rsquo;s logs I see it belongs to three IPs on Online.net in France:</li>
+</ul>
+<pre><code># zcat /var/log/nginx/access.log.*.gz /var/log/nginx/rest.log.*.gz | grep 'Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)' | awk '{print $1}' | sort | uniq -c
+  63090 163.172.68.99
+ 183428 163.172.70.248
+ 147608 163.172.71.24
+</code></pre><ul>
+<li>It is making 10,000 to 40,000 requests to XMLUI per day&hellip;</li>
+</ul>
+<pre><code># zgrep -c 'Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)' /var/log/nginx/access.log.{1..9}
+/var/log/nginx/access.log.30.gz:18687
+/var/log/nginx/access.log.31.gz:28936
+/var/log/nginx/access.log.32.gz:36402
+/var/log/nginx/access.log.33.gz:38886
+/var/log/nginx/access.log.34.gz:30607
+/var/log/nginx/access.log.35.gz:19040
+/var/log/nginx/access.log.36.gz:10780
+/var/log/nginx/access.log.37.gz:5808
+/var/log/nginx/access.log.38.gz:3100
+/var/log/nginx/access.log.39.gz:1485
+/var/log/nginx/access.log.3.gz:2898
+/var/log/nginx/access.log.40.gz:373
+/var/log/nginx/access.log.41.gz:3909
+/var/log/nginx/access.log.42.gz:4729
+/var/log/nginx/access.log.43.gz:3906
+</code></pre><ul>
+<li>I will purge those hits too!</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;userAgent:&quot;Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)&quot;&lt;/query&gt;&lt;/delete&gt;'
+</code></pre><ul>
+<li>Shit, and something happened and a few thousand hits from user agents with &ldquo;Bot&rdquo; in their user agent got through
+<ul>
+<li>I need to re-run the <code>check-bot-hits.sh</code> script with the standard COUNTER-Robots list again, but add my own versions of a few because the script/Solr doesn&rsquo;t support case-insensitive regular expressions:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ ./check-spider-hits.sh -f /tmp/bots -d -p
+(DEBUG) Using spiders pattern file: /tmp/bots
+(DEBUG) Checking for hits from spider: Citoid
+Purging 11 hits from Citoid in statistics
+(DEBUG) Checking for hits from spider: ecointernet
+Purging 375 hits from ecointernet in statistics
+(DEBUG) Checking for hits from spider: ^Pattern\/[0-9]
+Purging 1 hits from ^Pattern\/[0-9] in statistics
+(DEBUG) Checking for hits from spider: sqlmap
+(DEBUG) Checking for hits from spider: Typhoeus
+Purging 6 hits from Typhoeus in statistics
+(DEBUG) Checking for hits from spider: 7siters
+(DEBUG) Checking for hits from spider: Apache-HttpClient
+Purging 3178 hits from Apache-HttpClient in statistics
+
+Total number of bot hits purged: 3571
+
+$ ./check-spider-hits.sh -f /tmp/bots -d -p
+(DEBUG) Using spiders pattern file: /tmp/bots
+(DEBUG) Checking for hits from spider: [Bb]ot
+Purging 8317 hits from [Bb]ot in statistics
+(DEBUG) Checking for hits from spider: [Cc]rawl
+Purging 1314 hits from [Cc]rawl in statistics
+(DEBUG) Checking for hits from spider: [Ss]pider
+Purging 62 hits from [Ss]pider in statistics
+(DEBUG) Checking for hits from spider: Citoid
+(DEBUG) Checking for hits from spider: ecointernet
+(DEBUG) Checking for hits from spider: ^Pattern\/[0-9]
+(DEBUG) Checking for hits from spider: sqlmap
+(DEBUG) Checking for hits from spider: Typhoeus
+(DEBUG) Checking for hits from spider: 7siters
+(DEBUG) Checking for hits from spider: Apache-HttpClient
 </code></pre><!-- raw HTML omitted -->
 
   
