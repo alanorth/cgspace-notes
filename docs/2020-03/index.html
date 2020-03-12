@@ -22,7 +22,7 @@ You need to download this into the DSpace 6.x source and compile it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-03/" />
 <meta property="article:published_time" content="2020-03-02T12:31:30+02:00" />
-<meta property="article:modified_time" content="2020-03-08T15:53:34+02:00" />
+<meta property="article:modified_time" content="2020-03-10T16:18:20+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2020"/>
@@ -39,7 +39,7 @@ You need to download this into the DSpace 6.x source and compile it
 
 
 "/>
-<meta name="generator" content="Hugo 0.66.0" />
+<meta name="generator" content="Hugo 0.67.0" />
 
 
     
@@ -49,9 +49,9 @@ You need to download this into the DSpace 6.x source and compile it
   "@type": "BlogPosting",
   "headline": "March, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-03\/",
-  "wordCount": "1102",
+  "wordCount": "1358",
   "datePublished": "2020-03-02T12:31:30+02:00",
-  "dateModified": "2020-03-08T15:53:34+02:00",
+  "dateModified": "2020-03-10T16:18:20+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -321,7 +321,37 @@ Purging 62 hits from [Ss]pider in statistics
 (DEBUG) Checking for hits from spider: Typhoeus
 (DEBUG) Checking for hits from spider: 7siters
 (DEBUG) Checking for hits from spider: Apache-HttpClient
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2020-03-11">2020-03-11</h2>
+<ul>
+<li>Ask Michael Victor for permission to create a new Linode server for DSpace Test</li>
+</ul>
+<h2 id="2020-3-12">2020-3-12</h2>
+<ul>
+<li>I&rsquo;m working on the 170 IITA records on <a href="https://dspacetest.cgiar.org/handle/10568/106567">DSpace Test</a> from January finally
+<ul>
+<li>It&rsquo;s been two months since I last looked and I want to do a thorough check to make sure Bosede didn&rsquo;t introduce any new issues, but I want to consolidate all the text languages for these records so it&rsquo;s easier to check them in OpenRefine</li>
+<li>First I got a list of IDs from <code>csvcut</code> and then I updated the text languages for only those records:</li>
+</ul>
+</li>
+</ul>
+<pre><code>dspace=# SELECT DISTINCT text_lang, COUNT(*) FROM metadatavalue WHERE resource_type_id=2 AND resource_id in (111295,111294,111293,111292,111291,111290,111288,111286,111285,111284,111283,111282,111281,111280,111279,111278,111277,111276,111275,111274,111273,111272,111271,111270,111269,111268,111267,111266,111265,111264,111263,111262,111261,111260,111259,111258,111257,111256,111255,111254,111253,111252,111251,111250,111249,111248,111247,111246,111245,111244,111243,111242,111241,111240,111238,111237,111236,111235,111234,111233,111232,111231,111230,111229,111228,111227,111226,111225,111224,111223,111222,111221,111220,111219,111218,111217,111216,111215,111214,111213,111212,111211,111209,111208,111207,111206,111205,111204,111203,111202,111201,111200,111199,111198,111197,111196,111195,111194,111193,111192,111191,111190,111189,111188,111187,111186,111185,111184,111183,111182,111181,111180,111179,111178,111177,111176,111175,111174,111173,111172,111171,111170,111169,111168,111299,111298,111297,111296,111167,111166,111165,111164,111163,111162,111161,111160,111159,111158,111157,111156,111155,111154,111153,111152,111151,111150,111149,111148,111147,111146,111145,111144,111143,111142,111141,111140,111139,111138,111137,111136,111135,111134,111133,111132,111131,111129,111128,111127,111126,111125) GROUP BY text_lang ORDER BY count;
+</code></pre><ul>
+<li>Then I exported the metadata from DSpace Test and imported it into OpenRefine
+<ul>
+<li>I corrected one invalid AGROVOC subject using my <code>csv-metadata-quality</code> script</li>
+</ul>
+</li>
+<li>I exported a new list of affiliations from the database, added line numbers with <code>csvcut</code>, and then validated them in OpenRefine using <code>reconcile-csv</code>:</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2020-03-12-affiliations.csv WITH CSV HEADER;`
+dspace=# \q
+$ csvcut -l -c 0 /tmp/2020-03-12-affiliations.csv | sed -e 's/^line_number/id/' -e 's/text_value/name/' &gt; /tmp/affiliations.csv
+$ lein run /tmp/affiliations.csv name id
+</code></pre><ul>
+<li>I always forget how to copy the reconciled values in OpenRefine, but you need to make a new column and populate it using this GREL: <code>if(cell.recon.matched, cell.recon.match.name, value)</code></li>
+<li>I mapped all 170 items to their appropriate collections based on type and uploaded them to CGSpace</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
