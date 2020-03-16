@@ -22,7 +22,7 @@ You need to download this into the DSpace 6.x source and compile it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-03/" />
 <meta property="article:published_time" content="2020-03-02T12:31:30+02:00" />
-<meta property="article:modified_time" content="2020-03-10T16:18:20+02:00" />
+<meta property="article:modified_time" content="2020-03-12T12:58:21+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2020"/>
@@ -39,7 +39,7 @@ You need to download this into the DSpace 6.x source and compile it
 
 
 "/>
-<meta name="generator" content="Hugo 0.67.0" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
     
@@ -49,9 +49,9 @@ You need to download this into the DSpace 6.x source and compile it
   "@type": "BlogPosting",
   "headline": "March, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-03\/",
-  "wordCount": "1358",
+  "wordCount": "1462",
   "datePublished": "2020-03-02T12:31:30+02:00",
-  "dateModified": "2020-03-10T16:18:20+02:00",
+  "dateModified": "2020-03-12T12:58:21+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -350,6 +350,24 @@ $ lein run /tmp/affiliations.csv name id
 </code></pre><ul>
 <li>I always forget how to copy the reconciled values in OpenRefine, but you need to make a new column and populate it using this GREL: <code>if(cell.recon.matched, cell.recon.match.name, value)</code></li>
 <li>I mapped all 170 items to their appropriate collections based on type and uploaded them to CGSpace</li>
+</ul>
+<h2 id="2020-03-16">2020-03-16</h2>
+<ul>
+<li>I&rsquo;m looking at the CPU usage of CGSpace (linode18) over the past year and I see we <em>rarely</em> even go over two CPUs on average sustained usage:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/03/cgspace-cpu-year.png" alt="linode18 CPU usage year"></p>
+<ul>
+<li>Also clearly visible is the effect of CPU steal in 2019-03</li>
+</ul>
+<p><img src="/cgspace-notes/2020/03/cgspace-memory-year.png" alt="linode18 RAM usage year"></p>
+<p><img src="/cgspace-notes/2020/03/cgspace-heap-year.png" alt="linode18 JVM heap usage year"></p>
+<ul>
+<li>At max we have committed 10GB of RAM, the rest is used opportunistically by the filesystem cache, likely for Solr
+<ul>
+<li>There was a huge drop in 2019-07 when I changed the JVM settings</li>
+<li>I think we should re-evaluate our deployment and perhaps target a different instance type and add block storage for assetstore (as we determined Linode&rsquo;s block storage to be too slow for Solr)</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
