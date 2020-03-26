@@ -22,7 +22,7 @@ You need to download this into the DSpace 6.x source and compile it
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-03/" />
 <meta property="article:published_time" content="2020-03-02T12:31:30+02:00" />
-<meta property="article:modified_time" content="2020-03-24T15:25:19+02:00" />
+<meta property="article:modified_time" content="2020-03-25T15:58:01+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="March, 2020"/>
@@ -39,7 +39,7 @@ You need to download this into the DSpace 6.x source and compile it
 
 
 "/>
-<meta name="generator" content="Hugo 0.68.2" />
+<meta name="generator" content="Hugo 0.68.3" />
 
 
     
@@ -49,9 +49,9 @@ You need to download this into the DSpace 6.x source and compile it
   "@type": "BlogPosting",
   "headline": "March, 2020",
   "url": "https:\/\/alanorth.github.io\/cgspace-notes\/2020-03\/",
-  "wordCount": "1638",
+  "wordCount": "1894",
   "datePublished": "2020-03-02T12:31:30+02:00",
-  "dateModified": "2020-03-24T15:25:19+02:00",
+  "dateModified": "2020-03-25T15:58:01+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -407,6 +407,40 @@ $ lein run /tmp/affiliations.csv name id
 <ul>
 <li>I sent Atmire a message to ask if they managed to start working on the DSpace 6 port, as the last communication was twenty-six days ago when they said they were going to secure technical resources to do so</li>
 <li>Start adapting the <code>dspace</code> role in our <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a> for DSpace 6 support</li>
+</ul>
+<h2 id="2020-03-26">2020-03-26</h2>
+<ul>
+<li>More work adapting the <code>dspace</code> role in our Ansible infrastructure scripts to DSpace 6</li>
+<li>Update Tomcat to version 7.0.103 in the Ansible infrastrcutrue playbooks and deploy on DSpace Test (linode26)</li>
+<li>Maria sent me a few new ORCID identifiers from Bioversity so I combined them with our existing ones, filtered the unique ones, and then resolved their names using my <code>resolve-orcids.py</code> script:</li>
+</ul>
+<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcids | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2020-03-26-combined-orcids.txt
+$ ./resolve-orcids.py -i /tmp/2020-03-26-combined-orcids.txt -o /tmp/2020-03-26-combined-names.txt -d
+# sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
+$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+</code></pre><ul>
+<li>I checked the database for likely matches to the author name and then created a CSV with the author names and ORCID iDs:</li>
+</ul>
+<pre><code>dc.contributor.author,cg.creator.id
+&quot;King, Brian&quot;,&quot;Brian King: 0000-0002-7056-9214&quot;
+&quot;Ortiz-Crespo, Berta&quot;,&quot;Berta Ortiz-Crespo: 0000-0002-6664-0815&quot;
+&quot;Ekesa, Beatrice&quot;,&quot;Beatrice Ekesa: 0000-0002-2630-258X&quot;
+&quot;Ekesa, B.&quot;,&quot;Beatrice Ekesa: 0000-0002-2630-258X&quot;
+&quot;Ekesa, B.N.&quot;,&quot;Beatrice Ekesa: 0000-0002-2630-258X&quot;
+&quot;Gullotta, G.&quot;,&quot;Gaia Gullotta: 0000-0002-2240-3869&quot;
+</code></pre><ul>
+<li>Running the <code>add-orcid-identifiers-csv.py</code> script I added 32 ORCID iDs to items on CGSpace!</li>
+</ul>
+<pre><code>$ ./add-orcid-identifiers-csv.py -i /tmp/2020-03-26-ciat-orcids.csv -db dspace -u dspace -p 'fuuu'
+</code></pre><ul>
+<li>Udana from IWMI asked about some items that are missing Altmetric donuts on CGSpace
+<ul>
+<li>One of them had a link to the paper on Nature, but was missing a DOI</li>
+<li><a href="https://hdl.handle.net/10568/106899">The second item</a> had no donut so I <a href="https://twitter.com/mralanorth/status/1243158045540134913">tweeted its handle</a></li>
+<li><a href="https://hdl.handle.net/10568/107258">The third item</a> also had no handle so I <a href="https://twitter.com/mralanorth/status/1243158786392625153">tweeted it</a> as well</li>
+</ul>
+</li>
+<li>Abenet pointed out <a href="https://hdl.handle.net/10568/106573">one item</a> that she had tweeted last week that is missing a donut as well, so I <a href="https://twitter.com/mralanorth/status/1243163710241345536">tweeted it</a> too</li>
 </ul>
 <!-- raw HTML omitted -->
 
