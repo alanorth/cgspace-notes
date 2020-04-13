@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-07T16:32:02+03:00" />
+<meta property="article:modified_time" content="2020-04-12T17:09:14+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "793",
+  "wordCount": "1025",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-07T16:32:02+03:00",
+  "dateModified": "2020-04-12T17:09:14+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -250,7 +250,34 @@ $ ~/dspace63/bin/dspace solr-upgrade-statistics-6x
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-04-13">2020-04-13</h2>
+<ul>
+<li>I realized that <code>solr-upgrade-statistics-6x</code> only processes 100,000 records by default so I think we actually need to finish running it for all legacy Solr records before asking Atmire why CUA statlets and detailed statistics aren&rsquo;t working</li>
+<li>For now I am just doing 250,000 records at a time on my local environment:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS=&quot;-Xmx2000m -Dfile.encoding=UTF-8&quot;
+$ ~/dspace63/bin/dspace solr-upgrade-statistics-6x -n 250000
+</code></pre><ul>
+<li>Despite running the migration for all of my local 1.5 million Solr records, I still see a few hundred thousand like <code>-1</code> and <code>0-unmigrated</code>
+<ul>
+<li>I will purge them all and try to import only a subset&hellip;</li>
+<li>After importing again I see there are indeed tens of thousands of these documents with IDs &ldquo;-1&rdquo; and &ldquo;0&rdquo;</li>
+<li>They are all <code>type: 5</code>, which is &ldquo;SITE&rdquo; according to <code>Constants.java</code>:</li>
+</ul>
+</li>
+</ul>
+<pre><code>/** DSpace site type */
+public static final int SITE = 5;
+</code></pre><ul>
+<li>Even after deleting those documents and re-running <code>solr-upgrade-statistics-6x</code> I still get the UUID errors when using CUA and the statlets</li>
+<li>I have sent some feedback and questions to Atmire (including about the Â issue with glypicons in the header trail)</li>
+<li>In other news, my local Artifactory container stopped working for some reason so I re-created it and it seems some things have changed upstream (port 8082 for web UI?):</li>
+</ul>
+<pre><code>$ podman rm artifactory
+$ podman pull docker.bintray.io/jfrog/artifactory-oss:latest
+$ podman create --ulimit nofile=32000:32000 --name artifactory -v artifactory_data:/var/opt/jfrog/artifactory -p 8081-8082:8081-8082 docker.bintray.io/jfrog/artifactory-oss
+$ podman start artifactory
+</code></pre><!-- raw HTML omitted -->
 
   
 
