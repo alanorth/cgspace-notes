@@ -112,7 +112,7 @@ dcterms.audience | ✓ | ✓ | - | - | - | ✓ | |
 There are a few things that I need to check once I get a deployment of this code up and running:
 
 - Assess the XSL changes to see if things like `not(@qualifier)]` still make sense after we move fields from DC to DCTERMS, as some fields will no longer have qualifiers
-- Do I need to edit crosswalks that we are not using, like [MODS](https://wiki.duraspace.org/display/DSDOC5x/DSpace+AIP+Format#DSpaceAIPFormat-MODSSchema)?
+- Do I need to edit crosswalks that we are not using, like [MODS](https://wiki.lyrasis.org/display/DSDOC5x/DSpace+AIP+Format#DSpaceAIPFormat-MODSSchema)?
 - There is potentially a lot of work in the OAI metadata formats like DIM, METS, and QDC (see `dspace/config/crosswalks/oai/*.xsl`)
 
 ------
