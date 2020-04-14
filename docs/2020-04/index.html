@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-12T17:09:14+03:00" />
+<meta property="article:modified_time" content="2020-04-13T17:24:05+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "1025",
+  "wordCount": "1308",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-12T17:09:14+03:00",
+  "dateModified": "2020-04-13T17:24:05+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -277,7 +277,29 @@ public static final int SITE = 5;
 $ podman pull docker.bintray.io/jfrog/artifactory-oss:latest
 $ podman create --ulimit nofile=32000:32000 --name artifactory -v artifactory_data:/var/opt/jfrog/artifactory -p 8081-8082:8081-8082 docker.bintray.io/jfrog/artifactory-oss
 $ podman start artifactory
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2020-04-14">2020-04-14</h2>
+<ul>
+<li>A few days ago Peter asked me to update an author&rsquo;s name on CGSpace and in the controlled vocabularies:</li>
+</ul>
+<pre><code>dspace=# UPDATE metadatavalue SET text_value='Knight-Jones, Theodore J.D.' WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value='Knight-Jones, T.J.D.';
+</code></pre><ul>
+<li>I updated his existing records on CGSpace, changed the controlled lists, added his ORCID identifier to the controlled list, and tagged his thirty-nine items with the ORCID iD</li>
+<li>The new DSpace 6 stuff that Atmire sent modifies the Mirage 2&rsquo;s <code>pom.xml</code> to copy the each theme&rsquo;s resulting <code>node_modules</code> to each theme after building and installing with <code>ant update</code> because they moved some packages from bower to npm and now reference them in <code>page-structure.xsl</code>
+<ul>
+<li>This is a good idea, because bower is no longer supported, and npm has gotten a lot better, but it causes an extra 200,000 files to get copied!</li>
+<li>Most scripts are concatenated into <code>theme.js</code> during build, so we don&rsquo;t need the <code>node_modules</code> after that, but there are three scripts in <code>page-structure.xsl</code> that are not included there</li>
+<li>The scripts are a very old version of modernizr which is not even available on npm, html5shiv, and respond.js</li>
+<li>For modernizr I can simply download a static copy and put it in <code>0_CGIAR/scripts</code> and concatenate it into <code>theme.js</code></li>
+<li>For the others, I can revert to using them from bower&rsquo;s <code>vendor</code> directory, which is installed by the parent XMLUI Mirage 2 theme</li>
+<li>During this process I also realized that <code>mvn clean</code> doesn&rsquo;t actually clean everything, and <code>dspace/modules/xmlui-mirage2/target</code> is remaining from previous builds and contains a bunch of shit from previous builds (including all the themes which I was trying to build without!)
+<ul>
+<li>This must be a DSpace bug, but I should theoretically check on vanilla DSpace and then file a bug&hellip;</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
