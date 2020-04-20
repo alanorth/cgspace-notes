@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-14T20:01:06+03:00" />
+<meta property="article:modified_time" content="2020-04-17T19:40:30+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "1401",
+  "wordCount": "1660",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-14T20:01:06+03:00",
+  "dateModified": "2020-04-17T19:40:30+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -307,6 +307,56 @@ $ podman start artifactory
 <li>Also, they said we need to use something called <code>AtomicStatisticsUpdateCLI</code> to do the Solr legacy integer ID to UUID conversion so I asked for more information about that workflow</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-04-20">2020-04-20</h2>
+<ul>
+<li>Looking into a high rate of outgoing bandwidth from yesterday on CGSpace (linode18):</li>
+</ul>
+<pre><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Apr/2020:0[6789]&quot; | goaccess --log-format=COMBINED -
+</code></pre><ul>
+<li>One host in Russia (91.241.19.70) download 23GiB over those few hours in the morning
+<ul>
+<li>It looks like all the requests were for one single item&rsquo;s bitstreams:</li>
+</ul>
+</li>
+</ul>
+<pre><code># grep -c 91.241.19.70 /var/log/nginx/access.log.1
+8900
+# grep 91.241.19.70 /var/log/nginx/access.log.1 | grep -c '10568/35187'
+8900
+</code></pre><ul>
+<li>I thought the host might have been Yandex misbehaving, but its user agent is:</li>
+</ul>
+<pre><code>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_3; nl-nl) AppleWebKit/527  (KHTML, like Gecko) Version/3.1.1 Safari/525.20
+</code></pre><ul>
+<li>I will purge that IP from the Solr statistics using my <code>check-spider-ip-hits.sh</code> script:</li>
+</ul>
+<pre><code>$ ./check-spider-ip-hits.sh -d -f /tmp/ip -p
+(DEBUG) Using spider IPs file: /tmp/ip
+(DEBUG) Checking for hits from spider IP: 91.241.19.70
+Purging 8909 hits from 91.241.19.70 in statistics
+
+Total number of bot hits purged: 8909
+</code></pre><ul>
+<li>While investigating that I noticed ORCID identifiers missing from a few authors names, so I added them with my <code>add-orcid-identifiers.py</code> script:</li>
+</ul>
+<pre><code>$ ./add-orcid-identifiers-csv.py -i 2020-04-20-add-orcids.csv -db dspace -u dspace -p 'fuuu' -d
+</code></pre><ul>
+<li>The contents of <code>2020-04-20-add-orcids.csv</code> was:</li>
+</ul>
+<pre><code>dc.contributor.author,cg.creator.id
+&quot;Schut, Marc&quot;,&quot;Marc Schut: 0000-0002-3361-4581&quot;
+&quot;Schut, M.&quot;,&quot;Marc Schut: 0000-0002-3361-4581&quot;
+&quot;Kamau, G.&quot;,&quot;Geoffrey Kamau: 0000-0002-6995-4801&quot;
+&quot;Kamau, G&quot;,&quot;Geoffrey Kamau: 0000-0002-6995-4801&quot;
+&quot;Triomphe, Bernard&quot;,&quot;Bernard Triomphe: 0000-0001-6657-3002&quot;
+&quot;Waters-Bayer, Ann&quot;,&quot;Ann Waters-Bayer: 0000-0003-1887-7903&quot;
+&quot;Klerkx, Laurens&quot;,&quot;Laurens Klerkx: 0000-0002-1664-886X&quot;
+</code></pre><ul>
+<li>I confirmed some of the authors&rsquo; names from the report itself, then by looking at their profiles on ORCID.org</li>
+<li>Add new ILRI subject &ldquo;COVID19&rdquo; to the <code>5_x-prod</code> branch</li>
+<li>Add new CCAFS Phase II project tags to the <code>5_x-prod</code> branch</li>
+<li>I will deploy these to CGSpace in the next few days</li>
 </ul>
 <!-- raw HTML omitted -->
 
