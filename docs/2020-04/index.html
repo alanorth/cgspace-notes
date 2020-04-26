@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-20T12:41:21+03:00" />
+<meta property="article:modified_time" content="2020-04-24T21:36:23+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "1742",
+  "wordCount": "1970",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-20T12:41:21+03:00",
+  "dateModified": "2020-04-24T21:36:23+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -368,7 +368,35 @@ Total number of bot hits purged: 8909
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-04-25">2020-04-25</h2>
+<ul>
+<li>I researched a bit more about the Â issue with glypicons and realized it&rsquo;s due to <a href="https://github.com/twbs/bootstrap-sass/issues/919">a bug in libsass</a>
+<ul>
+<li>I have Ruby sass version 3.4.25 installed in my local environment, but DSpace Mirage 2 is supposed to build with 3.3.14</li>
+<li>Downgrading the version fixes it, though I wonder: why did I not have this issue on the <code>6.x-dev</code> branch before Atmire&rsquo;s pull request, and also on <code>5_x-prod</code> where I&rsquo;ve been building for a few months here&hellip;</li>
+</ul>
+</li>
+<li>I deployed the latest <code>5_x-prod</code> branch on CGSpace (linode18), ran all updates, and rebooted the server
+<ul>
+<li>This includes the &ldquo;COVID19&rdquo; ILRI subject, the new CCAFS Phase II project tags, and the changes to an ILRI author name</li>
+<li>After restarting the server I had to restart Tomcat three times before all Solr statistics cores loaded properly.</li>
+<li>After that I started a full Discovery reindexing to pick up some author changes I made last week:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre><ul>
+<li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
+</ul>
+<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(184980) is still referenced from table &quot;bundle&quot;.
+</code></pre><ul>
+<li>The solution is, as always:</li>
+</ul>
+<pre><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (183996);'
+UPDATE 1
+</code></pre><!-- raw HTML omitted -->
 
   
 
