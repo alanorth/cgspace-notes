@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-24T21:36:23+03:00" />
+<meta property="article:modified_time" content="2020-04-26T10:41:27+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -45,7 +45,7 @@ The third item now has a donut with score 1 since I tweeted it last week
 
 On the same note, the one item Abenet pointed out last week now has a donut with score of 104 after I tweeted it last week
 "/>
-<meta name="generator" content="Hugo 0.69.1" />
+<meta name="generator" content="Hugo 0.69.2" />
 
 
     
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "1970",
+  "wordCount": "2178",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-24T21:36:23+03:00",
+  "dateModified": "2020-04-26T10:41:27+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -396,6 +396,22 @@ $ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 </ul>
 <pre><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (183996);'
 UPDATE 1
+</code></pre><ul>
+<li>I spent some time working on the XMLUI themes in DSpace 6
+<ul>
+<li>Atmire&rsquo;s pull request modifies <code>pom.xml</code> to <em>not</em> exclude <code>node_modules</code>, which means an extra ~260,000 files get copied to our installation folder because of all the themes</li>
+<li>I worked on the <code>Gruntfile.js</code> to copy Font Awesome and Bootstrap glyphicon fonts out of <code>node_modules</code> and into <code>fonts</code> at build time, but still <code>jquery-ui.min.css</code> was being referenced as a <code>url()</code> in CSS</li>
+<li>SASS can include imported CSS in your compiled CSS—instead of including an <code>@import url(..)</code> if you import it without the &ldquo;.css&rdquo;, but our version of Ruby SASS doesn&rsquo;t support that</li>
+<li>I hacked <code>Gruntfile.js</code> to use <code>dart-sass</code> instead of Ruby <code>compass</code> (including installing compass&rsquo;s mixins via npm!) but then <a href="https://github.com/sass/dart-sass/issues/345">dart-sass converts all the glyphicon ASCII escape codes to Unicode literals</a> and they show up garbled in Firefox</li>
+<li>I tried to use <code>node-sass</code> instead of dart-sass and it doesn&rsquo;t replace the ASCII escapes with literals, but then I get the the Â issue with the glyphicon in the header trail again! Back to square one!</li>
+<li>So that was a waste of five hours&hellip;</li>
+<li>I might just leave this <a href="https://github.com/twbs/bootstrap-sass/issues/919">tiny hack</a> in <code>0_CGIAR/styles/_style.scss</code> to override this and be done with it:</li>
+</ul>
+</li>
+</ul>
+<pre><code>.breadcrumb &gt; li + li:before {
+  content: &quot;/\00a0&quot;;
+}
 </code></pre><!-- raw HTML omitted -->
 
   
