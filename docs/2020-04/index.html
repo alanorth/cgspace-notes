@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-28T18:18:34+03:00" />
+<meta property="article:modified_time" content="2020-04-29T14:20:28+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "2592",
+  "wordCount": "2787",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-28T18:18:34+03:00",
+  "dateModified": "2020-04-29T14:20:28+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -499,6 +499,39 @@ Caused by: java.lang.NullPointerException
 <li>I&rsquo;ve reverted my sweet SVG work from yesterday and adjusted the Font Awesome 5 SCSS to add a few more icons that they are using</li>
 </ul>
 </li>
+<li>Tezira said she was having issues submitting items on CGSpace today
+<ul>
+<li>I looked at all the errors in the DSpace log and see a few SQL pooling errors around mid day:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ grep ERROR dspace.log.2020-04-29 | cut -f 3- -d' ' | sort | uniq -c | sort -n
+      1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL findByUnique Error -
+      1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL find Error -
+      1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL query singleTable Error -
+      1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
+</code></pre><ul>
+<li>I looked in Munin and I see that there is a strange spike in the database pool usage this afternoon:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/04/jmx_tomcat_dbpools-day.png" alt="Tomcat Database Pool usage day"></p>
+<ul>
+<li>Looking at the past month it does seem to be something strange:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/04/jmx_tomcat_dbpools-month.png" alt="Tomcat Database Pool usage month"></p>
+<ul>
+<li>Database connections do seem high:</li>
+</ul>
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      5 dspaceApi
+      6 dspaceCli
+     88 dspaceWeb
+</code></pre><ul>
+<li>Most of those are idle in transaction:</li>
+</ul>
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep 'dspaceWeb' | grep -c &quot;idle in transaction&quot;
+67
+</code></pre><ul>
+<li>I don&rsquo;t see anything in the PostgreSQL or Tomcat logs suggesting anything is wrong&hellip; I think the solution to clear these idle connections is probably to just restart Tomcat</li>
 </ul>
 <!-- raw HTML omitted -->
 
