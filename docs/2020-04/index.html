@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-29T14:20:28+03:00" />
+<meta property="article:modified_time" content="2020-04-29T17:33:34+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "2787",
+  "wordCount": "3186",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-29T14:20:28+03:00",
+  "dateModified": "2020-04-29T17:33:34+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -532,6 +532,65 @@ Caused by: java.lang.NullPointerException
 67
 </code></pre><ul>
 <li>I don&rsquo;t see anything in the PostgreSQL or Tomcat logs suggesting anything is wrong&hellip; I think the solution to clear these idle connections is probably to just restart Tomcat</li>
+<li>I looked at the Solr stats for this month and see lots of suspicious IPs:</li>
+</ul>
+<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=*:*&amp;fq=dateYearMonth:2020-04&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip
+
+        &quot;88.99.115.53&quot;,23621, # Hetzner, using XMLUI and REST API with no user agent
+        &quot;104.154.216.0&quot;,11865,# Google cloud, scraping XMLUI with no user agent
+        &quot;104.198.96.245&quot;,4925,# Google cloud, using REST API with no user agent
+        &quot;52.34.238.26&quot;,2907,  # EcoSearch on XMLUI, user agent: EcoSearch (+https://search.ecointernet.org/)
+</code></pre><ul>
+<li>And a bunch more&hellip; ugh&hellip;
+<ul>
+<li>70.32.90.172: scraping REST API for IWMI/WLE pages with no user agent</li>
+<li>2a01:7e00::f03c:91ff:fe16:fcb: Linode, REST API, no user agent</li>
+<li>2607:f298:5:101d:f816:3eff:fed9:a484: DreamHost, XMLUI and REST API, python-requests/2.18.4</li>
+<li>2a00:1768:2001:7a::20: Netherlands, XMLUI, trying SQL injections</li>
+</ul>
+</li>
+<li>I need to start blocking requests without a user agent&hellip;</li>
+<li>I purged these user agents using my <code>check-spider-ip-hits.sh</code> script:</li>
+</ul>
+<pre><code>$ for year in {2010..2019}; do ./check-spider-ip-hits.sh -f /tmp/ips -s statistics-$year -p; done
+$ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
+</code></pre><ul>
+<li>Then I added a few of them to the bot mapping in the nginx config because it appears they are regular harvesters since 2018</li>
+<li>Looking through the Solr stats faceted by the <code>userAgent</code> field I see some interesting ones:</li>
+</ul>
+<pre><code>$ curl 'http://localhost:8081/solr/statistics/select?q=*%3A*&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=userAgent'
+...
+&quot;Delphi 2009&quot;,50725,
+&quot;OgScrper/1.0.0&quot;,12421,
+</code></pre><ul>
+<li>Delphi is only used by IP addresses in Greece, so that&rsquo;s obviously the GARDIAN people harvesting us&hellip;</li>
+<li>I have no idea what OgScrper is, but it&rsquo;s not a user!</li>
+<li>Then there are 276,000 hits from <code>MEL-API</code> from Jordanian IPs in 2018, so that&rsquo;s obviously CodeObia guys&hellip;</li>
+<li>Other user agents:
+<ul>
+<li>GigablastOpenSource/1</li>
+<li>Owlin Domain Resolver V1</li>
+<li>API scraper</li>
+<li>MetaURI</li>
+</ul>
+</li>
+<li>I don&rsquo;t know why, but my <code>check-spider-hits.sh</code> script doesn&rsquo;t seem to be handling the user agents with spaces properly so I will delete those manually after</li>
+<li>First delete the ones without spaces, creating a temp file in <code>/tmp/agents</code> containing the patterns:</li>
+</ul>
+<pre><code>$ for year in {2010..2019}; do ./check-spider-hits.sh -f /tmp/agents -s statistics-$year -p; done
+$ ./check-spider-hits.sh -f /tmp/agents -s statistics -p
+</code></pre><ul>
+<li>That&rsquo;s about 300,000 hits purged&hellip;</li>
+<li>Then remove the ones with spaces manually, checking the query syntax first, then deleting in yearly cores and the statistics core:</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:/Delphi 2009/&amp;rows=0&quot;
+...
+&lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;52&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;userAgent:/Delphi 2009/&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;38760&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
+$ for year in {2010..2019}; do curl -s &quot;http://localhost:8081/solr/statistics-$year/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;userAgent:&quot;Delphi 2009&quot;&lt;/query&gt;&lt;/delete&gt;'; done
+$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;userAgent:&quot;Delphi 2009&quot;&lt;/query&gt;&lt;/delete&gt;'
+</code></pre><ul>
+<li>Quoting them works for now until I can look into it and handle it properly in the script</li>
+<li>This was about 400,000 hits in total purged from the Solr statistics</li>
 </ul>
 <!-- raw HTML omitted -->
 
