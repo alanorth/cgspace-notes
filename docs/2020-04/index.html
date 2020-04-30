@@ -25,7 +25,7 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-04/" />
 <meta property="article:published_time" content="2020-04-02T10:53:24+03:00" />
-<meta property="article:modified_time" content="2020-04-30T10:44:23+03:00" />
+<meta property="article:modified_time" content="2020-04-30T11:21:42+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="April, 2020"/>
@@ -55,9 +55,9 @@ On the same note, the one item Abenet pointed out last week now has a donut with
   "@type": "BlogPosting",
   "headline": "April, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-04/",
-  "wordCount": "3286",
+  "wordCount": "3406",
   "datePublished": "2020-04-02T10:53:24+03:00",
-  "dateModified": "2020-04-30T10:44:23+03:00",
+  "dateModified": "2020-04-30T11:21:42+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -609,8 +609,32 @@ $ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quo
 # rm -rf /etc/letsencrypt.bak
 </code></pre><ul>
 <li>Run all system updates on DSpace Test and reboot it</li>
+<li>Tezira is still having issue submitting to CGSpace and the database is definitely busy according to Munin:</li>
 </ul>
-<!-- raw HTML omitted -->
+<p><img src="/cgspace-notes/2020/04/postgres_connections_cgspace-week.png" alt="Tomcat postgres connections week"></p>
+<ul>
+<li>But I don&rsquo;t see a lot of connections in PostgreSQL itself:</li>
+</ul>
+<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+      5 dspaceApi
+      6 dspaceCli
+     14 dspaceWeb
+$ psql -c 'select * from pg_stat_activity' | wc -l
+30
+</code></pre><ul>
+<li>Tezira said she cleared her browser cache and then was able to submit again
+<ul>
+<li>She said once she logged back in she had very many &ldquo;Untitled&rdquo; submissions pending</li>
+<li>I see that the database connections are indeed much lower now:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/04/postgres_connections_cgspace-day.png" alt="Tomcat postgres connections week"></p>
+<ul>
+<li>The PostgreSQL log shows a lot of errors about deadlocks and queries waiting on other processes&hellip;</li>
+</ul>
+<pre><code>ERROR:  deadlock detected
+</code></pre><!-- raw HTML omitted -->
 
   
 
