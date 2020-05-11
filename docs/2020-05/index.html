@@ -18,7 +18,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-05/" />
 <meta property="article:published_time" content="2020-05-02T09:52:04+03:00" />
-<meta property="article:modified_time" content="2020-05-06T16:03:29+03:00" />
+<meta property="article:modified_time" content="2020-05-07T11:45:25+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2020"/>
@@ -41,9 +41,9 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
   "@type": "BlogPosting",
   "headline": "May, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-05/",
-  "wordCount": "432",
+  "wordCount": "630",
   "datePublished": "2020-05-02T09:52:04+03:00",
-  "dateModified": "2020-05-06T16:03:29+03:00",
+  "dateModified": "2020-05-07T11:45:25+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -182,7 +182,36 @@ Total number of bot hits purged: 192332
 <li>And then I will add 188.134.31.88 to the nginx bad bot list and tell CodeObia to please use a &ldquo;bot&rdquo; user agent</li>
 <li>I also changed the nginx config to block requests with blank user agents</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-05-11">2020-05-11</h2>
+<ul>
+<li>Bizu said she was having issues submitting to CGSpace last week
+<ul>
+<li>The issue sounds like the one Tezira and CTA were having in the last few weeks</li>
+<li>I looked at the PostgreSQL graphs and see there are a lot of connections in &ldquo;idle in transaction&rdquo; and &ldquo;waiting for lock&rdquo; state:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/05/postgres_connections_cgspace-week.png" alt="PostgreSQL connections"></p>
+<ul>
+<li>I think I&rsquo;ll downgrade the PostgreSQL JDBC driver from 42.2.12 to 42.2.10, which was the version we were using before these issues started happening</li>
+<li>Atmire sent some feedback about my ongoing issues with their CUA module, but none of it was conclusive yet
+<ul>
+<li>Regarding Font Awesome 5 they will check how much work it will take and give me a quote</li>
+</ul>
+</li>
+<li>Abenet said some users are questioning why the statistics dropped so much lately, so I made a <a href="https://www.yammer.com/dspacedevelopers/#/Threads/show?threadId=674923030216704">post to Yammer</a> to explain about the robots</li>
+<li>Last week Peter had asked me to add a new ILRI author&rsquo;s ORCID iD
+<ul>
+<li>I added it to the controlled vocabulary and tagged the user&rsquo;s existing ~11 items in CGSpace using this CSV file with my <code>add-orcid-identifiers-csv.py</code> script:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ cat 2020-05-11-add-orcids.csv
+dc.contributor.author,cg.creator.id
+&quot;Lutakome, P.&quot;,&quot;Pius Lutakome: 0000-0002-0804-2649&quot;
+&quot;Lutakome, Pius&quot;,&quot;Pius Lutakome: 0000-0002-0804-2649&quot;
+$ ./add-orcid-identifiers-csv.py -i 2020-05-11-add-orcids.csv -db dspace -u dspace -p 'fuuu' -d
+</code></pre><!-- raw HTML omitted -->
 
   
 
