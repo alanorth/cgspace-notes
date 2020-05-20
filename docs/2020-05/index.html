@@ -18,7 +18,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-05/" />
 <meta property="article:published_time" content="2020-05-02T09:52:04+03:00" />
-<meta property="article:modified_time" content="2020-05-17T20:03:17+03:00" />
+<meta property="article:modified_time" content="2020-05-19T11:13:48+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2020"/>
@@ -41,9 +41,9 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
   "@type": "BlogPosting",
   "headline": "May, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-05/",
-  "wordCount": "912",
+  "wordCount": "1078",
   "datePublished": "2020-05-02T09:52:04+03:00",
-  "dateModified": "2020-05-17T20:03:17+03:00",
+  "dateModified": "2020-05-19T11:13:48+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -264,7 +264,30 @@ $ ./add-orcid-identifiers-csv.py -i 2020-05-11-add-orcids.csv -db dspace -u dspa
 dc.contributor.author,cg.creator.id
 $ ./add-orcid-identifiers-csv.py -i 2020-05-19-add-orcids.csv -db dspace -u dspace -p 'fuuu' -d
 &quot;Bahta, Sirak T.&quot;,&quot;Sirak Bahta: 0000-0002-5728-2489&quot;
-</code></pre><!-- raw HTML omitted -->
+</code></pre><ul>
+<li>An IITA user is having issues submitting to CGSpace and I see there are a rising number of PostgreSQL connections waiting in transaction and in lock:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/05/postgres_connections_cgspace-week2.png" alt="PostgreSQL connections"></p>
+<ul>
+<li>This is the same issue Tezira, Bizu, and CTA were having in the last few weeks and it I already downgraded the PostgreSQL JDBC driver version to the last version I was using before this started (42.2.10)
+<ul>
+<li>I will downgrade it to version 42.2.9 for now&hellip;</li>
+<li>The only other thing I can think of is that I upgraded Tomcat to 7.0.103 in March</li>
+</ul>
+</li>
+<li>Run system updates on DSpace Test (linode26) and reboot it</li>
+<li>Run system updates on CGSpace (linode18) and reboot it
+<ul>
+<li>After the system came back up I had to restart Tomcat 7 three times before all the Solr statistics cores came up OK</li>
+</ul>
+</li>
+<li>Send Atmire a snapshot of the CGSpace database for them to possibly troubleshoot the CUA issue with DSpace 6</li>
+</ul>
+<h2 id="2020-05-20">2020-05-20</h2>
+<ul>
+<li>Send CodeObia some logos and footer text for the next phase of OpenRXV development (<a href="https://github.com/ilri/OpenRXV/issues/18">#18</a>)</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
