@@ -18,7 +18,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-05/" />
 <meta property="article:published_time" content="2020-05-02T09:52:04+03:00" />
-<meta property="article:modified_time" content="2020-05-30T18:38:16+03:00" />
+<meta property="article:modified_time" content="2020-05-31T16:04:18+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2020"/>
@@ -41,9 +41,9 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
   "@type": "BlogPosting",
   "headline": "May, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-05/",
-  "wordCount": "1861",
+  "wordCount": "2094",
   "datePublished": "2020-05-02T09:52:04+03:00",
-  "dateModified": "2020-05-30T18:38:16+03:00",
+  "dateModified": "2020-05-31T16:04:18+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -386,9 +386,49 @@ $ ant update
 </ul>
 </li>
 <li>I had a mistake in my Solr internal URL parameter so DSpace couldn&rsquo;t find it, but once I fixed that DSpace starts up OK!</li>
-<li>Once the initial Discovery reindexing is completed I started the Solr statistics UUID migration:</li>
+<li>Once the initial Discovery reindexing was completed (after three hours or so!) I started the Solr statistics UUID migration:</li>
 </ul>
 <pre><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
+$ dspace solr-upgrade-statistics-6x -i statistics -n 250000
+$ dspace solr-upgrade-statistics-6x -i statistics -n 1000000
+$ dspace solr-upgrade-statistics-6x -i statistics -n 1000000
+...
+</code></pre><ul>
+<li>It&rsquo;s taking about 35 minutes for 1,000,000 records&hellip;</li>
+<li>Some issues towards the end of this core:</li>
+</ul>
+<pre><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+        at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
+        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:68)
+        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:54)
+        at org.dspace.util.SolrUpgradePre6xStatistics.batchUpdateStats(SolrUpgradePre6xStatistics.java:161)
+        at org.dspace.util.SolrUpgradePre6xStatistics.run(SolrUpgradePre6xStatistics.java:456)
+        at org.dspace.util.SolrUpgradePre6xStatistics.main(SolrUpgradePre6xStatistics.java:365)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</code></pre><ul>
+<li>So basically there are some documents that have IDs that have <em>not</em> been converted to UUID, and have <em>not</em> been labeled as &ldquo;unmigrated&rdquo; either&hellip;
+<ul>
+<li>Of these 101,257 documents, 90,000 are of type 5 (search), 9,000 are type storage, and 800 are type view, but it&rsquo;s weird because if I look at their type/statistics_type using a facet the storage ones disappear&hellip;</li>
+<li>For now I will export these documents from the statistics core and then delete them:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o statistics-unmigrated.json -k uid -f '(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)'
+$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>Now the UUID conversion script says there is nothing left to convert, so I can try to run the Atmire CUA conversion utility:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
+$ dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 1
 </code></pre><ul>
 <li>Experiment a bit with the Python <a href="https://pypi.org/project/country-converter/">country-converter</a> library as it can convert between different formats (like ISO 3166 and UN m49)
 <ul>
