@@ -18,7 +18,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-05/" />
 <meta property="article:published_time" content="2020-05-02T09:52:04+03:00" />
-<meta property="article:modified_time" content="2020-05-29T10:25:41+03:00" />
+<meta property="article:modified_time" content="2020-05-30T18:38:16+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2020"/>
@@ -41,9 +41,9 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
   "@type": "BlogPosting",
   "headline": "May, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-05/",
-  "wordCount": "1515",
+  "wordCount": "1861",
   "datePublished": "2020-05-02T09:52:04+03:00",
-  "dateModified": "2020-05-29T10:25:41+03:00",
+  "dateModified": "2020-05-30T18:38:16+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -342,6 +342,57 @@ $ ./add-orcid-identifiers-csv.py -i 2020-05-25-add-orcids.csv -db dspace -u dspa
 <li>Atmire got back to me about the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=706">Solr CUA issue in the DSpace 6 upgrade</a> and they cannot reproduce the error
 <ul>
 <li>The next step is for me to migrate DSpace Test (linode26) to DSpace 6 and try to reproduce the error there</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-05-31">2020-05-31</h2>
+<ul>
+<li>Start preparing to migrate DSpace Test (linode26) to the <code>6_x-dev-atmire-modules</code> branch
+<ul>
+<li>Run all system updates and reboot</li>
+<li>For now I will disable all yearly Solr statistics cores except the current <code>statistics</code> one</li>
+<li>Prepare PostgreSQL with a clean snapshot of CGSpace&rsquo;s DSpace 5.8 database:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ sudo su - postgres
+$ dropdb dspacetest
+$ createdb -O dspacetest --encoding=UNICODE dspacetest
+$ psql dspacetest -c 'alter user dspacetest superuser;'
+$ pg_restore -d dspacetest -O --role=dspacetest /tmp/cgspace_2020-05-31.backup
+$ psql dspacetest -c 'alter user dspacetest nosuperuser;'
+# run DSpace 5 version of update-sequences.sql!!!
+$ psql -f /home/dspace/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
+$ psql dspacetest -c &quot;DELETE FROM schema_version WHERE version IN ('5.8.2015.12.03.3');&quot;
+$ psql dspacetest -c 'CREATE EXTENSION pgcrypto;'
+$ exit
+</code></pre><ul>
+<li>Now switch to the DSpace 6.x branch and start a build:</li>
+</ul>
+<pre><code>$ chrt -i 0 ionice -c2 -n7 nice -n19 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false package
+...
+[ERROR] Failed to execute goal on project additions: Could not resolve dependencies for project org.dspace.modules:additions:jar:6.3: Failed to collect dependencies at com.atmire:atmire-listings-and-reports-api:jar:6.x-2.10.8-0-SNAPSHOT: Failed to read artifact descriptor for com.atmire:atmire-listings-and-reports-api:jar:6.x-2.10.8-0-SNAPSHOT: Could not transfer artifact com.atmire:atmire-listings-and-reports-api:pom:6.x-2.10.8-0-SNAPSHOT from/to atmire.com-snapshots (https://atmire.com/artifactory/atmire.com-snapshots): Not authorized , ReasonPhrase:Unauthorized. -&gt; [Help 1]
+</code></pre><ul>
+<li>Great! I will have to send Atmire a note about this&hellip; but for now I can sync over my local <code>~/.m2</code> directory and the build completes</li>
+<li>After the Maven build completed successfully I installed the updated code with Ant (make sure to delete the old spring directory):</li>
+</ul>
+<pre><code>$ cd dspace/target/dspace-installer
+$ rm -rf /blah/dspacetest/config/spring
+$ ant update
+</code></pre><ul>
+<li>Database migrations take 10:18.287s during the first startup&hellip;
+<ul>
+<li>perhaps when we do the production CGSpace migration I can do this in advance and tell users not to make any submissions?</li>
+</ul>
+</li>
+<li>I had a mistake in my Solr internal URL parameter so DSpace couldn&rsquo;t find it, but once I fixed that DSpace starts up OK!</li>
+<li>Once the initial Discovery reindexing is completed I started the Solr statistics UUID migration:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
+</code></pre><ul>
+<li>Experiment a bit with the Python <a href="https://pypi.org/project/country-converter/">country-converter</a> library as it can convert between different formats (like ISO 3166 and UN m49)
+<ul>
+<li>We need to eventually find a format we can use for all CGIAR DSpaces&hellip;</li>
 </ul>
 </li>
 </ul>
