@@ -19,7 +19,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-06/" />
 <meta property="article:published_time" content="2020-06-01T13:55:39+03:00" />
-<meta property="article:modified_time" content="2020-06-01T17:08:25+03:00" />
+<meta property="article:modified_time" content="2020-06-02T15:12:32+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="June, 2020"/>
@@ -33,7 +33,7 @@ I sent Atmire the dspace.log from today and told them to log into the server to 
 In other news, I checked the statistics API on DSpace 6 and it&rsquo;s working
 I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Test and I get an error:
 "/>
-<meta name="generator" content="Hugo 0.71.1" />
+<meta name="generator" content="Hugo 0.72.0" />
 
 
     
@@ -43,9 +43,9 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
   "@type": "BlogPosting",
   "headline": "June, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-06/",
-  "wordCount": "386",
+  "wordCount": "737",
   "datePublished": "2020-06-01T13:55:39+03:00",
-  "dateModified": "2020-06-01T17:08:25+03:00",
+  "dateModified": "2020-06-02T15:12:32+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -200,6 +200,46 @@ java.lang.NullPointerException
 <li>I cherry picked 150e83558103ed7f50e8f323b6407b9cbdf33717 into our current <code>6_x-dev-atmire-modules</code> branch</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-06-04">2020-06-04</h2>
+<ul>
+<li>Maria was asking about some items they are trying to map from the CGIAR Big Data collection into their Alliance of Bioversity and CIAT journal articles collection, but for some reason the items don&rsquo;t show up in the item mapper
+<ul>
+<li>The items don&rsquo;t even show up in the XMLUI Discover advanced search, and actually I don&rsquo;t even see any recent items on the recently submitted part of the collection (but the item pages exist of course)</li>
+<li>Perhaps I need to try a full Discovery re-index:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+...
+real    125m37.423s
+user    11m20.312s
+sys     3m19.965s
+</code></pre><ul>
+<li>Still I don&rsquo;t see the item in XMLUI search or in the item mapper (and I made sure to clear the Cocoon cache)
+<ul>
+<li>I&rsquo;m starting to think it&rsquo;s something related to the database transaction issue&hellip;</li>
+<li>I removed our custom JDBC driver from <code>/usr/local/apache-tomcat...</code> so that DSpace will use its own much older one, version 9.1-901-1.jdbc4</li>
+<li>I ran all system updates on the server (linode18) and rebooted it</li>
+<li>After it came back up I had to restart Tomcat five times before all Solr statistics cores came up properly</li>
+<li>Unfortunately this means that the Tomcat JDBC pooling via JNDI doesn&rsquo;t work, so we&rsquo;re using only the 30 connections reserved for the DSpace CLI from DSpace&rsquo;s own internal pool</li>
+</ul>
+</li>
+<li>I will also import a fresh database snapshot from CGSpace and check if I can map the item in my local environment
+<ul>
+<li>After importing and forcing a full reindex locally I can see the item in search and in the item mapper</li>
+</ul>
+</li>
+<li>Abenet sent another message about two users who are having issues with submission, and I see the number of locks in PostgreSQL has sky rocketed again as of a few days ago:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/06/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
+<ul>
+<li>As far as I can tell this started happening for the first time in April, connections and locks:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/06/postgres_connections_ALL-year.png" alt="PostgreSQL connections year">
+<img src="/cgspace-notes/2020/06/postgres_locks_ALL-year.png" alt="PostgreSQL locks year"></p>
+<ul>
+<li>I think I need to just leave this as is with the DSpace default JDBC driver for now, but perhaps I could also downgrade the Tomcat version (I deployed Tomcat 7.0.103 in March, so perhaps that&rsquo;s relevant)</li>
 </ul>
 <!-- raw HTML omitted -->
 
