@@ -19,7 +19,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-06/" />
 <meta property="article:published_time" content="2020-06-01T13:55:39+03:00" />
-<meta property="article:modified_time" content="2020-06-02T15:12:32+03:00" />
+<meta property="article:modified_time" content="2020-06-04T14:43:40+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="June, 2020"/>
@@ -43,9 +43,9 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
   "@type": "BlogPosting",
   "headline": "June, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-06/",
-  "wordCount": "737",
+  "wordCount": "846",
   "datePublished": "2020-06-01T13:55:39+03:00",
-  "dateModified": "2020-06-02T15:12:32+03:00",
+  "dateModified": "2020-06-04T14:43:40+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -211,7 +211,7 @@ java.lang.NullPointerException
 </li>
 </ul>
 <pre><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
-...
+
 real    125m37.423s
 user    11m20.312s
 sys     3m19.965s
@@ -223,6 +223,7 @@ sys     3m19.965s
 <li>I ran all system updates on the server (linode18) and rebooted it</li>
 <li>After it came back up I had to restart Tomcat five times before all Solr statistics cores came up properly</li>
 <li>Unfortunately this means that the Tomcat JDBC pooling via JNDI doesn&rsquo;t work, so we&rsquo;re using only the 30 connections reserved for the DSpace CLI from DSpace&rsquo;s own internal pool</li>
+<li>Perhaps our previous issues with the database pool from a few years ago will be less now that we have much more aggressive blocking and rate limiting of bots in nginx</li>
 </ul>
 </li>
 <li>I will also import a fresh database snapshot from CGSpace and check if I can map the item in my local environment
@@ -240,6 +241,20 @@ sys     3m19.965s
 <img src="/cgspace-notes/2020/06/postgres_locks_ALL-year.png" alt="PostgreSQL locks year"></p>
 <ul>
 <li>I think I need to just leave this as is with the DSpace default JDBC driver for now, but perhaps I could also downgrade the Tomcat version (I deployed Tomcat 7.0.103 in March, so perhaps that&rsquo;s relevant)</li>
+<li>Also, I&rsquo;ll start <em>another</em> full reindexing to see if the issue with mapping is somehow also resolved now that the database connections are working better
+<ul>
+<li>Perhaps related, but this one finished much faster:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    101m41.195s
+user    10m9.569s
+sys     3m13.929s
+</code></pre><ul>
+<li>Unfortunately the item is still not showing up in the item mapper&hellip;</li>
+<li>Something happened to AReS Explorer (linode20) so I ran all system updates and rebooted it</li>
 </ul>
 <!-- raw HTML omitted -->
 
