@@ -43,7 +43,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
   "@type": "BlogPosting",
   "headline": "June, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-06/",
-  "wordCount": "2127",
+  "wordCount": "2263",
   "datePublished": "2020-06-01T13:55:39+03:00",
   "dateModified": "2020-06-06T13:33:23+03:00",
   "author": {
@@ -262,7 +262,7 @@ sys     3m13.929s
 <li>The last time I normalized these was in 2019-06, and currently it looks like this:</li>
 </ul>
 <pre><code>dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE resource_type_id=2 GROUP BY text_lang ORDER BY count DESC;
-  text_lang  |  count  
+  text_lang  |  count
 -------------+---------
  en_US       | 2158377
  en          |  149540
@@ -449,6 +449,20 @@ Total number of bot hits purged: 29025
 </li>
 <li>Atmire sent an updated pull request for the Font Awesome 5 update for CUA (<a href="https://github.com/ilri/DSpace/pull/445">#445</a>) so I filed feedback on <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=706">their tracker</a></li>
 </ul>
+<h2 id="2020-06-09">2020-06-09</h2>
+<ul>
+<li>I&rsquo;m still thinking about the issue with PostgreSQL &ldquo;idle in transaction&rdquo; and &ldquo;waiting for lock&rdquo; connections
+<ul>
+<li>As far as I can see from the Munin graphs this issue started in late April or early May</li>
+<li>I don&rsquo;t see any PostgreSQL updates around then, though I did update Tomcat to version 7.0.103 in March</li>
+<li>I will try to downgrade Tomcat to 7.0.99, which was the version I was using until early February, before we had seen any issues</li>
+<li>Also, I will use the PostgreSQL JDBC driver version 42.2.9, which is what we were using back then as well</li>
+<li>After deploying Tomcat 7.0.99 I had to restart Tomcat three times before all the Solr statistics cores came up OK</li>
+</ul>
+</li>
+<li>Well look at that, the &ldquo;idle in transaction&rdquo; and locking issues started in April on DSpace Test too&hellip;</li>
+</ul>
+<p><img src="/cgspace-notes/2020/06/postgres_connections_ALL-day2.png" alt="PostgreSQL connections year DSpace Test"></p>
 <!-- raw HTML omitted -->
 
   
