@@ -19,7 +19,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-06/" />
 <meta property="article:published_time" content="2020-06-01T13:55:39+03:00" />
-<meta property="article:modified_time" content="2020-06-06T13:33:23+03:00" />
+<meta property="article:modified_time" content="2020-06-09T12:28:04+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="June, 2020"/>
@@ -43,9 +43,9 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
   "@type": "BlogPosting",
   "headline": "June, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-06/",
-  "wordCount": "2263",
+  "wordCount": "2429",
   "datePublished": "2020-06-01T13:55:39+03:00",
-  "dateModified": "2020-06-06T13:33:23+03:00",
+  "dateModified": "2020-06-09T12:28:04+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -463,6 +463,28 @@ Total number of bot hits purged: 29025
 <li>Well look at that, the &ldquo;idle in transaction&rdquo; and locking issues started in April on DSpace Test too&hellip;</li>
 </ul>
 <p><img src="/cgspace-notes/2020/06/postgres_connections_ALL-day2.png" alt="PostgreSQL connections year DSpace Test"></p>
+<h2 id="2020-06-13">2020-06-13</h2>
+<ul>
+<li>Atmire sent some questions about DSpace Test related to our ongoing CUA indexing issue
+<ul>
+<li>I had to clarify a few build steps and directories on the test server</li>
+</ul>
+</li>
+<li>I notice that the PostgreSQL connection issues have not come back since 2020-06-09 when I downgraded Tomcat to 7.0.99&hellip; fingers crossed that it was something related to that!
+<ul>
+<li>On that note I notice that the AReS explorer is still not harvesting CGSpace properly&hellip;</li>
+<li>I looked at the REST API logs on CGSpace (linode18) and saw that the AReS harvester is being denied due to not having a user agent, oops:</li>
+</ul>
+</li>
+</ul>
+<pre><code>172.104.229.92 - - [13/Jun/2020:02:00:00 +0200] &quot;GET /rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=50&amp;offset=0 HTTP/1.1&quot; 403 260 &quot;-&quot; &quot;-&quot;
+</code></pre><ul>
+<li>I created an nginx map based on the host&rsquo;s IP address that sets a temporary user agent (ua) and then changed the conditional in the REST API location block so that it checks this mapped ua instead of the default one
+<ul>
+<li>That should allow AReS to harvest for now until they update their user agent</li>
+</ul>
+</li>
+</ul>
 <!-- raw HTML omitted -->
 
   
