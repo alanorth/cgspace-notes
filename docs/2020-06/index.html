@@ -19,7 +19,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-06/" />
 <meta property="article:published_time" content="2020-06-01T13:55:39+03:00" />
-<meta property="article:modified_time" content="2020-06-14T10:11:12+03:00" />
+<meta property="article:modified_time" content="2020-06-14T16:06:56+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="June, 2020"/>
@@ -43,9 +43,9 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
   "@type": "BlogPosting",
   "headline": "June, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-06/",
-  "wordCount": "2600",
+  "wordCount": "2889",
   "datePublished": "2020-06-01T13:55:39+03:00",
-  "dateModified": "2020-06-14T10:11:12+03:00",
+  "dateModified": "2020-06-14T16:06:56+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -500,7 +500,46 @@ Total number of bot hits purged: 29025
 </ul>
 <pre><code>dspace=# \COPY (SELECT DISTINCT text_value AS author, COUNT(*) FROM metadatavalue WHERE metadata_field_id = (SELECT metadata_field_id FROM metadatafieldregistry WHERE element = 'contributor' AND qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (SELECT item_id FROM collection2item WHERE collection_id IN (SELECT resource_id FROM hANDle WHERE hANDle IN ('10568/100533', '10568/100653', '10568/101955', '10568/106580', '10568/108469', '10568/51671', '10568/53085', '10568/53086', '10568/53087', '10568/53088', '10568/53089', '10568/53090', '10568/53091', '10568/53092', '10568/53093', '10568/53094', '10568/64874', '10568/69069', '10568/70150', '10568/88229', '10568/89346', '10568/89347', '10568/99301', '10568/99302', '10568/99303', '10568/99304', '10568/99428'))) GROUP BY text_value ORDER BY count DESC) TO /tmp/cip-authors.csv WITH CSV;
 COPY 3917
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2020-06-15">2020-06-15</h2>
+<ul>
+<li>Macaroni Bros emailed me to say that they are having issues with thumbnail links on the REST API
+<ul>
+<li>For some reason all the bitstream <code>retrieveLink</code> links are wrong because they use <code>/bitstreams/</code> instead of <code>/rest/bitstreams/</code>, which leads to an HTTP 404</li>
+<li>I looked on DSpace Test, which is running DSpace 6 dev branch right now, and the links are OK there!</li>
+<li>Looks like someone <a href="https://jira.lyrasis.org/browse/DS-3193">reported this issue on DSpace 6</a></li>
+<li>Other large DSpace 5 sites have this same issue: <a href="https://openknowledge.worldbank.org/handle/10986/30568">https://openknowledge.worldbank.org/handle/10986/30568</a></li>
+<li>I can&rsquo;t believe nobody ever noticed this before&hellip;</li>
+<li>I tried to port the patch from DS-3193 to DSpace 5.x and it builds, but causes an HTTP 500 Internal Server error when generating bitstream links</li>
+<li>Well the correct URL should have <code>/rest/</code> anyways, and that&rsquo;s how the URLs are in DSpace 6 anyways, so I will tell Macaroni to just make sure that those links use <code>/rest/</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-06-16">2020-06-16</h2>
+<ul>
+<li>Looks like the PostgreSQL connection/lock issue might be fixed because it&rsquo;s been six days with no reoccurrence:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/06/postgres_connections_ALL-week3.png" alt="PostgreSQL connections week"></p>
+<ul>
+<li>And CGSpace is being harvested successfully by AReS every day still</li>
+<li>Fix some CIP subjects that had two different styles of dashes, causing them to show up differently in Discovery
+<ul>
+<li><code>SWEETPOTATO AGRI‐FOOD SYSTEMS</code> → <code>SWEETPOTATO AGRI-FOOD SYSTEMS</code></li>
+<li><code>POTATO AGRI‐FOOD SYSTEMS</code> → <code>POTATO AGRI-FOOD SYSTEMS</code></li>
+</ul>
+</li>
+<li>They also asked me to update <code>INCLUSIVE VALUE CHAINS</code> to <code>INCLUSIVE GROWTH</code>, both in the existing items on CGSpace and the submission form</li>
+</ul>
+<h2 id="2020-06-18">2020-06-18</h2>
+<ul>
+<li>I guess Atmire fixed the CUA download issue after updating the version for Font Awesome 5, but now I get an error during ant update
+<ul>
+<li>I tried to remove the <code>config/spring</code> directory, but it still fails</li>
+<li>The same issue happens on my local environment and on the DSpace Test server</li>
+<li>I raised the issue with Atmire</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
