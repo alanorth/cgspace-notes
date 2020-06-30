@@ -19,7 +19,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-06/" />
 <meta property="article:published_time" content="2020-06-01T13:55:39+03:00" />
-<meta property="article:modified_time" content="2020-06-23T16:13:27+03:00" />
+<meta property="article:modified_time" content="2020-06-28T18:13:44+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="June, 2020"/>
@@ -33,7 +33,7 @@ I sent Atmire the dspace.log from today and told them to log into the server to 
 In other news, I checked the statistics API on DSpace 6 and it&rsquo;s working
 I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Test and I get an error:
 "/>
-<meta name="generator" content="Hugo 0.72.0" />
+<meta name="generator" content="Hugo 0.73.0" />
 
 
     
@@ -43,9 +43,9 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
   "@type": "BlogPosting",
   "headline": "June, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-06/",
-  "wordCount": "3319",
+  "wordCount": "4764",
   "datePublished": "2020-06-01T13:55:39+03:00",
-  "dateModified": "2020-06-23T16:13:27+03:00",
+  "dateModified": "2020-06-28T18:13:44+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -593,6 +593,191 @@ COPY 3917
 <li>We thought other arbitrary date ranges could be added with queries like <code>?date_from=2020-05</code> etc that would query Solr on the fly and obviously be slower&hellip;</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-06-28">2020-06-28</h2>
+<ul>
+<li>Email GRID.ac to ask them about where old names for institutes are stores, as I see them in the &ldquo;Disambiguate&rdquo; search function online, but not in the standalone data
+<ul>
+<li>For example, both &ldquo;International Laboratory for Research on Animal Diseases&rdquo; (ILRAD) and &ldquo;International Livestock Centre for Africa&rdquo; (ILCA) correctly return a hit for &ldquo;International Livestock Research Institute&rdquo;, but it&rsquo;s nowhere in the data</li>
+</ul>
+</li>
+<li>I discovered two interesting OpenRefine reconciliation services:
+<ul>
+<li><a href="https://github.com/ror-community/ror-reconciler">OpenRefine reconciler for the Research Organization Registry</a></li>
+<li><a href="https://www.getty.edu/research/tools/vocabularies/obtain/openrefine.html">Getty Vocabularies OpenRefine Reconciliation</a> (see the Getty Thesaurus of Geographic Names ® (TGN))</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-06-29">2020-06-29</h2>
+<ul>
+<li>I stumbled upon a sort of <a href="https://rightsstatements.org/page/1.0/">standard for rights statements</a> that we might want to use for <code>dc.rights</code> eventually</li>
+<li>I&rsquo;m trying to understand the difference between <code>dcterms.coverage</code>, <code>dcterms.spatial</code>, and <code>dcterms.temporal</code>
+<ul>
+<li>According to the <a href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/coverage/">Dublin Core specification for coverage</a> the more specific spatial and temporal subproperties:</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Because coverage is so broadly defined, it is preferable to use the more specific subproperties Temporal Coverage and Spatial Coverage.</p>
+</blockquote>
+<ul>
+<li>So I guess we should be using this for countries&hellip; but then all regions, countries, etc get merged together into this when you use DCTERMS
+<ul>
+<li>Perhaps better to use <code>cg.coverage.country</code> and crosswalk to <code>dcterms.spatial</code></li>
+<li>Another thing is that these values are not literals—you are supposed to embed classes&hellip;</li>
+</ul>
+</li>
+<li>I also notice that there is a <a href="https://www.crossref.org/services/funder-registry/">CrossRef funders registry</a> with 23,000+ funders that you can <a href="https://gitlab.com/crossref/open_funder_registry">download as RDF</a> or <a href="https://www.crossref.org/education/funder-registry/accessing-the-funder-registry/">access via an API</a></li>
+</ul>
+<pre><code>$ http 'https://api.crossref.org/funders?query=Bill+and+Melinda+Gates&amp;mailto=a.orth@cgiar.org'
+</code></pre><ul>
+<li>Searching for &ldquo;Bill and Melinda Gates&rdquo; we can see the <code>name</code> literal and a list of <code>alt-names</code> literals
+<ul>
+<li>This could be good for checking our funders</li>
+<li>The API currently returns pages for each funder in the vocabulary, but they are giving HTTP 404 right now: <a href="https://data.crossref.org/fundingdata/vocabulary/Label-599174">https://data.crossref.org/fundingdata/vocabulary/Label-599174</a></li>
+<li>I sent an email to the CrossRef Funders Registry team</li>
+</ul>
+</li>
+<li>See the <a href="https://github.com/CrossRef/rest-api-doc">CrossRef API docs</a> (specifically the parameters and filters)</li>
+<li>I made a pull request on CG Core v2 to recommend using persistent identifiers for DOIs and ORCID iDs (<a href="https://github.com/AgriculturalSemantics/cg-core/pull/26">#26</a>)</li>
+<li>I exported sponsors/funders from CGSpace and wrote a script to query the CrossRef API for matches:</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29) TO /tmp/2020-06-29-sponsors.csv;
+COPY 682
+</code></pre><ul>
+<li>The script is <code>crossref-funders-lookup.py</code> and it is based on <code>agrovoc-lookup.py</code>
+<ul>
+<li>On that note, I realized I need to URL encode the funder before making the search request with requests because, while the requests library <em>does</em> do URL encoding, it seems that it interprets characters like <code>&amp;</code> as indicative query parameters and this causes searches for funders like <code>Bill &amp; Melinda Gates Foundation</code> to get misinterpreted</li>
+<li>So then I noticed that I had worked around this in <code>agrovoc-lookup.py</code> a few years ago by just ignoring subjects with special characters like apostrophes and accents!</li>
+</ul>
+</li>
+<li>I tested the script on our funders:</li>
+</ul>
+<pre><code>$ ./crossref-funders-lookup.py -i /tmp/2020-06-29-sponsors.csv -om /tmp/sponsors-matched.txt -or /tmp/sponsors-rejected.txt -d -e blah@blah.com
+$ wc -l /tmp/2020-06-29-sponsors.csv 
+682 /tmp/2020-06-29-sponsors.csv
+$ wc -l /tmp/sponsors-*
+  180 /tmp/sponsors-matched.txt
+  502 /tmp/sponsors-rejected.txt
+  682 total
+</code></pre><ul>
+<li>It seems that 35% of our funders already match&hellip; I bet a few more will match if I check for simple errors
+<ul>
+<li>Interesting, I found a few funders that we have correct, but can&rsquo;t figure out how to match them in the API:
+<ul>
+<li><code>Claussen-Simon-Stiftung</code></li>
+<li><code>H2020 Marie Skłodowska-Curie Actions</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-06-30">2020-06-30</h2>
+<ul>
+<li>GRID responded to my question about historical names
+<ul>
+<li>They said the information is not part of the public GRID or ROR lists, but you can access it with a license to the Dimensions API</li>
+</ul>
+</li>
+<li>Gabriela from CIP sent me a list of erroneously added CIP subjects to remove from CGSpace:</li>
+</ul>
+<pre><code>$ cat /tmp/2020-06-30-remove-cip-subjects.csv 
+cg.subject.cip
+INTEGRATED PEST MANAGEMENT
+ORANGE FLESH SWEET POTATOES
+AEROPONICS
+FOOD SUPPLY
+SASHA
+SPHI
+INSECT LIFE CYCLE MODELLING
+SUSTAIN
+AGRICULTURAL INNOVATIONS
+NATIVE VARIETIES
+PHYTOPHTHORA INFESTANS
+$ ./delete-metadata-values.py -i /tmp/2020-06-30-remove-cip-subjects.csv -db dspace -u dspace -p 'fuuu' -f cg.subject.cip -m 127 -d
+</code></pre><ul>
+<li>She also wants to change their <code>SWEET POTATOES</code> term to <code>SWEETPOTATOES</code>, both in the CIP subject list and existing items so I updated those too:</li>
+</ul>
+<pre><code>$ cat /tmp/2020-06-30-fix-cip-subjects.csv 
+cg.subject.cip,correct
+SWEET POTATOES,SWEETPOTATOES
+$ ./fix-metadata-values.py -i /tmp/2020-06-30-fix-cip-subjects.csv -db dspace -u dspace -p 'fuuu' -f cg.subject.cip -t correct -m 127 -d
+</code></pre><ul>
+<li>She also finished doing all the corrections to authors that I had sent her last week, but many of the changes are removing Spanish accents from authors names so I asked if she&rsquo;s really should she wants to do that</li>
+<li>I ran the fixes and deletes on CGSpace, but not on DSpace Test yet because those scripts need updating for DSpace 6 UUIDs</li>
+<li>I spent about two hours manually checking our sponsors that were rejected from CrossRef and found about fifty-five corrections that I ran on CGSpace:</li>
+</ul>
+<pre><code>$ cat 2020-06-29-fix-sponsors.csv
+dc.description.sponsorship,correct
+&quot;Conselho Nacional de Desenvolvimento Científico e Tecnológico, Brazil&quot;,&quot;Conselho Nacional de Desenvolvimento Científico e Tecnológico&quot;
+&quot;Claussen Simon Stiftung&quot;,&quot;Claussen-Simon-Stiftung&quot;
+&quot;Fonds pour la formation á la Recherche dans l'Industrie et dans l'Agriculture, Belgium&quot;,&quot;Fonds pour la Formation à la Recherche dans l’Industrie et dans l’Agriculture&quot;
+&quot;Fundação de Amparo à Pesquisa do Estado de São Paulo, Brazil&quot;,&quot;Fundação de Amparo à Pesquisa do Estado de São Paulo&quot;
+&quot;Schlumberger Foundation Faculty for the Future&quot;,&quot;Schlumberger Foundation&quot;
+&quot;Wildlife Conservation Society, United States&quot;,&quot;Wildlife Conservation Society&quot;
+&quot;Portuguese Foundation for Science and Technology&quot;,&quot;Portuguese Science and Technology Foundation&quot;
+&quot;Wageningen University and Research&quot;,&quot;Wageningen University and Research Centre&quot;
+&quot;Leverhulme Centre for Integrative Research in Agriculture and Health&quot;,&quot;Leverhulme Centre for Integrative Research on Agriculture and Health&quot;
+&quot;Natural Science and Engineering Research Council of Canada&quot;,&quot;Natural Sciences and Engineering Research Council of Canada&quot;
+&quot;Biotechnology and Biological Sciences Research Council, United Kingdom&quot;,&quot;Biotechnology and Biological Sciences Research Council&quot;
+&quot;Home Grown Ceraels Authority United Kingdom&quot;,&quot;Home-Grown Cereals Authority&quot;
+&quot;Fiat Panis Foundation&quot;,&quot;Foundation fiat panis&quot;
+&quot;Defence Science and Technology Laboratory, United Kingdom&quot;,&quot;Defence Science and Technology Laboratory&quot;
+&quot;African Development Bank&quot;,&quot;African Development Bank Group&quot;
+&quot;Ministry of Health, Labour, and Welfare, Japan&quot;,&quot;Ministry of Health, Labour and Welfare&quot;
+&quot;World Academy of Sciences&quot;,&quot;The World Academy of Sciences&quot;
+&quot;Agricultural Research Council, South Africa&quot;,&quot;Agricultural Research Council&quot;
+&quot;Department of Homeland Security, USA&quot;,&quot;U.S. Department of Homeland Security&quot;
+&quot;Quadram Institute&quot;,&quot;Quadram Institute Bioscience&quot;
+&quot;Google.org&quot;,&quot;Google&quot;
+&quot;Department for Environment, Food and Rural Affairs, United Kingdom&quot;,&quot;Department for Environment, Food and Rural Affairs, UK Government&quot;
+&quot;National Commission for Science, Technology and Innovation, Kenya&quot;,&quot;National Commission for Science, Technology and Innovation&quot;
+&quot;Hainan Province Natural Science Foundation of China&quot;,&quot;Natural Science Foundation of Hainan Province&quot;
+&quot;German Society for International Cooperation (GIZ)&quot;,&quot;GIZ&quot;
+&quot;German Federal Ministry of Food and Agriculture&quot;,&quot;Federal Ministry of Food and Agriculture&quot;
+&quot;State Key Laboratory of Environmental Geochemistry, China&quot;,&quot;State Key Laboratory of Environmental Geochemistry&quot;
+&quot;QUT student scholarship&quot;,&quot;Queensland University of Technology&quot;
+&quot;Australia Centre for International Agricultural Research&quot;,&quot;Australian Centre for International Agricultural Research&quot;
+&quot;Belgian Science Policy&quot;,&quot;Belgian Federal Science Policy Office&quot;
+&quot;U.S. Department of Agriculture USDA&quot;,&quot;U.S. Department of Agriculture&quot;
+&quot;U.S.. Department of Agriculture (USDA)&quot;,&quot;U.S. Department of Agriculture&quot;
+&quot;Fundação de Amparo à Pesquisa do Estado de São Paulo ( FAPESP)&quot;,&quot;Fundação de Amparo à Pesquisa do Estado de São Paulo&quot;
+&quot;Fundação de Amparo à Pesquisa do Estado do Rio Grande do Sul, Brazil&quot;,&quot;Fundação de Amparo à Pesquisa do Estado do Rio Grande do Sul&quot;
+&quot;Fundação de Amparo à Pesquisa do Estado do Rio de Janeiro, Brazil&quot;,&quot;Fundação Carlos Chagas Filho de Amparo à Pesquisa do Estado do Rio de Janeiro&quot;
+&quot;Swedish University of Agricultural Sciences (SLU)&quot;,&quot;Swedish University of Agricultural Sciences&quot;
+&quot;U.S. Department of Agriculture (USDA)&quot;,&quot;U.S. Department of Agriculture&quot;
+&quot;Swedish International Development Cooperation Agency (Sida)&quot;,&quot;Sida&quot;
+&quot;Swedish International Development Agency&quot;,&quot;Sida&quot;
+&quot;Federal Ministry for Economic Cooperation and Development, Germany&quot;,&quot;Federal Ministry for Economic Cooperation and Development&quot;
+&quot;Natural Environment Research Council, United Kingdom&quot;,&quot;Natural Environment Research Council&quot;
+&quot;Economic and Social Research Council, United Kingdom&quot;,&quot;Economic and Social Research Council&quot;
+&quot;Medical Research Council, United Kingdom&quot;,&quot;Medical Research Council&quot;
+&quot;Federal Ministry for Education and Research, Germany&quot;,&quot;Federal Ministry for Education, Science, Research and Technology&quot;
+&quot;UK Government’s Department for International Development&quot;,&quot;Department for International Development, UK Government&quot;
+&quot;Department for International Development, United Kingdom&quot;,&quot;Department for International Development, UK Government&quot;
+&quot;United Nations Children's Fund&quot;,&quot;United Nations Children's Emergency Fund&quot;
+&quot;Swedish Research Council for Environment, Agricultural Science and Spatial Planning&quot;,&quot;Swedish Research Council for Environment, Agricultural Sciences and Spatial Planning&quot;
+&quot;Agence Nationale de la Recherche, France&quot;,&quot;French National Research Agency&quot;
+&quot;Fondation pour la recherche sur la biodiversité&quot;,&quot;Foundation for Research on Biodiversity&quot;
+&quot;Programa Nacional de Innovacion Agraria, Peru&quot;,&quot;Programa Nacional de Innovación Agraria, Peru&quot;
+&quot;United States Agency for International Development (USAID)&quot;,&quot;United States Agency for International Development&quot;
+&quot;West Africa Agricultural Productivity Programme&quot;,&quot;West Africa Agricultural Productivity Program&quot;
+&quot;West African Agricultural Productivity Project&quot;,&quot;West Africa Agricultural Productivity Program&quot;
+&quot;Rural Development Administration, Republic of Korea&quot;,&quot;Rural Development Administration&quot;
+&quot;UK’s Biotechnology and Biological Sciences Research Council (BBSRC)&quot;,&quot;Biotechnology and Biological Sciences Research Council&quot;
+$ ./fix-metadata-values.py -i /tmp/2020-06-29-fix-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -t correct -m 29
+</code></pre><ul>
+<li>Peter wants me to add &ldquo;CORONAVIRUS DISEASE&rdquo; to all ILRI items that have ILRI subject &ldquo;COVID19&rdquo;
+<ul>
+<li>I exported the ILRI community and cut the columns I needed, then opened the file in OpenRefine:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ export JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot;
+$ dspace metadata-export -i 10568/1 -f /tmp/ilri.cs
+$ csvcut -c 'id,cg.subject.ilri[],cg.subject.ilri[en_US],dc.subject[en_US]' /tmp/ilri.csv &gt; /tmp/ilri-covid19.csv
+</code></pre><ul>
+<li>I see that all items with &ldquo;COVID19&rdquo; already have &ldquo;CORONAVIRUS DISEASE&rdquo; so I don&rsquo;t need to do anything</li>
 </ul>
 <!-- raw HTML omitted -->
 
