@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-01T15:37:20+03:00" />
+<meta property="article:modified_time" content="2020-07-02T09:53:45+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "844",
+  "wordCount": "1043",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-01T15:37:20+03:00",
+  "dateModified": "2020-07-02T09:53:45+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -291,8 +291,44 @@ Typhoeus
 </ul>
 </li>
 <li>I quickly re-applied the Font Awesome 5 changes to use SVG+JS instead of web fonts (from 2020-04) and things are looking good!</li>
+<li>Run all system updates on DSpace Test (linode26), deploy latest <code>6_x-dev-atmire-modules</code> branch, and reboot it</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-07-02">2020-07-02</h2>
+<ul>
+<li>I need to export some Solr statistics data from CGSpace to test Salem&rsquo;s modifications to the dspace-statistics-api
+<ul>
+<li>He modified it to query Solr on the fly instead of indexing it, which will be heavier and slower, but allows us to get more granular stats and countries/cities</li>
+<li>Because have so many records I want to use solr-import-export-json to get several months at a time with a date range, but it seems there are first issues with curl (need to disable globbing with <code>-g</code> and URL encode the range)</li>
+<li>For reference, the <a href="https://lucene.apache.org/solr/4_10_2/solr-core/org/apache/solr/schema/DateField.html">Solr 4.10.x DateField docs</a></li>
+<li>This range works in Solr UI: <code>[2019-01-01T00:00:00Z TO 2019-06-30T23:59:59Z]</code></li>
+<li>As well in curl:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ curl -g -s 'http://localhost:8081/solr/statistics-2019/select?q=*:*&amp;fq=time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z%5D&amp;rows=0&amp;wt=json&amp;indent=true'
+{
+  &quot;responseHeader&quot;:{
+    &quot;status&quot;:0,
+    &quot;QTime&quot;:0,
+    &quot;params&quot;:{
+      &quot;q&quot;:&quot;*:*&quot;,
+      &quot;indent&quot;:&quot;true&quot;,
+      &quot;fq&quot;:&quot;time:[2019-01-01T00:00:00Z TO 2019-06-30T23:59:59Z]&quot;,
+      &quot;rows&quot;:&quot;0&quot;,
+      &quot;wt&quot;:&quot;json&quot;}},
+  &quot;response&quot;:{&quot;numFound&quot;:7784285,&quot;start&quot;:0,&quot;docs&quot;:[]
+  }}
+</code></pre><ul>
+<li>But not in solr-import-export-json&hellip; hmmm&hellip; seems we need to URL encode <em>only</em> the date range itself, but not the brackets:</li>
+</ul>
+<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f 'time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z]' -k uid
+$ zstd /tmp/statistics-2019-1.json
+</code></pre><ul>
+<li>Then import it on my local dev environment:</li>
+</ul>
+<pre><code>$ zstd -d statistics-2019-1.json.zst
+$ ./run.sh -s http://localhost:8080/solr/statistics -a import -o ~/Downloads/statistics-2019-1.json -k uid
+</code></pre><!-- raw HTML omitted -->
 
   
 
