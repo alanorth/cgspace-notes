@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-06T15:20:30+03:00" />
+<meta property="article:modified_time" content="2020-07-06T20:53:54+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "1597",
+  "wordCount": "1785",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-06T15:20:30+03:00",
+  "dateModified": "2020-07-06T20:53:54+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -391,6 +391,32 @@ $ csvcut -c1 /tmp/2020-07-05-subjects-upper.csv | head -n 6500 &gt; 2020-07-05-c
 <li>I will treat the <code>matchedPrefLabel</code> values as if they were <code>prefLabel</code> values for the indicated language then</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-07-07">2020-07-07</h2>
+<ul>
+<li>Peter asked me to send him a list of sponsors on CGSpace</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;dc.description.sponsorship&quot;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &quot;dc.description.sponsorship&quot; ORDER BY count DESC) TO /tmp/2020-07-07-sponsors.csv WITH CSV HEADER;
+COPY 707
+</code></pre><ul>
+<li>I ran it quickly through my <code>csv-metadata-quality</code> tool and found two issues that I will correct with <code>fix-metadata-values.py</code> on CGSpace immediately:</li>
+</ul>
+<pre><code>$ cat 2020-07-07-fix-sponsors.csv
+dc.description.sponsorship,correct
+&quot;Ministe`re des Affaires Etrange`res et Européennes, France&quot;,&quot;Ministère des Affaires Étrangères et Européennes, France&quot;
+&quot;Global Food Security Programme,  United Kingdom&quot;,&quot;Global Food Security Programme, United Kingdom&quot;
+$ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -t correct -m 29
+</code></pre><ul>
+<li>Upload the Capacity Development July newsletter to CGSpace for Ben Hack because Abenet and Bizu usually do it, but they are currently offline due to the Internet being turned off in Ethiopia
+<ul>
+<li>Here: <a href="https://hdl.handle.net/10568/108708">https://hdl.handle.net/10568/108708</a></li>
+</ul>
+</li>
+<li>I implemented the Dimensions.ai badge on DSpace Test for Peter to see, as he&rsquo;s been asking me for awhile:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/dimensions-badge.png" alt="Dimensions.ai badge"></p>
+<ul>
+<li>It was easy once I figured out how to do the XSLT in the DSpace theme (need to get the DOI link and remove the &ldquo;<a href="https://doi.org/%22">https://doi.org/&quot;</a> from the string)</li>
 </ul>
 <!-- raw HTML omitted -->
 
