@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-07T12:53:16+03:00" />
+<meta property="article:modified_time" content="2020-07-07T16:14:49+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "1858",
+  "wordCount": "2116",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-07T12:53:16+03:00",
+  "dateModified": "2020-07-07T16:14:49+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -425,6 +425,45 @@ $ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -
 </li>
 </ul>
 <p><img src="/cgspace-notes/2020/07/dimensions-badge2.png" alt="Altmetric and Dimensions.ai badge"></p>
+<h2 id="2020-07-08">2020-07-08</h2>
+<ul>
+<li>Generate a CSV of all the AGROVOC subjects that didn&rsquo;t match from the top 6500 I exported earlier this week:</li>
+</ul>
+<pre><code>$ csvgrep -c 'number of matches' -r &quot;^0$&quot; 2020-07-05-cgspace-subjects.csv | csvcut -c 1 &gt; 2020-07-05-cgspace-invalid-subjects.csv
+</code></pre><ul>
+<li>Yesterday Gabriela from CIP emailed to say that she was removing the accents from her authors&rsquo; names because of &ldquo;funny character&rdquo; issues with reports generated from CGSpace
+<ul>
+<li>I told her that it&rsquo;s probably her Windows / Excel that is messing up the data, and she figured out how to open them correctly!</li>
+<li>Now she says she doesn&rsquo;t want to remove the accents after all and she sent me a new list of corrections</li>
+<li>I used csvgrep and found a few where she is still removing accents:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ csvgrep -c 2 -r &quot;^.+$&quot; ~/Downloads/cip-authors-GH-20200706.csv | csvgrep -c 1 -r &quot;^.*[À-ú].*$&quot; | csvgrep -c 2 -r &quot;^.*[À-ú].*$&quot; -i | csvcut -c 1,2
+dc.contributor.author,correction
+&quot;López, G.&quot;,&quot;Lopez, G.&quot;
+&quot;Gómez, R.&quot;,&quot;Gomez, R.&quot;
+&quot;García, M.&quot;,&quot;Garcia, M.&quot;
+&quot;Mejía, A.&quot;,&quot;Mejia, A.&quot;
+&quot;Quiróz, Roberto A.&quot;,&quot;Quiroz, R.&quot;
+</code></pre><ul>
+<li>
+<p>csvgrep from the csvkit suite is <em>so cool</em>:</p>
+<ul>
+<li>Select lines with column two (the correction) having a value</li>
+<li>Select lines with column one (the original author name) having an accent / diacritic</li>
+<li>Select lines with column two (the correction) NOT having an accent (ie, she&rsquo;s not removing an accent)</li>
+<li>Select columns one and two</li>
+</ul>
+</li>
+<li>
+<p>Peter said he liked the work I didn on the badges yesterday so I put some finishing touches on it to detect more DOI URI styles and pushed it to the <code>5_x-prod</code> branch</p>
+<ul>
+<li>I will port it to DSpace 6 soon</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/altmetrics-dimensions-badges.png" alt="Altmetric and Dimensions badges"></p>
 <!-- raw HTML omitted -->
 
   
