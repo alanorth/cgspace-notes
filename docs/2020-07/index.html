@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-08T16:30:40+03:00" />
+<meta property="article:modified_time" content="2020-07-09T09:35:58+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "2246",
+  "wordCount": "2550",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-08T16:30:40+03:00",
+  "dateModified": "2020-07-09T09:35:58+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -474,14 +474,61 @@ dc.contributor.author,correction
 </ul>
 <pre><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-07-08-affiliations.csv WITH CSV HEADER;
 </code></pre><ul>
-<li>Then I stripped the header and quotes to make it a plain text file and ran <code>ror-lookup.py</code>:</li>
+<li>Then I stripped the CSV header and quotes to make it a plain text file and ran <code>ror-lookup.py</code>:</li>
 </ul>
 <pre><code>$ ./ror-lookup.py -i /tmp/2020-07-08-affiliations.txt -r ror.json -o 2020-07-08-affiliations-ror.csv -d
-$ ./ror-lookup.py -i /tmp/2020-07-08-affiliations.txt -r ror.json -o 2020-07-08-affiliations-ror.csv -d
-$ csvgrep -c 2 -m true 2020-07-08-affiliations-ror.csv | wc -l 
-1378
-$ csvgrep -c 2 -m false 2020-07-08-affiliations-ror.csv | wc -l
-4490
+$ wc -l /tmp/2020-07-08-affiliations.txt 
+5866 /tmp/2020-07-08-affiliations.txt
+$ csvgrep -c matched -m true 2020-07-08-affiliations-ror.csv | wc -l 
+1406
+$ csvgrep -c matched -m false 2020-07-08-affiliations-ror.csv | wc -l
+4462
+</code></pre><ul>
+<li>So, minus the CSV header, we have 1405 case-insensitive matches out of 5866 (23.9%)</li>
+</ul>
+<h2 id="2020-07-09">2020-07-09</h2>
+<ul>
+<li>Atmire responded to the ticket about DSpace 6 and Solr yesterday
+<ul>
+<li>They said that the CUA issue is due to the &ldquo;unmigrated&rdquo; Solr records and that we should delete them</li>
+<li>I told them that <a href="https://wiki.lyrasis.org/display/DSDOC6x/SOLR+Statistics+Maintenance">the &ldquo;unmigrated&rdquo; IDs are a known issue in DSpace 6</a> and we should rather figure out why they are unmigrated</li>
+<li>I didn&rsquo;t see any discussion on the dspace-tech mailing list or on DSpace Jira about unmigrated IDs, so I sent a mail to the mailing list to ask</li>
+</ul>
+</li>
+<li>I updated <code>ror-lookup.py</code> to check aliases and acronyms as well and now the results are better for CGSpace&rsquo;s affiliation list:</li>
+</ul>
+<pre><code>$ wc -l /tmp/2020-07-08-affiliations.txt 
+5866 /tmp/2020-07-08-affiliations.txt
+$ csvgrep -c matched -m true 2020-07-08-affiliations-ror.csv | wc -l 
+1516
+$ csvgrep -c matched -m false 2020-07-08-affiliations-ror.csv | wc -l
+4352
+</code></pre><ul>
+<li>So now our matching improves to 1515 out of 5866 (25.8%)</li>
+<li>Gabriela from CIP said that I should run the author corrections minus those that remove accent characters so I will run it on CGSpace:</li>
+</ul>
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2020-07-09-fix-90-cip-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correction -m 3
+</code></pre><ul>
+<li>Apply 110 fixes and 90 deletions to sponsorships that Peter sent me a few days ago:</li>
+</ul>
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2020-07-07-fix-110-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -t 'correct/action' -m 29
+$ ./delete-metadata-values.py -i /tmp/2020-07-07-delete-90-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29
+</code></pre><ul>
+<li>Start a full Discovery re-index on CGSpace:</li>
+</ul>
+<pre><code>$ time chrt -b 0 dspace index-discovery -b
+
+real    94m21.413s
+user    9m40.364s
+sys     2m37.246s
+</code></pre><ul>
+<li>I modified <code>crossref-funders-lookup.py</code> to be case insensitive and now CGSpace&rsquo;s sponsors match 173 out of 534 (32.4%):</li>
+</ul>
+<pre><code>$ ./crossref-funders-lookup.py -i 2020-07-09-cgspace-sponsors.txt -o 2020-07-09-cgspace-sponsors-crossref.csv -d -e a.orth@cgiar.org
+$ wc -l 2020-07-09-cgspace-sponsors.txt
+534 2020-07-09-cgspace-sponsors.txt
+$ csvgrep -c matched -m true 2020-07-09-cgspace-sponsors-crossref.csv | wc -l 
+174
 </code></pre><!-- raw HTML omitted -->
 
   
