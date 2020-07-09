@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-07T16:14:49+03:00" />
+<meta property="article:modified_time" content="2020-07-08T16:30:40+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "2116",
+  "wordCount": "2246",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-07T16:14:49+03:00",
+  "dateModified": "2020-07-08T16:30:40+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -464,7 +464,25 @@ dc.contributor.author,correction
 </li>
 </ul>
 <p><img src="/cgspace-notes/2020/07/altmetrics-dimensions-badges.png" alt="Altmetric and Dimensions badges"></p>
-<!-- raw HTML omitted -->
+<ul>
+<li>I wrote a quick script to lookup organizations (affiliations) in the Research Organization Repository (ROR) JSON data release v5
+<ul>
+<li>I want to use this to evaluate ROR as a controlled vocabulary for CGSpace and MELSpace</li>
+<li>I exported a list of affiliations from CGSpace:</li>
+</ul>
+</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-07-08-affiliations.csv WITH CSV HEADER;
+</code></pre><ul>
+<li>Then I stripped the header and quotes to make it a plain text file and ran <code>ror-lookup.py</code>:</li>
+</ul>
+<pre><code>$ ./ror-lookup.py -i /tmp/2020-07-08-affiliations.txt -r ror.json -o 2020-07-08-affiliations-ror.csv -d
+$ ./ror-lookup.py -i /tmp/2020-07-08-affiliations.txt -r ror.json -o 2020-07-08-affiliations-ror.csv -d
+$ csvgrep -c 2 -m true 2020-07-08-affiliations-ror.csv | wc -l 
+1378
+$ csvgrep -c 2 -m false 2020-07-08-affiliations-ror.csv | wc -l
+4490
+</code></pre><!-- raw HTML omitted -->
 
   
 
