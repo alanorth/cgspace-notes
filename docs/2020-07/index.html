@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-13T12:31:34+03:00" />
+<meta property="article:modified_time" content="2020-07-14T10:57:49+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "2991",
+  "wordCount": "3347",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-13T12:31:34+03:00",
+  "dateModified": "2020-07-14T10:57:49+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -594,7 +594,72 @@ $ tidy -xml -utf8 -m -iq -w 0 dspace/config/controlled-vocabularies/dc-descripti
 </ul>
 <pre><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (189618, 188837);'
 UPDATE 1
-</code></pre><!-- raw HTML omitted -->
+</code></pre><ul>
+<li>Udana from WLE asked me about some items that didn&rsquo;t show Altmetric donuts
+<ul>
+<li>I checked his list and at least three of them actually <em>did</em> show donuts, and for four others I tweeted them manually to see if they would get a donut in a few hours:
+<ul>
+<li><a href="https://hdl.handle.net/10568/108477">https://hdl.handle.net/10568/108477</a></li>
+<li><a href="https://hdl.handle.net/10568/108475">https://hdl.handle.net/10568/108475</a></li>
+<li><a href="https://hdl.handle.net/10568/108361">https://hdl.handle.net/10568/108361</a></li>
+<li><a href="https://hdl.handle.net/10568/108360">https://hdl.handle.net/10568/108360</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-15">2020-07-15</h2>
+<ul>
+<li>All four IWMI items that I tweeted yesterday have Altmetric donuts with a score of 1 now&hellip;</li>
+<li>Export CGSpace countries to check them against ISO 3166-1 and ISO 3166-3 (historic countries):</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=228) TO /tmp/2020-07-15-countries.csv;
+COPY 194
+</code></pre><ul>
+<li>I wrote a script <code>iso3166-lookup.py</code> to check them:</li>
+</ul>
+<pre><code>$ ./iso3166-1-lookup.py -i /tmp/2020-07-15-countries.csv -o /tmp/2020-07-15-countries-resolved.csv
+$ csvgrep -c matched -m false /tmp/2020-07-15-countries-resolved.csv       
+country,match type,matched
+CAPE VERDE,,false
+&quot;KOREA, REPUBLIC&quot;,,false
+PALESTINE,,false
+&quot;CONGO, DR&quot;,,false
+COTE D'IVOIRE,,false
+RUSSIA,,false
+SYRIA,,false
+&quot;KOREA, DPR&quot;,,false
+SWAZILAND,,false
+MICRONESIA,,false
+TIBET,,false
+ZAIRE,,false
+COCOS ISLANDS,,false
+LAOS,,false
+IRAN,,false
+</code></pre><ul>
+<li>Check the database for DOIs that are not in the preferred &ldquo;<a href="https://doi.org/%22">https://doi.org/&quot;</a> format:</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT text_value as &quot;cg.identifier.doi&quot; FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=220 AND text_value NOT LIKE 'https://doi.org/%') TO /tmp/2020-07-15-doi.csv WITH CSV HEADER;
+COPY 186
+</code></pre><ul>
+<li>Then I imported them into OpenRefine and replaced them in a new &ldquo;correct&rdquo; column using this GREL transform:</li>
+</ul>
+<pre><code>value.replace(&quot;dx.doi.org&quot;, &quot;doi.org&quot;).replace(&quot;http://&quot;, &quot;https://&quot;).replace(&quot;https://dx,doi,org&quot;, &quot;https://doi.org&quot;).replace(&quot;https://doi.dx.org&quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx.doi:&quot;, &quot;https://doi.org&quot;).replace(&quot;DOI: &quot;, &quot;https://doi.org/&quot;).replace(&quot;doi: &quot;, &quot;https://doi.org/&quot;).replace(&quot;http:/​/​dx.​doi.​org&quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx. doi.org. &quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx.doi&quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx.doi:&quot;, &quot;https://doi.org/&quot;).replace(&quot;hdl.handle.net&quot;, &quot;doi.org&quot;)
+</code></pre><ul>
+<li>Then I fixed the DOIs on CGSpace:</li>
+</ul>
+<pre><code>$ ./fix-metadata-values.py -i /tmp/2020-07-15-fix-164-DOIs.csv -db dspace -u dspace -p 'fuuu' -f cg.identifier.doi -t 'correct' -m 220
+</code></pre><ul>
+<li>I filed <a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/issues/10">an issue on Debian&rsquo;s iso-codes</a> project to ask why &ldquo;Swaziland&rdquo; does not appear in the ISO 3166-3 list of historical country names despite it being changed to &ldquo;Eswatini&rdquo; in 2018.</li>
+<li>Atmire responded about the Solr issue
+<ul>
+<li>They said that it seems like a DSpace issue so that it&rsquo;s not their responsibility, and nobody responded to my question on the dspace-tech mailing list&hellip;</li>
+<li>I said I would try to do a migration on DSpace Test with more of CGSpace&rsquo;s Solr data to try and approximate how much of our data be affected</li>
+<li>I also asked them about the Tomcat 8.5 issue with CUA as well as the CUA group name issue that I had asked originally in April</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
