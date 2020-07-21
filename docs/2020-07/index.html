@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-15T15:42:23+03:00" />
+<meta property="article:modified_time" content="2020-07-20T22:14:45+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "3664",
+  "wordCount": "3928",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-15T15:42:23+03:00",
+  "dateModified": "2020-07-20T22:14:45+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -693,7 +693,38 @@ COPY 186
 <li>Sweet Potato Research Institute (SPRI) of Chinese Academy of Agricultural Sciences (CAAS)</li>
 </ul>
 </li>
+<li>And I checked the list with my csv-metadata-quality tool and found it still has whitespace and unnecessary Unicode characters in several records:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ csv-metadata-quality -i /tmp/clarisa-institutions.csv -o /tmp/clarisa-institutions-cleaned.csv
+Removing excessive whitespace (name): Comitato Internazionale per lo Sviluppo dei Popoli /  International Committee for the Development of Peoples
+Removing excessive whitespace (name): Deutsche Landwirtschaftsgesellschaft /  German agriculture society
+Removing excessive whitespace (name): Institute of Arid Regions  of Medenine
+Replacing unnecessary Unicode (U+00AD): Bundesministerium für wirtschaftliche Zusammen­arbeit und Entwicklung / Federal Ministry of Economic Cooperation and Development (Germany)
+Removing unnecessary Unicode (U+200B): Agencia de Servicios a la Comercialización​ y Desarrollo de Mercados Agropecuarios
+</code></pre><ul>
 <li>I think the ROR is much better in every possible way</li>
+<li>Re-enabled all the yearly Solr statistics cores on DSpace Test (linode26) because they had been disabled by Atmire when they were testing on the server
+<ul>
+<li>Run system updates on the server and reboot it</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-21">2020-07-21</h2>
+<ul>
+<li>I built the latest 6.x branch on DSpace Test (linode26) and I noticed a few Font Awesome icons are missing in the Atmire CUA statlets
+<ul>
+<li>One was simple to fix by adding it to our font library in <code>fontawesome.js</code>, but there are two more that are printing hex values instead of using HTML elements:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/cua-font-awesome.png" alt="Atmire CUA missing icons"></p>
+<ul>
+<li>I had previously thought these were fixed by setting the <code>font-family</code> on the elements, but it doesn&rsquo;t appear to be working now
+<ul>
+<li>I filed a ticket with Atmire to ask them to use the HTML elements instead, as their code already uses those elsewhere</li>
+<li>I don&rsquo;t want to go back to using the large webfonts with CSS because the SVG + JS method saves us ~140KiB and causes at least three fewer network requests</li>
 </ul>
 </li>
 </ul>
