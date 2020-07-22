@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-20T22:14:45+03:00" />
+<meta property="article:modified_time" content="2020-07-21T13:44:52+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "3928",
+  "wordCount": "4195",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-20T22:14:45+03:00",
+  "dateModified": "2020-07-21T13:44:52+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -727,6 +727,61 @@ Removing unnecessary Unicode (U+200B): Agencia de Servicios a la Comercializaci√
 <li>I don&rsquo;t want to go back to using the large webfonts with CSS because the SVG + JS method saves us ~140KiB and causes at least three fewer network requests</li>
 </ul>
 </li>
+<li>I started processing the 2019 stats in a batch of 1 million on DSpace Test:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2019
+...
+        *** Statistics Records with Legacy Id ***
+
+           6,359,966    Bistream View
+           2,204,775    Item View
+             139,266    Community View
+             131,234    Collection View
+             948,529    Community Search
+             593,974    Collection Search
+           1,682,818    Unexpected Type &amp; Full Site
+        --------------------------------------
+          12,060,562    TOTAL
+</code></pre><ul>
+<li>The statistics-2019 finished processing after about 9 hours so I started the 2018 ones:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2018
+        *** Statistics Records with Legacy Id ***
+
+           3,684,394    Bistream View
+           2,183,032    Item View
+             131,222    Community View
+              79,348    Collection View
+             345,529    Collection Search
+             322,223    Community Search
+             874,107    Unexpected Type &amp; Full Site
+        --------------------------------------
+           7,619,855    TOTAL
+</code></pre><ul>
+<li>Moayad finally made OpenRXV use a unique user agent:</li>
+</ul>
+<pre><code>OpenRXV harvesting bot; https://github.com/ilri/OpenRXV
+</code></pre><ul>
+<li>I see nearly 200,000 hits in Solr from the IP address, though, so I need to make sure those are old ones from before today
+<ul>
+<li>I purged the hits for 178.62.93.141 as well as any from the old <code>axios/0.19.2</code> user agent</li>
+<li>I made some requests with and without the new user agent and only the ones without showed up in Solr</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-22">2020-07-22</h2>
+<ul>
+<li>Atmire merged my latest bot suggestions to the COUNTER-Robots project:
+<ul>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/36">Add new bots</a></li>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/35">COUNTER_Robots_list.json: Escape literal dots</a></li>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/33">COUNTER_Robots_list.json: Remove anchors from okhttp</a></li>
+</ul>
+</li>
+<li>I will update the agent patterns on the CGSpace <code>5_x-prod</code> and 6.x branches</li>
+<li>Make some changes to the Bootstrap CSS and HTML configuration to improve readability and style on the CG Core v2 metadata reference guide and send a pull request to Marie (<a href="https://github.com/AgriculturalSemantics/cg-core/pull/29">#29</a>)</li>
 </ul>
 <!-- raw HTML omitted -->
 
