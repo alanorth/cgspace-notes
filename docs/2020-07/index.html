@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-22T11:00:40+03:00" />
+<meta property="article:modified_time" content="2020-07-23T12:32:11+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "4352",
+  "wordCount": "4728",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-22T11:00:40+03:00",
+  "dateModified": "2020-07-23T12:32:11+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -802,7 +802,112 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <h2 id="2020-07-23">2020-07-23</h2>
 <ul>
 <li>I closed all issues in the <a href="https://github.com/ilri/OpenRXV/issues">OpenRXV</a> and <a href="https://github.com/ilri/AReS/issues">AReS</a> GitHub repositories with screenshots so that Moayad can use them for his invoice</li>
-<li>The statistics-2018 core always crashes with the same error even after I deleted the &ldquo;id:10&rdquo; records&hellip;</li>
+<li>The statistics-2018 core always crashes with the same error even after I deleted the &ldquo;id:10&rdquo; records&hellip;
+<ul>
+<li>I started the statistics-2017 core and it finished in 3:44:15</li>
+<li>I started the statistics-2016 core and it finished in 2:27:08</li>
+<li>I started the statistics-2015 core and it finished in 1:07:38</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-24">2020-07-24</h2>
+<ul>
+<li>Looking at the statistics-2019 Solr stats and see some interesting user agents and IPs
+<ul>
+<li>For example, I see 568,000 requests from 66.109.27.x in 2019-10, all with the same exact user agent:</li>
+</ul>
+</li>
+</ul>
+<pre><code>Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1
+</code></pre><ul>
+<li>Also, in the same month with the same <em>exact</em> user agent, I see 300,000 from 192.157.89.x
+<ul>
+<li>The 66.109.27.x IPs belong to galaxyvisions.com</li>
+<li>The 192.157.89.x IPs belong to cologuard.com</li>
+<li>All these hosts were reported in late 2019 on abuseipdb.com</li>
+</ul>
+</li>
+<li>Then I see another one 163.172.71.23 that made 215,000 requests in 2019-09 and 2019-08
+<ul>
+<li>It belongs to poneytelecom.eu and is also in abuseipdb.com for PHP injection and directory traversal</li>
+<li>It uses this user agent:</li>
+</ul>
+</li>
+</ul>
+<pre><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
+</code></pre><ul>
+<li>In statistics-2018 I see more weird IPs
+<ul>
+<li>54.214.112.202 made 839,000 requests with no user agent&hellip;
+<ul>
+<li>It is on Amazon Web Services (AWS) and made 100% <code>statistics_type:view</code> so I guess it was harvesting via the REST API</li>
+</ul>
+</li>
+<li>A few IPs owned by perfectip.net made 400,000 requests in 2018-01
+<ul>
+<li>They are 2607:fa98:40:9:26b6:fdff:feff:195d and 2607:fa98:40:9:26b6:fdff:feff:1888 and 2607:fa98:40:9:26b6:fdff:feff:1c96</li>
+<li>All the requests used this user agent:</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36
+</code></pre><ul>
+<li>Then there is 213.139.53.62 in 2018, which is on Orange Telecom Jordan, so it&rsquo;s definitely CodeObia / ICARDA and I will purge them</li>
+<li>Jesus, and then there are 100,000 from the ILRI harvestor on Linode on 2a01:7e00::f03c:91ff:fe0a:d645</li>
+<li>Jesus fuck there is 46.101.86.248 making 15,000 requests per month in 2018 with no user agent&hellip;</li>
+<li>I will purge the hits from all the following IPs:</li>
+</ul>
+<pre><code>192.157.89.4
+192.157.89.5
+192.157.89.6
+192.157.89.7
+66.109.27.142
+66.109.27.139
+66.109.27.138
+66.109.27.140
+66.109.27.141
+2607:fa98:40:9:26b6:fdff:feff:1888
+2607:fa98:40:9:26b6:fdff:feff:195d
+2607:fa98:40:9:26b6:fdff:feff:1c96
+213.139.53.62
+2a01:7e00::f03c:91ff:fe0a:d645
+46.101.86.248
+</code></pre><ul>
+<li>In total these accounted for the following amount of requests in each year:
+<ul>
+<li>2020: 1436</li>
+<li>2019: 933148</li>
+<li>2018: 613936</li>
+</ul>
+</li>
+<li>I noticed a few other user agents that should be purged too:</li>
+</ul>
+<pre><code>^Java\/\d{1,2}.\d
+FlipboardProxy\/\d
+API scraper
+RebelMouse\/\d
+Iframely\/\d
+Python\/\d
+Ruby
+NING\/\d
+ubermetrics-technologies\.com
+Jetty\/\d
+scalaj-http\/\d
+mailto\:team@impactstory\.org
+</code></pre><ul>
+<li>I purged them from the stats too:
+<ul>
+<li>2020: 18153</li>
+<li>2019: 29745</li>
+<li>2018: 18083</li>
+<li>2017: 19399</li>
+<li>2016: 16283</li>
+<li>2015: 16659</li>
+<li>2014: 713</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
