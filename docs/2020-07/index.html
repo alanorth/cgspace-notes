@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-23T12:32:11+03:00" />
+<meta property="article:modified_time" content="2020-07-24T23:23:15+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "4728",
+  "wordCount": "5045",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-23T12:32:11+03:00",
+  "dateModified": "2020-07-24T23:23:15+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -807,6 +807,11 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <li>I started the statistics-2017 core and it finished in 3:44:15</li>
 <li>I started the statistics-2016 core and it finished in 2:27:08</li>
 <li>I started the statistics-2015 core and it finished in 1:07:38</li>
+<li>I started the statistics-2014 core and it finished in 1:45:44</li>
+<li>I started the statistics-2013 core and it finished in 1:41:50</li>
+<li>I started the statistics-2012 core and it finished in 1:23:36</li>
+<li>I started the statistics-2011 core and it finished in 0:39:37</li>
+<li>I started the statistics-2010 core and it finished in 0:01:46</li>
 </ul>
 </li>
 </ul>
@@ -845,7 +850,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </li>
 <li>A few IPs owned by perfectip.net made 400,000 requests in 2018-01
 <ul>
-<li>They are 2607:fa98:40:9:26b6:fdff:feff:195d and 2607:fa98:40:9:26b6:fdff:feff:1888 and 2607:fa98:40:9:26b6:fdff:feff:1c96</li>
+<li>They are 2607:fa98:40:9:26b6:fdff:feff:195d and 2607:fa98:40:9:26b6:fdff:feff:1888 and 2607:fa98:40:9:26b6:fdff:feff:1c96 and 70.36.107.49</li>
 <li>All the requests used this user agent:</li>
 </ul>
 </li>
@@ -857,6 +862,8 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <li>Then there is 213.139.53.62 in 2018, which is on Orange Telecom Jordan, so it&rsquo;s definitely CodeObia / ICARDA and I will purge them</li>
 <li>Jesus, and then there are 100,000 from the ILRI harvestor on Linode on 2a01:7e00::f03c:91ff:fe0a:d645</li>
 <li>Jesus fuck there is 46.101.86.248 making 15,000 requests per month in 2018 with no user agent&hellip;</li>
+<li>Jesus fuck there is 84.38.130.177 in Latvia that was making 75,000 requests in 2018-11 and 2018-10</li>
+<li>Jesus fuck there is 104.198.9.108 on Google Cloud that was making 30,000 requests with no user agent</li>
 <li>I will purge the hits from all the following IPs:</li>
 </ul>
 <pre><code>192.157.89.4
@@ -874,12 +881,16 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 213.139.53.62
 2a01:7e00::f03c:91ff:fe0a:d645
 46.101.86.248
+54.214.112.202
+84.38.130.177
+104.198.9.108
+70.36.107.49
 </code></pre><ul>
 <li>In total these accounted for the following amount of requests in each year:
 <ul>
 <li>2020: 1436</li>
-<li>2019: 933148</li>
-<li>2018: 613936</li>
+<li>2019: 960274</li>
+<li>2018: 1588149</li>
 </ul>
 </li>
 <li>I noticed a few other user agents that should be purged too:</li>
@@ -899,7 +910,7 @@ mailto\:team@impactstory\.org
 </code></pre><ul>
 <li>I purged them from the stats too:
 <ul>
-<li>2020: 18153</li>
+<li>2020: 19553</li>
 <li>2019: 29745</li>
 <li>2018: 18083</li>
 <li>2017: 19399</li>
@@ -909,7 +920,121 @@ mailto\:team@impactstory\.org
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-07-26">2020-07-26</h2>
+<ul>
+<li>I continued with the Solr ID to UUID migrations (solr-upgrade-statistics-6x) from last week and updated my notes for each core above
+<ul>
+<li>After all cores finished migrating I optimized them to delete old documents</li>
+</ul>
+</li>
+<li>Export some of the CGSpace Solr stats minus the Atmire CUA schema additions for Salem to play with:</li>
+</ul>
+<pre><code>$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f 'time:[2019-01-01T00\:00\:00Z TO 2019-06-30T23\:59\:59Z]' -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
+</code></pre><ul>
+<li>
+<p>Run system updates on DSpace Test (linode26) and reboot it</p>
+</li>
+<li>
+<p>I looked into the umigrated Solr records more and they are overwhelmingly <code>type: 5</code> (which means &ldquo;Site&rdquo; according to the DSpace constants):</p>
+<ul>
+<li>statistics
+<ul>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 167316</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 32581</li>
+</ul>
+</li>
+<li>id: -1
+<ul>
+<li>type 5: 10198</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>statistics-2019
+<ul>
+<li>id: -1
+<ul>
+<li>type 5: 2690500</li>
+</ul>
+</li>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 1348202</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 141576</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>statistics-2018
+<ul>
+<li>id: -1
+<ul>
+<li>type 5: 365466</li>
+</ul>
+</li>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 254680</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 204854</li>
+</ul>
+</li>
+<li>145870-unmigrated
+<ul>
+<li>type 0: 83235</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>statistics-2017</li>
+<li>id: -1
+<ul>
+<li>type 5: 808346</li>
+</ul>
+</li>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 598022</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 254014</li>
+</ul>
+</li>
+<li>145870-unmigrated
+<ul>
+<li>type 0: 28168</li>
+<li>bundleName THUMBNAIL: 28168</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>There is another one appears in 2018 and 2017 at least of type 0, which would be download</p>
+<ul>
+<li>In that case the id is of a bitstream that no longer exists&hellip;?</li>
+</ul>
+</li>
+<li>
+<p>I started processing Solr stats with the Atmire tool now:</p>
+</li>
+</ul>
+<pre><code>$ dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -c statistics -f -t 12
+</code></pre><!-- raw HTML omitted -->
 
   
 
