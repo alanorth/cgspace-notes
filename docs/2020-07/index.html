@@ -20,7 +20,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
 <meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
-<meta property="article:modified_time" content="2020-07-26T22:24:52+03:00" />
+<meta property="article:modified_time" content="2020-07-27T20:07:52+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2020"/>
@@ -35,7 +35,7 @@ I restarted Tomcat and PostgreSQL and the issue was gone
 
 Since I was restarting Tomcat anyways I decided to redeploy the latest changes from the 5_x-prod branch and I added a note about COVID-19 items to the CGSpace frontpage at Peter&rsquo;s request
 "/>
-<meta name="generator" content="Hugo 0.73.0" />
+<meta name="generator" content="Hugo 0.74.1" />
 
 
     
@@ -45,9 +45,9 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
   "@type": "BlogPosting",
   "headline": "July, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
-  "wordCount": "5184",
+  "wordCount": "5618",
   "datePublished": "2020-07-01T10:53:54+03:00",
-  "dateModified": "2020-07-26T22:24:52+03:00",
+  "dateModified": "2020-07-27T20:07:52+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -1063,7 +1063,62 @@ If run the update again with the resume option (-r) they will be reattempted
 <pre><code>$ ./fix-metadata-values.py -i /tmp/2020-07-27-fix-ILRI-author.csv -db dspace -u cgspace -p 'fuuu' -f dc.contributor.author -t 'correct' -m 3
 Fixed 13 occurences of: Muloi, D.
 Fixed 4 occurences of: Muloi, D.M.
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2020-07-28">2020-07-28</h2>
+<ul>
+<li>I started analyzing the situation with the cases I&rsquo;ve seen where a Solr record fails to be migrated:
+<ul>
+<li><code>id: 0-unmigrated</code> are mostly (all?) <code>type: 5</code> aka site view</li>
+<li><code>id: -1-unmigrated</code> are mostly (all?) <code>type: 5</code> aka site view</li>
+<li><code>id: -1</code> are mostly (all?) <code>type: 5</code> aka site view</li>
+<li><code>id: 59184-unmigrated</code> where &ldquo;59184&rdquo; is the id of an item or bitstream that no longer exists</li>
+</ul>
+</li>
+<li>Why doesn&rsquo;t Atmire&rsquo;s code ignore any id with &ldquo;-unmigrated&rdquo;?</li>
+<li>I sent feedback to Atmire since they had responded to my previous question yesterday
+<ul>
+<li>They said that the DSpace 6 version of CUA does not work with Tomcat 8.5&hellip;</li>
+</ul>
+</li>
+<li>I spent a few hours trying to write a <a href="https://wiki.lyrasis.org/display/DSDOC5x/Curation+tasks+in+Jython">Jython-based curation task</a> to update ISO 3166-1 Alpha2 country codes based on each item&rsquo;s ISO 3166-1 country
+<ul>
+<li>Peter doesn&rsquo;t want to use the ISO 3166-1 list because he objects to a few names, so I thought we might be able to use country codes or numeric codes and update the names with a curation task</li>
+<li>The work is very rough but kinda works: <a href="https://gist.github.com/alanorth/6a31af592b3467f7b63ac8aea7c75d52">mytask.py</a></li>
+<li>What is nice is that the <code>dso.update()</code> method updates the data the &ldquo;DSpace way&rdquo; so we don&rsquo;t need to re-index Solr</li>
+<li>I had a clever idea to &ldquo;vendor&rdquo; the pycountry code using <code>pip install pycountry -t</code>, but pycountry dropped support for Python 2 in 2019 so we can only use an outdated version</li>
+<li>In the end it&rsquo;s really limiting to this particular task in Jython because we are stuck with Python 2, we can&rsquo;t use virtual environments, and there is a lot of code we&rsquo;d need to write to be able to handle the ISO 3166 country lists</li>
+<li>Python 2 is no longer supported by the Python community anyways so it&rsquo;s probably better to figure out how to do this in Java</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-29">2020-07-29</h2>
+<ul>
+<li>The Atmire stats tool (com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI) created 150GB of log files due to errors and the disk got full on DSpace Test (linode26)
+<ul>
+<li>This morning I had noticed that the run I started last night said that 54,000,000 (54 million!) records failed to process, but the core only had 6 million or so documents to process&hellip;!</li>
+<li>I removed the large log files and optimized the Solr core</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-30">2020-07-30</h2>
+<ul>
+<li>Looking into ISO 3166-1 from the iso-codes package
+<ul>
+<li>I see that all current 249 countries have names, 173 have official names, and 6 have common names:</li>
+</ul>
+</li>
+</ul>
+<pre><code># grep -c numeric /usr/share/iso-codes/json/iso_3166-1.json
+249
+# grep -c -E '&quot;name&quot;:' /usr/share/iso-codes/json/iso_3166-1.json
+249
+# grep -c -E '&quot;official_name&quot;:' /usr/share/iso-codes/json/iso_3166-1.json
+173
+# grep -c -E '&quot;common_name&quot;:' /usr/share/iso-codes/json/iso_3166-1.json
+6
+</code></pre><ul>
+<li>Wow, the <code>CC-BY-NC-ND-3.0-IGO</code> license that I had <a href="https://github.com/spdx/license-list-XML/issues/767">requested in 2019-02</a> was finally merged into SPDX&hellip;</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
@@ -1084,6 +1139,8 @@ Fixed 4 occurences of: Muloi, D.M.
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2020-07/">August, 2020</a></li>
+
 <li><a href="/cgspace-notes/2020-07/">July, 2020</a></li>
 
 <li><a href="/cgspace-notes/2020-06/">June, 2020</a></li>
@@ -1091,8 +1148,6 @@ Fixed 4 occurences of: Muloi, D.M.
 <li><a href="/cgspace-notes/2020-05/">May, 2020</a></li>
 
 <li><a href="/cgspace-notes/2020-04/">April, 2020</a></li>
-
-<li><a href="/cgspace-notes/2020-03/">March, 2020</a></li>
 
     </ol>
   </section>
