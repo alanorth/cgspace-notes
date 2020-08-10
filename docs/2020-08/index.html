@@ -19,7 +19,7 @@ It is class based so I can easily add support for other vocabularies, and the te
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-08/" />
 <meta property="article:published_time" content="2020-08-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-08-06T16:24:01+03:00" />
+<meta property="article:modified_time" content="2020-08-07T19:55:21+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2020"/>
@@ -43,9 +43,9 @@ It is class based so I can easily add support for other vocabularies, and the te
   "@type": "BlogPosting",
   "headline": "August, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-08/",
-  "wordCount": "1421",
+  "wordCount": "2049",
   "datePublished": "2020-08-02T15:35:54+03:00",
-  "dateModified": "2020-08-06T16:24:01+03:00",
+  "dateModified": "2020-08-07T19:55:21+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -370,7 +370,141 @@ on_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-08-08">2020-08-08</h2>
+<ul>
+<li>The Atmire stats processing for the statistics-2018 Solr core keeps stopping with this error:</li>
+</ul>
+<pre><code>Exception: 50 consecutive records couldn't be saved. There's most likely an issue with the connection to the solr server. Shutting down.
+java.lang.RuntimeException: 50 consecutive records couldn't be saved. There's most likely an issue with the connection to the solr server. Shutting down.
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.storeOnServer(SourceFile:317)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:177)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</code></pre><ul>
+<li>It lists a few of the records that it is having issues with and they all have integer IDs
+<ul>
+<li>When I checked Solr I see 8,000 of them, some of which have type 0 and some with no type&hellip;</li>
+<li>I purged them and then the process continues:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/[0-9]+/&lt;/query&gt;&lt;/delete&gt;'
+</code></pre><h2 id="2020-08-09">2020-08-09</h2>
+<ul>
+<li>The Atmire script did something to the server and created 132GB of log files so the root partition ran out of space&hellip;</li>
+<li>I removed the log file and tried to re-run the process but it seems to be looping over 11,000 records and failing, creating millions of lines in the logs again:</li>
+</ul>
+<pre><code># grep -oE &quot;Record uid: ([a-f0-9\\-]*){1} couldn't be processed&quot; /home/dspacetest.cgiar.org/log/dspace.log.2020-08-09 &gt; /tmp/not-processed-errors.txt
+# wc -l /tmp/not-processed-errors.txt
+2202973 /tmp/not-processed-errors.txt
+# sort /tmp/not-processed-errors.txt | uniq -c | tail -n 10
+    220 Record uid: ffe52878-ba23-44fb-8df7-a261bb358abc couldn't be processed
+    220 Record uid: ffecb2b0-944d-4629-afdf-5ad995facaf9 couldn't be processed
+    220 Record uid: ffedde6b-0782-4d9f-93ff-d1ba1a737585 couldn't be processed
+    220 Record uid: ffedfb13-e929-4909-b600-a18295520a97 couldn't be processed
+    220 Record uid: fff116fb-a1a0-40d0-b0fb-b71e9bb898e5 couldn't be processed
+    221 Record uid: fff1349d-79d5-4ceb-89a1-ce78107d982d couldn't be processed
+    220 Record uid: fff13ddb-b2a2-410a-9baa-97e333118c74 couldn't be processed
+    220 Record uid: fff232a6-a008-47d0-ad83-6e209bb6cdf9 couldn't be processed
+    221 Record uid: fff75243-c3be-48a0-98f8-a656f925cb68 couldn't be processed
+    221 Record uid: fff88af8-88d4-4f79-ba1a-79853973c872 couldn't be processed
+</code></pre><ul>
+<li>I looked at some of those records and saw strange objects in their <code>containerCommunity</code>, <code>containerCollection</code>, etc&hellip;</li>
+</ul>
+<pre><code>{
+  &quot;responseHeader&quot;: {
+    &quot;status&quot;: 0,
+    &quot;QTime&quot;: 0,
+    &quot;params&quot;: {
+      &quot;q&quot;: &quot;uid:fff1349d-79d5-4ceb-89a1-ce78107d982d&quot;,
+      &quot;indent&quot;: &quot;true&quot;,
+      &quot;wt&quot;: &quot;json&quot;,
+      &quot;_&quot;: &quot;1596957629970&quot;
+    }
+  },
+  &quot;response&quot;: {
+    &quot;numFound&quot;: 1,
+    &quot;start&quot;: 0,
+    &quot;docs&quot;: [
+      {
+        &quot;containerCommunity&quot;: [
+          &quot;155&quot;,
+          &quot;155&quot;,
+          &quot;{set=null}&quot;
+        ],
+        &quot;uid&quot;: &quot;fff1349d-79d5-4ceb-89a1-ce78107d982d&quot;,
+        &quot;containerCollection&quot;: [
+          &quot;1099&quot;,
+          &quot;830&quot;,
+          &quot;{set=830}&quot;
+        ],
+        &quot;owningComm&quot;: [
+          &quot;155&quot;,
+          &quot;155&quot;,
+          &quot;{set=null}&quot;
+        ],
+        &quot;isInternal&quot;: false,
+        &quot;isBot&quot;: false,
+        &quot;statistics_type&quot;: &quot;view&quot;,
+        &quot;time&quot;: &quot;2018-05-08T23:17:00.157Z&quot;,
+        &quot;owningColl&quot;: [
+          &quot;1099&quot;,
+          &quot;830&quot;,
+          &quot;{set=830}&quot;
+        ],
+        &quot;_version_&quot;: 1621500445042147300
+      }
+    ]
+  }
+}
+</code></pre><ul>
+<li>I deleted those 11,724 records with the strange &ldquo;set&rdquo; object in the collections and communities, as well as 360,000 records with <code>id: -1</code></li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;'
+$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:\-1&lt;/query&gt;&lt;/delete&gt;'
+</code></pre><ul>
+<li>I was going to compare the CUA stats for 2018 and 2019 on CGSpace and DSpace Test, but after Linode rebooted CGSpace (linode18) for maintenance yesterday the solr cores didn&rsquo;t all come back up OK
+<ul>
+<li>I had to restart Tomcat five times before they all came up!</li>
+<li>After that I generated a report for 2018 and 2019 on each server and found that the difference is about 10,000–20,000 per month, which is much less than I was expecting</li>
+</ul>
+</li>
+<li>I noticed some authors that should have ORCID identifiers, but didn&rsquo;t (perhaps older items before we were tagging ORCID metadata)
+<ul>
+<li>With the simple list below I added 1,341 identifiers!</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ cat 2020-08-09-add-ILRI-orcids.csv
+dc.contributor.author,cg.creator.id
+&quot;Grace, Delia&quot;,&quot;Delia Grace: 0000-0002-0195-9489&quot;
+&quot;Delia Grace&quot;,&quot;Delia Grace: 0000-0002-0195-9489&quot;
+&quot;Baker, Derek&quot;,&quot;Derek Baker: 0000-0001-6020-6973&quot;
+&quot;Ngan Tran Thi&quot;,&quot;Tran Thi Ngan: 0000-0002-7184-3086&quot;
+&quot;Dang Xuan Sinh&quot;,&quot;Sinh Dang-Xuan: 0000-0002-0522-7808&quot;
+&quot;Hung Nguyen-Viet&quot;,&quot;Hung Nguyen-Viet: 0000-0001-9877-0596&quot;
+&quot;Pham Van Hung&quot;,&quot;Pham Anh Hung: 0000-0001-9366-0259&quot;
+&quot;Lindahl, Johanna F.&quot;,&quot;Johanna Lindahl: 0000-0002-1175-0398&quot;
+&quot;Teufel, Nils&quot;,&quot;Nils Teufel: 0000-0001-5305-6620&quot;
+&quot;Duncan, Alan J.&quot;,Alan Duncan: 0000-0002-3954-3067&quot;
+&quot;Moodley, Arshnee&quot;,&quot;Arshnee Moodley: 0000-0002-6469-3948&quot;
+</code></pre><ul>
+<li>That got me curious, so I generated a list of all the unique ORCID identifiers we have in the database:</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240) TO /tmp/2020-08-09-orcid-identifiers.csv;
+COPY 2095
+dspace=# \q
+$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' /tmp/2020-08-09-orcid-identifiers.csv | sort | uniq &gt; /tmp/2020-08-09-orcid-identifiers-uniq.csv
+$ wc -l /tmp/2020-08-09-orcid-identifiers-uniq.csv
+1949 /tmp/2020-08-09-orcid-identifiers-uniq.csv
+</code></pre><!-- raw HTML omitted -->
 
   
 
