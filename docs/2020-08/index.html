@@ -19,7 +19,7 @@ It is class based so I can easily add support for other vocabularies, and the te
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-08/" />
 <meta property="article:published_time" content="2020-08-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-08-10T09:27:50+03:00" />
+<meta property="article:modified_time" content="2020-08-10T15:59:22+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2020"/>
@@ -43,9 +43,9 @@ It is class based so I can easily add support for other vocabularies, and the te
   "@type": "BlogPosting",
   "headline": "August, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-08/",
-  "wordCount": "2285",
+  "wordCount": "2443",
   "datePublished": "2020-08-02T15:35:54+03:00",
-  "dateModified": "2020-08-10T09:27:50+03:00",
+  "dateModified": "2020-08-10T15:59:22+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -527,6 +527,26 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 <li>I tagged the ISO 3166-1 Alpha2 country codes on all items on CGSpace using my <a href="https://github.com/ilri/cgspace-java-helpers">CountryCodeTagger</a> curation task
 <ul>
 <li>I still need to set up a cron job for it&hellip;</li>
+<li>This tagged 50,000 countries!</li>
+</ul>
+</li>
+</ul>
+<pre><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE metadata_field_id = 243 AND resource_type_id = 2;
+ count
+-------
+ 50812
+(1 row)
+</code></pre><h2 id="2020-08-11">2020-08-11</h2>
+<ul>
+<li>I noticed some more hits from Macaroni&rsquo;s WordPress harvestor that I hadn&rsquo;t caught last week
+<ul>
+<li>104.198.13.34 made many requests without a user agent, with a &ldquo;WordPress&rdquo; user agent, and with their new &ldquo;RTB website BOT&rdquo; user agent, about 100,000 in total in 2020, and maybe another 70,000 in the other years</li>
+<li>I will purge them an add them to the Tomcat Crawler Session Manager and the DSpace bots list so they don&rsquo;t get logged in Solr</li>
+</ul>
+</li>
+<li>I noticed a bunch of user agents with &ldquo;Crawl&rdquo; in the Solr stats, which is strange because the DSpace spider agents file has had &ldquo;crawl&rdquo; for a long time (and it is case insensitive)
+<ul>
+<li>In any case I will purge them and add them to the Tomcat Crawler Session Manager Valve so that at least their sessions get re-used</li>
 </ul>
 </li>
 </ul>
