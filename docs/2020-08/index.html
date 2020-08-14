@@ -19,7 +19,7 @@ It is class based so I can easily add support for other vocabularies, and the te
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-08/" />
 <meta property="article:published_time" content="2020-08-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-08-11T11:35:05+03:00" />
+<meta property="article:modified_time" content="2020-08-13T17:56:39+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="August, 2020"/>
@@ -43,9 +43,9 @@ It is class based so I can easily add support for other vocabularies, and the te
   "@type": "BlogPosting",
   "headline": "August, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-08/",
-  "wordCount": "2554",
+  "wordCount": "2800",
   "datePublished": "2020-08-02T15:35:54+03:00",
-  "dateModified": "2020-08-11T11:35:05+03:00",
+  "dateModified": "2020-08-13T17:56:39+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -565,6 +565,56 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 <p><code>(CASE WHEN 2850=9474 THEN 2850 ELSE NULL END)</code></p>
 <ul>
 <li>I purged 150,000 hits from 2020 and 2020 from these user agents and hosts</li>
+</ul>
+<h2 id="2020-08-14">2020-08-14</h2>
+<ul>
+<li>Last night I started the processing of the statistics-2016 core with the Atmire stats util and I see some errors like this:</li>
+</ul>
+<pre><code>Record uid: f6b288d7-d60d-4df9-b311-1696b88552a0 couldn't be processed
+com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: f6b288d7-d60d-4df9-b311-1696b88552a0, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: java.lang.NullPointerException
+</code></pre><ul>
+<li>I see it has <code>id: 980-unmigrated</code> and <code>type: 0</code>&hellip;</li>
+<li>The 2016 core has 629,983 unmigrated docs, mostly:
+<ul>
+<li><code>type: 5</code>: 620311</li>
+<li><code>type: 0</code>: 7255</li>
+<li><code>type: 3</code>: 1333</li>
+</ul>
+</li>
+<li>I purged the unmigrated docs and continued processing:</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
+$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2016
+</code></pre><ul>
+<li>Then I see there are 849,000 docs with <code>id: -1</code> and <code>type: 5</code> so I should purge those too probably:</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2017/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:\-1&lt;/query&gt;&lt;/delete&gt;'
+</code></pre><ul>
+<li>Altmetric asked for a dump of CGSpace&rsquo;s OAI &ldquo;sets&rdquo; so they can update their affiliation mappings
+<ul>
+<li>I did it in a kinda ghetto way:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ http 'https://cgspace.cgiar.org/oai/request?verb=ListSets' &gt; /tmp/0.xml
+$ for num in {100..1300..100}; do http &quot;https://cgspace.cgiar.org/oai/request?verb=ListSets&amp;resumptionToken=////$num&quot; &gt; /tmp/$num.xml; sleep 2; done
+$ for num in {0..1300..100}; do cat /tmp/$num.xml &gt;&gt; /tmp/cgspace-oai-sets.xml; done
+</code></pre><ul>
+<li>This produces one file that has all the sets, albeit with 14 pages of responses concatenated into one document, but that&rsquo;s how theirs was in the first place&hellip;</li>
+<li>Help Bizu with a restricted item for CIAT</li>
 </ul>
 <!-- raw HTML omitted -->
 
