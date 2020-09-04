@@ -25,7 +25,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-09/" />
 <meta property="article:published_time" content="2020-09-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-09-02T13:39:11+03:00" />
+<meta property="article:modified_time" content="2020-09-03T13:50:56+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2020"/>
@@ -55,9 +55,9 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "557",
+  "wordCount": "731",
   "datePublished": "2020-09-02T15:35:54+03:00",
-  "dateModified": "2020-09-02T13:39:11+03:00",
+  "dateModified": "2020-09-03T13:50:56+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -244,6 +244,29 @@ java.lang.NullPointerException
         at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
 </code></pre><ul>
 <li>There are more in the DSpace log so I will raise it with Atmire immediately</li>
+</ul>
+<h2 id="2020-09-04">2020-09-04</h2>
+<ul>
+<li>I was checking the recent IITA data for duplicates when I noticed that one in CIFOR&rsquo;s Archive and saw that CIFOR has updated a bunch of their website URLs, for example:
+<ul>
+<li><a href="http://www.cifor.org/nc/online-library/browse/view-publication/publication/151.html">http://www.cifor.org/nc/online-library/browse/view-publication/publication/151.html</a> → <a href="https://www.cifor.org/knowledge/publication/151">https://www.cifor.org/knowledge/publication/151</a></li>
+<li><a href="https://www.cifor.org/library/4033">https://www.cifor.org/library/4033</a> → <a href="https://www.cifor.org/knowledge/publication/4033">https://www.cifor.org/knowledge/publication/4033</a></li>
+<li><a href="https://www.cifor.org/pid/5087">https://www.cifor.org/pid/5087</a> → <a href="https://www.cifor.org/knowledge/publication/5087">https://www.cifor.org/knowledge/publication/5087</a></li>
+</ul>
+</li>
+<li>I will update our nearly 6,000 metadata values for CIFOR in the database accordingly:</li>
+</ul>
+<pre><code>dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^(http://)?www\.cifor\.org/(nc/)?online-library/browse/view-publication/publication/([[:digit:]]+)\.html$', 'https://www.cifor.org/knowledge/publication/\3') WHERE metadata_field_id=219 AND text_value ~ 'www\.cifor\.org/(nc/)?online-library/browse/view-publication/publication/[[:digit:]]+';
+dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^https?://www\.cifor\.org/library/([[:digit:]]+)/?$', 'https://www.cifor.org/knowledge/publication/\1') WHERE metadata_field_id=219 AND text_value ~ 'https?://www\.cifor\.org/library/[[:digit:]]+/?';
+dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^https?://www\.cifor\.org/pid/([[:digit:]]+)/?$', 'https://www.cifor.org/knowledge/publication/\1') WHERE metadata_field_id=219 AND text_value ~ 'https?://www\.cifor\.org/pid/[[:digit:]]+';
+</code></pre><ul>
+<li>I did some cleanup on the author affiliations of the IITA data our 2019-04 list using reconcile-csv and OpenRefine:
+<ul>
+<li><code>$ lein run ~/src/git/DSpace/2019-04-08-affiliations.csv name id</code></li>
+<li>I always forget how to copy the reconciled values in OpenRefine, but you need to make a new column and populate it using this GREL: <code>if(cell.recon.matched, cell.recon.match.name, value)</code></li>
+</ul>
+</li>
+<li>I mapped one duplicated from the CIFOR Archives and re-uploaded the 94 IITA items to a new collection on <a href="https://dspacetest.cgiar.org/handle/10568/108453">DSpace Test</a></li>
 </ul>
 <!-- raw HTML omitted -->
 
