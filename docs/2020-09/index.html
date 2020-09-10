@@ -25,7 +25,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-09/" />
 <meta property="article:published_time" content="2020-09-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-09-08T12:10:08+03:00" />
+<meta property="article:modified_time" content="2020-09-10T12:18:03+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2020"/>
@@ -55,9 +55,9 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "1159",
+  "wordCount": "1398",
   "datePublished": "2020-09-02T15:35:54+03:00",
-  "dateModified": "2020-09-08T12:10:08+03:00",
+  "dateModified": "2020-09-10T12:18:03+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -339,6 +339,30 @@ Would fix 3 occurences of: SOUTHWEST ASIA
 <li>I think we need to wait for the web team, though, as they need to update their mappings
 <ul>
 <li>Not to mention that we&rsquo;ll need to give WLE and CCAFS time to update their harvesters as well&hellip; hmmm</li>
+</ul>
+</li>
+<li>Looking at the top user agents active on CGSpace in 2020-08 and I see:
+<ul>
+<li><code>Delphi 2009</code>: 235353 (this is GARDIAN harvester I guess, as the IP is in Greece)</li>
+<li><code>Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)</code>: 57004 (IP is 18.196.100.94, and the requests seem to be for CTA&rsquo;s content)</li>
+<li><code>RTB website BOT</code>: 12282</li>
+<li><code>ILRI Livestock Website Publications importer BOT</code>: 9393</li>
+</ul>
+</li>
+<li>Shit, I meant to add Delphi to the DSpace spider agents list last month but I guess I didn&rsquo;t commit the change</li>
+<li>HTTrack is in the agents list so I&rsquo;m not sure why DSpace registers a hit from that request</li>
+<li>Also, I am surprised to see the RTB and ILRI bots here because they have &ldquo;BOT&rdquo; in the name and that should also be dropped</li>
+<li>I also see hits from <code>curl</code> and <code>Java/1.8.0_66</code> and <code>Apache-HttpClient</code> so WTF&hellip; those are supposed to be dropped by the default agents list</li>
+<li>Some IP <code>2607:f298:5:101d:f816:3eff:fed9:a484</code> made 9,000 requests with the <code>RI/1.0</code> user agent this year&hellip;
+<ul>
+<li>That&rsquo;s on DreamHost&hellip;?</li>
+</ul>
+</li>
+<li>I purged 448658 hits from these agents and added <code>Delphi</code> to our local agents overload for Solr as well as Tomcat&rsquo;s Crawler Session Manager Valve so that it forces them to re-use a single session</li>
+<li>I made a pull request on the COUNTER-Robots project for the Daum robot: <a href="https://github.com/atmire/COUNTER-Robots/pull/38">https://github.com/atmire/COUNTER-Robots/pull/38</a>
+<ul>
+<li>This bot made 8,000 requests to CGSpace this year</li>
+<li>I purged about 20,000 total requests from this bot from our Solr stats for the last few years</li>
 </ul>
 </li>
 </ul>
