@@ -25,7 +25,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-09/" />
 <meta property="article:published_time" content="2020-09-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-09-04T13:32:16+03:00" />
+<meta property="article:modified_time" content="2020-09-08T12:10:08+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2020"/>
@@ -55,9 +55,9 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "838",
+  "wordCount": "1159",
   "datePublished": "2020-09-02T15:35:54+03:00",
-  "dateModified": "2020-09-04T13:32:16+03:00",
+  "dateModified": "2020-09-08T12:10:08+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -287,6 +287,58 @@ dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^http
 <li>So they end up getting rate limited due to the XMLUI rate limits
 <ul>
 <li>I told them to use the REST API bitstream retrieve links, because we don&rsquo;t have any rate limits there</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-09-09">2020-09-09</h2>
+<ul>
+<li>Wire up the systemd service/timer for the CGSpace Country Code Tagger curation task in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a>
+<ul>
+<li><del>For now it won&rsquo;t work on DSpace 6 because the curation task invocation needs to be slightly different (minus the <code>-l</code> parameter) and for some reason the task isn&rsquo;t working on DSpace Test (version 6) right now</del></li>
+<li>I added DSpace 6 support to the playbook templates&hellip;</li>
+</ul>
+</li>
+<li>Run system updates on DSpace Test (linode26), re-deploy the DSpace 6 test branch, and reboot the server
+<ul>
+<li>After rebooting I deleted old copies of the cgspace-java-helpers JAR in the DSpace lib directory and then the curation worked</li>
+<li>To my great surprise the curation worked (and completed, albeit a few times slower) on my local DSpace 6 environment as well:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ ~/dspace63/bin/dspace curate -t countrycodetagger -i all -s object
+</code></pre><h2 id="2020-09-10">2020-09-10</h2>
+<ul>
+<li>I checked the country code tagger on CGSpace and DSpace Test and it ran fine from the systemd timer last night&hellip; w00t</li>
+<li>I started looking at Peter&rsquo;s changes to the CGSpace regions that were proposed in 2020-07
+<ul>
+<li>The changes will be:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ cat 2020-09-10-fix-cgspace-regions.csv
+cg.coverage.region,correct
+EAST AFRICA,EASTERN AFRICA
+WEST AFRICA,WESTERN AFRICA
+SOUTHEAST ASIA,SOUTHEASTERN ASIA
+SOUTH ASIA,SOUTHERN ASIA
+AFRICA SOUTH OF SAHARA,SUB-SAHARAN AFRICA
+NORTH AFRICA,NORTHERN AFRICA
+WEST ASIA,WESTERN ASIA
+SOUTHWEST ASIA,SOUTHWESTERN ASIA
+$ ./fix-metadata-values.py -i 2020-09-10-fix-cgspace-regions.csv -db dspace -u dspace -p 'fuuu' -f cg.coverage.region -t 'correct' -m 227 -d -n
+Connected to database.
+Would fix 12227 occurences of: EAST AFRICA
+Would fix 7996 occurences of: WEST AFRICA
+Would fix 3515 occurences of: SOUTHEAST ASIA
+Would fix 3443 occurences of: SOUTH ASIA
+Would fix 1134 occurences of: AFRICA SOUTH OF SAHARA
+Would fix 357 occurences of: NORTH AFRICA
+Would fix 81 occurences of: WEST ASIA
+Would fix 3 occurences of: SOUTHWEST ASIA
+</code></pre><ul>
+<li>I think we need to wait for the web team, though, as they need to update their mappings
+<ul>
+<li>Not to mention that we&rsquo;ll need to give WLE and CCAFS time to update their harvesters as well&hellip; hmmm</li>
 </ul>
 </li>
 </ul>
