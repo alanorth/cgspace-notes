@@ -25,7 +25,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-09/" />
 <meta property="article:published_time" content="2020-09-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-09-10T15:00:40+03:00" />
+<meta property="article:modified_time" content="2020-09-12T19:53:57+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2020"/>
@@ -55,9 +55,9 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "1574",
+  "wordCount": "1757",
   "datePublished": "2020-09-02T15:35:54+03:00",
-  "dateModified": "2020-09-10T15:00:40+03:00",
+  "dateModified": "2020-09-12T19:53:57+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -392,6 +392,39 @@ Would fix 3 occurences of: SOUTHWEST ASIA
 <li>I told them that we don&rsquo;t allow this yet, but that we need to check in the future whether content can be posted to a workflow</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-09-15">2020-09-15</h2>
+<ul>
+<li>Charlotte from Altmetric said they had issues parsing the XML file I sent them last month
+<ul>
+<li>I told them that it was mimicking the same format that they had sent me (fourteen pages of XML responses concatenated together)!</li>
+</ul>
+</li>
+<li>A few days ago IWMI asked us if we can add a new field on CGSpace for their library identifier
+<ul>
+<li>The IDs look like this: H049940</li>
+<li>I suggested that we use <code>cg.identifier.iwmilibrary</code></li>
+<li>I added it to the input forms and push it to the <code>5_x-prod</code> and 6.x branches and will re-deploy it in the next few days</li>
+</ul>
+</li>
+<li>Abenet asked me to import sixty-nine (69) CIP Annual Reports to CGSpace
+<ul>
+<li>I looked at the data in OpenRefine and it is very good quality</li>
+<li>I only added descriptions to the filename field so that SAFBuilder will add them to the bitstreams on import:</li>
+</ul>
+</li>
+</ul>
+<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+</code></pre><ul>
+<li>Then I created a SAF bundle with SAFBuilder:</li>
+</ul>
+<pre><code>$ ./safbuilder.sh -c ~/Downloads/cip-annual-reports/cip-reports.csv
+</code></pre><ul>
+<li>And imported them into my local test instance of CGSpace:</li>
+</ul>
+<pre><code>$ ~/dspace/bin/dspace import -a -e y.arrr@cgiar.org -m /tmp/2020-09-15-cip-annual-reports.map -s ~/Downloads/cip-annual-reports/SimpleArchiveFormat
+</code></pre><ul>
+<li>Then I uploaded them to CGSpace</li>
 </ul>
 <!-- raw HTML omitted -->
 
