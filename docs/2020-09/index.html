@@ -25,7 +25,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-09/" />
 <meta property="article:published_time" content="2020-09-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-09-12T19:53:57+03:00" />
+<meta property="article:modified_time" content="2020-09-15T17:32:29+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2020"/>
@@ -45,7 +45,7 @@ I filed a bug on OpenRXV: https://github.com/ilri/OpenRXV/issues/39
 
 I filed an issue on OpenRXV to make some minor edits to the admin UI: https://github.com/ilri/OpenRXV/issues/40
 "/>
-<meta name="generator" content="Hugo 0.74.3" />
+<meta name="generator" content="Hugo 0.75.1" />
 
 
     
@@ -55,9 +55,9 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "1757",
+  "wordCount": "1911",
   "datePublished": "2020-09-02T15:35:54+03:00",
-  "dateModified": "2020-09-12T19:53:57+03:00",
+  "dateModified": "2020-09-15T17:32:29+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -425,6 +425,44 @@ Would fix 3 occurences of: SOUTHWEST ASIA
 <pre><code>$ ~/dspace/bin/dspace import -a -e y.arrr@cgiar.org -m /tmp/2020-09-15-cip-annual-reports.map -s ~/Downloads/cip-annual-reports/SimpleArchiveFormat
 </code></pre><ul>
 <li>Then I uploaded them to CGSpace</li>
+</ul>
+<h2 id="2020-09-16">2020-09-16</h2>
+<ul>
+<li>Looking further into Carlos Tejos&rsquo;s question about integrating LandVoc (the AGROVOC subset) into DSpace
+<ul>
+<li>I see that you can actually get LandVoc concepts directly from AGROVOC&rsquo;s SPARQL, for example with <a href="http://agrovoc.uniroma2.it/sparql#query=PREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0A%0ASELECT+%3Fconcept%0AWHERE+%7B%0A++%3Fconcept+a+skos%3AConcept+%3B%0A+++++++++++skos%3AinScheme+%3Chttp%3A%2F%2Flandvoc.org%2Flandvoc%3E+.%0A%0A%7D+ORDER+BY+%3Fconcept&amp;contentTypeConstruct=text%2Fturtle&amp;contentTypeSelect=application%2Fsparql-results%2Bjson&amp;endpoint=http%3A%2F%2Fagrovoc.uniroma2.it%2Fsparql&amp;requestMethod=POST&amp;tabTitle=Query&amp;headers=%7B%7D&amp;outputFormat=table">this query</a></li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/09/agrovoc-landvoc-sparql.png" alt="AGROVOC LandVoc SPARQL"></p>
+<ul>
+<li>So maybe we can query AGROVOC directly using a similar method to <a href="https://github.com/4Science/DSpace/blob/dspace-5_x_x-cris/dspace-api/src/main/java/org/dspace/content/authority/TGNAuthority.java">DSpace-CRIS&rsquo;s GettyAuthority</a></li>
+<li>I wired up DSpace-CRIS&rsquo;s VIAFAuthority to see how authorities for auto suggested names get stored
+<ul>
+<li>After submission you can see the item&rsquo;s VIAF identifier:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/09/viaf-authority.png" alt="VIAF authority"></p>
+<ul>
+<li>And this identifier is the ID on VIAF, pretty cool!</li>
+</ul>
+<p><img src="/cgspace-notes/2020/09/viaf-darwin.png" alt="VIAF entry for Charles Darwin"></p>
+<ul>
+<li>I did a similar test with the Getty Thesaurus of Geographic Names (TGN) and it stores the concept URI in the authority:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/09/tgn-concept-uri.png" alt="TGNAuthority"></p>
+<ul>
+<li>But the authority values are not exposed anywhere as metadata&hellip;
+<ul>
+<li>I need to play with it a bit more I guess&hellip;</li>
+</ul>
+</li>
+<li>The nice thing is that the Getty example from DSpace-CRIS uses SPARQL as well, and the TGN authority extends it
+<ul>
+<li>We could use a similar model for AGROVOC/LandVoc very easily</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
