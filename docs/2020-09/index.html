@@ -55,7 +55,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "1911",
+  "wordCount": "2161",
   "datePublished": "2020-09-02T15:35:54+03:00",
   "dateModified": "2020-09-15T17:32:29+03:00",
   "author": {
@@ -463,6 +463,39 @@ Would fix 3 occurences of: SOUTHWEST ASIA
 <li>We could use a similar model for AGROVOC/LandVoc very easily</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-09-17">2020-09-17</h2>
+<ul>
+<li>Maria from Bioveristy asked about the ORCID identifier for one of her colleagues that seems to have been removed from our list
+<ul>
+<li>I re-added it to our controlled vocabulary and added the identifier to fifty-one of his existing items on CGSpace using my script:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ cat 2020-09-17-add-bioversity-orcids.csv
+dc.contributor.author,cg.creator.id
+&quot;Etten, Jacob van&quot;,&quot;Jacob van Etten: 0000-0001-7554-2558&quot;
+&quot;van Etten, Jacob&quot;,&quot;Jacob van Etten: 0000-0001-7554-2558&quot;
+$ ./add-orcid-identifiers-csv.py -i 2020-09-17-add-bioversity-orcids.csv -db dspace -u dspace -p 'dom@in34sniper'
+</code></pre><ul>
+<li>I sent a follow-up message to Atmire to look into the two remaining issues with the DSpace 6 upgrade
+<ul>
+<li>First is the fact that we have zero results in our Listings and Reports, for any search</li>
+<li>Second is the error we get during CSV imports</li>
+</ul>
+</li>
+<li>Help Natalia and Cathy from Bioversity-CIAT with their OpenSearch query on &ldquo;trade offs&rdquo; again
+<ul>
+<li>They wanted to build a search query with multiple filters (type, crpsubject, status) and the general query &ldquo;trade offs&rdquo;</li>
+<li>I found a great <a href="https://www.kiwi.fi/pages/viewpage.action?pageId=45782169">reference for DSpace&rsquo;s OpenSearch syntax</a> (albeit in Finnish, but the example URLs show the syntax clearly)</li>
+<li>We can use quotes and <code>AND</code> and <code>OR</code> and even group search parameters with parenthesis!</li>
+<li>So now I built a query for Natalia which uses these (showing without URL encoding so you can see the syntax):</li>
+</ul>
+</li>
+</ul>
+<pre><code>https://cgspace.cgiar.org/open-search/discover?query=type:&quot;Journal Article&quot; AND status:&quot;Open Access&quot; AND crpsubject:&quot;Water, Land and Ecosystems&quot; AND &quot;tradeoffs&quot;&amp;rpp=100
+</code></pre><ul>
+<li>I noticed that my <code>move-collections.sh</code> script didn&rsquo;t work on DSpace 6 because of the change from IDs to UUIDs, so I modified it to quote the collection <code>resource_id</code> parameters in the PostgreSQL query</li>
 </ul>
 <!-- raw HTML omitted -->
 
