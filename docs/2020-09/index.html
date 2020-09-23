@@ -25,7 +25,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-09/" />
 <meta property="article:published_time" content="2020-09-02T15:35:54+03:00" />
-<meta property="article:modified_time" content="2020-09-22T12:38:53+03:00" />
+<meta property="article:modified_time" content="2020-09-22T14:14:18+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="September, 2020"/>
@@ -55,9 +55,9 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
   "@type": "BlogPosting",
   "headline": "September, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-09/",
-  "wordCount": "2380",
+  "wordCount": "2608",
   "datePublished": "2020-09-02T15:35:54+03:00",
-  "dateModified": "2020-09-22T12:38:53+03:00",
+  "dateModified": "2020-09-22T14:14:18+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -539,6 +539,8 @@ dspace=# DELETE FROM metadatavalue WHERE text_value='Report' AND resource_type_i
 DELETE 12
 dspace=# COMMIT;
 </code></pre><ul>
+<li>I added all CG center- and CRP-specific subject fields and mapped them to <code>dc.subject</code> in AReS</li>
+<li>After forcing a re-harvesting now the review status is much cleaner and the missing subjects are available</li>
 <li>Last week Natalia from CIAT had asked me to download all the PDFs for a certain query:
 <ul>
 <li>items with status &ldquo;Open Access&rdquo;</li>
@@ -548,6 +550,46 @@ dspace=# COMMIT;
 <li>There were 241 results with a total of 208 PDFs, which I downloaded with my <code>get-wle-pdfs.py</code> script and shared to her via bashupload.com</li>
 </ul>
 </li>
+</ul>
+<h2 id="2020-09-23">2020-09-23</h2>
+<ul>
+<li>Peter said he was having problems submitting items to CGSpace
+<ul>
+<li>On a hunch I looked at the PostgreSQL locks in Munin and indeed the normal issue with locks is back (though I haven&rsquo;t seen it in a few months?)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/09/postgres_connections_ALL-day.png" alt="PostgreSQL connections day"></p>
+<ul>
+<li>Instead of restarting Tomcat I restarted the PostgreSQL service and then Peter said he was able to submit the item&hellip;</li>
+<li>Experiment with doing direct queries for items in the <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a>
+<ul>
+<li>I tested querying a handful of item UUIDs with a date range and returning their hits faceted by <code>id</code></li>
+<li>Assuming a list of item UUIDs was posted to the REST API we could prepare them for a Solr query by joining them into a string with &ldquo;OR&rdquo; and escaping the hyphens:</li>
+</ul>
+</li>
+</ul>
+<pre><code>...
+item_ids = ['0079470a-87a1-4373-beb1-b16e3f0c4d81', '007a9df1-0871-4612-8b28-5335982198cb']
+item_ids_str = ' OR '.join(item_ids).replace('-', '\-')
+...
+solr_query_params = {
+    &quot;q&quot;: f&quot;id:({item_ids_str})&quot;,
+    &quot;fq&quot;: &quot;type:2 AND isBot:false AND statistics_type:view AND time:[2020-01-01T00:00:00Z TO 2020-09-02T00:00:00Z]&quot;,
+    &quot;facet&quot;: &quot;true&quot;,
+    &quot;facet.field&quot;: &quot;id&quot;,
+    &quot;facet.mincount&quot;: 1,
+    &quot;facet.limit&quot;: 1,
+    &quot;facet.offset&quot;: 0,
+    &quot;stats&quot;: &quot;true&quot;,
+    &quot;stats.field&quot;: &quot;id&quot;,
+    &quot;stats.calcdistinct&quot;: &quot;true&quot;,
+    &quot;shards&quot;: shards,
+    &quot;rows&quot;: 0,
+    &quot;wt&quot;: &quot;json&quot;,
+}
+</code></pre><ul>
+<li>The date range format for Solr is important, but it seems we only need to add <code>T00:00:00Z</code> to the normal ISO 8601 YYYY-MM-DD strings</li>
 </ul>
 <!-- raw HTML omitted -->
 
