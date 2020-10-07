@@ -23,7 +23,7 @@ During the FlywayDB migration I got an error:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-10/" />
 <meta property="article:published_time" content="2020-10-06T16:55:54+03:00" />
-<meta property="article:modified_time" content="2020-10-06T16:59:31+03:00" />
+<meta property="article:modified_time" content="2020-10-06T23:38:45+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2020"/>
@@ -51,9 +51,9 @@ During the FlywayDB migration I got an error:
   "@type": "BlogPosting",
   "headline": "October, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-10/",
-  "wordCount": "666",
+  "wordCount": "956",
   "datePublished": "2020-10-06T16:55:54+03:00",
-  "dateModified": "2020-10-06T16:59:31+03:00",
+  "dateModified": "2020-10-06T23:38:45+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -260,6 +260,63 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Expected m
 </code></pre><ul>
 <li>Solr returns <code>hits=18</code> for the L&amp;R query, but there are no result shown in the L&amp;R UI</li>
 <li>I sent all this feedback to Atmire&hellip;</li>
+</ul>
+<h2 id="2020-10-07">2020-10-07</h2>
+<ul>
+<li>Udana from IWMI had asked about stats discrepencies from reports they had generated in previous months or years
+<ul>
+<li>I told him that we very often purge bots and the number of stats can change drastically</li>
+<li>Also, I told him that it is not possible to compare stats from previous exports and that the stats should be taking with a grain of salt</li>
+</ul>
+</li>
+<li>Testing POSTing items to the DSpace 6 REST API
+<ul>
+<li>We need to authenticate to get a JSESSIONID cookie first:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ http -f POST https://dspacetest.cgiar.org/rest/login email=aorth@fuuu.com 'password=fuuuu'
+$ http https://dspacetest.cgiar.org/rest/status Cookie:JSESSIONID=EABAC9EFF942028AA52DFDA16DBCAFDE
+</code></pre><ul>
+<li>Then we post an item in JSON format to <code>/rest/collections/{uuid}/items</code>:</li>
+</ul>
+<pre><code>$ http POST https://dspacetest.cgiar.org/rest/collections/f10ad667-2746-4705-8b16-4439abe61d22/items Cookie:JSESSIONID=EABAC9EFF942028AA52DFDA16DBCAFDE &lt; item-object.json
+</code></pre><ul>
+<li>Format of JSON is:</li>
+</ul>
+<pre><code>{ &quot;metadata&quot;: [
+    {
+      &quot;key&quot;: &quot;dc.title&quot;,
+      &quot;value&quot;: &quot;Testing REST API post&quot;,
+      &quot;language&quot;: &quot;en_US&quot;
+    },
+    {
+      &quot;key&quot;: &quot;dc.contributor.author&quot;,
+      &quot;value&quot;: &quot;Orth, Alan&quot;,
+      &quot;language&quot;: &quot;en_US&quot;
+    },
+    {
+      &quot;key&quot;: &quot;dc.date.issued&quot;,
+      &quot;value&quot;: &quot;2020-09-01&quot;,
+      &quot;language&quot;: &quot;en_US&quot;
+    }
+  ],
+  &quot;archived&quot;:&quot;false&quot;,
+  &quot;withdrawn&quot;:&quot;false&quot;
+}
+</code></pre><ul>
+<li>What is unclear to me is the <code>archived</code> parameter, it seems to do nothing&hellip; perhaps it is only used for the <code>/items</code> endpoint when printing information about an item
+<ul>
+<li>If I submit to a collection that has a workflow, even as a super admin and with &ldquo;archived=false&rdquo; in the JSON, the item enters the workflow (&ldquo;Awaiting editor&rsquo;s attention&rdquo;)</li>
+<li>If I submit to a new collection without a workflow the item gets archived immediately</li>
+<li>I created <a href="https://gist.github.com/alanorth/40fc3092aefd78f978cca00e8abeeb7a">some notes</a> to share with Salem and Leroy for future reference when we start discussion POSTing items to the REST API</li>
+</ul>
+</li>
+<li>I created an account for Salem on DSpace Test and added it to the submitters group of an ICARDA collection with no other workflow steps so we can see what happens
+<ul>
+<li>We are curious to see if he gets a UUID when posting from MEL</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
