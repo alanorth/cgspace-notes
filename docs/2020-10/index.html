@@ -23,7 +23,7 @@ During the FlywayDB migration I got an error:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-10/" />
 <meta property="article:published_time" content="2020-10-06T16:55:54+03:00" />
-<meta property="article:modified_time" content="2020-10-14T22:21:03+03:00" />
+<meta property="article:modified_time" content="2020-10-15T18:11:00+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2020"/>
@@ -51,9 +51,9 @@ During the FlywayDB migration I got an error:
   "@type": "BlogPosting",
   "headline": "October, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-10/",
-  "wordCount": "2831",
+  "wordCount": "3789",
   "datePublished": "2020-10-06T16:55:54+03:00",
-  "dateModified": "2020-10-14T22:21:03+03:00",
+  "dateModified": "2020-10-15T18:11:00+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -598,6 +598,184 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.x
 real    88m21.678s
 user    7m59.182s
 sys     2m22.713s
+</code></pre><h2 id="2020-10-18">2020-10-18</h2>
+<ul>
+<li>Macaroni Bros wrote to me to ask why some of their CCAFS harvesting is failing
+<ul>
+<li>They are scraping HTML from /browse responses like this:</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://cgspace.cgiar.org/browse?type=crpsubject&amp;value=Climate+Change%2C+Agriculture+and+Food+Security&amp;XML&amp;rpp=5000">https://cgspace.cgiar.org/browse?type=crpsubject&amp;value=Climate+Change%2C+Agriculture+and+Food+Security&amp;XML&amp;rpp=5000</a></p>
+<ul>
+<li>They are using the user agent &ldquo;CCAFS Website Publications importer BOT&rdquo; so they are getting rate limited by nginx</li>
+<li>Ideally they would use the REST <code>find-by-metadata-field</code> endpoint, but it is <em>really</em> slow for large result sets (like twenty minutes!):</li>
+</ul>
+<pre><code>$ curl -f -H &quot;CCAFS Website Publications importer BOT&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field?limit=100&quot; -d '{&quot;key&quot;:&quot;cg.contributor.crp&quot;, &quot;value&quot;:&quot;Climate Change, Agriculture and Food Security&quot;,&quot;language&quot;: &quot;en_US&quot;}'
+</code></pre><ul>
+<li>For now I will whitelist their user agent so that they can continue scraping /browse</li>
+<li>I figured out that the mappings for AReS are stored in Elasticsearch
+<ul>
+<li>There is a Kibana interface running on port 5601 that can help explore the values in the index</li>
+<li>I can interact with Elasticsearch by sending requests, for example to delete an item by its <code>_id</code>:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ curl -XPOST &quot;localhost:9200/openrxv-values/_delete_by_query&quot; -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: {
+    &quot;match&quot;: {
+      &quot;_id&quot;: &quot;64j_THMBiwiQ-PKfCSlI&quot;
+    }
+  }
+}
+</code></pre><ul>
+<li>I added a new find/replace:</li>
+</ul>
+<pre><code>$ curl -XPOST &quot;localhost:9200/openrxv-values/_doc?pretty&quot; -H 'Content-Type: application/json' -d'
+{
+  &quot;find&quot;: &quot;ALAN1&quot;,
+  &quot;replace&quot;: &quot;ALAN2&quot;,
+}
+'
+</code></pre><ul>
+<li>I see it in Kibana, and I can search it in Elasticsearch, but I don&rsquo;t see it in OpenRXV&rsquo;s mapping values dashboard</li>
+<li>Now I deleted everything in the <code>openrxv-values</code> index:</li>
+</ul>
+<pre><code>$ curl -XDELETE http://localhost:9200/openrxv-values
+</code></pre><ul>
+<li>Then I tried posting it again:</li>
+</ul>
+<pre><code>$ curl -XPOST &quot;localhost:9200/openrxv-values/_doc?pretty&quot; -H 'Content-Type: application/json' -d'
+{
+  &quot;find&quot;: &quot;ALAN1&quot;,
+  &quot;replace&quot;: &quot;ALAN2&quot;,
+}
+'
+</code></pre><ul>
+<li>But I still don&rsquo;t see it in AReS</li>
+<li>Interesting! I added a find/replace manually in AReS and now I see the one I POSTed&hellip;</li>
+<li>I fixed a few bugs in the Simple and Extended PDF reports on AReS
+<ul>
+<li>Add missing ISI Journal and Type to Simple PDF report</li>
+<li>Fix DOIs in Simple PDF report</li>
+<li>Add missing &ldquo;<a href="https://hdl.handle.net">https://hdl.handle.net</a>&rdquo; to Handles in Extented PDF report</li>
+</ul>
+</li>
+<li>Testing Atmire CUA and L&amp;R based on their feedback from a few days ago
+<ul>
+<li>I no longer get the NullPointerException from CUA when importing metadata on the command line (!)</li>
+<li>Listings and Reports now shows results for simple queries that I tested (!), though it seems that there are some new JavaScript libraries I need to allow in nginx</li>
+</ul>
+</li>
+<li>I sent a mail to the dspace-tech mailing list asking about the error with DSpace 6&rsquo;s &ldquo;Export Search Metadata&rdquo; function
+<ul>
+<li>If I search for an author like &ldquo;Orth, Alan&rdquo; it gives an HTTP 400, but if I search for &ldquo;Orth&rdquo; alone it exports a CSV</li>
+<li>I replicated the same issue on demo.dspace.org</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-10-19">2020-10-19</h2>
+<ul>
+<li>Last night I learned how to POST mappings to Elasticsearch for AReS:</li>
+</ul>
+<pre><code>$ curl -XDELETE http://localhost:9200/openrxv-values
+$ curl -XPOST http://localhost:9200/openrxv-values/_doc/_bulk -H &quot;Content-Type: application/json&quot; --data-binary @./mapping.json
+</code></pre><ul>
+<li>The JSON file looks like this, with one instruction on each line:</li>
+</ul>
+<pre><code>{&quot;index&quot;:{}}
+{ &quot;find&quot;: &quot;CRP on Dryland Systems - DS&quot;, &quot;replace&quot;: &quot;Dryland Systems&quot; }
+{&quot;index&quot;:{}}
+{ &quot;find&quot;: &quot;FISH&quot;, &quot;replace&quot;: &quot;Fish&quot; }
+</code></pre><ul>
+<li>Adjust the report templates on AReS based on some of Peter&rsquo;s feedback</li>
+<li>I wrote a quick Python script to filter and convert the old AReS mappings to <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">Elasticsearch&rsquo;s Bulk API</a> format:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python3</span>
+
+<span style="color:#f92672">import</span> json
+<span style="color:#f92672">import</span> re
+
+f <span style="color:#f92672">=</span> open(<span style="color:#e6db74">&#39;/tmp/mapping.json&#39;</span>, <span style="color:#e6db74">&#39;r&#39;</span>)
+data <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>load(f)
+
+<span style="color:#75715e"># Iterate over old mapping file, which is in format &#34;find&#34;: &#34;replace&#34;, ie:</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e">#   &#34;alan&#34;: &#34;ALAN&#34;</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e"># And convert to proper dictionaries for import into Elasticsearch&#39;s Bulk API:</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e">#   { &#34;find&#34;: &#34;alan&#34;, &#34;replace&#34;: &#34;ALAN&#34; }</span>
+<span style="color:#75715e">#</span>
+<span style="color:#66d9ef">for</span> find, replace <span style="color:#f92672">in</span> data<span style="color:#f92672">.</span>items():
+    <span style="color:#75715e"># Skip all upper and all lower case strings because they are indicative of</span>
+    <span style="color:#75715e"># some AGROVOC or other mappings we no longer want to do</span>
+    <span style="color:#66d9ef">if</span> find<span style="color:#f92672">.</span>isupper() <span style="color:#f92672">or</span> find<span style="color:#f92672">.</span>islower() <span style="color:#f92672">or</span> replace<span style="color:#f92672">.</span>isupper() <span style="color:#f92672">or</span> replace<span style="color:#f92672">.</span>islower():
+        <span style="color:#66d9ef">continue</span>
+
+    <span style="color:#75715e"># Skip replacements with acronyms like:</span>
+    <span style="color:#75715e">#</span>
+    <span style="color:#75715e">#   International Livestock Research Institute - ILRI</span>
+    <span style="color:#75715e">#</span>
+    acronym_pattern <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;[A-Z]+$&#34;</span>)
+    acronym_pattern_match <span style="color:#f92672">=</span> acronym_pattern<span style="color:#f92672">.</span>search(replace)
+    <span style="color:#66d9ef">if</span> acronym_pattern_match <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+        <span style="color:#66d9ef">continue</span>
+
+    mapping <span style="color:#f92672">=</span> { <span style="color:#e6db74">&#34;find&#34;</span>: find, <span style="color:#e6db74">&#34;replace&#34;</span>: replace }
+
+    <span style="color:#75715e"># Print command for Elasticsearch</span>
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;{&#34;index&#34;:{}}&#39;</span>)
+    <span style="color:#66d9ef">print</span>(json<span style="color:#f92672">.</span>dumps(mapping))
+
+f<span style="color:#f92672">.</span>close()
+</code></pre></div><ul>
+<li>It filters all upper and lower case strings as well as any replacements that end in an acronym like &ldquo;- ILRI&rdquo;, reducing the number of mappings from around 4,000 to about 900</li>
+<li>I deleted the existing <code>openrxv-values</code> Elasticsearch core and then POSTed it:</li>
+</ul>
+<pre><code>$ ./convert-mapping.py &gt; /tmp/elastic-mappings.txt
+$ curl -XDELETE http://localhost:9200/openrxv-values
+$ curl -XPOST http://localhost:9200/openrxv-values/_doc/_bulk -H &quot;Content-Type: application/json&quot; --data-binary @/tmp/elastic-mappings.txt
+</code></pre><ul>
+<li>Then in AReS I didn&rsquo;t see the mappings in the dashboard until I added a new one manually, after which they all appeared
+<ul>
+<li>I started a new harvesting</li>
+</ul>
+</li>
+<li>I checked the CIMMYT DSpace repository and I see they have <a href="https://repository.cimmyt.org/rest">the REST API enabled</a>
+<ul>
+<li>The data doesn&rsquo;t look too bad actually: they have countries in title case, AGROVOC in upper case, CRPs, etc</li>
+<li>According to <a href="https://repository.cimmyt.org/oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc">their OAI</a> they have 6,500 items in the repository</li>
+<li>I would be interested to explore the possibility to harvest them&hellip;</li>
+</ul>
+</li>
+<li>Bosede said they were having problems with the &ldquo;Access&rdquo; step during item submission
+<ul>
+<li>I looked at the Munin graphs for PostgreSQL and both connections and locks look normal so I&rsquo;m not sure what it could be</li>
+<li>I restarted the PostgreSQL service just to see if that would help</li>
+</ul>
+</li>
+<li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
+</ul>
+<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+  Detail: Key (bitstream_id)=(192921) is still referenced from table &quot;bundle&quot;.
+</code></pre><ul>
+<li>The solution is, as always:</li>
+</ul>
+<pre><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (192921);'
+UPDATE 1
+</code></pre><ul>
+<li>After looking at the CGSpace Solr stats for 2020-10 I found some hits to purge:</li>
+</ul>
+<pre><code>$ ./check-spider-hits.sh -f /tmp/agents -s statistics -u http://localhost:8083/solr -p
+
+Purging 2474 hits from ShortLinkTranslate in statistics
+Purging 2568 hits from RI\/1\.0 in statistics
+Purging 1851 hits from ILRI Livestock Website Publications importer BOT in statistics
+Purging 1282 hits from curl in statistics
+
+Total number of bot hits purged: 8174
 </code></pre><!-- raw HTML omitted -->
 
   
