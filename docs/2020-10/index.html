@@ -23,7 +23,7 @@ During the FlywayDB migration I got an error:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-10/" />
 <meta property="article:published_time" content="2020-10-06T16:55:54+03:00" />
-<meta property="article:modified_time" content="2020-10-15T18:11:00+03:00" />
+<meta property="article:modified_time" content="2020-10-19T15:47:59+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2020"/>
@@ -51,9 +51,9 @@ During the FlywayDB migration I got an error:
   "@type": "BlogPosting",
   "headline": "October, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-10/",
-  "wordCount": "3789",
+  "wordCount": "3963",
   "datePublished": "2020-10-06T16:55:54+03:00",
-  "dateModified": "2020-10-15T18:11:00+03:00",
+  "dateModified": "2020-10-19T15:47:59+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -776,7 +776,35 @@ Purging 1851 hits from ILRI Livestock Website Publications importer BOT in stati
 Purging 1282 hits from curl in statistics
 
 Total number of bot hits purged: 8174
-</code></pre><!-- raw HTML omitted -->
+</code></pre><ul>
+<li>Add &ldquo;Infographic&rdquo; to types in input form</li>
+<li>Looking into the spider agent issue from last week, where hits seem to be logged regardless of ANY spider agent patterns being loaded
+<ul>
+<li>I changed the following two options:
+<ul>
+<li><code>usage-statistics.logBots = false</code></li>
+<li><code>usage-statistics.bots.case-insensitive = true</code></li>
+</ul>
+</li>
+<li>Then I made several requests with a bot user agent:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ http --print Hh https://dspacetest.cgiar.org/rest/bitstreams/dfa1d9c3-75d3-4380-a9d3-4c8cbbed2d21/retrieve User-Agent:&quot;RTB website BOT&quot;
+$ curl -s 'http://localhost:8083/solr/statistics/update?softCommit=true'
+</code></pre><ul>
+<li>And I saw three hits in Solr with <code>isBot: true</code>!!!
+<ul>
+<li>I made a few more requests with user agent &ldquo;fumanchu&rdquo; and it logs them with <code>isBot: false</code>&hellip;</li>
+<li>I made a request with user agent &ldquo;Delphi 2009&rdquo; which is in the ilri pattern file, and it was logged with <code>isBot: true</code></li>
+<li>I made a few more requests and confirmed that if a pattern is in the list it gets logged with <code>isBot: true</code> despite the fact that <code>usage-statistics.logBots</code> is false&hellip;</li>
+<li>So WTF this means that it <em>knows</em> they are from a bot, but it logs them anyways</li>
+<li>Is this an issue with Atmire&rsquo;s modules?</li>
+<li>I sent them feedback on the ticket</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
