@@ -23,7 +23,7 @@ During the FlywayDB migration I got an error:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-10/" />
 <meta property="article:published_time" content="2020-10-06T16:55:54+03:00" />
-<meta property="article:modified_time" content="2020-10-21T15:36:31+03:00" />
+<meta property="article:modified_time" content="2020-10-22T11:58:26+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2020"/>
@@ -51,9 +51,9 @@ During the FlywayDB migration I got an error:
   "@type": "BlogPosting",
   "headline": "October, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-10/",
-  "wordCount": "4233",
+  "wordCount": "4350",
   "datePublished": "2020-10-06T16:55:54+03:00",
-  "dateModified": "2020-10-21T15:36:31+03:00",
+  "dateModified": "2020-10-22T11:58:26+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -839,6 +839,31 @@ $ csvcut -c 'id,dc.subject[],dc.subject[en_US],cg.subject.ilri[],cg.subject.ilri
 </ul>
 </li>
 <li>Add two new blocks to list the top communities and collections on AReS</li>
+<li>I want to extract all CRPs and affiliations from AReS to do some text processing and create some mappings&hellip;
+<ul>
+<li>First extract 10,000 affiliations from Elasticsearch by only including the <code>affiliation</code> source:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ http 'http://localhost:9200/openrxv-items-final/_search?_source_includes=affiliation&amp;size=10000&amp;q=*:*' &gt; /tmp/affiliations.json
+</code></pre><ul>
+<li>Then I decided to try a different approach and I adjusted my <code>convert-mapping.py</code> script to re-consider some replacement patterns with acronyms from the original AReS <code>mapping.json</code> file to hopefully address some MEL to CGSpace mappings
+<ul>
+<li>For example, to changes this:
+<ul>
+<li>find: International Livestock Research Institute</li>
+<li>replace: International Livestock Research Institute - ILRI</li>
+</ul>
+</li>
+<li>&hellip; into this:
+<ul>
+<li>find: International Livestock Research Institute - ILRI</li>
+<li>replace: International Livestock Research Institute</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I re-uploaded the mappings to Elasticsearch like I did yesterday and restarted the harvesting</li>
 </ul>
 <!-- raw HTML omitted -->
 
