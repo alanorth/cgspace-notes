@@ -23,7 +23,7 @@ During the FlywayDB migration I got an error:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-10/" />
 <meta property="article:published_time" content="2020-10-06T16:55:54+03:00" />
-<meta property="article:modified_time" content="2020-10-22T11:58:26+03:00" />
+<meta property="article:modified_time" content="2020-10-24T22:23:06+03:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="October, 2020"/>
@@ -51,9 +51,9 @@ During the FlywayDB migration I got an error:
   "@type": "BlogPosting",
   "headline": "October, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-10/",
-  "wordCount": "4350",
+  "wordCount": "5014",
   "datePublished": "2020-10-06T16:55:54+03:00",
-  "dateModified": "2020-10-22T11:58:26+03:00",
+  "dateModified": "2020-10-24T22:23:06+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -432,7 +432,7 @@ $ http --print Hh https://dspacetest.cgiar.org/rest/bitstreams/dfa1d9c3-75d3-438
 <li>Reference: <a href="https://lucene.apache.org/core/4_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Regexp_Searches">https://lucene.apache.org/core/4_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Regexp_Searches</a></li>
 </ul>
 </li>
-<li>I added <code>[Ss]pider</code> to the Tomcat Crawler Sessions Manager Valve regex because this can catch a few more generic bots and force them to use the same Tomcat JSESSIONID</li>
+<li>I added <code>[Ss]pider</code> to the Tomcat Crawler Session Manager Valve regex because this can catch a few more generic bots and force them to use the same Tomcat JSESSIONID</li>
 <li>I added a few of the patterns from above to our local agents list and ran the <code>check-spider-hits.sh</code> on CGSpace:</li>
 </ul>
 <pre><code>$ ./check-spider-hits.sh -f dspace/config/spiders/agents/ilri -s statistics -u http://localhost:8083/solr -p
@@ -864,6 +864,120 @@ $ csvcut -c 'id,dc.subject[],dc.subject[en_US],cg.subject.ilri[],cg.subject.ilri
 </ul>
 </li>
 <li>I re-uploaded the mappings to Elasticsearch like I did yesterday and restarted the harvesting</li>
+</ul>
+<h2 id="2020-10-24">2020-10-24</h2>
+<ul>
+<li>Atmire sent a small version bump to CUA (6.x-4.1.10-ilri-RC5) to fix the logging of bot requests when <code>usage-statistics.logBots</code> is false
+<ul>
+<li>I tested it by making several requests to DSpace Test with the <code>RTB website BOT</code> and <code>Delphi 2009</code> user agents and can verify that they are no longer logged</li>
+</ul>
+</li>
+<li>I spent a few hours working on mappings on AReS
+<ul>
+<li>I decided to do a full re-harvest on AReS with <em>no mappings</em> so I could extract the CRPs and affiliations to see how much work they needed</li>
+<li>I worked on my Python script to process some cleanups of the values to create find/replace mappings for common scenarios:
+<ul>
+<li>Removing acronyms from the end of strings</li>
+<li>Removing &ldquo;CRP on &quot; from strings</li>
+</ul>
+</li>
+<li>The problem is that the mappings are applied to all fields, and we want to keep &ldquo;CGIAR Research Program on &hellip;&rdquo; in the authors, but not in the CRPs field</li>
+<li>Really the best solution is to have each repository use the same controlled vocabularies</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-10-25">2020-10-25</h2>
+<ul>
+<li>I re-installed DSpace Test with a fresh snapshot of CGSpace&rsquo;s to test the DSpace 6 upgrade (the last time was in 2020-05, and we&rsquo;ve fixed a lot of issues since then):</li>
+</ul>
+<pre><code>$ cp dspace/etc/postgres/update-sequences.sql /tmp/dspace5-update-sequences.sql
+$ git checkout origin/6_x-dev-atmire-modules
+$ chrt -b 0 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false clean package
+$ sudo su - postgres
+$ psql dspacetest -c 'CREATE EXTENSION pgcrypto;'
+$ psql dspacetest -c &quot;DELETE FROM schema_version WHERE version IN ('5.8.2015.12.03.3');&quot;
+$ exit
+$ sudo systemctl stop tomcat7
+$ cd dspace/target/dspace-installer
+$ rm -rf /blah/dspacetest/config/spring
+$ ant update
+$ dspace database migrate
+(10 minutes)
+$ sudo systemctl start tomcat7
+(discovery indexing starts)
+</code></pre><ul>
+<li>Then I started processing the Solr stats one core and 1 million records at a time:</li>
+</ul>
+<pre><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics
+</code></pre><ul>
+<li>After the fifth or so run I got this error:</li>
+</ul>
+<pre><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+        at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
+        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:68)
+        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:54)
+        at org.dspace.util.SolrUpgradePre6xStatistics.batchUpdateStats(SolrUpgradePre6xStatistics.java:161)
+        at org.dspace.util.SolrUpgradePre6xStatistics.run(SolrUpgradePre6xStatistics.java:456)
+        at org.dspace.util.SolrUpgradePre6xStatistics.main(SolrUpgradePre6xStatistics.java:365)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</code></pre><ul>
+<li>So basically, as I saw at this same step in 2020-05, there are some documents that have IDs that have <em>not</em> been converted to UUID, and have <em>not</em> been labeled as &ldquo;unmigrated&rdquo; either&hellip;
+<ul>
+<li>I see there are about 217,000 of them, 99% of which are of <code>type: 5</code> which is &ldquo;search&rdquo;</li>
+<li>I purged them:</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8083/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>Then I restarted the <code>solr-upgrade-statistics-6x</code> process, which apparently had no records left to process</li>
+<li>I started processing the statistics-2019 core&hellip;
+<ul>
+<li>I managed to process 7.5 million records in 7 hours without any errors!</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-10-26">2020-10-26</h2>
+<ul>
+<li>The statistics processing on the statistics-2018 core errored after 1.8 million records:</li>
+</ul>
+<pre><code>Exception: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+</code></pre><ul>
+<li>I had the same problem when I processed the statistics-2018 core in 2020-07 and 2020-08
+<ul>
+<li>I will try to purge some unmigrated records (around 460,000), most of which are of <code>type: 5</code> (search) so not relevant to our views and downloads anyways:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8083/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;id:/.+-unmigrated/&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>I restarted the process and it crashed again a few minutes later
+<ul>
+<li>I increased the memory to 4096m and tried again</li>
+<li>It eventually completed, after which time I purge all remaining 350,000 unmigrated records (99% of which were <code>type: 5</code>):</li>
+</ul>
+</li>
+</ul>
+<pre><code>$ curl -s &quot;http://localhost:8083/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>Then I started processing the statistics-2017 core&hellip;</li>
+<li>I filed an issue with Atmire about the duplicate values in the <code>owningComm</code> and <code>containerCommunity</code> fields in Solr: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839</a></li>
+<li>Add new ORCID identifier for <a href="https://orcid.org/0000-0003-3871-6277">Perle LATRE DE LATE</a> to controlled vocabulary</li>
 </ul>
 <!-- raw HTML omitted -->
 
