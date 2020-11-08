@@ -17,7 +17,7 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-11/" />
 <meta property="article:published_time" content="2020-11-01T13:11:54+02:00" />
-<meta property="article:modified_time" content="2020-11-07T16:22:36+02:00" />
+<meta property="article:modified_time" content="2020-11-08T14:43:00+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2020"/>
@@ -39,9 +39,9 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
   "@type": "BlogPosting",
   "headline": "November, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-11/",
-  "wordCount": "329",
+  "wordCount": "423",
   "datePublished": "2020-11-01T13:11:54+02:00",
-  "dateModified": "2020-11-07T16:22:36+02:00",
+  "dateModified": "2020-11-08T14:43:00+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -182,6 +182,19 @@ sys     2m26.931s
 <li>Add CGIAR System subjects to Discovery sidebar facets on CGSpace
 <ul>
 <li>Also add the System subject to item view on CGSpace</li>
+</ul>
+</li>
+<li>The statistics-2014 core finished processing after five hours, so I started processing the statistics-2013 core on DSpace Test</li>
+<li>Since I was going to restart CGSpace and update the Discovery indexes anyways I decided to check for any straggling upper case AGROVOC entries and lower case them:</li>
+</ul>
+<pre><code>dspace=# BEGIN;
+dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ '[[:upper:]]';
+UPDATE 164
+dspace=# COMMIT;
+</code></pre><ul>
+<li>Run system updates on CGSpace (linode18) and reboot it
+<ul>
+<li>I had to restart Tomcat once after the machine started up to get all Solr statistics cores to load properly</li>
 </ul>
 </li>
 </ul>
