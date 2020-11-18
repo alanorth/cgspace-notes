@@ -11,7 +11,8 @@ Notes about the DSpace 6 upgrade on CGSpace in 2020-11.
 
 <!--more-->
 
-- [Processing Solr Statistics With solr-upgrade-statistics-6x](#processing-solr-statistics-with-solr-upgrade-statistics-6x)
+- [Re-import OAI with clean index](#re-import-oai-with-clean-index)
+- [Processing Solr statistics with solr-upgrade-statistics-6x](#processing-solr-statistics-with-solr-upgrade-statistics-6x)
   - [Current year's statistics core](#statistics)
   - [statistics-2019 core](#statistics-2019)
   - [statistics-2018 core](#statistics-2018)
@@ -20,11 +21,28 @@ Notes about the DSpace 6 upgrade on CGSpace in 2020-11.
   - [statistics-2015 core](#statistics-2015)
   - [statistics-2014 core](#statistics-2014)
   - [statistics-2013 core](#statistics-2013)
+  - [statistics-2013 core](#statistics-2012)
+  - [statistics-2013 core](#statistics-2011)
+  - [statistics-2013 core](#statistics-2010)
+- [Processing Solr statistics with AtomicStatisticsUpdateCLI](processing-solr-statistics-with-atomicstatisticsupdatecli)
 
-## Processing Solr Statistics With solr-upgrade-statistics-6x
+
+### Re-import OAI with clean index
+
+After the upgrade is complete, re-index all items into OAI with a clean index:
+
+```console
+$ export JAVA_OPTS="-Dfile.encoding=UTF-8 -Xmx2048m"
+$ dspace oai -c import
+```
+
+The process ran out of memory several times so I had to keep trying again with more JVM heap memory.
+
+
+### Processing Solr Statistics With solr-upgrade-statistics-6x
 After the main upgrade process was finished and DSpace was running I started processing the Solr statistics with `solr-upgrade-statistics-6x` to migrate all IDs to UUIDs.
 
-### statistics
+## statistics
 First process the current year's statistics core:
 
 ```console
@@ -57,7 +75,7 @@ After several rounds of processing it finished. Here are some statistics about u
 $ curl -s "http://localhost:8081/solr/statistics/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
 ```
 
-### statistics-2019
+## statistics-2019
 Processing the statistics-2019 core:
 
 ```console
@@ -89,7 +107,7 @@ After several rounds of processing it finished. Here are some statistics about u
 $ curl -s "http://localhost:8081/solr/statistics-2019/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
 ```
 
-### statistics-2018
+## statistics-2018
 Processing the statistics-2018 core:
 
 ```console
@@ -161,7 +179,7 @@ Eventually the processing finished. Here are some statistics about unmigrated do
 $ curl -s "http://localhost:8081/solr/statistics-2017/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
 ```
 
-### statistics-2016
+## statistics-2016
 
 Processing the statistics-2016 core:
 
@@ -192,7 +210,8 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2016
 $ curl -s "http://localhost:8081/solr/statistics-2016/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
 ```
 
-### statistics-2015
+
+## statistics-2015
 
 Processing the statistics-2015 core:
 
@@ -224,6 +243,7 @@ Summary of stats after processing:
 ```console
 $ curl -s "http://localhost:8081/solr/statistics-2015/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
 ```
+
 
 ## statistics-2014
 
@@ -259,6 +279,7 @@ Summary of unmigrated documents after processing:
 $ curl -s "http://localhost:8081/solr/statistics-2014/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
 ```
 
+
 ## statistics-2013
 
 Processing the statistics-2013 core:
@@ -291,4 +312,106 @@ Summary of unmigrated docs after processing:
 
 ```console
 $ curl -s "http://localhost:8081/solr/statistics-2013/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
+```
+
+
+## statistics-2012
+
+Processing the statistics-2012 core:
+
+```console
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2012
+...
+=================================================================
+        *** Statistics Records with Legacy Id ***
+
+           2,229,332    Item View
+             913,577    Bistream View
+             215,577    Collection View
+             104,734    Community View
+        --------------------------------------
+           3,463,220    TOTAL
+=================================================================
+```
+
+Summary of unmigrated docs after processing:
+
+- 0: `(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)`
+- 33,161: `id:/.+-unmigrated/`
+- 33,161: `*:* NOT id:/.{36}/`
+- 33,161 are `type: 3` (COLLECTION), which is different than I've seen previously... but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:
+
+```console
+$ curl -s "http://localhost:8081/solr/statistics-2012/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
+```
+
+
+## statistics-2011
+
+Processing the statistics-2011 core:
+
+```console
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2011
+...
+=================================================================
+        *** Statistics Records with Legacy Id ***
+
+             904,896    Item View
+             385,789    Bistream View
+             154,356    Collection View
+              62,978    Community View
+        --------------------------------------
+           1,508,019    TOTAL
+=================================================================
+```
+
+Summary of unmigrated docs after processing:
+
+- 0: `(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)`
+- 17,551: `id:/.+-unmigrated/`
+- 17,551: `*:* NOT id:/.{36}/`
+- 12,116 are `type: 3` (COLLECTION), which is different than I've seen previously... but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:
+
+```console
+$ curl -s "http://localhost:8081/solr/statistics-2011/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
+```
+
+
+## statistics-2010
+
+Processing the statistics-2010 core:
+
+```console
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2010
+...
+=================================================================
+        *** Statistics Records with Legacy Id ***
+
+              26,067    Item View
+              15,615    Bistream View
+               4,116    Collection View
+               1,094    Community View
+        --------------------------------------
+              46,892    TOTAL
+=================================================================
+```
+
+Summary of unmigrated docs after processing:
+
+- 0: `(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)`
+- 1,012: `id:/.+-unmigrated/`
+- 1,012: `*:* NOT id:/.{36}/`
+- 654 are `type: 3` (COLLECTION), which is different than I've seen previously... but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:
+
+```console
+$ curl -s "http://localhost:8081/solr/statistics-2010/update?softCommit=true" -H "Content-Type: text/xml" --data-binary "<delete><query>*:* NOT id:/.{36}/</query></delete>"
+```
+
+
+### Processing Solr statistics with AtomicStatisticsUpdateCLI
+
+On 2020-11-18 I finished processing the Solr statistics with solr-upgrade-statistics-6x and I started processing them with AtomicStatisticsUpdateCLI:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics
 ```

@@ -17,7 +17,7 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-11/" />
 <meta property="article:published_time" content="2020-11-01T13:11:54+02:00" />
-<meta property="article:modified_time" content="2020-11-16T10:53:45+02:00" />
+<meta property="article:modified_time" content="2020-11-17T22:14:56+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2020"/>
@@ -39,9 +39,9 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
   "@type": "BlogPosting",
   "headline": "November, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-11/",
-  "wordCount": "2131",
+  "wordCount": "2665",
   "datePublished": "2020-11-01T13:11:54+02:00",
-  "dateModified": "2020-11-16T10:53:45+02:00",
+  "dateModified": "2020-11-17T22:14:56+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -486,7 +486,77 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </ul>
 <pre><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 2071
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2020-11-18">2020-11-18</h2>
+<ul>
+<li>I decided to enable the <code>rollbackOnReturn=true</code> option in <a href="https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html">Tomcat&rsquo;s JDBC connection pool parameters</a> because I noticed that all of the &ldquo;idle in transaction&rdquo; connections waiting for locks were SELECT queries
+<ul>
+<li>There are many posts on the Internet about people having this issue with Hibernate</li>
+<li>The locks are lower now, but Peter and Abenet are still having issues approving items and Tezira forwarded one strange case where an item was &ldquo;approved&rdquo; and was assigned a handle, but it doesn&rsquo;t exist&hellip;</li>
+<li>I sent another mail to the dspace-tech mailing list to ask for help</li>
+<li>I reverted the <code>rollbackOnReturn</code> change in Tomcat&hellip;</li>
+<li>I sent a message to Atmire to ask for urgent help</li>
+</ul>
+</li>
+<li>Call with IWMI and Abenet about them potentially moving from InMagic to CGSpace
+<ul>
+<li>They have questions about the reporting on AReS</li>
+<li>We told them that we can use collections to infer Strategic Priorities and Research Groups and WLE Flagships</li>
+<li>It sounds like we will create this structure under the top-level IWMI community:
+<ul>
+<li>IWMI Strategic Priorities (sub-community)
+<ul>
+<li>Water, Food and Ecosystems (sub-community)
+<ul>
+<li>Sustainable and Resilient Food Production Systems (collection)</li>
+<li>Sustainable Water infrastructure and Ecosystems (collection)</li>
+<li>Integrated Basin and Aquifer Management</li>
+</ul>
+</li>
+<li>Water, Climate Change and Resilience (sub-community)
+<ul>
+<li>Climate Change Adaptation and Resilience (collection)</li>
+</ul>
+</li>
+<li>etc&hellip;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>They will submit items to their normal output type collections and map to these</li>
+</ul>
+</li>
+<li>In other news I finally finished processing the Solr statistics for UUIDs and re-indexed the stats with the dspace-statistics-api
+<ul>
+<li>I started the Atmire stats processing, notes in the dedicated <a href="/cgspace-notes/cgspace-dspace6-upgrade/">CGSpace DSpace 6 Upgrade section</a></li>
+</ul>
+</li>
+<li>Peter got a strange message this evening when trying to update metadata:</li>
+</ul>
+<pre><code>2020-11-18 16:57:33,309 ERROR org.hibernate.engine.jdbc.batch.internal.BatchingBatch @ HHH000315: Exception executing batch [Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1]
+2020-11-18 16:57:33,316 ERROR org.hibernate.engine.jdbc.batch.internal.BatchingBatch @ HHH000315: Exception executing batch [Batch update returned unexpected row count from update [13]; actual row count: 0; expected: 1]
+2020-11-18 16:57:33,385 INFO  org.hibernate.engine.jdbc.batch.internal.AbstractBatchImpl @ HHH000010: On release of batch it still contained JDBC statements
+</code></pre><ul>
+<li>Minor bug fixes to limit parameter in DSpace Statistics API
+<ul>
+<li>Release <a href="https://github.com/ilri/dspace-statistics-api/releases/tag/v1.3.2">version 1.3.2</a></li>
+</ul>
+</li>
+<li>Send a list of potential ToRs for a next phase of OpenRXV development to Michael Victor for feedback:
+<ul>
+<li>Enable advanced reporting templates using &ldquo;Angular expressions&rdquo; in Docxtemplater (would be used immediately for IWMI and Bioversity–CIAT)</li>
+<li>Enable embedding of charts like world map and word cloud in reports</li>
+<li>Enable embedding of item thumbnails in reports, similar to the &ldquo;list of information products&rdquo;</li>
+<li>Enable something like the &ldquo;Statistics&rdquo; Excel report Peter wanted in 2019 so we can get community and collection statistics reports</li>
+<li>Add a new &ldquo;metrics&rdquo; block with statistics about top authors and items by number of views and downloads for the current search terms</li>
+<li>Add ability to change the explorer UI to &ldquo;Usage Statistics&rdquo; mode where lists of authors, affiliations, sponsors, CRPs, communities, collections, etc are sorted according to the number of views or downloads for the current search results, rather than by number of occurrences of metadata values</li>
+<li>Add ability to &ldquo;drill down&rdquo; or modify search filter terms by clicking on countries in the map</li>
+<li>Enable date-based usage statistics (currently only &ldquo;all time&rdquo; statistics are available)</li>
+<li>Fixing minor bugs for all issues filed on GitHub</li>
+</ul>
+</li>
+<li>I also added GitHub issues for each of them</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
