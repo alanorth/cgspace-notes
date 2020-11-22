@@ -17,7 +17,7 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-11/" />
 <meta property="article:published_time" content="2020-11-01T13:11:54+02:00" />
-<meta property="article:modified_time" content="2020-11-19T22:40:48+02:00" />
+<meta property="article:modified_time" content="2020-11-19T22:41:55+02:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2020"/>
@@ -29,7 +29,7 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 
 
 "/>
-<meta name="generator" content="Hugo 0.78.1" />
+<meta name="generator" content="Hugo 0.78.2" />
 
 
     
@@ -39,9 +39,9 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
   "@type": "BlogPosting",
   "headline": "November, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-11/",
-  "wordCount": "2743",
+  "wordCount": "3039",
   "datePublished": "2020-11-01T13:11:54+02:00",
-  "dateModified": "2020-11-19T22:40:48+02:00",
+  "dateModified": "2020-11-19T22:41:55+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -568,7 +568,58 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <ul>
 <li>Very curious that there was such a high number of rolled back transactions after the update</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-11-22">2020-11-22</h2>
+<ul>
+<li>PostgreSQL situation on CGSpace (linode18) looks much better now:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/11/postgres_locks_ALL-week3.png" alt="PostgreSQL locks week">
+<img src="/cgspace-notes/2020/11/postgres_xlog-week2.png" alt="PostgreSQL transaction log week"></p>
+<ul>
+<li>In other news, I noticed that harvesting DSpace 6 works fine in OpenRXV, but the statistics fail on page 1
+<ul>
+<li>I filed an issue: <a href="https://github.com/ilri/OpenRXV/issues/59">https://github.com/ilri/OpenRXV/issues/59</a></li>
+</ul>
+</li>
+<li>Abenet asked for help trying to add a new user to the Bioversity and CIAT groups on CGSpace
+<ul>
+<li>I see that the user search is split on five results, so the user in question appears on page 2</li>
+<li>I asked Abenet if she was getting an error or it was simply this&hellip;</li>
+</ul>
+</li>
+<li>Maria Garuccio sent me an example report that she wants to be able to generate from AReS
+<ul>
+<li>First, she would like to have the option to group by output type</li>
+<li>Second, she would like to be able to control the sorting in the template, like sorting the citation alphabetically</li>
+<li>I filed an issue: <a href="https://github.com/ilri/OpenRXV/issues/60">https://github.com/ilri/OpenRXV/issues/60</a></li>
+</ul>
+</li>
+<li>Mohammad Salem had asked if there was an item ID to UUID mapping for CGSpace
+<ul>
+<li>I found a thread on the dspace-tech mailing list that pointed out that there is a new <code>uuid</code> column in the item table</li>
+<li>Only old items have an <code>item_id</code> so we can get a mapping easily:</li>
+</ul>
+</li>
+</ul>
+<pre><code>dspace=# \COPY (SELECT item_id,uuid FROM item WHERE in_archive='t' AND withdrawn='f' AND item_id IS NOT NULL) TO /tmp/2020-11-22-item-id2uuid.csv WITH CSV HEADER;
+COPY 87411
+</code></pre><ul>
+<li>Saving some notes I wrote down about faceting by community and collection in Solr, for potential use in the future in the DSpace Statistics API</li>
+<li>Facet by owningComm to see total number of distinct communities (136):</li>
+</ul>
+<pre><code>  facet=true&amp;facet.mincount=1&amp;facet.field=owningComm&amp;facet.limit=1&amp;facet.offset=0&amp;stats=true&amp;stats.field=id&amp;stats.calcdistinct=true
+</code></pre><ul>
+<li>Facet by owningComm and get the first 5 distinct:</li>
+</ul>
+<pre><code>  facet=true&amp;facet.mincount=1&amp;facet.field=owningComm&amp;facet.limit=5&amp;facet.offset=0&amp;facet.pivot=id,countryCode
+</code></pre><ul>
+<li>Facet by owningComm and countryCode using facet.pivot and maybe I can just skip the normal facet params?</li>
+</ul>
+<pre><code>facet=true&amp;f.owningComm.facet.limit=5&amp;f.owningComm.facet.offset=5&amp;facet.pivot=owningComm,countryCode
+</code></pre><ul>
+<li>Facet by owningComm and countryCode using facet.pivot and limiting to top five countries&hellip; fuck it&rsquo;s possible!</li>
+</ul>
+<pre><code>facet=true&amp;f.owningComm.facet.limit=5&amp;f.owningComm.facet.offset=5&amp;f.countryCode.facet.limit=5&amp;facet.pivot=owningComm,countryCode
+</code></pre><!-- raw HTML omitted -->
 
   
 

@@ -410,8 +410,14 @@ $ curl -s "http://localhost:8081/solr/statistics-2010/update?softCommit=true" -H
 
 ### Processing Solr statistics with AtomicStatisticsUpdateCLI
 
-On 2020-11-18 I finished processing the Solr statistics with solr-upgrade-statistics-6x and I started processing them with AtomicStatisticsUpdateCLI:
+On 2020-11-18 I finished processing the Solr statistics with solr-upgrade-statistics-6x and I started processing them with AtomicStatisticsUpdateCLI.
+
+## statistics
+
+First the current year's statistics core, in 12-hour batches:
 
 ```
 $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics
 ```
+
+It took ~38 hours to finish processing this core.
