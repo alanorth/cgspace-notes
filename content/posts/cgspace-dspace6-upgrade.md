@@ -441,3 +441,13 @@ $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisti
 ```
 
 It took ~28 hours to finish processing this core.
+
+## statistics-2017
+
+The statistics-2017 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2017
+```
+
+It took ~24 hours to finish processing this core.
