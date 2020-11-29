@@ -451,3 +451,73 @@ $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisti
 ```
 
 It took ~24 hours to finish processing this core.
+
+## statistics-2016
+
+The statistics-2016 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2016
+```
+
+It took ~20 hours to finish processing this core.
+
+## statistics-2015
+
+The statistics-2015 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2015
+```
+
+It took ~17 hours to finish processing this core.
+
+## statistics-2014
+
+The statistics-2014 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2014
+```
+
+It took ~12 hours to finish processing this core.
+
+## statistics-2013
+
+The statistics-2013 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2013
+```
+
+It took ~3 hours to finish processing this core.
+
+## statistics-2012
+
+The statistics-2012 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2012
+```
+
+It took ~2 hours to finish processing this core.
+
+## statistics-2011
+
+The statistics-2011 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2011
+```
+
+It took 1 hour to finish processing this core.
+
+## statistics-2010
+
+The statistics-2010 core, in 12-hour batches:
+
+```
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2010
+```
+
+It took five minutes to finish processing this core.
