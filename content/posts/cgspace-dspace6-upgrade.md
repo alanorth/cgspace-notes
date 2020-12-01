@@ -470,7 +470,7 @@ The statistics-2015 core, in 12-hour batches:
 $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2015
 ```
 
-It took ~17 hours to finish processing this core.
+It took ~21 hours to finish processing this core.
 
 ## statistics-2014
 
