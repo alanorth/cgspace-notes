@@ -5,6 +5,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+
 <meta property="og:title" content="December, 2020" />
 <meta property="og:description" content="2020-12-01
 
@@ -19,7 +20,9 @@ I started processing those (about 411,000 records):
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-12/" />
 <meta property="article:published_time" content="2020-12-01T11:32:54+02:00" />
-<meta property="article:modified_time" content="2020-12-01T11:32:54+02:00" />
+<meta property="article:modified_time" content="2020-12-01T19:15:48+02:00" />
+
+
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2020"/>
@@ -33,7 +36,7 @@ I started processing those (about 411,000 records):
 
 
 "/>
-<meta name="generator" content="Hugo 0.78.2" />
+<meta name="generator" content="Hugo 0.79.0" />
 
 
     
@@ -43,9 +46,9 @@ I started processing those (about 411,000 records):
   "@type": "BlogPosting",
   "headline": "December, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-12/",
-  "wordCount": "122",
+  "wordCount": "553",
   "datePublished": "2020-12-01T11:32:54+02:00",
-  "dateModified": "2020-12-01T11:32:54+02:00",
+  "dateModified": "2020-12-01T19:15:48+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -63,7 +66,7 @@ I started processing those (about 411,000 records):
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.d20c61b183eb27beb5b2c48f70a38b91c8bb5fb929e77b447d5f77c7285221ad.css" rel="stylesheet" integrity="sha256-0gxhsYPrJ761ssSPcKOLkci7X7kp53tEfV93xyhSIa0=" crossorigin="anonymous">
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.16633182cd803b52b9bf9e29ea1ef4b2e3d460deee0ded49466d7e16e449c158.css" rel="stylesheet" integrity="sha256-FmMxgs2AO1K5v54p6h70suPUYN7uDe1JRm1&#43;FuRJwVg=" crossorigin="anonymous">
     
 
     <!-- minified Font Awesome for SVG icons -->
@@ -134,6 +137,67 @@ I started processing those (about 411,000 records):
 <li>AReS went down when the <code>renew-letsencrypt</code> service stopped the <code>angular_nginx</code> container in the pre-update hook and failed to bring it back up
 <ul>
 <li>I ran all system updates on the host and rebooted it and AReS came back up OK</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-02">2020-12-02</h2>
+<ul>
+<li>Udana emailed me yesterday to ask why the CGSpace usage statistics were showing &ldquo;No Data&rdquo;
+<ul>
+<li>I noticed a message in the Solr Admin UI that one of the statistics cores failed to load, but it is up and I can query it&hellip;</li>
+<li>Nevertheless, I restarted Tomcat a few times to see if all cores would come up without an error message, but had no success (despite that all cores ARE up and I can query them, <em>sigh</em>)</li>
+<li>I think I will move all the Solr yearly statistics back into the main statistics core</li>
+</ul>
+</li>
+<li>Start testing export/import of yearly Solr statistics data into the main statistics core on DSpace Test, for example:</li>
+</ul>
+<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o statistics-2010.json -k uid
+$ ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>I deployed Tomcat 7.0.107 on DSpace Test (CGSpace is still Tomcat 7.0.104)</li>
+<li>I finished migrating all the statistics from the yearly shards back to the main core</li>
+</ul>
+<h2 id="2020-12-05">2020-12-05</h2>
+<ul>
+<li>I deleted all the yearly statistics shards and restarted Tomcat on DSpace Test (linode26)</li>
+</ul>
+<h2 id="2020-12-06">2020-12-06</h2>
+<ul>
+<li>Looking into the statistics on DSpace Test after I migrated them back to the main core
+<ul>
+<li>All stats are working as expected&hellip; indexing time for the DSpace Statistics API is the same&hellip; and I don&rsquo;t even see a difference in the JVM or memory stats in Munin other than a minor jump last week when I was processing them</li>
+</ul>
+</li>
+<li>I will migrate them on CGSpace too I think
+<ul>
+<li>First I will start with the statistics-2010 and statistics-2015 cores because they were the ones that were failing to load recently (despite actually being available in Solr WTF)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/solr-statistics-2010-failed.png" alt="Error message in Solr admin UI about the statistics-2010 core failing to load"></p>
+<ul>
+<li>First the 2010 core:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o statistics-2010.json -k uid
+$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&quot;
+</code></pre><ul>
+<li>Judging by the DSpace logs all these cores had a problem starting up in the last month:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># grep -rsI &quot;Unable to create core&quot; [dspace]/log/dspace.log.2020-* | grep -o -E &quot;statistics-[0-9]+&quot; | sort | uniq -c
+     24 statistics-2010
+     24 statistics-2015
+     18 statistics-2016
+      6 statistics-2018
+</code></pre><ul>
+<li>The message is always this:</li>
+</ul>
+<pre><code>org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error CREATEing SolrCore 'statistics-2016': Unable to create core [statistics-2016] Caused by: Lock obtain timed out: NativeFSLock@/[dspace]/solr/statistics-2016/data/index/write.lock
+</code></pre><ul>
+<li>I will migrate all these cores and see if it makes a difference, then probably end up migrating all of them
+<ul>
+<li>I removed the statistics-2010, statistics-2015, statistics-2016, and statistics-2018 cores and restarted Tomcat and <em>all the statistics cores came up OK and the CUA statistics are OK</em>!</li>
 </ul>
 </li>
 </ul>
