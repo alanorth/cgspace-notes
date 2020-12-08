@@ -20,7 +20,7 @@ I started processing those (about 411,000 records):
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-12/" />
 <meta property="article:published_time" content="2020-12-01T11:32:54+02:00" />
-<meta property="article:modified_time" content="2020-12-01T19:15:48+02:00" />
+<meta property="article:modified_time" content="2020-12-06T16:53:29+02:00" />
 
 
 
@@ -46,9 +46,9 @@ I started processing those (about 411,000 records):
   "@type": "BlogPosting",
   "headline": "December, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-12/",
-  "wordCount": "553",
+  "wordCount": "754",
   "datePublished": "2020-12-01T11:32:54+02:00",
-  "dateModified": "2020-12-01T19:15:48+02:00",
+  "dateModified": "2020-12-06T16:53:29+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -201,7 +201,62 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2020-12-07">2020-12-07</h2>
+<ul>
+<li>Run <code>dspace cleanup -v</code> on CGSpace to clean up deleted bitstreams</li>
+<li>Atmire sent a <a href="https://github.com/ilri/DSpace/pull/457">pull request</a> to address the duplicate owningComm and owningColl
+<ul>
+<li>Built and deployed it on DSpace Test but I am not sure how to run it yet</li>
+<li>I sent feedback to Atmire on their tracker: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839</a></li>
+</ul>
+</li>
+<li>Abenet and Tezira are having issues with committing to the archive in their workflow
+<ul>
+<li>I looked at the server and indeed the locks and transactions are back up:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/postgres_transactions_ALL-day.png" alt="PostgreSQL Transactions day">
+<img src="/cgspace-notes/2020/12/postgres_locks_ALL-day.png" alt="PostgreSQL Locks day">
+<img src="/cgspace-notes/2020/12/postgres_querylength_ALL-day.png" alt="PostgreSQL Locks day">
+<img src="/cgspace-notes/2020/12/postgres_connections_ALL-day.png" alt="PostgreSQL Connections day"></p>
+<ul>
+<li>There are apparently 1,700 locks right now:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+1739
+</code></pre><h2 id="2020-12-08">2020-12-08</h2>
+<ul>
+<li>Atmire sent some instructions for using the DeduplicateValuesProcessor
+<ul>
+<li>I modified <code>atmire-cua-update.xml</code> as they instructed, but I get a million errors like this when I run AtomicStatisticsUpdateCLI with that configuration:</li>
+</ul>
+</li>
+</ul>
+<pre><code>Record uid: 64387815-d9a7-4605-8024-1c0a5c7520e0 couldn't be processed
+com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: 64387815-d9a7-4605-8024-1c0a5c7520e0, an error occured in the com.atmire.statistics.util.update.atomic.processor.DeduplicateValuesProcessor
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: java.lang.UnsupportedOperationException
+        at org.apache.solr.common.SolrDocument$1.entrySet(SolrDocument.java:256)
+        at java.util.HashMap.putMapEntries(HashMap.java:512)
+        at java.util.HashMap.&lt;init&gt;(HashMap.java:490)
+        at com.atmire.statistics.util.update.atomic.record.Record.getFieldValuesMap(SourceFile:86)
+        at com.atmire.statistics.util.update.atomic.processor.DeduplicateValuesProcessor.process(SourceFile:38)
+        at com.atmire.statistics.util.update.atomic.processor.DeduplicateValuesProcessor.visit(SourceFile:34)
+        at com.atmire.statistics.util.update.atomic.record.UsageRecord.accept(SourceFile:23)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:301)
+        ... 10 more
+</code></pre><!-- raw HTML omitted -->
 
   
 
