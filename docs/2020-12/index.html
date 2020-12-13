@@ -20,7 +20,7 @@ I started processing those (about 411,000 records):
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-12/" />
 <meta property="article:published_time" content="2020-12-01T11:32:54+02:00" />
-<meta property="article:modified_time" content="2020-12-09T22:48:19+02:00" />
+<meta property="article:modified_time" content="2020-12-10T23:43:09+02:00" />
 
 
 
@@ -46,9 +46,9 @@ I started processing those (about 411,000 records):
   "@type": "BlogPosting",
   "headline": "December, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-12/",
-  "wordCount": "1231",
+  "wordCount": "1378",
   "datePublished": "2020-12-01T11:32:54+02:00",
-  "dateModified": "2020-12-09T22:48:19+02:00",
+  "dateModified": "2020-12-10T23:43:09+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -333,7 +333,38 @@ Caused by: org.apache.http.TruncatedChunkException: Truncated chunk ( expected s
 </ul>
 <p><img src="/cgspace-notes/2020/12/postgres_connections_ALL-week.png" alt="PostgreSQL connections all week">
 <img src="/cgspace-notes/2020/12/postgres_locks_ALL-week.png" alt="PostgreSQL locks all week"></p>
-<!-- raw HTML omitted -->
+<h2 id="2020-12-13">2020-12-13</h2>
+<ul>
+<li>I tried to harvest a few times on OpenRXV in the last few days and every time it appends all the new records to the items index instead of overwriting it:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/openrxv-duplicates.png" alt="OpenRXV duplicates"></p>
+<ul>
+<li>I can see it in the <code>openrxv-items-final</code> index:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*' | json_pp
+{
+   &quot;_shards&quot; : {
+      &quot;failed&quot; : 0,
+      &quot;skipped&quot; : 0,
+      &quot;successful&quot; : 1,
+      &quot;total&quot; : 1
+   },
+   &quot;count&quot; : 299922
+}
+</code></pre><ul>
+<li>I filed a bug on OpenRXV: <a href="https://github.com/ilri/OpenRXV/issues/64">https://github.com/ilri/OpenRXV/issues/64</a></li>
+<li>For now I will try to delete the index and start a re-harvest in the Admin UI:</li>
+</ul>
+<pre><code>$ curl -XDELETE http://localhost:9200/openrxv-items-final
+{&quot;acknowledged&quot;:true}%
+</code></pre><ul>
+<li>Moayad said he&rsquo;s working on the harvesting so I stopped it for now to re-deploy his latest changes</li>
+<li>I updated Tomcat to version 7.0.107 on CGSpace (linode18), ran all updates, and restarted the server</li>
+<li>I deleted both items indexes and restarted the harvesting:</li>
+</ul>
+<pre><code>$ curl -XDELETE http://localhost:9200/openrxv-items-final
+$ curl -XDELETE http://localhost:9200/openrxv-items-temp
+</code></pre><!-- raw HTML omitted -->
 
   
 
