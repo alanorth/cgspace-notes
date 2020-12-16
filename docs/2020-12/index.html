@@ -20,7 +20,7 @@ I started processing those (about 411,000 records):
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-12/" />
 <meta property="article:published_time" content="2020-12-01T11:32:54+02:00" />
-<meta property="article:modified_time" content="2020-12-13T16:16:10+02:00" />
+<meta property="article:modified_time" content="2020-12-15T13:13:18+02:00" />
 
 
 
@@ -46,9 +46,9 @@ I started processing those (about 411,000 records):
   "@type": "BlogPosting",
   "headline": "December, 2020",
   "url": "https://alanorth.github.io/cgspace-notes/2020-12/",
-  "wordCount": "2037",
+  "wordCount": "2609",
   "datePublished": "2020-12-01T11:32:54+02:00",
-  "dateModified": "2020-12-13T16:16:10+02:00",
+  "dateModified": "2020-12-15T13:13:18+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -490,7 +490,122 @@ $ query-json '.items | length' /tmp/policy2.json
 <pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-2020-12-14
 $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2020-12-15">2020-12-15</h2>
+<ul>
+<li>After the re-harvest last night there were 200,000 items in the <code>openrxv-items-temp</code> index again
+<ul>
+<li>I cleared the core and started a re-harvest, but Peter sent me a bunch of author corrections for CGSpace so I decided to cancel it until after I apply them and re-index Discovery</li>
+</ul>
+</li>
+<li>I checked the 1,534 fixes in Open Refine (had to fix a few UTF-8 errors, as always from Peter&rsquo;s CSVs) and then applied them using the <code>fix-metadata-values.py</code> script:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./fix-metadata-values.py -i /tmp/2020-10-28-fix-1534-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t 'correct' -m 3
+$ ./delete-metadata-values.py -i /tmp/2020-10-28-delete-2-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3
+</code></pre><ul>
+<li>Since I was re-indexing Discovery anyways I decided to check for any uppercase AGROVOC and lowercase them:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">dspace=# BEGIN;
+BEGIN
+dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ '[[:upper:]]';
+UPDATE 406
+dspace=# COMMIT;
+COMMIT
+</code></pre><ul>
+<li>I also updated the Font Awesome icon classes for version 5 syntax:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">dspace=# BEGIN;
+dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'fa fa-rss','fas fa-rss', 'g') WHERE text_value LIKE '%fa fa-rss%';
+UPDATE 74
+dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'fa fa-at','fas fa-at', 'g') WHERE text_value LIKE '%fa fa-at%';
+UPDATE 74
+dspace=# COMMIT;
+</code></pre><ul>
+<li>Then I started a full Discovery re-index:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
+$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    265m11.224s
+user    171m29.141s
+sys     2m41.097s
+</code></pre><ul>
+<li>Udana sent a report that the WLE approver is experiencing the same issue Peter highlighted a few weeks ago: they are unable to save metadata edits in the workflow</li>
+<li>Yesterday Atmire responded about the owningComm and owningColl duplicates in Solr saying they didn&rsquo;t see any anymore&hellip;
+<ul>
+<li>Indeed I spent a few minutes looking randomly and I didn&rsquo;t find any either&hellip;</li>
+<li>I did, however, see lots of duplicates in countryCode_search, countryCode_ngram, ip_search, ip_ngram, userAgent_search, userAgent_ngram, referrer_search, referrer_ngram fields</li>
+<li>I sent feedback to them</li>
+</ul>
+</li>
+<li>On the database locking front we haven&rsquo;t had issues in over a week and the Munin graphs look normal:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/postgres_connections_ALL-week2.png" alt="PostgreSQL connections all week">
+<img src="/cgspace-notes/2020/12/postgres_locks_ALL-week2.png" alt="PostgreSQL locks all week"></p>
+<ul>
+<li>After the Discovery re-indexing finished on CGSpace I prepared to start re-harvesting AReS by making sure the <code>openrxv-items-temp</code> index was empty and that the backup index I made yesterday was still there:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
+{
+  &quot;acknowledged&quot; : true
+}
+$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 0,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -s 'http://localhost:9200/openrxv-items-2020-12-14/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 99992,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+</code></pre><h2 id="2020-12-16">2020-12-16</h2>
+<ul>
+<li>The harvesting on AReS finished last night so this morning I manually cloned the <code>openrxv-items-temp</code> index to <code>openrxv-items</code>
+<ul>
+<li>First check the number of items in the temp index, then set it to read only, then delete the items index, then delete the temp index:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 100046,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items?pretty'
+$ curl -s -X POST &quot;http://localhost:9200/openrxv-items-temp/_clone/openrxv-items?pretty&quot;
+$ curl -s 'http://localhost:9200/openrxv-items/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 100046,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
+</code></pre><ul>
+<li>Interestingly <a href="https://hdl.handle.net/10568/110447">the item</a> that we noticed was duplicated now only appears once</li>
+<li>The <a href="https://hdl.handle.net/10568/110133">missing item</a> is still missing</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
