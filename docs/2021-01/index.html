@@ -15,6 +15,14 @@ It&rsquo;s the same issue with the field names getting .keyword appended to the 
 I fixed the broken filters (careful to not edit any others, lest they break too!)
 
 
+Fix an issue with start page number for the DSpace REST API and statistics API in OpenRXV
+
+The start page had been &ldquo;1&rdquo; in the UI, but in the backend they were doing some gymnastics to adjust to the zero-based offset/limit/page of the DSpace REST API and the statistics API
+I adjusted it to default to 0 and added a note to the admin screen
+I realized that this issue was actually causing the first page of 100 statistics to be missing&hellip;
+For example, this item has 51 views on CGSpace, but 0 on AReS
+
+
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-01/" />
@@ -33,6 +41,14 @@ It&rsquo;s the same issue with the field names getting .keyword appended to the 
 I fixed the broken filters (careful to not edit any others, lest they break too!)
 
 
+Fix an issue with start page number for the DSpace REST API and statistics API in OpenRXV
+
+The start page had been &ldquo;1&rdquo; in the UI, but in the backend they were doing some gymnastics to adjust to the zero-based offset/limit/page of the DSpace REST API and the statistics API
+I adjusted it to default to 0 and added a note to the admin screen
+I realized that this issue was actually causing the first page of 100 statistics to be missing&hellip;
+For example, this item has 51 views on CGSpace, but 0 on AReS
+
+
 "/>
 <meta name="generator" content="Hugo 0.80.0" />
 
@@ -44,7 +60,7 @@ I fixed the broken filters (careful to not edit any others, lest they break too!
   "@type": "BlogPosting",
   "headline": "January, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-01/",
-  "wordCount": "52",
+  "wordCount": "420",
   "datePublished": "2021-01-03T10:13:54+02:00",
   "dateModified": "2021-01-03T10:15:07+02:00",
   "author": {
@@ -126,6 +142,60 @@ I fixed the broken filters (careful to not edit any others, lest they break too!
 <ul>
 <li>It&rsquo;s the same issue with the field names getting <code>.keyword</code> appended to the end that I already <a href="https://github.com/ilri/OpenRXV/issues/66">filed an issue on OpenRXV about last month</a></li>
 <li>I fixed the broken filters (careful to not edit any others, lest they break too!)</li>
+</ul>
+</li>
+<li>Fix an issue with start page number for the DSpace REST API and statistics API in OpenRXV
+<ul>
+<li>The start page had been &ldquo;1&rdquo; in the UI, but in the backend they were doing some gymnastics to adjust to the zero-based offset/limit/page of the DSpace REST API and the statistics API</li>
+<li>I adjusted it to default to 0 and added a note to the admin screen</li>
+<li>I realized that this issue was actually causing the first page of 100 statistics to be missing&hellip;</li>
+<li>For example, <a href="https://cgspace.cgiar.org/handle/10568/66839">this item</a> has 51 views on CGSpace, but 0 on AReS</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Start a re-index on AReS
+<ul>
+<li>First delete the old Elasticsearch temp index:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+# start indexing in AReS
+</code></pre><ul>
+<li>Then, the next morning when it&rsquo;s done, check the results of the harvesting, backup the current <code>openrxv-items</code> index, and clone the <code>openrxv-items-temp</code> index to <code>openrxv-items</code>:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 100278,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-01-04
+$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-01-04'
+</code></pre><h2 id="2021-01-04">2021-01-04</h2>
+<ul>
+<li>There is one item that appears twice in AReS: <a href="https://cgspace.cgiar.org/handle/10568/66839">10568/66839</a>
+<ul>
+<li>If I use the Handle filter I see it twice&hellip; whereas other items don&rsquo;t appear twice</li>
+<li>I filed a bug on OpenRXV: <a href="https://github.com/ilri/OpenRXV/issues/67">https://github.com/ilri/OpenRXV/issues/67</a></li>
+</ul>
+</li>
+<li>Help Peter troubleshoot an issue with Altmetric badges on AReS
+<ul>
+<li>He generated a report of our repository from Altmetric and noticed that many were missing scores despite having scores on CGSpace item pages</li>
+<li>AReS harvest Altmetric scores using the Handle prefix (10568) in batch, while CGSpace uses the DOI if it is found, and falls back to using the Handle</li>
+<li>I think it&rsquo;s due to the fact that some items were never tweeted, so Altmetric never made the link between the DOI and the Handle</li>
+<li>I did some tweets of five items and within an hour or so the DOI API link registers the associated Handle, and within an hour or so the Handle API link is live with the same score</li>
 </ul>
 </li>
 </ul>
