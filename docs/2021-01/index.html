@@ -27,7 +27,7 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-01/" />
 <meta property="article:published_time" content="2021-01-03T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-01-05T16:19:05+02:00" />
+<meta property="article:modified_time" content="2021-01-05T19:56:15+02:00" />
 
 
 
@@ -60,9 +60,9 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
   "@type": "BlogPosting",
   "headline": "January, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-01/",
-  "wordCount": "554",
+  "wordCount": "1025",
   "datePublished": "2021-01-03T10:13:54+02:00",
-  "dateModified": "2021-01-05T16:19:05+02:00",
+  "dateModified": "2021-01-05T19:56:15+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -220,7 +220,86 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-01-04'
 </li>
 <li>Import one item to CGSpace for Peter</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-01-07">2021-01-07</h2>
+<ul>
+<li>Import twenty CABI book chapters for Abenet</li>
+<li>Udana and some editors from IWMI are still having problems editing metadata during the workflow step
+<ul>
+<li>It is the same issue Peter reported last month, that values he edits are not saved when the item gets archived</li>
+<li>I added myself the the edit and approval steps of <a href="https://dspacetest.cgiar.org/handle/10568/81589">the collection</a> on DSpace Test and asked Udana to submit an item there for me to test</li>
+</ul>
+</li>
+<li>Atmire got back to me about the duplicate data in Solr
+<ul>
+<li>They want to arrange a time for us to do the stats processing so they can monitor it</li>
+<li>I proposed that I set everything up with a fresh Solr snapshot from CGSpace and then let them start the stats process</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-01-10">2021-01-10</h2>
+<ul>
+<li>Dominique from IWMI asked about API access to the IWMI collections
+<ul>
+<li>A partner of theirs called AMCOW is interested in harvesting their publications</li>
+<li>I told her that they can use the REST API or OAI to get them from the <a href="https://cgspace.cgiar.org/handle/10568/36185">IWMI Journal Articles collection</a>:
+<ul>
+<li>CGSpace REST API: <a href="https://cgspace.cgiar.org/rest/collections/c2618391-184e-4091-8a93-280fdf01238b/items">https://cgspace.cgiar.org/rest/collections/c2618391-184e-4091-8a93-280fdf01238b/items</a></li>
+<li>CGSpace OAI API: <a href="https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;set=col_10568_36185">https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;set=col_10568_36185</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Udana submitted an item to <a href="https://dspacetest.cgiar.org/handle/10568/81589">the collection</a> on DSpace Test that I discussed last week
+<ul>
+<li>I was able to take the task, add a new AGROVOC subject, approve the task, and commit it to archive</li>
+<li>The final item had my new AGROVOC subject, so I don&rsquo;t see the issue</li>
+<li>Perhaps the issue only occurs when we replace an existing field? Or only on IWMI fields? I don&rsquo;t know&hellip;</li>
+<li>Also there is this warning that occurs in the DSpace log during editing (and many other operations):</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">2021-01-10 10:03:27,692 WARN  com.atmire.metadataquality.batchedit.BatchEditConsumer @ BatchEditConsumer should not have been given this kind of Subject in an event, skipping: org.dspace.event.Event(eventType=MODIFY, SubjectType=ITEM, SubjectID=1e8fb96c-b994-4fe2-8f0c-0a98ab138be0, ObjectType=(Unknown), ObjectID=null, TimeStamp=1610269383279, dispatcher=1544803905, detail=[null], transactionID=&quot;TX35636856957739531161091194485578658698&quot;)
+</code></pre><ul>
+<li>I filed <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=907">a bug on Atmire&rsquo;s issue tracker</a></li>
+<li>Peter asked me to move the CGIAR Gender Platform community to the top level of CGSpace, but I get an error when I use the community-filiator command:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ dspace community-filiator --remove --parent=10568/66598 --child=10568/106605
+Loading @mire database changes for module MQM
+Changes have been processed
+Exception: null
+java.lang.UnsupportedOperationException
+        at java.util.AbstractList.remove(AbstractList.java:161)
+        at java.util.AbstractList$Itr.remove(AbstractList.java:374)
+        at java.util.AbstractCollection.remove(AbstractCollection.java:293)
+        at org.dspace.administer.CommunityFiliator.defiliate(CommunityFiliator.java:264)
+        at org.dspace.administer.CommunityFiliator.main(CommunityFiliator.java:164)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</code></pre><ul>
+<li>There is apparently <a href="https://jira.lyrasis.org/browse/DS-3914">a bug</a> in DSpace 6.x that makes community-filiator not work
+<ul>
+<li>There is <a href="https://github.com/DSpace/DSpace/pull/2178">a patch</a> for the as-of-yet unreleased DSpace 6.4 so I will try that</li>
+</ul>
+</li>
+<li>Udana had asked about exporting IWMI&rsquo;s community on CGSpace, but we don&rsquo;t want to give him super admin permissions to do that
+<ul>
+<li>I suggested that he use AReS, but there are some fields missing because we don&rsquo;t harvest them all</li>
+<li>I added a few more fields to the configuration and will start a fresh harvest.</li>
+</ul>
+</li>
+<li>Start a re-index on AReS
+<ul>
+<li>First delete the old Elasticsearch temp index:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+# start indexing in AReS
+</code></pre><!-- raw HTML omitted -->
 
   
 
