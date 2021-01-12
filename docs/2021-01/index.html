@@ -27,7 +27,7 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-01/" />
 <meta property="article:published_time" content="2021-01-03T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-01-05T19:56:15+02:00" />
+<meta property="article:modified_time" content="2021-01-10T16:15:04+02:00" />
 
 
 
@@ -60,9 +60,9 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
   "@type": "BlogPosting",
   "headline": "January, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-01/",
-  "wordCount": "1025",
+  "wordCount": "1347",
   "datePublished": "2021-01-03T10:13:54+02:00",
-  "dateModified": "2021-01-05T19:56:15+02:00",
+  "dateModified": "2021-01-10T16:15:04+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -283,6 +283,7 @@ java.lang.UnsupportedOperationException
 <li>There is apparently <a href="https://jira.lyrasis.org/browse/DS-3914">a bug</a> in DSpace 6.x that makes community-filiator not work
 <ul>
 <li>There is <a href="https://github.com/DSpace/DSpace/pull/2178">a patch</a> for the as-of-yet unreleased DSpace 6.4 so I will try that</li>
+<li>I tested the patch on DSpace Test and it worked, so I will do the same on CGSpace tomorrow</li>
 </ul>
 </li>
 <li>Udana had asked about exporting IWMI&rsquo;s community on CGSpace, but we don&rsquo;t want to give him super admin permissions to do that
@@ -299,7 +300,65 @@ java.lang.UnsupportedOperationException
 </ul>
 <pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 # start indexing in AReS
-</code></pre><!-- raw HTML omitted -->
+... after ten hours
+$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 100411,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+</code></pre><ul>
+<li>Looking over the last month of Solr stats I see a familiar bot that <em>should</em> have been marked as a bot months ago:</li>
+</ul>
+<blockquote>
+<p>Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)</p>
+</blockquote>
+<ul>
+<li>There are 51,961 hits from this bot on 64.62.202.71 and 64.62.202.73
+<ul>
+<li>Ah! Actually I added the bot pattern to the Tomcat Crawler Session Manager Valve, which mitigated the abuse of Tomcat sessions:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ cat log/dspace.log.2020-12-2* | grep -E 'session_id=[A-Z0-9]{32}:ip_addr=64.62.202.71' | sort | uniq | wc -l
+0
+</code></pre><ul>
+<li>So now I should really add it to the DSpace spider agent list so it doesn&rsquo;t create Solr hits
+<ul>
+<li>I added it to the &ldquo;ilri&rdquo; lists of spider agent patterns</li>
+</ul>
+</li>
+<li>I purged the existing hits using my <code>check-spider-ip-hits.sh</code> script:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./check-spider-ip-hits.sh -d -f /tmp/ips -s http://localhost:8081/solr -s statistics -p
+</code></pre><h2 id="2021-01-11">2021-01-11</h2>
+<ul>
+<li>The AReS indexing finished this morning and I moved the <code>openrxv-items-temp</code> core to <code>openrxv-items</code> (see above)
+<ul>
+<li>I sorted the explorer results by Altmetric attention score and I see a few new ones on the top so I think the recent tweeting of Handles by Peter and myself worked</li>
+</ul>
+</li>
+<li>I deployed the community-filiator fix on CGSpace and moved the Gender Platform community to the top level of CGSpace:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ dspace community-filiator --remove --parent=10568/66598 --child=10568/106605
+</code></pre><h2 id="2021-01-12">2021-01-12</h2>
+<ul>
+<li>IWMI is really pressuring us to have a periodic CSV export of their community
+<ul>
+<li>I decided to write a systemd timer to use <code>dspace metadata-export</code> every week, and made an nginx alias to make it available <a href="https://cgspace.cgiar.org/iwmi.csv">publicly</a></li>
+<li>It is part of the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a> that I use to provision the servers</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
