@@ -93,8 +93,8 @@ dcterms.issued | ✓ | ✓ | ? | ✓ | ✓ | ✓ | |
 dcterms.abstract | ✓ | ✓ | ✓ | ✓ | ✓ | - | |
 dcterms.description | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
 cg.contributor.donor | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | |
-cg.review-status | ✓ | ✓ | ✓ | - | ✓ | - | |
-cg.howpublished | ✓ | ✓ | - | - | - | - | |
+cg.reviewStatus | ✓ | ✓ | ✓ | - | ✓ | - | |
+cg.howPublished | ✓ | ✓ | - | - | - | - | |
 dcterms.bibliographicCitation | ✓ | ✓ | ✓ | - | - | ✓ | |
 dcterms.accessRights | ✓ | ✓ | ✓ | - | ✓ | ✓ | |
 dcterms.language | ✓ | ✓ | ✓ | - | ✓ | ✓ | |
