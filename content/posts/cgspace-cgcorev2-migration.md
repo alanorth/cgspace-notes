@@ -20,7 +20,7 @@ With reference to [CG Core v2 draft standard](https://agriculturalsemantics.gith
 - [Implementation Progress](#implementation-progress)
 
 ## Proposed Changes
-As of 2019-12-22 the scope of the changes includes the following fields:
+As of 2021-01-18 the scope of the changes includes the following fields:
 
 - cg.creator.id→cg.creator.identifier
   - ORCID identifiers
@@ -30,8 +30,8 @@ As of 2019-12-22 the scope of the changes includes the following fields:
 - dc.description→dcterms.description
 - dc.description.sponsorship→cg.contributor.donor
   - values from CrossRef or Grid.ac if possible
-- dc.description.version→cg.review-status
-- cg.fulltextstatus→cg.howpublished
+- dc.description.version→cg.reviewStatus
+- cg.fulltextstatus→cg.howPublished
   - CGSpace uses values like "Formally Published" or "Grey Literature"
 - dc.identifier.citation→dcterms.bibliographicCitation
 - cg.identifier.status→dcterms.accessRights
@@ -67,8 +67,8 @@ Make sure the following fields exist:
 
 - [x] cg.creator.identifier (242)
 - [x] cg.contributor.donor (243)
-- [x] cg.review-status (244)
-- [x] cg.howpublished (245)
+- [x] cg.reviewStatus (244)
+- [x] cg.howPublished (245)
 - [x] cg.journal (246)
 - [x] cg.isbn (247)
 - [x] cg.issn (248)
