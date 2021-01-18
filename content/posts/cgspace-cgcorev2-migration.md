@@ -65,13 +65,13 @@ The following fields are currently out of the scope of this migration because th
 ## Fields to Create
 Make sure the following fields exist:
 
-- [x] cg.creator.identifier (242)
-- [x] cg.contributor.donor (243)
-- [x] cg.reviewStatus (244)
-- [x] cg.howPublished (245)
-- [x] cg.journal (246)
-- [x] cg.isbn (247)
-- [x] cg.issn (248)
+- [] cg.creator.identifier
+- [] cg.contributor.donor
+- [] cg.reviewStatus
+- [] cg.howPublished
+- [] cg.journal
+- [] cg.isbn
+- [] cg.issn
 
 ## Fields to delete
 Fields to delete after migration:
