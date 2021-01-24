@@ -42,7 +42,9 @@ As of 2021-01-18 the scope of the changes includes the following fields:
   - future values are possibly ISO 639-3 (aka Alpha 3)?
 - cg.link.reference→dcterms.relation
 - dc.publisher→dcterms.publisher
-- dc.relation.ispartofseries→dcterms.isPartOf
+- dc.relation.ispartofseries will be split into:
+  - series name: dcterms.isPartOf
+  - series number: cg.number
 - dc.rights→dcterms.license
   - Using [SPDX license identifiers](https://spdx.org/licenses/) if possible
 - dc.source→cg.journal
