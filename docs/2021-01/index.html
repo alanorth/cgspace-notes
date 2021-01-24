@@ -60,7 +60,7 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
   "@type": "BlogPosting",
   "headline": "January, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-01/",
-  "wordCount": "2060",
+  "wordCount": "2313",
   "datePublished": "2021-01-03T10:13:54+02:00",
   "dateModified": "2021-01-21T16:54:45+02:00",
   "author": {
@@ -488,6 +488,45 @@ localhost/dspace63= &gt; COMMIT;
 <li>A little bit more work on the CG Core v2 migration in CGSpace
 <ul>
 <li>I updated the <code>migrate-fields.sh</code> script for DSpace 6 and created all the new fields in my test instance</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-01-24">2021-01-24</h2>
+<ul>
+<li>Abenet mentioned that Alan Duncan could not find one of his items on AReS, but it is on CGSpace
+<ul>
+<li>The item is: <a href="https://hdl.handle.net/10568/110133">https://hdl.handle.net/10568/110133</a></li>
+<li>The handle does not appear on AReS when I try to filter by Handle</li>
+<li>I suspect it is related to the issue of the missing Livestock CRP community and I added a comment on <a href="https://github.com/ilri/OpenRXV/issues/62">the GitHub issue</a></li>
+</ul>
+</li>
+<li>Import fifteen items to CGSpace for Peter after doing a brief check in OpenRefine and csv-metadata-quality</li>
+<li>Ben Hack asked me why I&rsquo;m still using the default favicon on CGSpace
+<ul>
+<li>I used an <a href="https://commons.wikimedia.org/wiki/File:CGIAR-logo.svg">SVG version of the CGIAR logo</a> with <a href="https://realfavicongenerator.net">https://realfavicongenerator.net</a> to to make a better favicon setup and it is currently running on DSpace Test</li>
+</ul>
+</li>
+<li>Start a re-index on AReS
+<ul>
+<li>First delete the old Elasticsearch temp index:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+# start indexing in AReS
+</code></pre><ul>
+<li>Resume working on CG Core v2, I realized a few things:
+<ul>
+<li>We are trying to move from <code>dc.identifier.issn</code> (and ISBN) to <code>cg.issn</code>, but this is currently implemented as a &ldquo;qualdrop&rdquo; input in DSpace&rsquo;s submission form, which only works to fill in the qualifier (ie <code>dc.identier.xxxx</code>)
+<ul>
+<li>If we really want to use <code>cg.issn</code> and <code>cg.isbn</code> we would need to add a new input field for each separately</li>
+</ul>
+</li>
+<li>We are trying to move series name/number fro m<code>dc.relation.ispartofseries</code> to <code>dcterms.isPartOf</code>, but this uses a special &ldquo;series&rdquo; input type in DSpace&rsquo;s submission form that joins series name and number with a colon (;)
+<ul>
+<li>If we really want to do that we need to add two separate input fields for each</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
