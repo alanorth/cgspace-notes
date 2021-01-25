@@ -27,7 +27,7 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-01/" />
 <meta property="article:published_time" content="2021-01-03T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-01-21T16:54:45+02:00" />
+<meta property="article:modified_time" content="2021-01-24T17:40:56+02:00" />
 
 
 
@@ -60,9 +60,9 @@ For example, this item has 51 views on CGSpace, but 0 on AReS
   "@type": "BlogPosting",
   "headline": "January, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-01/",
-  "wordCount": "2313",
+  "wordCount": "2526",
   "datePublished": "2021-01-03T10:13:54+02:00",
-  "dateModified": "2021-01-21T16:54:45+02:00",
+  "dateModified": "2021-01-24T17:40:56+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -515,6 +515,27 @@ localhost/dspace63= &gt; COMMIT;
 <pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 # start indexing in AReS
 </code></pre><ul>
+<li>Then, the next morning when it&rsquo;s done, check the results of the harvesting, backup the current <code>openrxv-items</code> index, and clone the <code>openrxv-items-temp</code> index to <code>openrxv-items</code>:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 100699,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.b
+locks.write&quot;:true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-01-25
+$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-01-25'
+</code></pre><ul>
 <li>Resume working on CG Core v2, I realized a few things:
 <ul>
 <li>We are trying to move from <code>dc.identifier.issn</code> (and ISBN) to <code>cg.issn</code>, but this is currently implemented as a &ldquo;qualdrop&rdquo; input in DSpace&rsquo;s submission form, which only works to fill in the qualifier (ie <code>dc.identier.xxxx</code>)
@@ -527,6 +548,19 @@ localhost/dspace63= &gt; COMMIT;
 <li>If we really want to do that we need to add two separate input fields for each</li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-01-25">2021-01-25</h2>
+<ul>
+<li>Finish indexing AReS and adjusting the indexes (see above)</li>
+<li>Merged the changes for the favicon in to the <code>6_x-prod</code> branch</li>
+<li>Meeting with Peter and Abenet about CG Core v2
+<ul>
+<li>We agreed to go ahead with it ASAP and share a list of the changes with Macaroni, Fabio, and others and give them a firm timeline</li>
+<li>We also discussed the CSV export option on DSpace 6 and were surprised to see that it kinda works</li>
+<li>If you do a free-text search it works properly, but if you try to use the metadata filters it doesn&rsquo;t</li>
+<li>I changed the default setting to make it available to any logged in user and will deploy it on CGSpace this week</li>
 </ul>
 </li>
 </ul>
