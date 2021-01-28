@@ -76,6 +76,7 @@ Make sure the following fields exist:
 - [x] cg.issn (253)
 - [x] cg.volume (254)
 - [x] cg.number (255)
+- [x] cg.issue (256)
 
 ## Fields to delete
 Fields to delete after migration:
