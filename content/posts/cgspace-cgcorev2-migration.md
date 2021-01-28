@@ -67,13 +67,15 @@ The following fields are currently out of the scope of this migration because th
 ## Fields to Create
 Make sure the following fields exist:
 
-- [] cg.creator.identifier
-- [] cg.contributor.donor
-- [] cg.reviewStatus
-- [] cg.howPublished
-- [] cg.journal
-- [] cg.isbn
-- [] cg.issn
+- [x] cg.creator.identifier (247)
+- [x] cg.contributor.donor (248)
+- [x] cg.reviewStatus (249)
+- [x] cg.howPublished (250)
+- [x] cg.journal (251)
+- [x] cg.isbn (252)
+- [x] cg.issn (253)
+- [x] cg.volume (254)
+- [x] cg.number (255)
 
 ## Fields to delete
 Fields to delete after migration:
@@ -85,7 +87,7 @@ Fields to delete after migration:
 - [ ] cg.targetaudience
 
 ## Implementation Progress
-Tally of the status of the implementation of the new fields in the CGSpace `5_x-cgcorev2` branch.
+Tally of the status of the implementation of the new fields in the CGSpace `6_x-cgcorev2` branch.
 
 | Field Name | migrate-fields.sh | Input Forms | XMLUI Themes¹ | dspace.cfg | Discovery | Atmire Modules | Crosswalks |
 | ---------- | :---------------: | :---------: | :-----------: | :--------: | :-------: | :------------: | :--------: |
