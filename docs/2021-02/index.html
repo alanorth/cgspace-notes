@@ -32,7 +32,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-02/" />
 <meta property="article:published_time" content="2021-02-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-02-11T09:36:09+02:00" />
+<meta property="article:modified_time" content="2021-02-11T22:24:21+02:00" />
 
 
 
@@ -70,9 +70,9 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
   "@type": "BlogPosting",
   "headline": "February, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-02/",
-  "wordCount": "2064",
+  "wordCount": "2281",
   "datePublished": "2021-02-01T10:13:54+02:00",
-  "dateModified": "2021-02-11T09:36:09+02:00",
+  "dateModified": "2021-02-11T22:24:21+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -485,7 +485,46 @@ $ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed '1d' | sort | uniq -c | sort -h | 
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-02-13">2021-02-13</h2>
+<ul>
+<li>Run system updates, deploy latest <code>6_x-prod</code> branch, and reboot CGSpace (linode18)</li>
+<li>Normalize <code>text_lang</code> of DSpace item metadata on CGSpace:</li>
+</ul>
+<pre><code>dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) GROUP BY text_lang ORDER BY count DESC;
+ text_lang |  count  
+-----------+---------
+ en_US     | 2567413
+           |    8050
+ en        |    7601
+           |       0
+(4 rows)
+dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (SELECT uuid FROM item);
+</code></pre><ul>
+<li>Start a full Discovery re-indexing on CGSpace</li>
+</ul>
+<h2 id="2021-02-14">2021-02-14</h2>
+<ul>
+<li>Clear the OpenRXV temp items index:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+</code></pre><ul>
+<li>Then start a full harvesting of CGSpace in the AReS Explorer admin dashboard</li>
+<li>Peter asked me about a few other recently submitted FEAST items that are restricted
+<ul>
+<li>I checked the collection and there was an empty group there for the &ldquo;default read&rdquo; authorization</li>
+<li>I deleted the group and fixed the authorization policies for two new items manually</li>
+</ul>
+</li>
+<li>Upload fifteen items to CGSpace for Peter Ballantyne</li>
+<li>Move 313 journals from series, which Peter had indicated when we were cleaning up the series last week
+<ul>
+<li>I re-purposed one of my Python metadata scripts to create <code>move-metadata-values.py</code></li>
+<li>The script reads a text file with one metadata value per line and moves them from one metadata field id to another</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/move-metadata-values.py -i /tmp/move.txt -db dspace -u dspace -p 'fuuu' -f 43 -t 55
+</code></pre><!-- raw HTML omitted -->
 
   
 
