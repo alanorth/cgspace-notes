@@ -32,7 +32,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-02/" />
 <meta property="article:published_time" content="2021-02-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-02-14T20:00:24+02:00" />
+<meta property="article:modified_time" content="2021-02-16T12:56:10+02:00" />
 
 
 
@@ -70,9 +70,9 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
   "@type": "BlogPosting",
   "headline": "February, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-02/",
-  "wordCount": "2397",
+  "wordCount": "2725",
   "datePublished": "2021-02-01T10:13:54+02:00",
-  "dateModified": "2021-02-14T20:00:24+02:00",
+  "dateModified": "2021-02-16T12:56:10+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -553,7 +553,60 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-15'
 </code></pre><ul>
 <li>Call with Abdullah from CodeObia to discuss community and collection statistics reporting</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-02-16">2021-02-16</h2>
+<ul>
+<li>Linode emailed me to say that CGSpace (linode18) had a high CPU usage this afternoon</li>
+<li>I looked in the nginx logs and found a few heavy users:
+<ul>
+<li>45.146.165.203 in Russia with user agent <code>Opera/9.80 (Windows NT 6.1; U; cs) Presto/2.2.15 Version/10.00</code></li>
+<li>130.255.161.231 in Sweden with user agent <code>Mozilla/5.0 (Macintosh; Intel Mac OS X 11.1; rv:84.0) Gecko/20100101 Firefox/84.0</code></li>
+</ul>
+</li>
+<li>They are definitely bots posing as users, as I see they have created six thousand DSpace sessions today:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ cat dspace.log.2021-02-16 | grep -E 'session_id=[A-Z0-9]{32}:ip_addr=45.146.165.203' | sort | uniq | wc -l
+4007
+$ cat dspace.log.2021-02-16 | grep -E 'session_id=[A-Z0-9]{32}:ip_addr=130.255.161.231' | sort | uniq | wc -l
+2128
+</code></pre><ul>
+<li>Ah, actually 45.146.165.203 is making requests like this:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">&quot;http://cgspace.cgiar.org:80/bitstream/handle/10568/238/Res_report_no3.pdf;jsessionid=7311DD88B30EEF9A8F526FF89378C2C5%' AND 4313=CONCAT(CHAR(113)+CHAR(98)+CHAR(106)+CHAR(112)+CHAR(113),(SELECT (CASE WHEN (4313=4313) THEN CHAR(49) ELSE CHAR(48) END)),CHAR(113)+CHAR(106)+CHAR(98)+CHAR(112)+CHAR(113)) AND 'XzQO%'='XzQO&quot;
+</code></pre><ul>
+<li>I purged the hits from these two using my <code>check-spider-ip-hits.sh</code>:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+Purging 4005 hits from 45.146.165.203 in statistics
+Purging 3493 hits from 130.255.161.231 in statistics
+
+Total number of bot hits purged: 7498
+</code></pre><ul>
+<li>Ugh, I looked in Solr for the top IPs in 2021-01 and found a few more of these Russian IPs so I purged them too:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+Purging 27163 hits from 45.146.164.176 in statistics
+Purging 19556 hits from 45.146.165.105 in statistics
+Purging 15927 hits from 45.146.165.83 in statistics
+Purging 8085 hits from 45.146.165.104 in statistics
+
+Total number of bot hits purged: 70731
+</code></pre><ul>
+<li>My god, and 64.39.99.15 is from Qualys, the domain scanning security people, who are making queries trying to see if we are vulnerable or something (?)
+<ul>
+<li>Looking in Solr I see a few different IPs with DNS like <code>sn003.s02.iad01.qualys.com.</code> so I will purge their requests too:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+Purging 3 hits from 130.255.161.231 in statistics
+Purging 16773 hits from 64.39.99.15 in statistics
+Purging 6976 hits from 64.39.99.13 in statistics
+Purging 13 hits from 64.39.99.63 in statistics
+Purging 12 hits from 64.39.99.65 in statistics
+Purging 12 hits from 64.39.99.94 in statistics
+
+Total number of bot hits purged: 23789
+</code></pre><!-- raw HTML omitted -->
 
   
 
