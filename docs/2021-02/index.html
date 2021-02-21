@@ -32,7 +32,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-02/" />
 <meta property="article:published_time" content="2021-02-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-02-16T12:56:10+02:00" />
+<meta property="article:modified_time" content="2021-02-16T20:19:14+02:00" />
 
 
 
@@ -70,9 +70,9 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
   "@type": "BlogPosting",
   "headline": "February, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-02/",
-  "wordCount": "2725",
+  "wordCount": "3061",
   "datePublished": "2021-02-01T10:13:54+02:00",
-  "dateModified": "2021-02-16T12:56:10+02:00",
+  "dateModified": "2021-02-16T20:19:14+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -591,7 +591,7 @@ Purging 8085 hits from 45.146.165.104 in statistics
 
 Total number of bot hits purged: 70731
 </code></pre><ul>
-<li>My god, and 64.39.99.15 is from Qualys, the domain scanning security people, who are making queries trying to see if we are vulnerable or something (?)
+<li>My god, and 64.39.99.15 is from Qualys, the domain scanning security people, who are making queries trying to see if we are vulnerable or something (wtf?)
 <ul>
 <li>Looking in Solr I see a few different IPs with DNS like <code>sn003.s02.iad01.qualys.com.</code> so I will purge their requests too:</li>
 </ul>
@@ -606,7 +606,67 @@ Purging 12 hits from 64.39.99.65 in statistics
 Purging 12 hits from 64.39.99.94 in statistics
 
 Total number of bot hits purged: 23789
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-02-17">2021-02-17</h2>
+<ul>
+<li>I tested Node.js 10 vs 12 on CGSpace (linode18) and DSpace Test (linode26) and the build times were surprising
+<ul>
+<li>Node.js 10
+<ul>
+<li>linode26: [INFO] Total time:  17:07 min</li>
+<li>linode18: [INFO] Total time:  19:26 min</li>
+</ul>
+</li>
+<li>Node.js 12
+<ul>
+<li>linode26: [INFO] Total time:  17:14 min</li>
+<li>linode18: [INFO] Total time:  19:43 min</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>So I guess there is no need to use Node.js 12 any time soon, unless 10 becomes end of life</li>
+<li>Abenet asked me to add Tom Randolph&rsquo;s ORCID identifier to CGSpace</li>
+<li>I also tagged all his 247 existing items on CGSpace:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ cat 2021-02-17-add-tom-orcid.csv 
+dc.contributor.author,cg.creator.id
+&quot;Randolph, Thomas F.&quot;,&quot;Thomas Fitz Randolph: 0000-0003-1849-9877&quot;
+$ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace -u dspace -p 'fuuu'
+</code></pre><h2 id="2021-02-20">2021-02-20</h2>
+<ul>
+<li>Test the CG Core v2 migration on DSpace Test (linode26) one last time</li>
+</ul>
+<h2 id="2021-02-21">2021-02-21</h2>
+<ul>
+<li>Start the CG Core v2 migration on CGSpace (linode18)</li>
+<li>After deploying the latest <code>6_x-prod</code> branch and running <code>migrate-fields.sh</code> I started a full Discovery reindex:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre><ul>
+<li>Ben Hack was asking if there is a REST API query that will give him all ILRI outputs for their new Sharepoint intranet
+<ul>
+<li>I told him he can try to use something like this if it&rsquo;s just something like the ILRI articles in journals collection:</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://cgspace.cgiar.org/rest/collections/8ea4b611-1f59-4d4e-b78d-a9921a72cfe7/items?limit=100&amp;offset=0">https://cgspace.cgiar.org/rest/collections/8ea4b611-1f59-4d4e-b78d-a9921a72cfe7/items?limit=100&amp;offset=0</a></p>
+<ul>
+<li>But I don&rsquo;t know if he wants the entire ILRI community, in which case he needs to get the collections recursively and iterate over them, or if his software can manage the iteration over the pages of item results using limit and offset</li>
+<li>Help proof and upload 1095 CIFOR items to DSpace Test for Abenet
+<ul>
+<li>There were a few dozen issues with author affiliations, but the metadata was otherwise very good quality</li>
+<li>I ran the data through the csv-metadata-quality tool nevertheless to fix some minor formatting issues</li>
+<li>I uploaded it to DSpace Test to check for duplicates</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx1024m'
+$ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
+</code></pre><ul>
+<li>The process took an hour or so!</li>
+<li>I added colorized output to the csv-metadata-quality tool and tagged <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.4.4">version 0.4.4 on GitHub</a></li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
