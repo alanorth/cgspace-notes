@@ -32,7 +32,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-02/" />
 <meta property="article:published_time" content="2021-02-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-02-16T20:19:14+02:00" />
+<meta property="article:modified_time" content="2021-02-21T18:20:37+02:00" />
 
 
 
@@ -70,9 +70,9 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
   "@type": "BlogPosting",
   "headline": "February, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-02/",
-  "wordCount": "3061",
+  "wordCount": "3111",
   "datePublished": "2021-02-01T10:13:54+02:00",
-  "dateModified": "2021-02-16T20:19:14+02:00",
+  "dateModified": "2021-02-21T18:20:37+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -642,6 +642,15 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace
 <li>After deploying the latest <code>6_x-prod</code> branch and running <code>migrate-fields.sh</code> I started a full Discovery reindex:</li>
 </ul>
 <pre><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    311m12.617s
+user    217m3.102s
+sys     2m37.363s
+</code></pre><ul>
+<li>Then update OAI:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ dspace oai import -c
+$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m&quot;
 </code></pre><ul>
 <li>Ben Hack was asking if there is a REST API query that will give him all ILRI outputs for their new Sharepoint intranet
 <ul>
@@ -665,8 +674,11 @@ $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
 </code></pre><ul>
 <li>The process took an hour or so!</li>
 <li>I added colorized output to the csv-metadata-quality tool and tagged <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.4.4">version 0.4.4 on GitHub</a></li>
+<li>I updated the fields in AReS Explorer and then removed the old temp index so I can start a fresh re-harvest of CGSpace:</li>
 </ul>
-<!-- raw HTML omitted -->
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+# start indexing in AReS
+</code></pre><!-- raw HTML omitted -->
 
   
 
