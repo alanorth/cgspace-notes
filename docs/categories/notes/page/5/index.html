@@ -10,14 +10,14 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/categories/notes/" />
-<meta property="og:updated_time" content="2021-02-21T20:37:27+02:00" />
+<meta property="og:updated_time" content="2021-03-01T10:13:54+02:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.81.0" />
 
 
     
@@ -75,6 +75,90 @@
         <div class="col-sm-8 blog-main">
 
           
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-01/">January, 2018</a></h2>
+    <p class="blog-post-meta"><time datetime="2018-01-02T08:35:54-08:00">Tue Jan 02, 2018</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2018-01-02">2018-01-02</h2>
+<ul>
+<li>Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time</li>
+<li>I didn&rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&rsquo;t show anything out of the ordinary</li>
+<li>The nginx logs show HTTP 200s until <code>02/Jan/2018:11:27:17 +0000</code> when Uptime Robot got an HTTP 500</li>
+<li>In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;</li>
+<li>And just before that I see this:</li>
+</ul>
+<pre><code>Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+</code></pre><ul>
+<li>Ah hah! So the pool was actually empty!</li>
+<li>I need to increase that, let&rsquo;s try to bump it up from 50 to 75</li>
+<li>After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw</li>
+<li>I notice this error quite a few times in dspace.log:</li>
+</ul>
+<pre><code>2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
+org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse 'dateIssued_keyword:[1976+TO+1979]': Encountered &quot; &quot;]&quot; &quot;] &quot;&quot; at line 1, column 32.
+</code></pre><ul>
+<li>And there are many of these errors every day for the past month:</li>
+</ul>
+<pre><code>$ grep -c &quot;Error while searching for sidebar facets&quot; dspace.log.*
+dspace.log.2017-11-21:4
+dspace.log.2017-11-22:1
+dspace.log.2017-11-23:4
+dspace.log.2017-11-24:11
+dspace.log.2017-11-25:0
+dspace.log.2017-11-26:1
+dspace.log.2017-11-27:7
+dspace.log.2017-11-28:21
+dspace.log.2017-11-29:31
+dspace.log.2017-11-30:15
+dspace.log.2017-12-01:15
+dspace.log.2017-12-02:20
+dspace.log.2017-12-03:38
+dspace.log.2017-12-04:65
+dspace.log.2017-12-05:43
+dspace.log.2017-12-06:72
+dspace.log.2017-12-07:27
+dspace.log.2017-12-08:15
+dspace.log.2017-12-09:29
+dspace.log.2017-12-10:35
+dspace.log.2017-12-11:20
+dspace.log.2017-12-12:44
+dspace.log.2017-12-13:36
+dspace.log.2017-12-14:59
+dspace.log.2017-12-15:104
+dspace.log.2017-12-16:53
+dspace.log.2017-12-17:66
+dspace.log.2017-12-18:83
+dspace.log.2017-12-19:101
+dspace.log.2017-12-20:74
+dspace.log.2017-12-21:55
+dspace.log.2017-12-22:66
+dspace.log.2017-12-23:50
+dspace.log.2017-12-24:85
+dspace.log.2017-12-25:62
+dspace.log.2017-12-26:49
+dspace.log.2017-12-27:30
+dspace.log.2017-12-28:54
+dspace.log.2017-12-29:68
+dspace.log.2017-12-30:89
+dspace.log.2017-12-31:53
+dspace.log.2018-01-01:45
+dspace.log.2018-01-02:34
+</code></pre><ul>
+<li>Danny wrote to ask for help renewing the wildcard ilri.org certificate and I advised that we should probably use Let&rsquo;s Encrypt if it&rsquo;s just a handful of domains</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2018-01/'>Read more →</a>
+</article> 
 
 
 
@@ -207,6 +291,8 @@ COPY 54701
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2021-03/">March, 2021</a></li>
+
 <li><a href="/cgspace-notes/2021-02/">February, 2021</a></li>
 
 <li><a href="/cgspace-notes/2021-01/">January, 2021</a></li>
@@ -214,8 +300,6 @@ COPY 54701
 <li><a href="/cgspace-notes/2020-12/">December, 2020</a></li>
 
 <li><a href="/cgspace-notes/cgspace-dspace6-upgrade/">CGSpace DSpace 6 Upgrade</a></li>
-
-<li><a href="/cgspace-notes/2020-11/">November, 2020</a></li>
 
     </ol>
   </section>
