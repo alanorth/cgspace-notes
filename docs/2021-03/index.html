@@ -19,7 +19,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-03/" />
 <meta property="article:published_time" content="2021-03-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-03-07T15:51:12+02:00" />
+<meta property="article:modified_time" content="2021-03-08T20:13:40+02:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
   "@type": "BlogPosting",
   "headline": "March, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-03/",
-  "wordCount": "1673",
+  "wordCount": "1861",
   "datePublished": "2021-03-01T10:13:54+02:00",
-  "dateModified": "2021-03-07T15:51:12+02:00",
+  "dateModified": "2021-03-08T20:13:40+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -415,7 +415,27 @@ $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items
 </code></pre><ul>
 <li>As I saw on my local test instance, even when you cancel a harvesting, it replaces the <code>openrxv-items-final</code> index with whatever is in <code>openrxv-items-temp</code> automatically, so I assume it will do the same now</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-03-09">2021-03-09</h2>
+<ul>
+<li>The harvesting on AReS finished last night and everything worked as expected, with no manual intervention
+<ul>
+<li>This means that <a href="https://github.com/ilri/OpenRXV/issues/64">the issue</a> we were facing for a few months was due to the <code>openrxv-items</code> index being deleted and re-created as a standalone index instead of an alias of <code>openrxv-items-final</code></li>
+</ul>
+</li>
+<li>Talk to Moayad about OpenRXV development
+<ul>
+<li>We realized that the missing/duplicate items issue is probably due to the long harvesting time on the REST API, as the time between starting the harvesting on page 0 and finishing the harvesting on page 900 (in the CGSpace example), some items will have been added to the repository, which causes the pages to shift</li>
+<li>I proposed a solution in the <a href="https://github.com/ilri/OpenRXV/issues/67">GitHub issue</a>, where we consult the site&rsquo;s XML sitemap after harvesting to see if we missed any items, and then we harvest them individually</li>
+</ul>
+</li>
+<li>Peter sent me a list of 356 DOIs from Altmetric that don&rsquo;t have our Handles, so we need to Tweet them
+<ul>
+<li>I used my <code>doi-to-handle.py</code> script to generate a list of handles and titles for him:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.txt -db dspace -u dspace -p 'fuuu'
+</code></pre><!-- raw HTML omitted -->
 
   
 
