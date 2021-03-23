@@ -19,7 +19,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-03/" />
 <meta property="article:published_time" content="2021-03-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-03-14T21:34:07+02:00" />
+<meta property="article:modified_time" content="2021-03-17T14:57:45+02:00" />
 
 
 
@@ -34,7 +34,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 
 
 "/>
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.82.0" />
 
 
     
@@ -44,9 +44,9 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
   "@type": "BlogPosting",
   "headline": "March, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-03/",
-  "wordCount": "2337",
+  "wordCount": "2914",
   "datePublished": "2021-03-01T10:13:54+02:00",
-  "dateModified": "2021-03-14T21:34:07+02:00",
+  "dateModified": "2021-03-17T14:57:45+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -522,7 +522,130 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Conte
 <li>I also made some minor optimizations in the Pandas code</li>
 <li>I <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.4.7">tagged version 0.4.7 of csv-metadata-quality on GitHub</a></li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-03-18">2021-03-18</h2>
+<ul>
+<li>I added the ability to check for, and fix, &ldquo;mojibake&rdquo; characters in csv-metadata-quality</li>
+</ul>
+<h2 id="2021-03-21">2021-03-21</h2>
+<ul>
+<li>Last week Atmire asked me which browser I was using to test the duplicate checker, which I had <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=934">reported</a> as not loading
+<ul>
+<li>I tried to load it in Chrome and it works&hellip; hmmm</li>
+</ul>
+</li>
+<li>Back up the current <code>openrxv-items-final</code> index to start a fresh AReS Harvest:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-21
+$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
+</code></pre><ul>
+<li>Then start harvesting in the AReS Explorer admin UI</li>
+</ul>
+<h2 id="2021-03-22">2021-03-22</h2>
+<ul>
+<li>The harvesting on AReS yesterday completed, but somehow I have twice the number of items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 206204,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+</code></pre><ul>
+<li>Hmmm and even my backup index has a strange number of items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final-2021-03-21/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 844,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+</code></pre><ul>
+<li>I deleted all indexes and re-created the openrxv-items alias:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application/json' -d'{&quot;actions&quot; : [{&quot;add&quot; : { &quot;index&quot; : &quot;openrxv-items-final&quot;, &quot;alias&quot; : &quot;openrxv-items&quot;}}]}'
+$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
+...
+    &quot;openrxv-items-temp&quot;: {
+        &quot;aliases&quot;: {}
+    },
+    &quot;openrxv-items-final&quot;: {
+        &quot;aliases&quot;: {
+            &quot;openrxv-items&quot;: {}
+        }
+    }
+</code></pre><ul>
+<li>Then I started a new harvesting</li>
+<li>I switched the Node.js in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a> to v12 since v10 will cease to be supported soon
+<ul>
+<li>I re-deployed DSpace Test (linode26) with Node.js 12 and restarted the server</li>
+</ul>
+</li>
+<li>The AReS harvest finally finished, with 1047 pages of items, but the <code>openrxv-items-final</code> index is empty and the <code>openrxv-items-temp</code> index has a 103,000 items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 103162,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+</code></pre><ul>
+<li>I tried to clone the temp index to the final, but got an error:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
+{&quot;error&quot;:{&quot;root_cause&quot;:[{&quot;type&quot;:&quot;resource_already_exists_exception&quot;,&quot;reason&quot;:&quot;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&quot;,&quot;index_uuid&quot;:&quot;LmxH-rQsTRmTyWex2d8jxw&quot;,&quot;index&quot;:&quot;openrxv-items-final&quot;}],&quot;type&quot;:&quot;resource_already_exists_exception&quot;,&quot;reason&quot;:&quot;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&quot;,&quot;index_uuid&quot;:&quot;LmxH-rQsTRmTyWex2d8jxw&quot;,&quot;index&quot;:&quot;openrxv-items-final&quot;},&quot;status&quot;:400}% 
+</code></pre><ul>
+<li>I looked in the Docker logs for Elasticsearch and saw a few memory errors:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">java.lang.OutOfMemoryError: Java heap space
+</code></pre><ul>
+<li>According to <code>/usr/share/elasticsearch/config/jvm.options</code> in the Elasticsearch container the default JVM heap is 1g
+<ul>
+<li>I see the running Java process has <code>-Xms 1g -Xmx 1g</code> in its process invocation so I guess that it must be indeed using 1g</li>
+<li>We can <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html">change the heap size with the ES_JAVA_OPTS environment variable</a></li>
+<li>Or perhaps better, we should <a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/jvm-options.html">use a jvm.options.d file</a> because if you use the environment variable it overrides all other JVM options from the default <code>jvm.options</code></li>
+<li>I tried to set memory to 1536m by binding an options file and restarting the container, but it didn&rsquo;t seem to work</li>
+<li>Nevertheless, after restarting I see 103,000 items in the Explorer&hellip;</li>
+<li>But the indexes are still kinda messed up&hellip; the <code>openrxv-items</code> index is an alias of the wrong index!</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">    &quot;openrxv-items-final&quot;: {
+        &quot;aliases&quot;: {}
+    },
+    &quot;openrxv-items-temp&quot;: {
+        &quot;aliases&quot;: {
+            &quot;openrxv-items&quot;: {}
+        }
+    },
+</code></pre><h2 id="2021-03-23">2021-03-23</h2>
+<ul>
+<li>For reference you can also get the Elasticsearch JVM stats from the API:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_nodes/jvm?human' | python -m json.tool
+</code></pre><ul>
+<li>I re-deployed AReS with 1.5GB of heap using the <code>ES_JAVA_OPTS</code> environment variable
+<ul>
+<li>It turns out that this <em>is</em> the recommended way to set the heap: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.6/jvm-options.html">https://www.elastic.co/guide/en/elasticsearch/reference/7.6/jvm-options.html</a></li>
+</ul>
+</li>
+<li>Then I fixed the aliases to make sure <code>openrxv-items</code> was an alias of <code>openrxv-items-final</code>, similar to how I did a few weeks ago</li>
+<li>I re-created the temp index:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XPUT 'http://localhost:9200/openrxv-items-temp'
+</code></pre><!-- raw HTML omitted -->
 
   
 
