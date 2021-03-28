@@ -44,7 +44,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
   "@type": "BlogPosting",
   "headline": "March, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-03/",
-  "wordCount": "2914",
+  "wordCount": "3964",
   "datePublished": "2021-03-01T10:13:54+02:00",
   "dateModified": "2021-03-23T09:34:40+02:00",
   "author": {
@@ -645,7 +645,138 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 <li>I re-created the temp index:</li>
 </ul>
 <pre><code class="language-console" data-lang="console">$ curl -XPUT 'http://localhost:9200/openrxv-items-temp'
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-03-24">2021-03-24</h2>
+<ul>
+<li>Atmire responded to the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=934">ticket about the Duplicate Checker</a>
+<ul>
+<li>He says it works for him in Firefox, so I checked and it seems to have been an issue with my LocalCDN addon</li>
+</ul>
+</li>
+<li>I re-deployed DSpace Test (linode26) from the latest CGSpace (linode18) data
+<ul>
+<li>I want to try to finish up processing the duplicates in Solr that <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">Atmire advised on last month</a></li>
+<li>The current statistics core is 57861236 kilobytes:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># du -s /home/dspacetest.cgiar.org/solr/statistics
+57861236        /home/dspacetest.cgiar.org/solr/statistics
+</code></pre><ul>
+<li>I applied their changes to <code>config/spring/api/atmire-cua-update.xml</code> and started the duplicate processor:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx4096m'
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r 1000 -c statistics -t 12
+</code></pre><ul>
+<li>The default number of records per query is 10,000, which caused memory issues, so I will try with 1000 (Atmire used 100, but that seems too low!)</li>
+<li>Hah, I still got a memory error after only a few minutes:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">...
+Run 1 —  80% — 5,000/6,263 docs — 25s — 6m 31s                                      
+Exception: GC overhead limit exceeded                                                                          
+java.lang.OutOfMemoryError: GC overhead limit exceeded 
+</code></pre><ul>
+<li>I guess we really do have to use <code>-r 100</code></li>
+<li>Now the thing runs for a few minutes and &ldquo;finishes&rdquo;:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r 100 -c statistics -t 12
+Loading @mire database changes for module MQM
+Changes have been processed
+
+
+*************************
+* Update Script Started *
+*************************
+
+Run 1
+Start updating Solr Storage Reports | Wed Mar 24 14:42:17 CET 2021
+Deleting old storage docs from Solr... | Wed Mar 24 14:42:17 CET 2021
+Done. | Wed Mar 24 14:42:17 CET 2021
+Processing storage reports for type: eperson | Wed Mar 24 14:42:17 CET 2021
+Done. | Wed Mar 24 14:42:41 CET 2021
+Processing storage reports for type: group | Wed Mar 24 14:42:41 CET 2021
+Done. | Wed Mar 24 14:45:46 CET 2021
+Processing storage reports for type: collection | Wed Mar 24 14:45:46 CET 2021
+Done. | Wed Mar 24 14:45:54 CET 2021
+Processing storage reports for type: community | Wed Mar 24 14:45:54 CET 2021
+Done. | Wed Mar 24 14:45:58 CET 2021
+Committing to Solr... | Wed Mar 24 14:45:58 CET 2021
+Done. | Wed Mar 24 14:45:59 CET 2021
+Successfully finished updating Solr Storage Reports | Wed Mar 24 14:45:59 CET 2021
+Run 1 —   2% — 100/4,824 docs — 3m 47s — 3m 47s
+Run 1 —   4% — 200/4,824 docs — 2s — 3m 50s
+Run 1 —   6% — 300/4,824 docs — 2s — 3m 53s
+Run 1 —   8% — 400/4,824 docs — 2s — 3m 55s
+Run 1 —  10% — 500/4,824 docs — 2s — 3m 58s
+Run 1 —  12% — 600/4,824 docs — 2s — 4m 1s
+Run 1 —  15% — 700/4,824 docs — 2s — 4m 3s
+Run 1 —  17% — 800/4,824 docs — 2s — 4m 6s
+Run 1 —  19% — 900/4,824 docs — 2s — 4m 9s
+Run 1 —  21% — 1,000/4,824 docs — 2s — 4m 11s
+Run 1 —  23% — 1,100/4,824 docs — 2s — 4m 14s
+Run 1 —  25% — 1,200/4,824 docs — 2s — 4m 16s
+Run 1 —  27% — 1,300/4,824 docs — 2s — 4m 19s
+Run 1 —  29% — 1,400/4,824 docs — 2s — 4m 22s
+Run 1 —  31% — 1,500/4,824 docs — 2s — 4m 24s
+Run 1 —  33% — 1,600/4,824 docs — 2s — 4m 27s
+Run 1 —  35% — 1,700/4,824 docs — 2s — 4m 29s
+Run 1 —  37% — 1,800/4,824 docs — 2s — 4m 32s
+Run 1 —  39% — 1,900/4,824 docs — 2s — 4m 35s
+Run 1 —  41% — 2,000/4,824 docs — 2s — 4m 37s
+Run 1 —  44% — 2,100/4,824 docs — 2s — 4m 40s
+Run 1 —  46% — 2,200/4,824 docs — 2s — 4m 42s
+Run 1 —  48% — 2,300/4,824 docs — 2s — 4m 45s
+Run 1 —  50% — 2,400/4,824 docs — 2s — 4m 48s
+Run 1 —  52% — 2,500/4,824 docs — 2s — 4m 50s
+Run 1 —  54% — 2,600/4,824 docs — 2s — 4m 53s
+Run 1 —  56% — 2,700/4,824 docs — 2s — 4m 55s
+Run 1 —  58% — 2,800/4,824 docs — 2s — 4m 58s
+Run 1 —  60% — 2,900/4,824 docs — 2s — 5m 1s
+Run 1 —  62% — 3,000/4,824 docs — 2s — 5m 3s
+Run 1 —  64% — 3,100/4,824 docs — 2s — 5m 6s
+Run 1 —  66% — 3,200/4,824 docs — 3s — 5m 9s
+Run 1 —  68% — 3,300/4,824 docs — 2s — 5m 12s
+Run 1 —  70% — 3,400/4,824 docs — 2s — 5m 14s
+Run 1 —  73% — 3,500/4,824 docs — 2s — 5m 17s
+Run 1 —  75% — 3,600/4,824 docs — 2s — 5m 20s
+Run 1 —  77% — 3,700/4,824 docs — 2s — 5m 22s
+Run 1 —  79% — 3,800/4,824 docs — 2s — 5m 25s
+Run 1 —  81% — 3,900/4,824 docs — 2s — 5m 27s
+Run 1 —  83% — 4,000/4,824 docs — 2s — 5m 30s
+Run 1 —  85% — 4,100/4,824 docs — 2s — 5m 33s
+Run 1 —  87% — 4,200/4,824 docs — 2s — 5m 35s
+Run 1 —  89% — 4,300/4,824 docs — 2s — 5m 38s
+Run 1 —  91% — 4,400/4,824 docs — 2s — 5m 41s
+Run 1 —  93% — 4,500/4,824 docs — 2s — 5m 43s
+Run 1 —  95% — 4,600/4,824 docs — 2s — 5m 46s
+Run 1 —  97% — 4,700/4,824 docs — 2s — 5m 49s
+Run 1 — 100% — 4,800/4,824 docs — 2s — 5m 51s
+Run 1 — 100% — 4,824/4,824 docs — 2s — 5m 53s
+Run 1 took 5m 53s
+
+
+**************************
+* Update Script Finished *
+**************************
+</code></pre><ul>
+<li>If I run it again it finds the same 4,824 docs and processes them&hellip;
+<ul>
+<li>I asked Atmire for feedback on this: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-03-25">2021-03-25</h2>
+<ul>
+<li>Niroshini from IWMI is still having problems adding metadata during the edit step of the workflow on CGSpace
+<ul>
+<li>I told her to try to register using a private email account and we&rsquo;ll add her to the WLE group so she can try that way</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-03-28">2021-03-28</h2>
+<ul>
+<li>Make a backup of the <code>openrxv-items-final</code> index on AReS Explorer and start a new harvest</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
