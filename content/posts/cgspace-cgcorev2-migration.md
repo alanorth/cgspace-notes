@@ -8,7 +8,7 @@ url = "cgspace-cgcorev2-migration"
 
 +++
 
-Possible changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2.
+Changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2. Implemented on 2021-02-21.
 
 With reference to [CG Core v2 draft standard](https://agriculturalsemantics.github.io/cg-core/cgcore.html) by Marie-Angélique as well as [DCMI DCTERMS](http://www.dublincore.org/specifications/dublin-core/dcmi-terms/).
 
@@ -81,11 +81,11 @@ Make sure the following fields exist:
 ## Fields to delete
 Fields to delete after migration:
 
-- [ ] cg.creator.id
-- [ ] cg.fulltextstatus
-- [ ] cg.identifier.status
-- [ ] cg.link.reference
-- [ ] cg.targetaudience
+- [x] cg.creator.id
+- [x] cg.fulltextstatus
+- [x] cg.identifier.status
+- [x] cg.link.reference
+- [x] cg.targetaudience
 
 ## Implementation Progress
 Tally of the status of the implementation of the new fields in the CGSpace `6_x-cgcorev2` branch.
