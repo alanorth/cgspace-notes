@@ -1,6 +1,6 @@
 +++
 title = "CGSpace CG Core v2 Migration"
-date = 2019-10-28T13:27:35+02:00
+date = 2021-02-21T13:27:35+02:00
 description = "Possible changes to CGSpace metadata fields to align more with DC, QDC, and DCTERMS as well as CG Core v2."
 categories = ["Notes"]
 tags = ["Migration"]
