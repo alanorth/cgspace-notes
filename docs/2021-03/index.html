@@ -19,7 +19,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-03/" />
 <meta property="article:published_time" content="2021-03-01T10:13:54+02:00" />
-<meta property="article:modified_time" content="2021-03-23T09:34:40+02:00" />
+<meta property="article:modified_time" content="2021-03-30T09:56:38+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
   "@type": "BlogPosting",
   "headline": "March, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-03/",
-  "wordCount": "3964",
+  "wordCount": "4421",
   "datePublished": "2021-03-01T10:13:54+02:00",
-  "dateModified": "2021-03-23T09:34:40+02:00",
+  "dateModified": "2021-03-30T09:56:38+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -776,6 +776,79 @@ Run 1 took 5m 53s
 <ul>
 <li>Make a backup of the <code>openrxv-items-final</code> index on AReS Explorer and start a new harvest</li>
 </ul>
+<h2 id="2021-03-29">2021-03-29</h2>
+<ul>
+<li>The AReS harvesting that I started yesterday finished successfully and all indexes look OK:
+<ul>
+<li><code>openrxv-items</code> is an alias of <code>openrxv-items-final</code> and has a correct number of items</li>
+</ul>
+</li>
+<li>Last week Bosede from IITA said she was trying to move an item from one collection to another and the system was &ldquo;rolling&rdquo; and never finished
+<ul>
+<li>I looked in Munin and I don&rsquo;t see anything particularly wrong that day, so I told her to try again</li>
+</ul>
+</li>
+<li>Marianne Gadeberg asked about mapping an item last week
+<ul>
+<li>Searched for <a href="https://hdl.handle.net/10568/110633">the item</a>&rsquo;s handle, the title, the title in quotes, the UUID, with pluses instead of spaces, etc in the item mapper&hellip; but I can never find it in the results</li>
+<li>I see someone has reported this issue on Jira in DSpace 5.x&rsquo;s XMLUI item mapper: <a href="https://jira.lyrasis.org/browse/DS-2761">https://jira.lyrasis.org/browse/DS-2761</a></li>
+<li>The Solr log shows that my query (with and without quotes, etc) has 143 results:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">2021-03-29 08:55:40,073 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=Gender+mainstreaming+in+local+potato+seed+system+in+Georgia&amp;fl=handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=-location:l5308ea39-7c65-401b-890b-c2b93dad649a&amp;wt=javabin&amp;version=2} hits=143 status=0 QTime=0
+</code></pre><ul>
+<li>But the item mapper only displays ten items, with no pagination
+<ul>
+<li>There is no way to search by handle or ID</li>
+<li>I mapped the item manually using a CSV</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-03-30">2021-03-30</h2>
+<ul>
+<li>I realized I never finished deleting all the old fields after our CG Core migration a few months ago
+<ul>
+<li>I found a few occurrences of old metadata so I had to move them where possible and delete them where not</li>
+</ul>
+</li>
+<li>I updated the <a href="/cgspace-notes/cgspace-cgcorev2-migration/">CG Core v2 migration page</a></li>
+<li>Marianne Gadeberg wrote to ask why the item she wanted to map a few days ago still doesn&rsquo;t appear in the mapped collection
+<ul>
+<li>I looked on the item page itself and it lists the collection, but doesn&rsquo;t appear in the collection list</li>
+<li>I tried to forceably reindex the collection and the item, but it didn&rsquo;t seem to work</li>
+<li>Now I will try a complete Discovery re-index</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-03-31">2021-03-31</h2>
+<ul>
+<li>The Discovery re-index finished, but <a href="https://hdl.handle.net/10568/110633">the CIP item</a> still does not appear in the GENDER Platform grants collection
+<ul>
+<li>The item page itself DOES list the grants collection! WTF</li>
+<li>I sent a message to the dspace-tech mailing list to see if someone can comment</li>
+<li>I even tried unmapping and re-mapping, but it doesn&rsquo;t change anything: the item still doesn&rsquo;t appear in the collection, but I can see that it is mapped</li>
+</ul>
+</li>
+<li>I signed up for a SHERPA API key so I can try to write something to get journal names from ISSN
+<ul>
+<li>This code seems to get a journal title, though I only tried it with a few ISSNs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> requests
+
+query_params <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;item-type&#39;</span>: <span style="color:#e6db74">&#39;publication&#39;</span>, <span style="color:#e6db74">&#39;format&#39;</span>: <span style="color:#e6db74">&#39;Json&#39;</span>, <span style="color:#e6db74">&#39;limit&#39;</span>: <span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#39;offset&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;api-key&#39;</span>: <span style="color:#e6db74">&#39;blahhhahahah&#39;</span>, <span style="color:#e6db74">&#39;filter&#39;</span>: <span style="color:#e6db74">&#39;[[&#34;issn&#34;,&#34;equals&#34;,&#34;0011-183X&#34;]]&#39;</span>}
+r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;https://v2.sherpa.ac.uk/cgi/retrieve&#39;</span>)
+<span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>status_code <span style="color:#f92672">and</span> len(r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;items&#39;</span>]) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+    r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;items&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;title&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;title&#39;</span>]
+</code></pre></div><ul>
+<li>I wrote a script to check the ISSNs against Crossref&rsquo;s API: <code>crossref-issn-lookup.py</code>
+<ul>
+<li>I suspect Crossref might have better data actually&hellip;</li>
+</ul>
+</li>
+</ul>
 <!-- raw HTML omitted -->
 
   
@@ -799,13 +872,13 @@ Run 1 took 5m 53s
 
 <li><a href="/cgspace-notes/2021-03/">March, 2021</a></li>
 
+<li><a href="/cgspace-notes/cgspace-cgcorev2-migration/">CGSpace CG Core v2 Migration</a></li>
+
 <li><a href="/cgspace-notes/2021-02/">February, 2021</a></li>
 
 <li><a href="/cgspace-notes/2021-01/">January, 2021</a></li>
 
 <li><a href="/cgspace-notes/2020-12/">December, 2020</a></li>
-
-<li><a href="/cgspace-notes/cgspace-dspace6-upgrade/">CGSpace DSpace 6 Upgrade</a></li>
 
     </ol>
   </section>
