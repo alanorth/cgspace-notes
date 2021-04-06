@@ -24,7 +24,7 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-04/" />
 <meta property="article:published_time" content="2021-04-01T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-04-01T09:50:54+03:00" />
+<meta property="article:modified_time" content="2021-04-05T19:36:44+03:00" />
 
 
 
@@ -54,9 +54,9 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
   "@type": "BlogPosting",
   "headline": "April, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-04/",
-  "wordCount": "823",
+  "wordCount": "1789",
   "datePublished": "2021-04-01T09:50:54+03:00",
-  "dateModified": "2021-04-01T09:50:54+03:00",
+  "dateModified": "2021-04-05T19:36:44+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -272,6 +272,181 @@ $ grep downloads /tmp/page*.json | grep -o -E '[0-9]+,' | sed 's/,//' | xargs | 
 <ul>
 <li>Views: 30721</li>
 <li>Downloads: 10205</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-04-06">2021-04-06</h2>
+<ul>
+<li>Margarita from CCAFS was having problems deleting an item from CGSpace again
+<ul>
+<li>The error was &ldquo;Authorization denied for action OBSOLETE (DELETE) on BITSTREAM:bd157345-448e &hellip;&rdquo;</li>
+<li>This is the same issue as last month</li>
+</ul>
+</li>
+<li>Create a new collection on CGSpace for a new CIP project at Mishel Portilla&rsquo;s request</li>
+<li>I got a notice that CGSpace was down
+<ul>
+<li>I didn&rsquo;t see anything strange at first, but there are an insane amount of database connections:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+12413
+</code></pre><ul>
+<li>The system journal shows thousands of these messages in the system journal, this is the first one:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">Apr 06 07:52:13 linode18 tomcat7[556]: Apr 06, 2021 7:52:13 AM org.apache.tomcat.jdbc.pool.ConnectionPool abandon
+</code></pre><ul>
+<li>Around that time in the dspace log I see nothing unusual, but maybe these?</li>
+</ul>
+<pre><code class="language-console" data-lang="console">2021-04-06 07:52:29,409 INFO  com.atmire.dspace.cua.CUASolrLoggerServiceImpl @ Updating : 200/127 docs in http://localhost:8081/solr/statistics
+</code></pre><ul>
+<li>(BTW what is the deal with the &ldquo;200/127&rdquo;? I should send a comment to Atmire)
+<ul>
+<li>I file a ticket with Atmire: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-tickets">https://tracker.atmire.com/tickets-cgiar-ilri/view-tickets</a></li>
+</ul>
+</li>
+<li>I restarted the PostgreSQL and Tomcat services and now I see less connections, but still WAY high:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+3640
+$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+2968
+$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+13
+</code></pre><ul>
+<li>After ten minutes or so it went back down&hellip;</li>
+<li>And now it&rsquo;s back up in the thousands&hellip; I am seeing a lot of stuff in dspace log like this:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">2021-04-06 11:59:34,364 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717951
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717952
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717953
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717954
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717955
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717956
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717957
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717958
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717959
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717960
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717961
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717962
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717963
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717964
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717965
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717966
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717967
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717968
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717969
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717970
+2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717971
+</code></pre><ul>
+<li>I sent some notes and a log to Atmire on our existing issue about the database stuff
+<ul>
+<li>Also I asked them about the possibility of doing a formal review of Hibernate</li>
+</ul>
+</li>
+<li>Falcon 3.0.0 was released so I updated the 3.0.0 branch for dspace-statistics-api and merged it to <code>v6_x</code>
+<ul>
+<li>I also fixed one minor (unrelated) bug in the tests</li>
+<li>Then I deployed the new version on DSpace Test</li>
+</ul>
+</li>
+<li>I had a meeting with Peter and Abenet about CGSpace TODOs</li>
+<li>CGSpace went down again and the PostgreSQL locks are through the roof:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+12154
+</code></pre><ul>
+<li>I don&rsquo;t see any activity on REST API, but in the last four hours there have been 3,500 DSpace sessions:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># grep -a -E '2021-04-06 (13|14|15|16|17):' /home/cgspace.cgiar.org/log/dspace.log.2021-04-06 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
+3547
+</code></pre><ul>
+<li>I looked at the same time of day for the past few weeks and it seems to be a normal number of sessions:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># for file in /home/cgspace.cgiar.org/log/dspace.log.2021-0{3,4}-*; do grep -a -E &quot;2021-0(3|4)-[0-9]{2} (13|14|15|16|17):&quot; &quot;$file&quot; | grep -o -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l; done
+...
+3572
+4085
+3476
+3128
+2949
+2016
+1839
+4513
+3463
+4425
+3328
+2783
+3898
+3848
+7799
+255
+534
+2755
+599
+4463
+3547
+</code></pre><ul>
+<li>What about total number of sessions per day?</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># for file in /home/cgspace.cgiar.org/log/dspace.log.2021-0{3,4}-*; do echo &quot;$file:&quot;; grep -a -o -E 'session_id=[A-Z0-9]{32}' &quot;$file&quot; | sort | uniq | wc -l; done
+...
+/home/cgspace.cgiar.org/log/dspace.log.2021-03-28:
+11784
+/home/cgspace.cgiar.org/log/dspace.log.2021-03-29:
+15104
+/home/cgspace.cgiar.org/log/dspace.log.2021-03-30:
+19396
+/home/cgspace.cgiar.org/log/dspace.log.2021-03-31:
+32612
+/home/cgspace.cgiar.org/log/dspace.log.2021-04-01:
+26037
+/home/cgspace.cgiar.org/log/dspace.log.2021-04-02:
+14315
+/home/cgspace.cgiar.org/log/dspace.log.2021-04-03:
+12530
+/home/cgspace.cgiar.org/log/dspace.log.2021-04-04:
+13138
+/home/cgspace.cgiar.org/log/dspace.log.2021-04-05:
+16756
+/home/cgspace.cgiar.org/log/dspace.log.2021-04-06:
+12343
+</code></pre><ul>
+<li>So it&rsquo;s not the number of sessions&hellip; it&rsquo;s something with the workload&hellip;</li>
+<li>I had to step away for an hour or so and when I came back the site was still down and there were still 12,000 locks
+<ul>
+<li>I restarted postgresql and tomcat7&hellip;</li>
+</ul>
+</li>
+<li>The locks in PostgreSQL shot up again&hellip;</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+3447
+$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+3527
+$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+4582
+</code></pre><ul>
+<li>I don&rsquo;t know what the hell is going on</li>
+<li>While looking at the logs I see that MEL is trying to log into CGSpace&rsquo;s REST API and delete items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">34.209.213.122 - - [06/Apr/2021:03:50:46 +0200] &quot;POST /rest/login HTTP/1.1&quot; 401 727 &quot;-&quot; &quot;MEL&quot;
+34.209.213.122 - - [06/Apr/2021:03:50:48 +0200] &quot;DELETE /rest/items/95f52bf1-f082-4e10-ad57-268a76ca18ec/metadata HTTP/1.1&quot; 401 704 &quot;-&quot; &quot;-&quot;
+</code></pre><ul>
+<li>I see a few of these per day going back several months</li>
+<li>Also annoying, I see tons of what look like penetration testing requests from Qualys:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">2021-04-04 06:35:17,889 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:no DN found for user &quot;'&gt;&lt;qss a=X158062356Y1_2Z&gt;
+2021-04-04 06:35:17,889 INFO  org.dspace.authenticate.PasswordAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:authenticate:attempting password auth of user=&quot;'&gt;&lt;qss a=X158062356Y1_2Z&gt;
+2021-04-04 06:35:17,890 INFO  org.dspace.app.xmlui.utils.AuthenticationUtil @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:email=&quot;'&gt;&lt;qss a=X158062356Y1_2Z&gt;, realm=null, result=2
+2021-04-04 06:35:18,145 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:auth:attempting trivial auth of user=was@qualys.com
+2021-04-04 06:35:18,519 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:no DN found for user was@qualys.com
+2021-04-04 06:35:18,520 INFO  org.dspace.authenticate.PasswordAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:authenticate:attempting password auth of user=was@qualys.com
+</code></pre><ul>
+<li>I deleted the ilri/AReS repository on GitHub since we haven&rsquo;t updated it in two years
+<ul>
+<li>All development is happening in <a href="https://github.com/ilri/openRXV">https://github.com/ilri/openRXV</a> now</li>
 </ul>
 </li>
 </ul>
