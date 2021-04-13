@@ -24,7 +24,7 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-04/" />
 <meta property="article:published_time" content="2021-04-01T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-04-06T22:48:44+03:00" />
+<meta property="article:modified_time" content="2021-04-13T15:42:35+03:00" />
 
 
 
@@ -54,9 +54,9 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
   "@type": "BlogPosting",
   "headline": "April, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-04/",
-  "wordCount": "2530",
+  "wordCount": "2984",
   "datePublished": "2021-04-01T09:50:54+03:00",
-  "dateModified": "2021-04-06T22:48:44+03:00",
+  "dateModified": "2021-04-13T15:42:35+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -192,7 +192,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Conte
 </li>
 <li>Create the CGSpace community and collection structure for the new Accelerating Impacts of CGIAR Climate Research for Africa (AICCRA) and assign all workflow steps</li>
 </ul>
-<h2 id="2021-04-04-1">2021-04-04</h2>
+<h2 id="2021-04-05">2021-04-05</h2>
 <ul>
 <li>The AReS Explorer harvesting from yesterday finished, and the results look OK, but actually the Elasticsearch indexes are messed up again:</li>
 </ul>
@@ -600,7 +600,112 @@ $ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = 
 <ul>
 <li>I definitely need to look into that!</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-04-11">2021-04-11</h2>
+<ul>
+<li>I am trying to resolve the AReS Elasticsearch index issues that happened last week
+<ul>
+<li>I decided to back up the <code>openrxv-items</code> index to <code>openrxv-items-backup</code> and then delete all the others:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-backup
+$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-final'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-final'
+</code></pre><ul>
+<li>Then I updated all Docker containers and rebooted the server (linode20) so that the correct indexes would be created again:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
+</code></pre><ul>
+<li>Then I realized I have to clone the backup index directly to <code>openrxv-items-final</code>, and re-create the <code>openrxv-items</code> alias:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-final'
+$ curl -X PUT &quot;localhost:9200/openrxv-items-backup/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-backup/_clone/openrxv-items-final
+$ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application/json' -d'{&quot;actions&quot; : [{&quot;add&quot; : { &quot;index&quot; : &quot;openrxv-items-final&quot;, &quot;alias&quot; : &quot;openrxv-items&quot;}}]}'
+</code></pre><ul>
+<li>Now I see both <code>openrxv-items-final</code> and <code>openrxv-items</code> have the current number of items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items/_count?q=*&amp;pretty'     
+{
+  &quot;count&quot; : 103373,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
+{
+  &quot;count&quot; : 103373,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+</code></pre><ul>
+<li>Then I started a fresh harvesting in the AReS Explorer admin dashboard</li>
+</ul>
+<h2 id="2021-04-12">2021-04-12</h2>
+<ul>
+<li>The harvesting on AReS finished last night, but the indexes got messed up again
+<ul>
+<li>I will have to fix them manually next time&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-04-13">2021-04-13</h2>
+<ul>
+<li>Looking into the logs on 2021-04-06 on CGSpace and DSpace Test to see if there is anything specific that stands out about the activty on those days that would cause the PostgreSQL issues
+<ul>
+<li>Digging into the Munin graphs for the last week I found a few other things happening on that morning:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2021/04/sda-week.png" alt="/dev/sda disk latency week">
+<img src="/cgspace-notes/2021/04/classes_unloaded-week.png" alt="JVM classes unloaded week">
+<img src="/cgspace-notes/2021/04/nginx_status-week.png" alt="Nginx status week"></p>
+<ul>
+<li>13,000 requests in the last two months from a user with user agent <code>SomeRandomText</code>, for example:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">84.33.2.97 - - [06/Apr/2021:06:25:13 +0200] &quot;GET /bitstream/handle/10568/77776/CROP%20SCIENCE.jpg.jpg HTTP/1.1&quot; 404 10890 &quot;-&quot; &quot;SomeRandomText&quot;
+</code></pre><ul>
+<li>I purged them:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f /tmp/agents.txt -p
+Purging 13159 hits from SomeRandomText in statistics
+
+Total number of bot hits purged: 13159
+</code></pre><ul>
+<li>I noticed there were 78 items submitted in the hour before CGSpace crashed:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># grep -a -E '2021-04-06 0(6|7):' /home/cgspace.cgiar.org/log/dspace.log.2021-04-06 | grep -c -a add_item 
+78
+</code></pre><ul>
+<li>Of those 78, 77 of them were from Udana</li>
+<li>Compared to other mornings (0 to 9 AM) this month that seems to be pretty high:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># for num in {01..13}; do grep -a -E &quot;2021-04-$num 0&quot; /home/cgspace.cgiar.org/log/dspace.log.2021-04-$num | grep -c -a
+ add_item; done
+32
+0
+0
+2
+8
+108
+4
+0
+29
+0
+1
+1
+2
+</code></pre><!-- raw HTML omitted -->
 
   
 
