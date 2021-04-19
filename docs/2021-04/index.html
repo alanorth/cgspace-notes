@@ -24,7 +24,7 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-04/" />
 <meta property="article:published_time" content="2021-04-01T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-04-15T16:27:06+03:00" />
+<meta property="article:modified_time" content="2021-04-18T10:07:54+03:00" />
 
 
 
@@ -54,9 +54,9 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
   "@type": "BlogPosting",
   "headline": "April, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-04/",
-  "wordCount": "3527",
+  "wordCount": "3749",
   "datePublished": "2021-04-01T09:50:54+03:00",
-  "dateModified": "2021-04-15T16:27:06+03:00",
+  "dateModified": "2021-04-18T10:07:54+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -792,6 +792,49 @@ $ elasticdump --input=/home/aorth/openrxv-items_data.json --output=http://localh
 <pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-temp&quot;
 </code></pre><ul>
 <li>Run system updates on CGSpace (linode18) and run the latest Ansible infrastructure playbook to update the DSpace Statistics API, PostgreSQL JDBC driver, etc, and then reboot the system</li>
+<li>I wasted a bit of time trying to get TSLint and then ESLint running for OpenRXV on GitHub Actions</li>
+</ul>
+<h2 id="2021-04-19">2021-04-19</h2>
+<ul>
+<li>The AReS harvesting last night seems to have completed successfully, but the number of results is strange:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
+yellow open openrxv-items-temp       kNUlupUyS_i7vlBGiuVxwg 1 1 103741 105553 483.6mb 483.6mb
+yellow open openrxv-items-final      HFc3uytTRq2GPpn13vkbmg 1 1    970      0   2.3mb   2.3mb
+</code></pre><ul>
+<li>The indices endpoint doesn&rsquo;t include the <code>openrxv-items</code> alias, but it is currently in the <code>openrxv-items-temp</code> index so the number of items is the same:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items/_count?q=*&amp;pretty'     
+{
+  &quot;count&quot; : 103741,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  }
+}
+</code></pre><ul>
+<li>A user was having problems resetting their password on CGSpace, with some message about SMTP etc
+<ul>
+<li>I checked and we are indeed locked out of our mailbox:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ dspace test-email
+...
+Error sending email:
+ - Error: javax.mail.SendFailedException: Send failure (javax.mail.AuthenticationFailedException: 550 5.2.1 Mailbox cannot be accessed [PR0P264CA0280.FRAP264.PROD.OUTLOOK.COM]
+)
+</code></pre><ul>
+<li>I have to write to ICT&hellip;</li>
+<li>I decided to switch back to the G1GC garbage collector on DSpace Test
+<ul>
+<li>Reading Shawn Heisy&rsquo;s discussion again: <a href="https://cwiki.apache.org/confluence/display/SOLR/ShawnHeisey">https://cwiki.apache.org/confluence/display/SOLR/ShawnHeisey</a></li>
+<li>I am curious to check the JVM stats in a few days to see if there is a marked change</li>
+</ul>
+</li>
+<li>Work on minor changes to get DSpace working on Ubuntu 20.04 for our <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a></li>
 </ul>
 <!-- raw HTML omitted -->
 
