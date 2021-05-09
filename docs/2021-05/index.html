@@ -20,7 +20,7 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-05/" />
 <meta property="article:published_time" content="2021-05-02T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-05-02T19:55:06+03:00" />
+<meta property="article:modified_time" content="2021-05-05T21:03:27+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
   "@type": "BlogPosting",
   "headline": "May, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-05/",
-  "wordCount": "581",
+  "wordCount": "964",
   "datePublished": "2021-05-02T09:50:54+03:00",
-  "dateModified": "2021-05-02T19:55:06+03:00",
+  "dateModified": "2021-05-05T21:03:27+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -213,7 +213,59 @@ yellow open openrxv-items-final      d0tbMM_SRWimirxr_gm9YA 1 1    937      0   
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-05-09">2021-05-09</h2>
+<ul>
+<li>I set up a clean DSpace 6.4 instance locally to test some things against, for example to be able to rule out whether some issues are due to Atmire modules or are fixed in the as-of-yet-unreleased DSpace 6.4
+<ul>
+<li>I had to delete all the Atmire schemas, then it worked fine on Tomcat 8.5 with Mirage (I didn&rsquo;t want to bother with npm and ruby for Mirage 2)</li>
+<li>Then I tried to see if I could reproduce the mapping issue that Marianne raised last month
+<ul>
+<li>I tried unmapping and remapping to the CGIAR Gender grants collection and the collection appears in the item view&rsquo;s list of mapped collections, but not on the collection browse itself</li>
+<li>Then I tried mapping to a new collection and it was the same as above</li>
+<li>So this issue is really just a DSpace bug, and nothing to do with Atmire and not fixed in the unreleased DSpace 6.4</li>
+<li>I will try one more time after updating the Discovery index (I&rsquo;m also curious how fast it is on vanilla DSpace 6.4, though I think I tried that when I did the flame graphs in 2019 and it was miserable)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ time ~/dspace64/bin/dspace index-discovery -b
+~/dspace64/bin/dspace index-discovery -b  4053.24s user 53.17s system 38% cpu 2:58:53.83 total
+</code></pre><ul>
+<li>Nope! Still slow, and still no mapped item&hellip;
+<ul>
+<li>I even tried unmapping it from all collections, and adding it to a single new owning collection&hellip;</li>
+</ul>
+</li>
+<li>Ah hah! Actually, I was inspecting the item&rsquo;s authorization policies when I noticed that someone had made the item private!
+<ul>
+<li>After making it public again I was able to see it in the target collection</li>
+</ul>
+</li>
+<li>The indexes on AReS Explorer are messed up after last week&rsquo;s harvesting:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
+yellow open openrxv-items-temp       H-CGsyyLTaqAj6-nKXZ-7w 1 1 104165 105024 487.7mb 487.7mb
+yellow open openrxv-items-final      d0tbMM_SRWimirxr_gm9YA 1 1    937      0   2.2mb   2.2mb
+
+$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool
+...
+    &quot;openrxv-items-final&quot;: {
+        &quot;aliases&quot;: {}
+    },
+    &quot;openrxv-items-temp&quot;: {
+        &quot;aliases&quot;: {
+            &quot;openrxv-items&quot;: {}
+        }
+    }
+</code></pre><ul>
+<li><code>openrxv-items</code> should be an alias of <code>openrxv-items-final</code>&hellip;</li>
+<li>I made a backup of the temp index and then started indexing on the AReS Explorer admin dashboard:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-temp-backup
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
+</code></pre><!-- raw HTML omitted -->
 
   
 
