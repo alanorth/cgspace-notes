@@ -20,7 +20,7 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-05/" />
 <meta property="article:published_time" content="2021-05-02T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-05-05T21:03:27+03:00" />
+<meta property="article:modified_time" content="2021-05-09T19:11:51+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
   "@type": "BlogPosting",
   "headline": "May, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-05/",
-  "wordCount": "964",
+  "wordCount": "1200",
   "datePublished": "2021-05-02T09:50:54+03:00",
-  "dateModified": "2021-05-05T21:03:27+03:00",
+  "dateModified": "2021-05-09T19:11:51+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -265,7 +265,41 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool
 <pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-temp-backup
 $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-05-10">2021-05-10</h2>
+<ul>
+<li>Amazing, the harvesting on AReS finished but it messed up all the indexes and now there are no items in any index!</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
+yellow open openrxv-items-temp        8thRX0WVRUeAzmd2hkG6TA 1 1      0     0    283b    283b
+yellow open openrxv-items-temp-backup _0tyvctBTg2pjOlcoVP1LA 1 1 104165 20134 305.5mb 305.5mb
+yellow open openrxv-items-final       BtvV9kwVQ3yBYCZvJS1QyQ 1 1      0     0    283b    283b
+</code></pre><ul>
+<li>I fixed the indexes manually by re-creating them and cloning from the backup:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-final'
+$ curl -X PUT &quot;localhost:9200/openrxv-items-temp-backup/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -s -X POST http://localhost:9200/openrxv-items-temp-backup/_clone/openrxv-items-final
+$ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application/json' -d'{&quot;actions&quot; : [{&quot;add&quot; : { &quot;index&quot; : &quot;openrxv-items-final&quot;, &quot;alias&quot; : &quot;openrxv-items&quot;}}]}'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp-backup'
+</code></pre><ul>
+<li>Also I ran all updated on the server and updated all Docker images, then rebooted the server (linode20):</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
+</code></pre><ul>
+<li>I backed up the AReS Elasticsearch data using elasticdump, then started a new harvest:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ elasticdump --input=http://localhost:9200/openrxv-items --output=/home/aorth/openrxv-items_mapping.json --type=mapping
+$ elasticdump --input=http://localhost:9200/openrxv-items --output=/home/aorth/openrxv-items_data.json --type=data --limit=1000
+</code></pre><ul>
+<li>Discuss CGSpace statistics with the CIP team
+<ul>
+<li>They were wondering why their numbers for 2020 were so low</li>
+<li>I checked their community using the DSpace Statistics API and found very accurate numbers for 2020 and 2019 for them</li>
+<li>I think they had been using AReS, which actually doesn&rsquo;t even give stats for a time period&hellip;</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
