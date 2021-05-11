@@ -20,7 +20,7 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-05/" />
 <meta property="article:published_time" content="2021-05-02T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-05-09T19:11:51+03:00" />
+<meta property="article:modified_time" content="2021-05-10T17:16:32+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
   "@type": "BlogPosting",
   "headline": "May, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-05/",
-  "wordCount": "1200",
+  "wordCount": "1566",
   "datePublished": "2021-05-02T09:50:54+03:00",
-  "dateModified": "2021-05-09T19:11:51+03:00",
+  "dateModified": "2021-05-10T17:16:32+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -298,6 +298,43 @@ $ elasticdump --input=http://localhost:9200/openrxv-items --output=/home/aorth/o
 <li>I think they had been using AReS, which actually doesn&rsquo;t even give stats for a time period&hellip;</li>
 </ul>
 </li>
+</ul>
+<h2 id="2021-05-11">2021-05-11</h2>
+<ul>
+<li>The AReS harvesting from yesterday finished, but the indexes are messed up again so I will have to fix them again before I harvest next time</li>
+<li>I also spent some time looking at IWMI&rsquo;s reports again
+<ul>
+<li>On AReS we don&rsquo;t have a way to group by peer reviewed or item type other than doing &ldquo;if type is Journal Article&rdquo;</li>
+<li>Also, we don&rsquo;t have a way to check the IWMI Strategic Priorities because those are communities, not metadata&hellip;</li>
+<li>We can get the collections an item is in from the <code>parentCollectionList</code> metadata, but it is saved in Elasticsearch as a string instead of a list&hellip;</li>
+<li>I told them it won&rsquo;t be possible to replicate their reports exactly</li>
+</ul>
+</li>
+<li>I decided to look at the CLARISA controlled vocabularies again
+<ul>
+<li>They now have 6,200 institutions (was around 3,400 when I last looked in 2020-07)</li>
+<li>They have updated their Swagger interface but it still requires an API key if you want to use it from curl</li>
+<li>They have ISO 3166 countries and UN M.49 regions, but I notice they have some weird names like &ldquo;Russian Federation (the)&rdquo;, which is not in ISO 3166 as far as I can see</li>
+<li>I exported a list of the institutions to look closer
+<ul>
+<li>I found twelve items with whitespace issues</li>
+<li>There are some weird entries like <code>Research Institute for Aquaculture No1</code> and <code>Research Institute for Aquaculture No2</code></li>
+<li>A few items have weird Unicode characters like U+00AD, U+200B, and U+00A0</li>
+<li>I found 100+ items with multiple languages in there name like <code>Ministère de l’Agriculture, de la pêche et des ressources hydrauliques / Ministry of Agriculture, Hydraulic Resources and Fisheries</code></li>
+<li>Over 600 institutions have the country in their name like <code>Ministry of Coordination of Environmental Affairs (Mozambique)</code></li>
+<li>For URLs they have <code>null</code> in some places&hellip; which is weird&hellip; why not just leave it blank?</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I checked the CLARISA list against ROR&rsquo;s April, 2020 release (&ldquo;Version 9&rdquo;, on figshare, though it is version 8 in the dump):</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/ror-lookup.py -i /tmp/clarisa-institutions.txt -r ror-data-2021-04-06.json -o /tmp/clarisa-ror-matches.csv
+$ csvgrep -c matched -m 'true' /tmp/clarisa-ror-matches.csv | sed '1d' | wc -l
+1770
+</code></pre><ul>
+<li>With 1770 out of 6230 matched, that&rsquo;s 28.5%&hellip;</li>
+<li>Meeting with GARDIAN developers about CG Core and how GARDIAN works</li>
 </ul>
 <!-- raw HTML omitted -->
 
