@@ -20,7 +20,7 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-05/" />
 <meta property="article:published_time" content="2021-05-02T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-05-13T12:58:08+03:00" />
+<meta property="article:modified_time" content="2021-05-15T20:28:33+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
   "@type": "BlogPosting",
   "headline": "May, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-05/",
-  "wordCount": "1747",
+  "wordCount": "1907",
   "datePublished": "2021-05-02T09:50:54+03:00",
-  "dateModified": "2021-05-13T12:58:08+03:00",
+  "dateModified": "2021-05-15T20:28:33+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -362,6 +362,42 @@ UPDATE 1803
 <h2 id="2021-05-14">2021-05-14</h2>
 <ul>
 <li>I updated the PostgreSQL JDBC driver in the Ansible playbooks to version 42.2.20 and deployed it on DSpace Test (linode26)</li>
+</ul>
+<h2 id="2021-05-15">2021-05-15</h2>
+<ul>
+<li>I have to fix the Elasticsearch indexes on AReS after last week&rsquo;s harvesting because, as always, the <code>openrxv-items</code> index should be an alias of <code>openrxv-items-final</code> instead of <code>openrxv-items-temp</code>:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool
+    &quot;openrxv-items-final&quot;: {
+        &quot;aliases&quot;: {}
+    },
+    &quot;openrxv-items-temp&quot;: {
+        &quot;aliases&quot;: {
+            &quot;openrxv-items&quot;: {}
+        }
+    },
+...
+</code></pre><ul>
+<li>I took a backup of the <code>openrxv-items</code> index with elasticdump so I can re-create them manually before starting a new harvest tomorrow:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ elasticdump --input=http://localhost:9200/openrxv-items --output=/home/aorth/openrxv-items_mapping.json --type=mapping
+$ elasticdump --input=http://localhost:9200/openrxv-items --output=/home/aorth/openrxv-items_data.json --type=data --limit=1000
+</code></pre><h2 id="2021-05-16">2021-05-16</h2>
+<ul>
+<li>I deleted and re-created the Elasticsearch indexes on AReS:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-final'
+$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+$ curl -XPUT 'http://localhost:9200/openrxv-items-final'
+$ curl -XPUT 'http://localhost:9200/openrxv-items-temp'
+$ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application/json' -d'{&quot;actions&quot; : [{&quot;add&quot; : { &quot;index&quot; : &quot;openrxv-items-final&quot;, &quot;alias&quot; : &quot;openrxv-items&quot;}}]}'
+</code></pre><ul>
+<li>Then I re-imported the backup that I created with elasticdump yesterday:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ elasticdump --input=/home/aorth/openrxv-items_mapping.json --output=http://localhost:9200/openrxv-items-final --type=mapping
+$ elasticdump --input=/home/aorth/openrxv-items_data.json --output=http://localhost:9200/openrxv-items-final --type=data --limit=1000 
+</code></pre><ul>
+<li>Then I started a new harvest on AReS</li>
 </ul>
 <!-- raw HTML omitted -->
 
