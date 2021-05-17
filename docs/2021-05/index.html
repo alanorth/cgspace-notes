@@ -20,7 +20,7 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-05/" />
 <meta property="article:published_time" content="2021-05-02T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-05-15T20:28:33+03:00" />
+<meta property="article:modified_time" content="2021-05-16T17:11:48+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
   "@type": "BlogPosting",
   "headline": "May, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-05/",
-  "wordCount": "1907",
+  "wordCount": "2245",
   "datePublished": "2021-05-02T09:50:54+03:00",
-  "dateModified": "2021-05-15T20:28:33+03:00",
+  "dateModified": "2021-05-16T17:11:48+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -398,6 +398,63 @@ $ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application
 $ elasticdump --input=/home/aorth/openrxv-items_data.json --output=http://localhost:9200/openrxv-items-final --type=data --limit=1000 
 </code></pre><ul>
 <li>Then I started a new harvest on AReS</li>
+</ul>
+<h2 id="2021-05-17">2021-05-17</h2>
+<ul>
+<li>The AReS harvest finished and the Elasticsearch indexes seem OK so I shouldn&rsquo;t have to fix them next time&hellip;</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
+yellow open openrxv-items-temp       o3ijJLcyTtGMOPeWpAJiVA 1 1      0 0    283b    283b
+yellow open openrxv-items-final      TrJ1Ict3QZ-vFkj-4VcAzw 1 1 104317 0 259.4mb 259.4mb
+$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool
+    &quot;openrxv-items-temp&quot;: {
+        &quot;aliases&quot;: {}
+    },
+    &quot;openrxv-items-final&quot;: {
+        &quot;aliases&quot;: {
+            &quot;openrxv-items&quot;: {}
+        }
+    },
+...
+</code></pre><ul>
+<li>Abenet said she and some others can&rsquo;t log into CGSpace
+<ul>
+<li>I tried to check the CGSpace LDAP account and it does seem to be not working:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;cgspace-ldap@cgiarad.org&quot; -W &quot;(sAMAccountName=aorth)&quot;
+Enter LDAP Password: 
+ldap_bind: Invalid credentials (49)
+        additional info: 80090308: LdapErr: DSID-0C090453, comment: AcceptSecurityContext error, data 532, v3839
+</code></pre><ul>
+<li>I sent a message to Biruk so he can check the LDAP account</li>
+<li>IWMI confirmed that they do indeed want to move all their subjects to AGROVOC, so I made the changes in the XMLUI and config (<a href="https://github.com/ilri/DSpace/pull/467">#467</a>)
+<ul>
+<li>Then I used the <code>migrate-fields.sh</code> script to move them (46,000 metadata entries!)</li>
+</ul>
+</li>
+<li>I tested Abdullah&rsquo;s latest pull request to add clickable filters to AReS and I think it works
+<ul>
+<li>I had some issues with my local AReS installation so I was only able to do limited testing&hellip;</li>
+<li>I will have to wait until I have more time to test before I can merge that</li>
+</ul>
+</li>
+<li>CCAFS asked me to add eight more phase II project tags to the CGSpace input form
+<ul>
+<li>I extracted the existing ones using xmllint, added the new ones, sorted them, and then replaced them in <code>input-forms.xml</code>:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ xmllint --xpath '//value-pairs[@value-pairs-name=&quot;ccafsprojectpii&quot;]/pair/stored-value/node()' dspace/config/input-forms.xml
+</code></pre><ul>
+<li>I formatted the input file with tidy, especially because one of the new project tags has an ampersand character&hellip; grrr:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ tidy -xml -utf8 -m -iq -w 0 dspace/config/input-forms.xml      
+line 3658 column 26 - Warning: unescaped &amp; or unknown entity &quot;&amp;WA_EU-IFAD&quot;
+line 3659 column 23 - Warning: unescaped &amp; or unknown entity &quot;&amp;WA_EU-IFAD&quot;
+</code></pre><ul>
+<li>After testing whether this escaped value worked during submission, I created and merged a pull request to <code>6_x-prod</code> (<a href="https://github.com/ilri/DSpace/pull/468">#468</a>)</li>
 </ul>
 <!-- raw HTML omitted -->
 
