@@ -20,7 +20,7 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-05/" />
 <meta property="article:published_time" content="2021-05-02T09:50:54+03:00" />
-<meta property="article:modified_time" content="2021-05-18T23:21:39+03:00" />
+<meta property="article:modified_time" content="2021-05-25T21:20:22+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I will add the RI/1.0 pattern to our DSpace agents overload and purge them from 
   "@type": "BlogPosting",
   "headline": "May, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-05/",
-  "wordCount": "3089",
+  "wordCount": "3555",
   "datePublished": "2021-05-02T09:50:54+03:00",
-  "dateModified": "2021-05-18T23:21:39+03:00",
+  "dateModified": "2021-05-25T21:20:22+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -594,6 +594,67 @@ elasticdump --input=/home/aorth/openrxv-items_mapping.json --output=http://local
 elasticdump --input=/home/aorth/openrxv-items_data.json --output=http://localhost:9200/openrxv-items-final --type=data --limit=1000
 </code></pre><ul>
 <li>I will just start a new harvest&hellip; sigh</li>
+</ul>
+<h2 id="2021-05-26">2021-05-26</h2>
+<ul>
+<li>The AReS harvest last night got stuck at 3:20AM (UTC+3) at 752 pages for some reason&hellip;
+<ul>
+<li>Something seems to have happened on CGSpace this morning around then as I have an alert from UptimeRobot as well</li>
+<li>I re-created everything as above (again) and restarted the harvest</li>
+</ul>
+</li>
+<li>Looking in the DSpace log for this morning I see a big hole in the logs at that time (UTC+2 server time):</li>
+</ul>
+<pre><code>2021-05-26 02:17:52,808 INFO  org.dspace.curate.Curator @ Curation task: countrycodetagger performed on: 10568/70659 with status: 2. Result: '10568/70659: item has country codes, skipping'
+2021-05-26 02:17:52,853 INFO  org.dspace.curate.Curator @ Curation task: countrycodetagger performed on: 10568/66761 with status: 2. Result: '10568/66761: item has country codes, skipping'
+2021-05-26 03:00:05,772 INFO  org.dspace.statistics.SolrLoggerServiceImpl @ solr-statistics.spidersfile:null
+2021-05-26 03:00:05,773 INFO  org.dspace.statistics.SolrLoggerServiceImpl @ solr-statistics.server:http://localhost:8081/solr/statistics
+</code></pre><ul>
+<li>There are no logs between 02:17 and 03:00&hellip; hmmm.</li>
+<li>I see a similar gap in the Solr log, though it starts at 02:15:</li>
+</ul>
+<pre><code>2021-05-26 02:15:07,968 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={f.location.coll.facet.sort=count&amp;facet.field=location.comm&amp;facet.field=location.coll&amp;fl=handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=search.resourcetype:2&amp;fq=NOT(discoverable:false)&amp;rows=0&amp;version=2&amp;q=*:*&amp;f.location.coll.facet.limit=-1&amp;facet.mincount=1&amp;facet=true&amp;f.location.comm.facet.sort=count&amp;wt=javabin&amp;facet.offset=0&amp;f.location.comm.facet.limit=-1} hits=90792 status=0 QTime=6 
+2021-05-26 02:15:09,446 INFO  org.apache.solr.core.SolrCore @ [statistics] webapp=/solr path=/update params={wt=javabin&amp;version=2} status=0 QTime=1 
+2021-05-26 02:28:03,602 INFO  org.apache.solr.update.UpdateHandler @ start commit{,optimize=false,openSearcher=true,waitSearcher=true,expungeDeletes=false,softCommit=false,prepareCommit=false}
+2021-05-26 02:28:03,630 INFO  org.apache.solr.core.SolrCore @ SolrDeletionPolicy.onCommit: commits: num=2
+        commit{dir=NRTCachingDirectory(MMapDirectory@/home/cgspace.cgiar.org/solr/statistics/data/index lockFactory=NativeFSLockFactory@/home/cgspace.cgiar.org/solr/statistics/data/index; maxCacheMB=48.0 maxMergeSizeMB=4.0),segFN=segments_n6ns,generation=1081720}
+        commit{dir=NRTCachingDirectory(MMapDirectory@/home/cgspace.cgiar.org/solr/statistics/data/index lockFactory=NativeFSLockFactory@/home/cgspace.cgiar.org/solr/statistics/data/index; maxCacheMB=48.0 maxMergeSizeMB=4.0),segFN=segments_n6nt,generation=1081721}
+2021-05-26 02:28:03,630 INFO  org.apache.solr.core.SolrCore @ newest commit generation = 1081721
+2021-05-26 02:28:03,632 INFO  org.apache.solr.search.SolrIndexSearcher @ Opening Searcher@34f2c871[statistics] main
+2021-05-26 02:28:03,633 INFO  org.apache.solr.core.SolrCore @ QuerySenderListener sending requests to Searcher@34f2c871[statistics] main{StandardDirectoryReader(segments_n5xy:4540675:nrt _1befl(4.10.4):C42054400/925069:delGen=8891 _1bksq(4.10.4):C685090/92211:delGen=1227 _1bx0c(4.10.4):C1069897/49988:delGen=966 _1bxr2(4.10.4):C197387/5860:delGen=485 _1cc1x(4.10.4):C353338/40887:delGen=626 _1ck6k(4.10.4):C1009357/39041:delGen=166 _1celj(4.10.4):C268907/18097:delGen=340 _1clq9(4.10.4):C147453/25003:delGen=68 _1cn3t(4.10.4):C260311/1802:delGen=82 _1cl3c(4.10.4):C47408/2610:delGen=39 _1cnmh(4.10.4):C32851/237:delGen=41 _1cod4(4.10.4):C85915/281:delGen=35 _1coy4(4.10.4):C178367/483:delGen=27 _1cpgs(4.10.4):C25465/81:delGen=13 _1cppf(4.10.4):C101411/154:delGen=15 _1cqc4(4.10.4):C26003/39:delGen=8 _1cpvl(4.10.4):C24160/91:delGen=8 _1cq3n(4.10.4):C18167/39:delGen=4 _1cq15(4.10.4):C9983/13:delGen=2 _1cq79(4.10.4):C13077/19:delGen=4 _1cqhz(4.10.4):C21251/2:delGen=1 _1cqka(4.10.4):C3531 _1cqku(4.10.4):C2597 _1cqkk(4.10.4):C2951 _1cqjq(4.10.4):C2675 _1cql5(4.10.4):C993 _1cql6(4.10.4):C161 _1cql7(4.10.4):C106 _1cql8(4.10.4):C19 _1cql9(4.10.4):C147 _1cqla(4.10.4):C2 _1cqlb(4.10.4):C15)}
+2021-05-26 02:28:03,633 INFO  org.apache.solr.core.SolrCore @ QuerySenderListener done.
+</code></pre><ul>
+<li>Ah, it seems to have been a <a href="https://status.linode.com/incidents/byqmt6nss9l0">Linode network issue in the Frankfurt region</a>:</li>
+</ul>
+<pre><code>May 26, 2021
+Connectivity Issue - Frankfurt
+Resolved - We haven’t observed any additional connectivity issues in our Frankfurt data center, and will now consider this incident resolved. If you continue to experience problems, please open a Support ticket for assistance.
+May 26, 02:57 UTC 
+</code></pre><ul>
+<li>While looking in the logs I noticed an error about SMTP:</li>
+</ul>
+<pre><code>2021-05-26 02:00:18,015 ERROR org.dspace.eperson.SubscribeCLITool @ Failed to send subscription to eperson_id=934cb92f-2e77-4881-89e2-6f13ad4b1378
+2021-05-26 02:00:18,015 ERROR org.dspace.eperson.SubscribeCLITool @ javax.mail.SendFailedException: Send failure (javax.mail.MessagingException: Could not convert socket to TLS (javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)))
+</code></pre><ul>
+<li>And indeed the email seems to be broken:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ dspace test-email
+
+About to send test email:
+ - To: fuuuuuu
+ - Subject: DSpace test email
+ - Server: smtp.office365.com
+
+Error sending email:
+ - Error: javax.mail.SendFailedException: Send failure (javax.mail.MessagingException: Could not convert socket to TLS (javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)))
+
+Please see the DSpace documentation for assistance.
+</code></pre><ul>
+<li>I saw a recent thread on the dspace-tech mailing list about this that makes me wonder if Microsoft changed something on Office 365
+<ul>
+<li>I added <code>mail.smtp.ssl.protocols=TLSv1.2</code> to the <code>mail.extraproperties</code> in dspace.cfg and the test email sent successfully</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
