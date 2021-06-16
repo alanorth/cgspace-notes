@@ -20,7 +20,7 @@ I simply started it and AReS was running again:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-06/" />
 <meta property="article:published_time" content="2021-06-01T10:51:07+03:00" />
-<meta property="article:modified_time" content="2021-06-10T21:41:44+03:00" />
+<meta property="article:modified_time" content="2021-06-14T15:09:07+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I simply started it and AReS was running again:
   "@type": "BlogPosting",
   "headline": "June, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-06/",
-  "wordCount": "415",
+  "wordCount": "627",
   "datePublished": "2021-06-01T10:51:07+03:00",
-  "dateModified": "2021-06-10T21:41:44+03:00",
+  "dateModified": "2021-06-14T15:09:07+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -189,7 +189,27 @@ elasticdump --input=/home/aorth/openrxv-items_data.json --output=http://localhos
 <ul>
 <li>Dump and re-create indexes on AReS (as above) so I can do a harvest</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-06-16">2021-06-16</h2>
+<ul>
+<li>Looking at the Solr statistics on CGSpace for last month I see many requests from hosts using seemingly normal Windows browser user agents, but using the MSN bot&rsquo;s DNS
+<ul>
+<li>For example, user agent <code>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0;  Trident/5.0)</code> with DNS <code>msnbot-131-253-25-91.search.msn.com.</code></li>
+<li>I queried Solr for all hits using the MSN bot DNS (<code>dns:*msnbot* AND dns:*.msn.com.</code>) and found 457,706</li>
+<li>I extracted their IPs using Solr&rsquo;s CSV format and ran them through my <code>resolve-addresses.py</code> script and found that they all belong to MICROSOFT-CORP-MSN-AS-BLOCK (AS8075)</li>
+<li>Note that <a href="https://www.bing.com/webmasters/help/how-to-verify-bingbot-3905dc26">Microsoft&rsquo;s docs say that reverse lookups on Bingbot IPs will always have &ldquo;search.msn.com&rdquo;</a> so it is safe to purge these as non-human traffic</li>
+<li>I purged the hits with <code>ilri/check-spider-ip-hits.sh</code> (though I had to do it in 3 batches because I forgot to increase the <code>facet.limit</code> so I was only getting them 100 at a time)</li>
+</ul>
+</li>
+<li>Moayad sent a pull request a few days ago to re-work the harvesting on OpenRXV
+<ul>
+<li>It will hopefully also fix the duplicate and missing items issues</li>
+<li>I had a Skype with him to discuss</li>
+<li>I got it running on podman-compose, but I had to fix the storage permissions on the Elasticsearch volume after the first time it tries (and fails) to run:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ podman unshare chown 1000:1000 /home/aorth/.local/share/containers/storage/volumes/docker_esData_7/_data
+</code></pre><!-- raw HTML omitted -->
 
   
 
