@@ -20,7 +20,7 @@ I simply started it and AReS was running again:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-06/" />
 <meta property="article:published_time" content="2021-06-01T10:51:07+03:00" />
-<meta property="article:modified_time" content="2021-06-16T18:31:15+03:00" />
+<meta property="article:modified_time" content="2021-06-17T18:16:18+03:00" />
 
 
 
@@ -36,7 +36,7 @@ I simply started it and AReS was running again:
 
 
 "/>
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
     
@@ -46,9 +46,9 @@ I simply started it and AReS was running again:
   "@type": "BlogPosting",
   "headline": "June, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-06/",
-  "wordCount": "817",
+  "wordCount": "1419",
   "datePublished": "2021-06-01T10:51:07+03:00",
-  "dateModified": "2021-06-16T18:31:15+03:00",
+  "dateModified": "2021-06-17T18:16:18+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -213,7 +213,7 @@ elasticdump --input=/home/aorth/openrxv-items_data.json --output=http://localhos
 <li>The new OpenRXV harvesting method by Moayad uses pages of 10 items instead of 100 and it&rsquo;s much faster
 <ul>
 <li>I harvested 90,000+ items from DSpace Test in ~3 hours</li>
-<li>There seem to be some issues with the health check step though</li>
+<li>There seem to be some issues with the health check step though, as I see it is requesting one restricted item 600,000+ times&hellip;</li>
 </ul>
 </li>
 </ul>
@@ -247,7 +247,103 @@ $ grep -oE '&quot;handle&quot;:&quot;[[:digit:]]+/[[:digit:]]+&quot;' openrxv-it
       3 &quot;10568/106940&quot;
       3 &quot;10568/107195&quot;
       3 &quot;10568/96546&quot;
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-06-20">2021-06-20</h2>
+<ul>
+<li>Udana asked me to update their IWMI subjects from <code>farmer managed irrigation systems</code> to <code>farmer-led irrigation</code>
+<ul>
+<li>First I extracted the IWMI community from CGSpace:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ dspace metadata-export -i 10568/16814 -f /tmp/2021-06-20-IWMI.csv
+</code></pre><ul>
+<li>Then I used <code>csvcut</code> to extract just the columns I needed and do the replacement into a new CSV:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ csvcut -c 'id,dcterms.subject[],dcterms.subject[en_US]' /tmp/2021-06-20-IWMI.csv | sed 's/farmer managed irrigation systems/farmer-led irrigation/' &gt; /tmp/2021-06-20-IWMI-new-subjects.csv
+</code></pre><ul>
+<li>Then I uploaded the resulting CSV to CGSpace, updating 161 items</li>
+<li>Start a harvest on AReS</li>
+<li>I found <a href="https://jira.lyrasis.org/browse/DS-1977">a bug</a> and <a href="https://github.com/DSpace/DSpace/pull/2584">a patch</a> for the private items showing up in the DSpace sitemap bug
+<ul>
+<li>The fix is super simple, I should try to apply it</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-06-21">2021-06-21</h2>
+<ul>
+<li>The AReS harvesting finished, but the indexes got messed up again</li>
+<li>I was looking at the JSON export I made yesterday and trying to understand the situation with duplicates
+<ul>
+<li>We have 90,000+ items, but only 85,000 unique:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ grep -E '&quot;repo&quot;:&quot;CGSpace&quot;' openrxv-items_data.json | grep -oE '&quot;handle&quot;:&quot;[[:digit:]]+/[[:alnum:]]+&quot;' | wc -l
+90937
+$ grep -E '&quot;repo&quot;:&quot;CGSpace&quot;' openrxv-items_data.json | grep -oE '&quot;handle&quot;:&quot;[[:digit:]]+/[[:alnum:]]+&quot;' | sort -u | wc -l
+85709
+</code></pre><ul>
+<li>So those could be duplicates from the way we harvest pages, but they could also be from mappings&hellip;
+<ul>
+<li>Manually inspecting the duplicates where handles appear more than once:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ grep -E '&quot;repo&quot;:&quot;CGSpace&quot;' openrxv-items_data.json | grep -oE '&quot;handle&quot;:&quot;[[:digit:]]+/[[:alnum:]]+&quot;' | sort | uniq -c | sort -h
+</code></pre><ul>
+<li>Unfortunately I found no pattern:
+<ul>
+<li>Some appear twice in the Elasticsearch index, but appear in only one collection</li>
+<li>Some appear twice in the Elasticsearch index, and appear in <em>two</em> collections</li>
+<li>Some appear twice in the Elasticsearch index, but appear in three collections (!)</li>
+</ul>
+</li>
+<li>So really we need to just check whether a handle exists before we insert it</li>
+<li>I tested the <a href="https://github.com/DSpace/DSpace/pull/2584">pull request for DS-1977</a> that adjusts the sitemap generation code to exclude private items
+<ul>
+<li>It applies cleanly and seems to work, but we don&rsquo;t actually have any private items</li>
+<li>The issue we are having with AReS hitting restricted items in the sitemap is that the items have restricted metadata, not that they are private</li>
+</ul>
+</li>
+<li>Testing the <a href="https://github.com/DSpace/DSpace/pull/2275">pull request for DS-4065</a> where the REST API&rsquo;s <code>/rest/items</code> endpoint is not aware of private items and returns an incorrect number of items
+<ul>
+<li>This is most easily seen by setting a low limit in <code>/rest/items</code>, making one of the items private, and requesting items again with the same limit</li>
+<li>I confirmed the issue on the current DSpace 6 Demo:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -s -H &quot;Accept: application/json&quot; &quot;https://demo.dspace.org/rest/items?offset=0&amp;limit=5&quot; | jq length
+5
+$ curl -s -H &quot;Accept: application/json&quot; &quot;https://demo.dspace.org/rest/items?offset=0&amp;limit=5&quot; | jq '.[].handle'
+&quot;10673/4&quot;
+&quot;10673/3&quot;
+&quot;10673/6&quot;
+&quot;10673/5&quot;
+&quot;10673/7&quot;
+# log into DSpace Demo XMLUI as admin and make one item private (for example 10673/6)
+$ curl -s -H &quot;Accept: application/json&quot; &quot;https://demo.dspace.org/rest/items?offset=0&amp;limit=5&quot; | jq length       
+4
+$ curl -s -H &quot;Accept: application/json&quot; &quot;https://demo.dspace.org/rest/items?offset=0&amp;limit=5&quot; | jq '.[].handle' 
+&quot;10673/4&quot;
+&quot;10673/3&quot;
+&quot;10673/5&quot;
+&quot;10673/7&quot;
+</code></pre><ul>
+<li>I tested the pull request on DSpace Test and it works, so I left a note on GitHub and Jira</li>
+<li>Last week I noticed that the Gender Platform website is using &ldquo;cgspace.cgiar.org&rdquo; links for CGSpace, instead of handles
+<ul>
+<li>I emailed Fabio and Marianne to ask them to please use the Handle links</li>
+</ul>
+</li>
+<li>I tested the <a href="https://github.com/DSpace/DSpace/pull/2543">pull request for DS-4271</a> where Discovery filters of type &ldquo;contains&rdquo; don&rsquo;t work as expected when the user&rsquo;s search term has spaces
+<ul>
+<li>I tested with filter &ldquo;farmer managed irrigation systems&rdquo; on DSpace Test</li>
+<li>Before the patch I got 293 results, and the few I checked didn&rsquo;t have the expected metadata value</li>
+<li>After the patch I got 162 results, and all the items I checked had the exact metadata value I was expecting</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
