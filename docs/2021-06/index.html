@@ -20,7 +20,7 @@ I simply started it and AReS was running again:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-06/" />
 <meta property="article:published_time" content="2021-06-01T10:51:07+03:00" />
-<meta property="article:modified_time" content="2021-06-17T18:16:18+03:00" />
+<meta property="article:modified_time" content="2021-06-21T16:24:40+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I simply started it and AReS was running again:
   "@type": "BlogPosting",
   "headline": "June, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-06/",
-  "wordCount": "1419",
+  "wordCount": "1665",
   "datePublished": "2021-06-01T10:51:07+03:00",
-  "dateModified": "2021-06-17T18:16:18+03:00",
+  "dateModified": "2021-06-21T16:24:40+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -342,6 +342,51 @@ $ curl -s -H &quot;Accept: application/json&quot; &quot;https://demo.dspace.org/
 <li>After the patch I got 162 results, and all the items I checked had the exact metadata value I was expecting</li>
 </ul>
 </li>
+<li>I tested a fresh harvest from my local AReS on DSpace Test with the DS-4065 REST API patch and here are my results:
+<ul>
+<li>90459 in final from last harvesting</li>
+<li>90307 in temp after new harvest</li>
+<li>90327 in temp after start plugins</li>
+</ul>
+</li>
+<li>The 90327 number seems closer to the &ldquo;real&rdquo; number of items on CGSpace&hellip;
+<ul>
+<li>Seems close, but not entirely correct yet:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ grep -oE '&quot;handle&quot;:&quot;[[:digit:]]+/[[:digit:]]+&quot;' openrxv-items_data-local-ds-4065.json | wc -l
+90327
+$ grep -oE '&quot;handle&quot;:&quot;[[:digit:]]+/[[:digit:]]+&quot;' openrxv-items_data-local-ds-4065.json | sort -u | wc -l
+90317
+</code></pre><h2 id="2021-06-22">2021-06-22</h2>
+<ul>
+<li>Make a <a href="https://github.com/atmire/COUNTER-Robots/pull/43">pull request</a> to the COUNTER-Robots project to add two new user agents: crusty and newspaper
+<ul>
+<li>These two bots have made ~3,000 requests on CGSpace</li>
+<li>Then I added them to our local bot override in CGSpace (until the above pull request is merged) and ran my bot checking script:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p   
+Purging 1339 hits from RI\/1\.0 in statistics
+Purging 447 hits from crusty in statistics
+Purging 3736 hits from newspaper in statistics
+
+Total number of bot hits purged: 5522
+</code></pre><ul>
+<li>Surprised to see RI/1.0 in there because it&rsquo;s been in the override file for a while</li>
+<li>Looking at the 2021 statistics in Solr I see a few more suspicious user agents:
+<ul>
+<li><code>PostmanRuntime/7.26.8</code></li>
+<li><code>node-fetch/1.0 (+https://github.com/bitinn/node-fetch)</code></li>
+<li><code>Photon/1.0</code></li>
+<li><code>StatusCake_Pagespeed_indev</code></li>
+<li><code>node-superagent/3.8.3</code></li>
+<li><code>cortex/1.0</code></li>
+</ul>
+</li>
+<li>These bots account for ~42,000 hits in our statistics&hellip; I will just purge them and add them to our local override, but I can&rsquo;t be bothered to submit them to COUNTER-Robots since I&rsquo;d have to look up the information for each one</li>
 </ul>
 <!-- raw HTML omitted -->
 
