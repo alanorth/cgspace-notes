@@ -20,7 +20,7 @@ I simply started it and AReS was running again:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-06/" />
 <meta property="article:published_time" content="2021-06-01T10:51:07+03:00" />
-<meta property="article:modified_time" content="2021-06-21T16:24:40+03:00" />
+<meta property="article:modified_time" content="2021-06-22T15:22:15+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I simply started it and AReS was running again:
   "@type": "BlogPosting",
   "headline": "June, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-06/",
-  "wordCount": "1665",
+  "wordCount": "2396",
   "datePublished": "2021-06-01T10:51:07+03:00",
-  "dateModified": "2021-06-21T16:24:40+03:00",
+  "dateModified": "2021-06-22T15:22:15+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -387,6 +387,105 @@ Total number of bot hits purged: 5522
 </ul>
 </li>
 <li>These bots account for ~42,000 hits in our statistics&hellip; I will just purge them and add them to our local override, but I can&rsquo;t be bothered to submit them to COUNTER-Robots since I&rsquo;d have to look up the information for each one</li>
+<li>I re-synced DSpace Test (linode26) with the assetstore, Solr statistics, and database from CGSpace (linode18)</li>
+</ul>
+<h2 id="2021-06-23">2021-06-23</h2>
+<ul>
+<li>I woke up this morning to find CGSpace down
+<ul>
+<li>The logs show a high number of abandoned PostgreSQL connections and locks:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># journalctl --since=today -u tomcat7 | grep -c 'Connection has been abandoned'
+978
+$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+10100
+</code></pre><ul>
+<li>I sent a message to Atmire, hoping that the database logging stuff they put in place last time this happened will be of help now</li>
+<li>In the mean time, I decided to upgrade Tomcat from 7.0.107 to 7.0.109, and the PostgreSQL JDBC driver from 42.2.20 to 42.2.22 (first on DSpace Test)</li>
+<li>I also applied the following patches from the 6.4 milestone to our <code>6_x-prod</code> branch:
+<ul>
+<li>DS-4065: resource policy aware REST API hibernate queries</li>
+<li>DS-4271: Replaced brackets with double quotes in SolrServiceImpl</li>
+</ul>
+</li>
+<li>After upgrading and restarting Tomcat the database connections and locks were back down to normal levels:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+63
+</code></pre><ul>
+<li>Looking in the DSpace log, the first &ldquo;pool empty&rdquo; message I saw this morning was at 4AM:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">2021-06-23 04:01:14,596 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ [http-bio-127.0.0.1-8443-exec-4323] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:250; busy:250; idle:0; lastwait:5000].
+</code></pre><ul>
+<li>Oh, and I notice 8,000 hits from a Flipboard bot using this user-agent:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0 (FlipboardProxy/1.2; +http://flipboard.com/browserproxy)
+</code></pre><ul>
+<li>We can purge them, as this is not user traffic: <a href="https://about.flipboard.com/browserproxy/">https://about.flipboard.com/browserproxy/</a>
+<ul>
+<li>I will add it to our local user agent pattern file and eventually submit a pull request to COUNTER-Robots</li>
+</ul>
+</li>
+<li>I merged <a href="https://github.com/ilri/OpenRXV/pull/96">Moayad&rsquo;s health check pull request in AReS</a> and I will deploy it on the production server soon</li>
+</ul>
+<h2 id="2021-06-24">2021-06-24</h2>
+<ul>
+<li>I deployed the new OpenRXV code on CGSpace but I&rsquo;m having problems with the indexing, something about missing the mappings on the <code>openrxv-items-temp</code> index
+<ul>
+<li>I extracted the mappings from my local instance using <code>elasticdump</code> and after putting them on CGSpace I was able to harvest&hellip;</li>
+<li>But still, there are way too many duplicates and I&rsquo;m not sure what the actual number of items should be</li>
+<li>According to the OAI ListRecords for each of our repositories, we should have about:
+<ul>
+<li>MELSpace: 9537</li>
+<li>WorldFish: 4483</li>
+<li>CGSpace: 91305</li>
+<li>Total: 105325</li>
+</ul>
+</li>
+<li>Looking at the last backup I have from harvesting before these changes we have 104,000 total handles, but only 99186 unique:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ grep -oE '&quot;handle&quot;:&quot;([[:digit:]]|\.)+/[[:digit:]]+&quot;' cgspace-openrxv-items-temp-backup.json | wc -l
+104797
+$ grep -oE '&quot;handle&quot;:&quot;([[:digit:]]|\.)+/[[:digit:]]+&quot;' cgspace-openrxv-items-temp-backup.json | sort | uniq | wc -l
+99186
+</code></pre><ul>
+<li>This number is probably unique for that particular harvest, but I don&rsquo;t think it represents the true number of items&hellip;</li>
+<li>The harvest of DSpace Test I did on my local test instance yesterday has about 91,000 items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ grep -E '&quot;repo&quot;:&quot;DSpace Test&quot;' 2021-06-23-openrxv-items-final-local.json | grep -oE '&quot;handle&quot;:&quot;([[:digit:]]|\.)+/[[:digit:]]+&quot;' | sort | uniq | wc -l
+90990
+</code></pre><ul>
+<li>So the harvest on the live site is missing items, then why didn&rsquo;t the add missing items plugin find them?!
+<ul>
+<li>I notice that we are missing the <code>type</code> in the metadata structure config for each repository on the production site, and we are using <code>type</code> for item type in the actual schema&hellip; so maybe there is a conflict there</li>
+<li>I will rename type to <code>item_type</code> and add it back to the metadata structure</li>
+<li>The add missing items definitely checks this field&hellip;</li>
+<li>I modified my local backup to add <code>type: item</code> and uploaded it to the temp index on production</li>
+<li>Oh! nginx is blocking OpenRXV&rsquo;s attempt to read the sitemap:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">172.104.229.92 - - [24/Jun/2021:07:52:58 +0200] &quot;GET /sitemap HTTP/1.1&quot; 503 190 &quot;-&quot; &quot;OpenRXV harvesting bot; https://github.com/ilri/OpenRXV&quot;
+</code></pre><ul>
+<li>I fixed nginx so it always allows people to get the sitemap and then re-ran the plugins&hellip; now it&rsquo;s checking 180,000+ handles to see if they are collections or items&hellip;
+<ul>
+<li>I see it fetched the sitemap three times, we need to make sure it&rsquo;s only doing it once for each repository</li>
+</ul>
+</li>
+<li>According to the api logs we will be adding 5,697 items:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ docker logs api 2&gt;/dev/null | grep dspace_add_missing_items | sort | uniq | wc -l
+5697
+</code></pre><ul>
+<li>Spent a few hours with Moayad troubleshooting and improving OpenRXV
+<ul>
+<li>We found a bug in the harvesting code that can occur when you are harvesting DSpace 5 and DSpace 6 instances, as DSpace 5 uses numeric (long) IDs, and DSpace 6 uses UUIDs</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
