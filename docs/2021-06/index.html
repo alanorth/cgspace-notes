@@ -20,7 +20,7 @@ I simply started it and AReS was running again:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-06/" />
 <meta property="article:published_time" content="2021-06-01T10:51:07+03:00" />
-<meta property="article:modified_time" content="2021-06-25T09:34:29+03:00" />
+<meta property="article:modified_time" content="2021-06-25T21:32:18+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I simply started it and AReS was running again:
   "@type": "BlogPosting",
   "headline": "June, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-06/",
-  "wordCount": "2651",
+  "wordCount": "2993",
   "datePublished": "2021-06-01T10:51:07+03:00",
-  "dateModified": "2021-06-25T09:34:29+03:00",
+  "dateModified": "2021-06-25T21:32:18+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -531,6 +531,82 @@ hash
 </ul>
 </li>
 <li>There is clearly something wrong with the new DSpace health check plugin, as it creates WAY too many jobs every time we run the plugins</li>
+</ul>
+<h2 id="2021-06-27">2021-06-27</h2>
+<ul>
+<li>Looking into the spike in PostgreSQL connections last week
+<ul>
+<li>I see the same things that I always see (large number of connections waiting for lock, large number of threads, high CPU usage, etc), but I also see almost 10,000 DSpace sessions on 2021-06-25</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2021/06/dspace-sessions-week.png" alt="DSpace sessions"></p>
+<ul>
+<li>Looking at the DSpace log I see there was definitely a higher number of sessions that day, perhaps twice the normal:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ for file in dspace.log.2021-06-[12]*; do echo &quot;$file&quot;; grep -oE 'session_id=[A-Z0-9]{32}' &quot;$file&quot; | sort | uniq | wc -l; done
+dspace.log.2021-06-10
+19072
+dspace.log.2021-06-11
+19224
+dspace.log.2021-06-12
+19215
+dspace.log.2021-06-13
+16721
+dspace.log.2021-06-14
+17880
+dspace.log.2021-06-15
+12103
+dspace.log.2021-06-16
+4651
+dspace.log.2021-06-17
+22785
+dspace.log.2021-06-18
+21406
+dspace.log.2021-06-19
+25967
+dspace.log.2021-06-20
+20850
+dspace.log.2021-06-21
+6388
+dspace.log.2021-06-22
+5945
+dspace.log.2021-06-23
+46371
+dspace.log.2021-06-24
+9024
+dspace.log.2021-06-25
+12521
+dspace.log.2021-06-26
+16163
+dspace.log.2021-06-27
+5886
+</code></pre><ul>
+<li>I see 15,000 unique IPs in the XMLUI logs alone on that day:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># zcat /var/log/nginx/access.log.5.gz /var/log/nginx/access.log.4.gz | grep '23/Jun/2021' | awk '{print $1}' | sort | uniq | wc -l
+15835
+</code></pre><ul>
+<li>Annoyingly I found 37,000 more hits from Bing using <code>dns:*msnbot* AND dns:*.msn.com.</code> as a Solr filter
+<ul>
+<li>WTF, they are using a normal user agent: <code>Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko</code></li>
+<li>I will purge the IPs and add this user agent to the nginx config so that we can rate limit it</li>
+</ul>
+</li>
+<li>I signed up for Bing Webmaster Tools and verified cgspace.cgiar.org with the BingSiteAuth.xml file
+<ul>
+<li>Also I adjusted the nginx config to explicitly allow access to <code>robots.txt</code> even when bots are rate limited</li>
+<li>Also I found that Bing was auto discovering all our RSS and Atom feeds as &ldquo;sitemaps&rdquo; so I deleted 750 of them and submitted the real sitemap</li>
+<li>I need to see if I can adjust the nginx config further to map the <code>bot</code> user agent to DNS like msnbot&hellip;</li>
+</ul>
+</li>
+<li>Review Abdullah&rsquo;s filter on click pull request
+<ul>
+<li>I rebased his code on the latest master branch and tested adding filter on click to the map and list components, and it works fine</li>
+<li>There seems to be a bug that breaks scrolling on the page though&hellip;</li>
+<li>Abdullah fixed the bug in the filter on click branch</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
