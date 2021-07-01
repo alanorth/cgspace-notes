@@ -20,7 +20,7 @@ I simply started it and AReS was running again:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-06/" />
 <meta property="article:published_time" content="2021-06-01T10:51:07+03:00" />
-<meta property="article:modified_time" content="2021-06-27T20:35:32+03:00" />
+<meta property="article:modified_time" content="2021-06-30T12:21:16+03:00" />
 
 
 
@@ -36,7 +36,7 @@ I simply started it and AReS was running again:
 
 
 "/>
-<meta name="generator" content="Hugo 0.84.2" />
+<meta name="generator" content="Hugo 0.84.3" />
 
 
     
@@ -46,9 +46,9 @@ I simply started it and AReS was running again:
   "@type": "BlogPosting",
   "headline": "June, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-06/",
-  "wordCount": "3202",
+  "wordCount": "3505",
   "datePublished": "2021-06-01T10:51:07+03:00",
-  "dateModified": "2021-06-27T20:35:32+03:00",
+  "dateModified": "2021-06-30T12:21:16+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -639,6 +639,38 @@ dspace.log.2021-06-27
 <li>I pointed him to our Tomcat server.xml configuration, saying that we purposefully isolated the Tomcat connection pools between the API and XMLUI for this purpose&hellip;</li>
 </ul>
 </li>
+<li>Export a list of all CGSpace&rsquo;s AGROVOC keywords with counts for Enrico and Elizabeth Arnaud to discuss with AGROVOC:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value AS &quot;dcterms.subject&quot;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 187 GROUP BY &quot;dcterms.subject&quot; ORDER BY count DESC) to /tmp/2021-06-30-agrovoc.csv WITH CSV HEADER;
+COPY 20780
+</code></pre><ul>
+<li>Actually Enrico wanted NON AGROVOC, so I extracted all the center and CRP subjects (ignoring system office and themes):</li>
+</ul>
+<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242) GROUP BY subject ORDER BY count DESC) to /tmp/2021-06-30-non-agrovoc.csv WITH CSV HEADER;
+COPY 1710
+</code></pre><ul>
+<li>Fix an issue in the Ansible infrastructure playbooks for the DSpace role
+<ul>
+<li>It was causing the template module to fail when setting up the npm environment</li>
+<li>We needed to install <code>acl</code> so that Ansible can use <code>setfacl</code> on the target file before becoming an unprivileged user</li>
+</ul>
+</li>
+<li>I saw a strange message in the Tomcat 7 journal on DSpace Test (linode26):</li>
+</ul>
+<pre><code class="language-console" data-lang="console">Jun 30 16:00:09 linode26 tomcat7[30294]: WARNING: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [111,733] milliseconds.
+</code></pre><ul>
+<li>What&rsquo;s even crazier is that it is twice that on CGSpace (linode18)!</li>
+<li>Apparently OpenJDK defaults to using <code>/dev/random</code> (see <code>/etc/java-8-openjdk/security/java.security</code>):</li>
+</ul>
+<pre><code class="language-console" data-lang="console">securerandom.source=file:/dev/urandom
+</code></pre><ul>
+<li><code>/dev/random</code> blocks and can take a long time to get entropy, and urandom on modern Linux is a cryptographically secure pseudorandom number generator
+<ul>
+<li>Now Tomcat starts much faster and no warning is printed so I&rsquo;m going to add this to our Ansible infrastructure playbooks</li>
+</ul>
+</li>
+<li>Interesting resource about the lore behind the <code>/dev/./urandom</code> workaround that is posted all over the Internet, apparently due to a bug in early JVMs: <a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6202721">https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6202721</a></li>
+<li>I&rsquo;m experimenting with using PgBouncer for pooling instead of Tomcat&rsquo;s JDBC</li>
 </ul>
 <!-- raw HTML omitted -->
 
