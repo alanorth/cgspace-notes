@@ -17,7 +17,7 @@ COPY 20994
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-07/" />
 <meta property="article:published_time" content="2021-07-01T08:53:07+03:00" />
-<meta property="article:modified_time" content="2021-07-20T11:04:51+03:00" />
+<meta property="article:modified_time" content="2021-07-20T14:54:25+03:00" />
 
 
 
@@ -40,9 +40,9 @@ COPY 20994
   "@type": "BlogPosting",
   "headline": "July, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-07/",
-  "wordCount": "3039",
+  "wordCount": "3309",
   "datePublished": "2021-07-01T08:53:07+03:00",
-  "dateModified": "2021-07-20T11:04:51+03:00",
+  "dateModified": "2021-07-20T14:54:25+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -546,7 +546,7 @@ $ wc -l /tmp/abusive-networks.txt
 <pre><code class="language-console" data-lang="console">$ cat roles/dspace/templates/nginx/abusive-networks.conf.j2 /tmp/abusive-networks.txt | grep deny | sort | uniq | wc -l
 2298
 </code></pre><ul>
-<li><a href="https://scamalytics.com/ip/isp">According to Scamlytics all these are high risk ISPs</a> (as recently as 2021-06) so I will just keep blocking them</li>
+<li><a href="https://scamalytics.com/ip/isp/2021-06">According to Scamalytics all these are high risk ISPs</a> (as recently as 2021-06) so I will just keep blocking them</li>
 <li>I deployed the block list on CGSpace (linode18) and the load is down to 1.0 but I see there are still some DDoS IPs getting through&hellip; sigh</li>
 <li>The next thing I need to do is purge all the IPs from Solr using grepcidr&hellip;</li>
 </ul>
@@ -577,7 +577,7 @@ $ grep deny roles/dspace/templates/nginx/abusive-networks.conf.j2 | sort | uniq 
 </code></pre><ul>
 <li>Combined with the previous networks this brings about 200 more for a total of 2,354 networks
 <ul>
-<li>I think I need to re-work the ipset stuff in my common Ansible role so that I can add such abusive networks as an iptables ipset / nftables set, and have a cron job to update them daily (from <a href="https://www.spamhaus.org/drop/">Spamhaus&rsquo;s DROP and EDROP lists</a>, for example</li>
+<li>I think I need to re-work the ipset stuff in my common Ansible role so that I can add such abusive networks as an iptables ipset / nftables set, and have a cron job to update them daily (from <a href="https://www.spamhaus.org/drop/">Spamhaus&rsquo;s DROP and EDROP lists</a>, for example)</li>
 </ul>
 </li>
 <li>Then I got a list of all the 5,095 IPs from above and used <code>check-spider-ip-hits.sh</code> to purge them from Solr:</li>
@@ -628,6 +628,39 @@ $ csvcut -c 2,4 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 15
 10458
 </code></pre><ul>
 <li>I purged all the (26,000) hits from these new IP addresses from Solr as well</li>
+<li>Looking back at my notes for the 2019-05 attack I see that I had already identified most of these network providers (!)&hellip;
+<ul>
+<li>Also, I took a closer look at QuadraNet (AS8100) and found some association with ATOMOHOST LLC and finegroupservers.com and traffictransitsolution.us, so now I need to block/purge that ASN too!</li>
+<li>I saw it on the <a href="https://scamalytics.com/ip/isp/2021-06">Scamalytics 2021-06</a> list anyways, so at this point I have no doubt</li>
+</ul>
+</li>
+<li>Adding QuadraNet brings the total networks seen during these two attacks to 262, and the number of unique IPs to 10900:</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2 /var/log/nginx/access.log.3 /var/log/nginx/access.log.4 /var/log/nginx/access.log.5 /var/log/nginx/access.log.27.gz /var/log/nginx/access.log.28.gz | grep -E &quot; (200|499) &quot; | grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; | awk '{print $1}' | sort | uniq &gt; /tmp/ddos-ips.txt
+# wc -l /tmp/ddos-ips.txt 
+54002 /tmp/ddos-ips.txt
+$ ./ilri/resolve-addresses-geoip2.py -i /tmp/ddos-ips.txt -o /tmp/ddos-ips.csv
+$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624|8100)$' /tmp/ddos-ips.csv | csvcut -c ip | sed 1d | sort | uniq &gt; /tmp/ddos-ips-to-purge.txt
+$ wc -l /tmp/ddos-ips-to-purge.txt
+10900 /tmp/ddos-ips-to-purge.txt
+$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624|8100)$' /tmp/ddos-ips.csv | csvcut -c network | sed 1d | sort | uniq &gt; /tmp/ddos-networks-to-block.txt
+$ wc -l /tmp/ddos-networks-to-block.txt
+262 /tmp/ddos-networks-to-block.txt
+</code></pre><ul>
+<li>The new total number of networks to block, including the network prefixes for these ASNs downloaded from asn.ipinfo.app, is 4,007:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ wget https://asn.ipinfo.app/api/text/nginx/AS49453 \
+https://asn.ipinfo.app/api/text/nginx/AS46844 \
+https://asn.ipinfo.app/api/text/nginx/AS206485 \
+https://asn.ipinfo.app/api/text/nginx/AS62282 \
+https://asn.ipinfo.app/api/text/nginx/AS36352 \
+https://asn.ipinfo.app/api/text/nginx/AS35913 \
+https://asn.ipinfo.app/api/text/nginx/AS35624 \
+https://asn.ipinfo.app/api/text/nginx/AS8100
+$ cat AS* /tmp/ddos-networks-to-block.txt | sed -e '/^$/d' -e '/^#/d' -e '/^{/d' -e 's/deny //' -e 's/;//' | sort | uniq | wc -l
+4007
+</code></pre><ul>
+<li>I re-applied these networks to nginx on CGSpace (linode18) and DSpace Test (linode26), and purged 14,000 more Solr statistics hits from these IPs</li>
 </ul>
 
   
