@@ -18,7 +18,7 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-08/" />
 <meta property="article:published_time" content="2021-08-01T09:01:07+03:00" />
-<meta property="article:modified_time" content="2021-08-01T16:19:05+03:00" />
+<meta property="article:modified_time" content="2021-08-02T16:00:42+03:00" />
 
 
 
@@ -32,7 +32,7 @@ Update Docker images on AReS server (linode20) and reboot the server:
 
 I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 "/>
-<meta name="generator" content="Hugo 0.86.1" />
+<meta name="generator" content="Hugo 0.87.0" />
 
 
     
@@ -42,9 +42,9 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
   "@type": "BlogPosting",
   "headline": "August, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-08/",
-  "wordCount": "300",
+  "wordCount": "535",
   "datePublished": "2021-08-01T09:01:07+03:00",
-  "dateModified": "2021-08-01T16:19:05+03:00",
+  "dateModified": "2021-08-02T16:00:42+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -168,7 +168,43 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-08-03">2021-08-03</h2>
+<ul>
+<li>Run fresh re-harvest on AReS</li>
+</ul>
+<h2 id="2021-08-05">2021-08-05</h2>
+<ul>
+<li>Have a quick call with Mishell Portilla from CIP about a journal article that was flagged as being in a predatory journal (Beall&rsquo;s List)
+<ul>
+<li>We agreed to unmap it from RTB&rsquo;s collection for now, and I asked for advice from Peter and Abenet for what to do in the future</li>
+</ul>
+</li>
+<li>A developer from the Alliance asked for access to the CGSpace database so they can make some integration with PowerBI
+<ul>
+<li>I told them we don&rsquo;t allow direct database access, and that it would be tricky anyways (that&rsquo;s what APIs are for!)</li>
+</ul>
+</li>
+<li>I&rsquo;m curious if there are still any requests coming in to CGSpace from the abusive Russian networks
+<ul>
+<li>I extracted all the unique IPs that nginx processed in the last week:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2 /var/log/nginx/access.log.3 /var/log/nginx/access.log.4 /var/log/nginx/access.log.5 /var/log/nginx/access.log.6 /var/log/nginx/access.log.7 /var/log/nginx/access.log.8 | grep -E &quot; (200|499) &quot; | grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; | awk '{print $1}' | sort | uniq &gt; /tmp/2021-08-05-all-ips.txt
+# wc -l /tmp/2021-08-05-all-ips.txt
+43428 /tmp/2021-08-05-all-ips.txt
+</code></pre><ul>
+<li>Already I can see that the total is much less than during the attack on one weekend last month (over 50,000!)
+<ul>
+<li>Indeed, now I see that there are no IPs from those networks coming in now:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/2021-08-05-all-ips.txt -o /tmp/2021-08-05-all-ips.csv
+$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624|8100)$' /tmp/2021-08-05-all-ips.csv | csvcut -c ip | sed 1d | sort | uniq &gt; /tmp/2021-08-05-all-ips-to-purge.csv
+$ wc -l /tmp/2021-08-05-all-ips-to-purge.csv
+0 /tmp/2021-08-05-all-ips-to-purge.csv
+</code></pre><!-- raw HTML omitted -->
 
   
 
