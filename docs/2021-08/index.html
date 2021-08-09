@@ -18,7 +18,7 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-08/" />
 <meta property="article:published_time" content="2021-08-01T09:01:07+03:00" />
-<meta property="article:modified_time" content="2021-08-06T09:08:15+03:00" />
+<meta property="article:modified_time" content="2021-08-09T08:38:44+03:00" />
 
 
 
@@ -42,9 +42,9 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
   "@type": "BlogPosting",
   "headline": "August, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-08/",
-  "wordCount": "1288",
+  "wordCount": "1537",
   "datePublished": "2021-08-01T09:01:07+03:00",
-  "dateModified": "2021-08-06T09:08:15+03:00",
+  "dateModified": "2021-08-09T08:38:44+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -295,6 +295,38 @@ Total number of hits from bots: 4492
 <ul>
 <li>In total it was a few thousand metadata entries or so so I had to split the CSV with <code>xsv split</code> in order to process it</li>
 <li>I was reminded again how DSpace 6 is very fucking slow when it comes to any database-related operations, as it takes over an hour to process 200 metadata changes&hellip;</li>
+<li>In total it was 1,195 changes to ISSN and ISBN metadata fields</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-08-09">2021-08-09</h2>
+<ul>
+<li>Extract all unique ISSNs to look up on Sherpa Romeo and Crossref</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ csvcut -c 'cg.issn[en_US]' ~/Downloads/2021-08-08-CGSpace-ISBN-ISSN.csv | csvgrep -c 1 -r '^[0-9]{4}' | sed 1d | sort | uniq &gt; /tmp/2021-08-09-issns.txt
+$ ./ilri/sherpa-issn-lookup.py -a mehhhhhhhhhhhhh -i /tmp/2021-08-09-issns.txt -o /tmp/2021-08-09-journals-sherpa-romeo.csv
+$ ./ilri/crossref-issn-lookup.py -e me@cgiar.org -i /tmp/2021-08-09-issns.txt -o /tmp/2021-08-09-journals-crossref.csv
+</code></pre><ul>
+<li>Then I updated the CSV headers for each and joined the CSVs on the issn column:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ sed -i '1s/journal title/sherpa romeo journal title/' /tmp/2021-08-09-journals-sherpa-romeo.csv
+$ sed -i '1s/journal title/crossref journal title/' /tmp/2021-08-09-journals-crossref.csv
+$ csvjoin -c issn /tmp/2021-08-09-journals-sherpa-romeo.csv /tmp/2021-08-09-journals-crossref.csv &gt; /tmp/2021-08-09-journals-all.csv
+</code></pre><ul>
+<li>In OpenRefine I faceted by blank in each column and copied the values from the other, then created a new column to indicate whether the values were the same with this GREL:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">if(cells['sherpa romeo journal title'].value == cells['crossref journal title'].value,&quot;same&quot;,&quot;different&quot;)
+</code></pre><ul>
+<li>Then I exported the list of journals that differ and sent it to Peter for comments and corrections
+<ul>
+<li>I want to build an updated controlled vocabulary so I can update CGSpace and reconcile our existing metadata against it</li>
+</ul>
+</li>
+<li>Convert my <code>generate-thumbnails.py</code> script to use libvips instead of Graphicsmagick
+<ul>
+<li>It is faster and uses less memory than GraphicsMagick (and ImageMagick), and produces nice thumbnails from PDFs</li>
+<li>One drawback is that libvips uses Poppler instead of Graphicsmagick, which apparently means that it can&rsquo;t work in CMYK</li>
+<li>I tested one item (10568/51999) that uses CMYK and the thumbnail looked OK (closer to the original than GraphicsMagick), so I&rsquo;m not sure&hellip;</li>
 </ul>
 </li>
 </ul>
