@@ -18,7 +18,7 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-08/" />
 <meta property="article:published_time" content="2021-08-01T09:01:07+03:00" />
-<meta property="article:modified_time" content="2021-08-02T16:00:42+03:00" />
+<meta property="article:modified_time" content="2021-08-06T09:08:15+03:00" />
 
 
 
@@ -42,9 +42,9 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
   "@type": "BlogPosting",
   "headline": "August, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-08/",
-  "wordCount": "535",
+  "wordCount": "1288",
   "datePublished": "2021-08-01T09:01:07+03:00",
-  "dateModified": "2021-08-02T16:00:42+03:00",
+  "dateModified": "2021-08-06T09:08:15+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -204,7 +204,101 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 $ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624|8100)$' /tmp/2021-08-05-all-ips.csv | csvcut -c ip | sed 1d | sort | uniq &gt; /tmp/2021-08-05-all-ips-to-purge.csv
 $ wc -l /tmp/2021-08-05-all-ips-to-purge.csv
 0 /tmp/2021-08-05-all-ips-to-purge.csv
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-08-08">2021-08-08</h2>
+<ul>
+<li>Advise IWMI colleagues on best practices for thumbnails</li>
+<li>Add a handful of mappings for incorrect countries, regions, and licenses on AReS and start a new harvest
+<ul>
+<li>I sent a message to Jacquie from WorldFish to ask if I can help her clean up the incorrect countries and regions in their repository, for example:</li>
+<li>WorldFish countries: Aegean, Euboea, Caribbean Sea, Caspian Sea, Chilwa Lake, Imo River, Indian Ocean, Indo-pacific</li>
+<li>WorldFish regions: Black Sea, Arabian Sea, Caribbean Sea, California Gulf, Mediterranean Sea, North Sea, Red Sea</li>
+</ul>
+</li>
+<li>Looking at the July Solr statistics to find the top IP and user agents, looking for anything strange
+<ul>
+<li>35.174.144.154 made 11,000 requests last month with the following user agent:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36
+</code></pre><ul>
+<li>That IP is on Amazon, and from looking at the DSpace logs I don&rsquo;t see them logging in at all, only scraping&hellip; so I will purge hits from that IP</li>
+<li>I see 93.158.90.30 is some Swedish IP that also has a normal-looking user agent, but never logs in and requests thousands of XMLUI pages, I will purge their hits too
+<ul>
+<li>Same deal with 130.255.162.173, which is also in Sweden and makes requests every five seconds or so</li>
+<li>Same deal with 93.158.90.91, also in Sweden</li>
+</ul>
+</li>
+<li>3.225.28.105 uses a normal-looking user agent but makes thousands of request to the REST API a few seconds apart</li>
+<li>61.143.40.50 is in China and uses this hilarious user agent:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.{random.randint(0, 9999)} Safari/537.{random.randint(0, 99)}&quot;
+</code></pre><ul>
+<li>47.252.80.214 is owned by Alibaba in the US and has the same user agent</li>
+<li>159.138.131.15 is in Hong Kong and also seems to be a bot because I never see it log in and it downloads 4,300 PDFs over the course of a few hours</li>
+<li>95.87.154.12 seems to be a new bot with the following user agent:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">Mozilla/5.0 (compatible; MaCoCu; +https://www.clarin.si/info/macocu-massive-collection-and-curation-of-monolingual-and-bilingual-data/
+</code></pre><ul>
+<li>They have a legitimate EU-funded project to enrich data for under-resourced languages in the EU
+<ul>
+<li>I will purge the hits and add them to our list of bot overrides in the mean time before I submit it to COUNTER-Robots</li>
+</ul>
+</li>
+<li>I see a new bot using this user agent:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">nettle (+https://www.nettle.sk)
+</code></pre><ul>
+<li>129.0.211.251 is in Cameroon and uses a normal-looking user agent, but seems to be a bot of some sort, as it downloaded 900 PDFs over a short period.</li>
+<li>217.182.21.193 is on OVH in France and uses a Linux user agent, but never logs in and makes several requests per minute, over 1,000 in a day</li>
+<li>103.135.104.139 is in Hong Kong and also seems to be making real requests, but makes way too many to be a human</li>
+<li>There are probably more but that&rsquo;s most of them over 1,000 hits last month, so I will purge them:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips.txt -p
+Purging 10796 hits from 35.174.144.154 in statistics
+Purging 9993 hits from 93.158.90.30 in statistics
+Purging 6092 hits from 130.255.162.173 in statistics
+Purging 24863 hits from 3.225.28.105 in statistics
+Purging 2988 hits from 93.158.90.91 in statistics
+Purging 2497 hits from 61.143.40.50 in statistics
+Purging 13866 hits from 159.138.131.15 in statistics
+Purging 2721 hits from 95.87.154.12 in statistics
+Purging 2786 hits from 47.252.80.214 in statistics
+Purging 1485 hits from 129.0.211.251 in statistics
+Purging 8952 hits from 217.182.21.193 in statistics
+Purging 3446 hits from 103.135.104.139 in statistics
+
+Total number of bot hits purged: 90485
+</code></pre><ul>
+<li>Then I purged a few thousand more by user agent:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri 
+Found 2707 hits from MaCoCu in statistics
+Found 1785 hits from nettle in statistics
+
+Total number of hits from bots: 4492
+</code></pre><ul>
+<li>I found some CGSpace metadata in the wrong fields
+<ul>
+<li>Seven metadata in dc.subject (57) should be in dcterms.subject (187)</li>
+<li>Twelve metadata in cg.title.journal (202) should be in cg.journal (251)</li>
+<li>Three dc.identifier.isbn (20) should be in cg.isbn (252)</li>
+<li>Three dc.identifier.issn (21) should be in cg.issn (253)</li>
+<li>I re-ran the <code>migrate-fields.sh</code> script on CGSpace</li>
+</ul>
+</li>
+<li>I exported the entire CGSpace repository as a CSV to do some work on ISSNs and ISBNs:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ csvcut -c 'id,cg.issn,cg.issn[],cg.issn[en],cg.issn[en_US],cg.isbn,cg.isbn[],cg.isbn[en_US]' /tmp/2021-08-08-cgspace.csv &gt; /tmp/2021-08-08-issn-isbn.csv
+</code></pre><ul>
+<li>Then in OpenRefine I merged all null, blank, and en fields into the <code>en_US</code> one for each, removed all spaces, fixed invalid multi-value separators, removed everything other than ISSN/ISBNs themselves
+<ul>
+<li>In total it was a few thousand metadata entries or so so I had to split the CSV with <code>xsv split</code> in order to process it</li>
+<li>I was reminded again how DSpace 6 is very fucking slow when it comes to any database-related operations, as it takes over an hour to process 200 metadata changes&hellip;</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
