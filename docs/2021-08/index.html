@@ -18,7 +18,7 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-08/" />
 <meta property="article:published_time" content="2021-08-01T09:01:07+03:00" />
-<meta property="article:modified_time" content="2021-08-09T17:10:45+03:00" />
+<meta property="article:modified_time" content="2021-08-09T17:34:13+03:00" />
 
 
 
@@ -42,9 +42,9 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
   "@type": "BlogPosting",
   "headline": "August, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-08/",
-  "wordCount": "1636",
+  "wordCount": "2059",
   "datePublished": "2021-08-01T09:01:07+03:00",
-  "dateModified": "2021-08-09T17:10:45+03:00",
+  "dateModified": "2021-08-09T17:34:13+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -327,6 +327,7 @@ $ csvjoin -c issn /tmp/2021-08-09-journals-sherpa-romeo.csv /tmp/2021-08-09-jour
 <li>It is faster and uses less memory than GraphicsMagick (and ImageMagick), and produces nice thumbnails from PDFs</li>
 <li>One drawback is that libvips uses Poppler instead of Graphicsmagick, which apparently means that it can&rsquo;t work in CMYK</li>
 <li>I tested one item (10568/51999) that uses CMYK and the thumbnail looked OK (closer to the original than GraphicsMagick), so I&rsquo;m not sure&hellip;</li>
+<li>Perhaps this is not a problem after all, see this PR from 2019: <a href="https://github.com/libvips/libvips/pull/1196">https://github.com/libvips/libvips/pull/1196</a></li>
 </ul>
 </li>
 <li>I did some tests of the memory used and time elapsed with libvips, GraphicsMagick, and ImageMagick:</li>
@@ -343,6 +344,54 @@ $ /usr/bin/time -f %M:%e convert -auto-orient /tmp/impdfthumb2862933674765647409
 <li>The ImageMagick way is the same as how DSpace does it (first creating an intermediary image, then getting a thumbnail)
 <ul>
 <li>libvips does use less time and memory&hellip; I should do more tests!</li>
+<li>I wonder if I can try to use these <a href="https://github.com/criteo/JVips/blob/master/src/test/java/com/criteo/vips/example/SimpleExample.java">unofficial Java bindings</a> in DSpace</li>
+<li>The authors of the JVips project wrote a nice blog post about libvips performance: <a href="https://medium.com/criteo-engineering/boosting-image-processing-performance-from-imagemagick-to-libvips-268cc3451d55">https://medium.com/criteo-engineering/boosting-image-processing-performance-from-imagemagick-to-libvips-268cc3451d55</a></li>
+<li>Ouch, JVips is Java 8 only as far as I can tell&hellip; that works now, but it&rsquo;s a non-starter going forward</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-08-11">2021-08-11</h2>
+<ul>
+<li>Peter got back to me about the journal title cleanup
+<ul>
+<li>From his corrections it seems an overwhelming majority of his choices match the Sherpa Romeo version of the titles rather than Crossref&rsquo;s</li>
+<li>Anyways, I exported the originals that were the same in Sherpa Romeo and Crossref as well as Peter&rsquo;s selections for where Sherpa Romeo and Crossref differred:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ csvcut -c cgspace ~/Downloads/2021-08-09-CGSpace-Journals-PB.csv | sort -u | sed 1d &gt; /tmp/journals1.txt
+$ csvcut -c 'sherpa romeo journal title' ~/Downloads/2021-08-09-CGSpace-Journals-All.csv | sort -u | sed 1d &gt; /tmp/journals2.txt
+$ cat /tmp/journals1.txt /tmp/journals2.txt | sort -u | wc -l
+1911
+</code></pre><ul>
+<li>Now I will create a controlled vocabulary out of this list and reconcile our existing journal title metadata with it in OpenRefine</li>
+<li>I exported a list of all the journal titles we have in the <code>cg.journal</code> field:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT(text_value) AS &quot;cg.journal&quot; FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (251)) to /tmp/2021-08-11-journals.csv WITH CSV;
+COPY 3245
+</code></pre><ul>
+<li>I started looking at reconciling them with reconcile-csv in OpenRefine, but ouch, there are 1,600 journal titles that don&rsquo;t match, so I&rsquo;d have to go check many of them manually before selecting a match or fixing them&hellip;
+<ul>
+<li>I think it&rsquo;s better if I try to write a Python script to fetch the ISSNs for each journal article and update them that way</li>
+<li>Or instead of doing it via SQL I could use CSV and parse the values there&hellip;</li>
+</ul>
+</li>
+<li>A few more issues:
+<ul>
+<li>Some ISSNs are non-existent in Sherpa Romeo and Crossref, but appear on issn.org&rsquo;s web search (their API is invite only)</li>
+<li>Some titles are different across all three datasets, for example ISSN 0003-1305:
+<ul>
+<li><a href="https://portal.issn.org/resource/ISSN/0003-1305">According to ISSN.org</a> this is &ldquo;The American statistician&rdquo;</li>
+<li><a href="https://v2.sherpa.ac.uk/id/publication/20807">According to Sherpa Romeo</a> this is &ldquo;American Statistician&rdquo;</li>
+<li><a href="https://search.crossref.org/?q=0003-1305&amp;from_ui=yes&amp;container-title=The+American+Statistician">According to Crossref</a> this is &ldquo;The American Statistician&rdquo;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I also realized that our previous controlled vocabulary came from CGSpace&rsquo;s top 500 journals, so when I replaced it with the generated list earlier today we lost some journals
+<ul>
+<li>Now I went back and merged the previous with the new, and manually removed duplicates (sigh)</li>
+<li>I requested access to the issn.org OAI-PMH API so I can use their registry&hellip;</li>
 </ul>
 </li>
 </ul>
