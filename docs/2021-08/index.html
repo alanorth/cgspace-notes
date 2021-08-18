@@ -18,7 +18,7 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-08/" />
 <meta property="article:published_time" content="2021-08-01T09:01:07+03:00" />
-<meta property="article:modified_time" content="2021-08-16T21:35:44+03:00" />
+<meta property="article:modified_time" content="2021-08-17T10:59:14+03:00" />
 
 
 
@@ -42,9 +42,9 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
   "@type": "BlogPosting",
   "headline": "August, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-08/",
-  "wordCount": "2255",
+  "wordCount": "2512",
   "datePublished": "2021-08-01T09:01:07+03:00",
-  "dateModified": "2021-08-16T21:35:44+03:00",
+  "dateModified": "2021-08-17T10:59:14+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -436,6 +436,53 @@ $ dspace community-filiator --set --parent=10568/114644 --child=10568/76451
 <li>I made an initial attempt on the policy statements page on DSpace Test
 <ul>
 <li>It is modeled on Sherpa Romeo&rsquo;s OpenDOAR policy statements advice</li>
+</ul>
+</li>
+<li>Sit with Moayad and discuss the future of AReS
+<ul>
+<li>We specifically discussed formalizing the API and documenting its use to allow as an alternative to harvesting directly from CGSpace</li>
+<li>We also discussed allowing linking to search results to enable something like &ldquo;Explore this collection&rdquo; links on CGSpace collection pages</li>
+</ul>
+</li>
+<li>Lower case all AGROVOC metadata, as I had noticed a few in sentence case:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=187 AND text_value ~ '[[:upper:]]';
+UPDATE 484
+</code></pre><ul>
+<li>Also update some DOIs using the <code>dx.doi.org</code> format, just to keep things uniform:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, 'https://dx.doi.org', 'https://doi.org') WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 220 AND text_value LIKE 'https://dx.doi.org%';
+UPDATE 469
+</code></pre><ul>
+<li>Then start a full Discovery re-indexing to update the Feed the Future community item counts that have been stuck at 0 since we moved the three projects to be a subcommunity a few days ago:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+
+real    322m16.917s
+user    226m43.121s
+sys     3m17.469s
+</code></pre><ul>
+<li>I learned how to use the OpenRXV API, which is just a thin wrapper around Elasticsearch:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ curl -X POST 'https://cgspace.cgiar.org/explorer/api/search?scroll=1d' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    &quot;size&quot;: 10,
+    &quot;query&quot;: {
+        &quot;bool&quot;: {
+            &quot;filter&quot;: {
+                &quot;term&quot;: {
+                    &quot;repo.keyword&quot;: &quot;CGSpace&quot;
+                }
+            }
+        }
+    }
+}'
+$ curl -X POST 'https://cgspace.cgiar.org/explorer/api/search/scroll/DXF1ZXJ5QW5kRmV0Y2gBAAAAAAAASekWMTRwZ3lEMkVRYUtKZjgyMno4dV9CUQ==
+</code></pre><ul>
+<li>This uses the Elasticsearch scroll ID to page through results
+<ul>
+<li>The second query doesn&rsquo;t need the request body because it is saved for 1 day as part of the first request</li>
 </ul>
 </li>
 </ul>
