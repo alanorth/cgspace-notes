@@ -18,7 +18,7 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-08/" />
 <meta property="article:published_time" content="2021-08-01T09:01:07+03:00" />
-<meta property="article:modified_time" content="2021-08-18T16:24:40+03:00" />
+<meta property="article:modified_time" content="2021-08-19T22:32:35+03:00" />
 
 
 
@@ -42,9 +42,9 @@ I decided to upgrade linode20 from Ubuntu 18.04 to 20.04
   "@type": "BlogPosting",
   "headline": "August, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-08/",
-  "wordCount": "2675",
+  "wordCount": "3064",
   "datePublished": "2021-08-01T09:01:07+03:00",
-  "dateModified": "2021-08-18T16:24:40+03:00",
+  "dateModified": "2021-08-19T22:32:35+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -503,7 +503,68 @@ $ curl -X POST 'https://cgspace.cgiar.org/explorer/api/search/scroll/DXF1ZXJ5QW5
 <li>I improved the quality of the &ldquo;no thumbnail&rdquo; placeholder image on AReS: <a href="https://github.com/ilri/OpenRXV/pull/114">https://github.com/ilri/OpenRXV/pull/114</a></li>
 <li>I sent some feedback to some ILRI and CCAFS colleagues about how to use better thumbnails for publications</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-08-24">2021-08-24</h2>
+<ul>
+<li>In the last few days I did a lot of work on OpenRXV
+<ul>
+<li>I started exploring the Angular 9.0 to 9.1 update</li>
+<li>I tested some updates to dependencies for Angular 9 that we somehow missed, like @tinymce/tinymce-angular, @nicky-lenaers/ngx-scroll-to, and @ng-select/ng-select</li>
+<li>I changed the default target from ES5 to ES2015 because ES5 was released in 2009 and the only thing we lose by moving to ES2015 is IE11 support</li>
+<li>I fixed a handful of issues in the Docker build and deployment process</li>
+<li>I started exploring changing the Docker configuration from using volumes to <code>COPY</code> instructions in the <code>Dockerfile</code> because we are having sporadic issues with permissions in containers caused by copying the host&rsquo;s frontend/backend directories and not being able to write to them</li>
+<li>I tested moving from node-sass to sass, as it has been <a href="https://blog.ninja-squad.com/2019/05/29/angular-cli-8.0/">supported since Angular 8 apparently</a> and will allow us to avoid stupid node-gyp issues</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-08-25">2021-08-25</h2>
+<ul>
+<li>I did a bunch of tests of the OpenRXV Angular 9.1 update and merged it to master (<a href="https://github.com/ilri/OpenRXV/pull/115">#115</a>)</li>
+<li>Last week Maria Garruccio sent me a handful of new ORCID identifiers for Bioversity staff
+<ul>
+<li>We currently have 1320 unique identifiers, so this adds eleven new ones:</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/bioversity-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2021-08-25-combined-orcids.txt
+$ wc -l /tmp/2021-08-25-combined-orcids.txt
+1331
+</code></pre><ul>
+<li>After I combined them and removed duplicates, I resolved all the names using my <code>resolve-orcids.py</code> script:</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ ./ilri/resolve-orcids.py -i /tmp/2021-08-25-combined-orcids.txt -o /tmp/2021-08-25-combined-orcids-names.txt
+</code></pre><ul>
+<li>Tag existing items from the Alliance&rsquo;s new authors with ORCID iDs using <code>add-orcid-identifiers-csv.py</code> (181 new metadata fields added):</li>
+</ul>
+<pre><code class="language-console" data-lang="console">$ cat 2021-08-25-add-orcids.csv 
+dc.contributor.author,cg.creator.identifier
+&quot;Chege, Christine G. Kiria&quot;,&quot;Christine G.Kiria Chege: 0000-0001-8360-0279&quot;
+&quot;Chege, Christine Kiria&quot;,&quot;Christine G.Kiria Chege: 0000-0001-8360-0279&quot;
+&quot;Kiria, C.&quot;,&quot;Christine G.Kiria Chege: 0000-0001-8360-0279&quot;
+&quot;Kinyua, Ivy&quot;,&quot;Ivy Kinyua :0000-0002-1978-8833&quot;
+&quot;Rahn, E.&quot;,&quot;Eric Rahn: 0000-0001-6280-7430&quot;
+&quot;Rahn, Eric&quot;,&quot;Eric Rahn: 0000-0001-6280-7430&quot;
+&quot;Jager M.&quot;,&quot;Matthias Jager: 0000-0003-1059-3949&quot;
+&quot;Jager, M.&quot;,&quot;Matthias Jager: 0000-0003-1059-3949&quot;
+&quot;Jager, Matthias&quot;,&quot;Matthias Jager: 0000-0003-1059-3949&quot;
+&quot;Waswa, Boaz&quot;,&quot;Boaz Waswa: 0000-0002-0066-0215&quot;
+&quot;Waswa, Boaz S.&quot;,&quot;Boaz Waswa: 0000-0002-0066-0215&quot;
+&quot;Rivera, Tatiana&quot;,&quot;Tatiana Rivera: 0000-0003-4876-5873&quot;
+&quot;Andrade, Robert&quot;,&quot;Robert Andrade: 0000-0002-5764-3854&quot;
+&quot;Ceccarelli, Viviana&quot;,&quot;Viviana Ceccarelli: 0000-0003-2160-9483&quot;
+&quot;Ceccarellia, Viviana&quot;,&quot;Viviana Ceccarelli: 0000-0003-2160-9483&quot;
+&quot;Nyawira, Sylvia&quot;,&quot;Sylvia Sarah Nyawira: 0000-0003-4913-1389&quot;
+&quot;Nyawira, Sylvia S.&quot;,&quot;Sylvia Sarah Nyawira: 0000-0003-4913-1389&quot;
+&quot;Nyawira, Sylvia Sarah&quot;,&quot;Sylvia Sarah Nyawira: 0000-0003-4913-1389&quot;
+&quot;Groot, J.C.&quot;,&quot;Groot, J.C.J.: 0000-0001-6516-5170&quot;
+&quot;Groot, J.C.J.&quot;,&quot;Groot, J.C.J.: 0000-0001-6516-5170&quot;
+&quot;Groot, Jeroen C.J.&quot;,&quot;Groot, J.C.J.: 0000-0001-6516-5170&quot;
+&quot;Groot, Jeroen CJ&quot;,&quot;Groot, J.C.J.: 0000-0001-6516-5170&quot;
+&quot;Abera, W.&quot;,&quot;Wuletawu Abera: 0000-0002-3657-5223&quot;
+&quot;Abera, Wuletawu&quot;,&quot;Wuletawu Abera: 0000-0002-3657-5223&quot;
+&quot;Kanyenga Lubobo, Antoine&quot;,&quot;Antoine Lubobo Kanyenga: 0000-0003-0806-9304&quot;
+&quot;Lubobo Antoine, Kanyenga&quot;,&quot;Antoine Lubobo Kanyenga: 0000-0003-0806-9304&quot; 
+$ ./ilri/add-orcid-identifiers-csv.py -i 2021-08-25-add-orcids.csv -db dspace -u dspace -p 'fuuu'
+</code></pre><!-- raw HTML omitted -->
 
   
 
