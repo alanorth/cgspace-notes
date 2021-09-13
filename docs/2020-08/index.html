@@ -36,7 +36,7 @@ It is class based so I can easily add support for other vocabularies, and the te
 
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -150,7 +150,7 @@ It is class based so I can easily add support for other vocabularies, and the te
 </li>
 <li>I purged all unmigrated stats in a few cores and then restarted processing:</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
 $ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
 $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics
 </code></pre><ul>
@@ -192,14 +192,14 @@ $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisti
 </ul>
 </li>
 </ul>
-<pre><code>$ http 'http://localhost:8080/rest/collections/1445' | json_pp | grep numberItems
+<pre tabindex="0"><code>$ http 'http://localhost:8080/rest/collections/1445' | json_pp | grep numberItems
    &quot;numberItems&quot; : 63,
 $ http 'http://localhost:8080/rest/collections/1445/items' jq '. | length'
 61
 </code></pre><ul>
 <li>Also on DSpace Test (which is running DSpace 6!), though the issue is slightly different there:</li>
 </ul>
-<pre><code>$ http 'https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-497a18e3b708' | json_pp | grep numberItems
+<pre tabindex="0"><code>$ http 'https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-497a18e3b708' | json_pp | grep numberItems
    &quot;numberItems&quot; : 61,
 $ http 'https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-497a18e3b708/items' | jq '. | length'
 59
@@ -210,7 +210,7 @@ $ http 'https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-49
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT * FROM collection2item WHERE item_id = '107687';
+<pre tabindex="0"><code>dspace=# SELECT * FROM collection2item WHERE item_id = '107687';
    id   | collection_id | item_id
 --------+---------------+---------
  133698 |           966 |  107687
@@ -220,12 +220,12 @@ $ http 'https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-49
 </code></pre><ul>
 <li>So for each id you can delete one duplicate mapping:</li>
 </ul>
-<pre><code>dspace=# DELETE FROM collection2item WHERE id='134686';
+<pre tabindex="0"><code>dspace=# DELETE FROM collection2item WHERE id='134686';
 dspace=# DELETE FROM collection2item WHERE id='128819';
 </code></pre><ul>
 <li>Update countries on CGSpace to be closer to ISO 3166-1 with some minor differences based on Peter&rsquo;s preferred display names</li>
 </ul>
-<pre><code>$ cat 2020-08-04-PB-new-countries.csv
+<pre tabindex="0"><code>$ cat 2020-08-04-PB-new-countries.csv
 cg.coverage.country,correct
 CAPE VERDE,CABO VERDE
 COCOS ISLANDS,COCOS (KEELING) ISLANDS
@@ -267,7 +267,7 @@ $ ./fix-metadata-values.py -i 2020-08-04-PB-new-countries.csv -db dspace -u dspa
 </li>
 <li>I checked the nginx logs around 5PM yesterday to see who was accessing the server:</li>
 </ul>
-<pre><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E '04/Aug/2020:(17|18)' | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E '04/Aug/2020:(17|18)' | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>I see the Macaroni Bros are using their new user agent for harvesting: <code>RTB website BOT</code>
 <ul>
@@ -276,7 +276,7 @@ $ ./fix-metadata-values.py -i 2020-08-04-PB-new-countries.csv -db dspace -u dspa
 </ul>
 </li>
 </ul>
-<pre><code>$ cat dspace.log.2020-08-04 | grep -E &quot;(63.32.242.35|64.62.202.71)&quot; | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2020-08-04 | grep -E &quot;(63.32.242.35|64.62.202.71)&quot; | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 5693
 </code></pre><ul>
 <li>DSpace itself uses a case-sensitive regex for user agents so there are no hits from those IPs in Solr, but I need to tweak the other regexes so they don&rsquo;t misuse the resources
@@ -291,18 +291,18 @@ $ ./fix-metadata-values.py -i 2020-08-04-PB-new-countries.csv -db dspace -u dspa
 </li>
 <li>A few more IPs causing lots of Tomcat sessions yesterday:</li>
 </ul>
-<pre><code>$ cat dspace.log.2020-08-04 | grep &quot;38.128.66.10&quot; | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2020-08-04 | grep &quot;38.128.66.10&quot; | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 1585
 $ cat dspace.log.2020-08-04 | grep &quot;64.62.202.71&quot; | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 5691
 </code></pre><ul>
 <li>38.128.66.10 isn&rsquo;t creating any Solr statistics due to our DSpace agents pattern, but they are creating lots of sessions so perhaps I need to force them to use one session in Tomcat:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 5.1) brokenlinkcheck.com/1.2
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 5.1) brokenlinkcheck.com/1.2
 </code></pre><ul>
 <li>64.62.202.71 is using a user agent I&rsquo;ve never seen before:</li>
 </ul>
-<pre><code>Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)
+<pre tabindex="0"><code>Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)
 </code></pre><ul>
 <li>So now our &ldquo;bot&rdquo; regex can&rsquo;t even match that&hellip;
 <ul>
@@ -310,7 +310,7 @@ $ cat dspace.log.2020-08-04 | grep &quot;64.62.202.71&quot; | grep -E 'session_i
 </ul>
 </li>
 </ul>
-<pre><code>RTB website BOT
+<pre tabindex="0"><code>RTB website BOT
 Altmetribot
 Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
 Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)
@@ -318,7 +318,7 @@ Mozilla/5.0 (compatible; BLEXBot/1.0; +http://webmeup-crawler.com/)
 </code></pre><ul>
 <li>And another IP belonging to Turnitin (the alternate user agent of Turnitinbot):</li>
 </ul>
-<pre><code>$ cat dspace.log.2020-08-04 | grep &quot;199.47.87.145&quot; | grep -E 'sessi
+<pre tabindex="0"><code>$ cat dspace.log.2020-08-04 | grep &quot;199.47.87.145&quot; | grep -E 'sessi
 on_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 2777
 </code></pre><ul>
@@ -377,7 +377,7 @@ on_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 <ul>
 <li>The Atmire stats processing for the statistics-2018 Solr core keeps stopping with this error:</li>
 </ul>
-<pre><code>Exception: 50 consecutive records couldn't be saved. There's most likely an issue with the connection to the solr server. Shutting down.
+<pre tabindex="0"><code>Exception: 50 consecutive records couldn't be saved. There's most likely an issue with the connection to the solr server. Shutting down.
 java.lang.RuntimeException: 50 consecutive records couldn't be saved. There's most likely an issue with the connection to the solr server. Shutting down.
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.storeOnServer(SourceFile:317)
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:177)
@@ -398,13 +398,13 @@ java.lang.RuntimeException: 50 consecutive records couldn't be saved. There's mo
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/[0-9]+/&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/[0-9]+/&lt;/query&gt;&lt;/delete&gt;'
 </code></pre><h2 id="2020-08-09">2020-08-09</h2>
 <ul>
 <li>The Atmire script did something to the server and created 132GB of log files so the root partition ran out of space&hellip;</li>
 <li>I removed the log file and tried to re-run the process but it seems to be looping over 11,000 records and failing, creating millions of lines in the logs again:</li>
 </ul>
-<pre><code># grep -oE &quot;Record uid: ([a-f0-9\\-]*){1} couldn't be processed&quot; /home/dspacetest.cgiar.org/log/dspace.log.2020-08-09 &gt; /tmp/not-processed-errors.txt
+<pre tabindex="0"><code># grep -oE &quot;Record uid: ([a-f0-9\\-]*){1} couldn't be processed&quot; /home/dspacetest.cgiar.org/log/dspace.log.2020-08-09 &gt; /tmp/not-processed-errors.txt
 # wc -l /tmp/not-processed-errors.txt
 2202973 /tmp/not-processed-errors.txt
 # sort /tmp/not-processed-errors.txt | uniq -c | tail -n 10
@@ -421,7 +421,7 @@ java.lang.RuntimeException: 50 consecutive records couldn't be saved. There's mo
 </code></pre><ul>
 <li>I looked at some of those records and saw strange objects in their <code>containerCommunity</code>, <code>containerCollection</code>, etc&hellip;</li>
 </ul>
-<pre><code>{
+<pre tabindex="0"><code>{
   &quot;responseHeader&quot;: {
     &quot;status&quot;: 0,
     &quot;QTime&quot;: 0,
@@ -470,7 +470,7 @@ java.lang.RuntimeException: 50 consecutive records couldn't be saved. There's mo
 </code></pre><ul>
 <li>I deleted those 11,724 records with the strange &ldquo;set&rdquo; object in the collections and communities, as well as 360,000 records with <code>id: -1</code></li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;'
 $ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:\-1&lt;/query&gt;&lt;/delete&gt;'
 </code></pre><ul>
 <li>I was going to compare the CUA stats for 2018 and 2019 on CGSpace and DSpace Test, but after Linode rebooted CGSpace (linode18) for maintenance yesterday the solr cores didn&rsquo;t all come back up OK
@@ -485,7 +485,7 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=tru
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-08-09-add-ILRI-orcids.csv
+<pre tabindex="0"><code>$ cat 2020-08-09-add-ILRI-orcids.csv
 dc.contributor.author,cg.creator.id
 &quot;Grace, Delia&quot;,&quot;Delia Grace: 0000-0002-0195-9489&quot;
 &quot;Delia Grace&quot;,&quot;Delia Grace: 0000-0002-0195-9489&quot;
@@ -501,7 +501,7 @@ dc.contributor.author,cg.creator.id
 </code></pre><ul>
 <li>That got me curious, so I generated a list of all the unique ORCID identifiers we have in the database:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240) TO /tmp/2020-08-09-orcid-identifiers.csv;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240) TO /tmp/2020-08-09-orcid-identifiers.csv;
 COPY 2095
 dspace=# \q
 $ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' /tmp/2020-08-09-orcid-identifiers.csv | sort | uniq &gt; /tmp/2020-08-09-orcid-identifiers-uniq.csv
@@ -517,7 +517,7 @@ $ wc -l /tmp/2020-08-09-orcid-identifiers-uniq.csv
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;'
 ...
 $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;'
 </code></pre><ul>
@@ -534,7 +534,7 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE metadata_field_id = 243 AND resource_type_id = 2;
+<pre tabindex="0"><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE metadata_field_id = 243 AND resource_type_id = 2;
  count
 -------
  50812
@@ -573,7 +573,7 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 <ul>
 <li>Last night I started the processing of the statistics-2016 core with the Atmire stats util and I see some errors like this:</li>
 </ul>
-<pre><code>Record uid: f6b288d7-d60d-4df9-b311-1696b88552a0 couldn't be processed
+<pre tabindex="0"><code>Record uid: f6b288d7-d60d-4df9-b311-1696b88552a0 couldn't be processed
 com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: f6b288d7-d60d-4df9-b311-1696b88552a0, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
@@ -598,7 +598,7 @@ Caused by: java.lang.NullPointerException
 </li>
 <li>I purged the unmigrated docs and continued processing:</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
 $ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
 $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2016
 </code></pre><ul>
@@ -608,7 +608,7 @@ $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisti
 </ul>
 </li>
 </ul>
-<pre><code>$ http 'https://cgspace.cgiar.org/oai/request?verb=ListSets' &gt; /tmp/0.xml
+<pre tabindex="0"><code>$ http 'https://cgspace.cgiar.org/oai/request?verb=ListSets' &gt; /tmp/0.xml
 $ for num in {100..1300..100}; do http &quot;https://cgspace.cgiar.org/oai/request?verb=ListSets&amp;resumptionToken=////$num&quot; &gt; /tmp/$num.xml; sleep 2; done
 $ for num in {0..1300..100}; do cat /tmp/$num.xml &gt;&gt; /tmp/cgspace-oai-sets.xml; done
 </code></pre><ul>
@@ -620,7 +620,7 @@ $ for num in {0..1300..100}; do cat /tmp/$num.xml &gt;&gt; /tmp/cgspace-oai-sets
 <li>The com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI script that was processing 2015 records last night started spitting shit tons of errors and created 120GB of logs&hellip;</li>
 <li>I looked at a few of the UIDs that it was having problems with and they were unmigrated ones&hellip; so I purged them in 2015 and all the rest of the statistics cores</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
 ...
 $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;'
 </code></pre><h2 id="2020-08-19">2020-08-19</h2>
@@ -715,13 +715,13 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 </ul>
 </li>
 </ul>
-<pre><code>$ http 'https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=0' User-Agent:'curl' &gt; /tmp/wle-trade-off-page1.xml
+<pre tabindex="0"><code>$ http 'https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=0' User-Agent:'curl' &gt; /tmp/wle-trade-off-page1.xml
 $ http 'https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=100' User-Agent:'curl' &gt; /tmp/wle-trade-off-page2.xml
 $ http 'https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=200' User-Agent:'curl' &gt; /tmp/wle-trade-off-page3.xml
 </code></pre><ul>
 <li>Ugh, and to extract the <code>&lt;id&gt;</code> from each <code>&lt;entry&gt;</code> we have to use an XPath query, but use a <a href="http://blog.powered-up-games.com/wordpress/archives/70">hack to ignore the default namespace by setting each element&rsquo;s local name</a>:</li>
 </ul>
-<pre><code>$ xmllint --xpath '//*[local-name()=&quot;entry&quot;]/*[local-name()=&quot;id&quot;]/text()' /tmp/wle-trade-off-page1.xml &gt;&gt; /tmp/ids.txt
+<pre tabindex="0"><code>$ xmllint --xpath '//*[local-name()=&quot;entry&quot;]/*[local-name()=&quot;id&quot;]/text()' /tmp/wle-trade-off-page1.xml &gt;&gt; /tmp/ids.txt
 $ xmllint --xpath '//*[local-name()=&quot;entry&quot;]/*[local-name()=&quot;id&quot;]/text()' /tmp/wle-trade-off-page2.xml &gt;&gt; /tmp/ids.txt
 $ xmllint --xpath '//*[local-name()=&quot;entry&quot;]/*[local-name()=&quot;id&quot;]/text()' /tmp/wle-trade-off-page3.xml &gt;&gt; /tmp/ids.txt
 $ sort -u /tmp/ids.txt &gt; /tmp/ids-sorted.txt
@@ -764,7 +764,7 @@ $ grep -oE '[0-9]+/[0-9]+' /tmp/ids.txt &gt; /tmp/handles.txt
 <ul>
 <li>I ran the CountryCodeTagger on CGSpace and it was very fast:</li>
 </ul>
-<pre><code>$ time chrt -b 0 dspace curate -t countrycodetagger -i all -r - -l 500 -s object | tee /tmp/2020-08-27-countrycodetagger.log
+<pre tabindex="0"><code>$ time chrt -b 0 dspace curate -t countrycodetagger -i all -r - -l 500 -s object | tee /tmp/2020-08-27-countrycodetagger.log
 real    2m7.643s
 user    1m48.740s
 sys     0m14.518s

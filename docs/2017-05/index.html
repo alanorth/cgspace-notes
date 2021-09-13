@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2017"/>
 <meta name="twitter:description" content="2017-05-01  ICARDA apparently started working on CG Core on their MEL repository They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items:  https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full https://cgspace.cgiar.org/handle/10568/73683    2017-05-02  Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request  2017-05-04  Sync DSpace Test with database and assetstore from CGSpace Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server Now I can see the workflow statistics and am able to select users, but everything returns 0 items Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace."/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -131,7 +131,7 @@
 <li>Discovered that CGSpace has ~700 items that are missing the <code>cg.identifier.status</code> field</li>
 <li>Need to perhaps try using the &ldquo;required metadata&rdquo; curation task to find fields missing these items:</li>
 </ul>
-<pre><code>$ [dspace]/bin/dspace curate -t requiredmetadata -i 10568/1 -r - &gt; /tmp/curation.out
+<pre tabindex="0"><code>$ [dspace]/bin/dspace curate -t requiredmetadata -i 10568/1 -r - &gt; /tmp/curation.out
 </code></pre><ul>
 <li>It seems the curation task dies when it finds an item which has missing metadata</li>
 </ul>
@@ -145,7 +145,7 @@
 <ul>
 <li>Testing one replacement for CCAFS Flagships (<code>cg.subject.ccafs</code>), first changed in the submission forms, and then in the database:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
 </code></pre><ul>
 <li>Also, CCAFS wants to re-order their flagships to prioritize the Phase II ones</li>
 <li>Waiting for feedback from CCAFS, then I can merge <a href="https://github.com/ilri/DSpace/pull/320">#320</a></li>
@@ -159,7 +159,7 @@
 <li>This leads to tens of thousands of abandoned files in the assetstore, which need to be cleaned up using <code>dspace cleanup -v</code>, or else you&rsquo;ll run out of disk space</li>
 <li>In the end I realized it&rsquo;s better to use submission mode (<code>-s</code>) to ingest the community object as a single AIP without its children, followed by each of the collections:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m -XX:-UseGCOverheadLimit&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m -XX:-UseGCOverheadLimit&quot;
 $ [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10568/87775 /home/aorth/10947-1/10947-1.zip
 $ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
 $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
@@ -184,13 +184,13 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <li>The CGIAR Library metadata has some blank metadata values, which leads to <code>|||</code> in the Discovery facets</li>
 <li>Clean these up in the database using:</li>
 </ul>
-<pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 </code></pre><ul>
 <li>I ended up running into issues during data cleaning and decided to wipe out the entire community and re-sync DSpace Test assetstore and database from CGSpace rather than waiting for the cleanup task to clean up</li>
 <li>Hours into the re-ingestion I ran into more errors, and had to erase everything and start over <em>again</em>!</li>
 <li>Now, no matter what I do I keep getting foreign key errors&hellip;</li>
 </ul>
-<pre><code>Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;
+<pre tabindex="0"><code>Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;
   Detail: Key (handle_id)=(80928) already exists.
 </code></pre><ul>
 <li>I think those errors actually come from me running the <code>update-sequences.sql</code> script while Tomcat/DSpace are running</li>
@@ -202,7 +202,7 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <li>I clarified that the scope of the implementation should be that ORCIDs are stored in the database and exposed via REST / API like other fields</li>
 <li>Finally finished importing all the CGIAR Library content, final method was:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit&quot;
 $ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2517/10947-2517.zip
 $ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2515/10947-2515.zip
 $ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2516/10947-2516.zip
@@ -215,7 +215,7 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <li>The <code>-XX:-UseGCOverheadLimit</code> JVM option helps with some issues in large imports</li>
 <li>After this I ran the <code>update-sequences.sql</code> script (with Tomcat shut down), and cleaned up the 200+ blank metadata records:</li>
 </ul>
-<pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 </code></pre><h2 id="2017-05-13">2017-05-13</h2>
 <ul>
 <li>After quite a bit of troubleshooting with importing cleaned up data as CSV, it seems that there are actually <a href="https://en.wikipedia.org/wiki/Null_character">NUL</a> characters in the <code>dc.description.abstract</code> field (at least) on the lines where CSV importing was failing</li>
@@ -230,7 +230,7 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <li>Merge changes to CCAFS project identifiers and flagships: <a href="https://github.com/ilri/DSpace/pull/320">#320</a></li>
 <li>Run updates for CCAFS flagships on CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>
 <p>These include:</p>
@@ -258,19 +258,19 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <ul>
 <li>Looking into the error I get when trying to create a new collection on DSpace Test:</li>
 </ul>
-<pre><code>ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot; Detail: Key (handle_id)=(84834) already exists.
+<pre tabindex="0"><code>ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot; Detail: Key (handle_id)=(84834) already exists.
 </code></pre><ul>
 <li>I tried updating the sequences a few times, with Tomcat running and stopped, but it hasn&rsquo;t helped</li>
 <li>It appears item with <code>handle_id</code> 84834 is one of the imported CGIAR Library items:</li>
 </ul>
-<pre><code>dspace=# select * from handle where handle_id=84834;
+<pre tabindex="0"><code>dspace=# select * from handle where handle_id=84834;
  handle_id |   handle   | resource_type_id | resource_id
 -----------+------------+------------------+-------------
      84834 | 10947/1332 |                2 |       87113
 </code></pre><ul>
 <li>Looks like the max <code>handle_id</code> is actually much higher:</li>
 </ul>
-<pre><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
+<pre tabindex="0"><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
  handle_id |  handle  | resource_type_id | resource_id
 -----------+----------+------------------+-------------
      86873 | 10947/99 |                2 |       89153
@@ -279,7 +279,7 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <li>I&rsquo;ve posted on the dspace-test mailing list to see if I can just manually set the <code>handle_seq</code> to that value</li>
 <li>Actually, it seems I can manually set the handle sequence using:</li>
 </ul>
-<pre><code>dspace=# select setval('handle_seq',86873);
+<pre tabindex="0"><code>dspace=# select setval('handle_seq',86873);
 </code></pre><ul>
 <li>After that I can create collections just fine, though I&rsquo;m not sure if it has other side effects</li>
 </ul>
@@ -294,11 +294,11 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 <li>Do some cleanups of community and collection names in CGIAR System Management Office community on DSpace Test, as well as move some items as Peter requested</li>
 <li>Peter wanted a list of authors in here, so I generated a list of collections using the &ldquo;View Source&rdquo; on each community and this hacky awk:</li>
 </ul>
-<pre><code>$ grep 10947/ /tmp/collections | grep -v cocoon | awk -F/ '{print $3&quot;/&quot;$4}' | awk -F\&quot; '{print $1}' | vim -
+<pre tabindex="0"><code>$ grep 10947/ /tmp/collections | grep -v cocoon | awk -F/ '{print $3&quot;/&quot;$4}' | awk -F\&quot; '{print $1}' | vim -
 </code></pre><ul>
 <li>Then I joined them together and ran this old SQL query from the dspace-tech mailing list which gives you authors for items in those collections:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value
+<pre tabindex="0"><code>dspace=# select distinct text_value
 from metadatavalue
 where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author')
 AND resource_type_id = 2
@@ -314,7 +314,7 @@ AND resource_id IN (select item_id from collection2item where collection_id IN (
 </code></pre><ul>
 <li>To get a CSV (with counts) from that:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*)
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*)
 from metadatavalue
 where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author')
 AND resource_type_id = 2
@@ -326,7 +326,7 @@ AND resource_id IN (select item_id from collection2item where collection_id IN (
 <li>For now I&rsquo;ve suggested that they just change the collection names and that we fix their metadata manually afterwards</li>
 <li>Also, they have a lot of messed up values in their <code>cg.subject.wle</code> field so I will clean up some of those first:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id=119) to /tmp/wle.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id=119) to /tmp/wle.csv with csv;
 COPY 111
 </code></pre><ul>
 <li>Respond to Atmire message about ORCIDs, saying that right now we&rsquo;d prefer to just have them available via REST API like any other metadata field, and that I&rsquo;m available for a Skype</li>
@@ -343,21 +343,21 @@ COPY 111
 <li>Communicate with MARLO people about progress on exposing ORCIDs via the REST API, as it is set to be discussed in the <a href="https://wiki.lyrasis.org/display/cmtygp/DCAT+Meeting+June+2017">June, 2017 DCAT meeting</a></li>
 <li>Find all of Amos Omore&rsquo;s author name variations so I can link them to his authority entry that has an ORCID:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like 'Omore, A%';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like 'Omore, A%';
 </code></pre><ul>
 <li>Set the authority for all variations to one containing an ORCID:</li>
 </ul>
-<pre><code>dspace=# update metadatavalue set authority='4428ee88-90ef-4107-b837-3c0ec988520b', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Omore, A%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set authority='4428ee88-90ef-4107-b837-3c0ec988520b', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Omore, A%';
 UPDATE 187
 </code></pre><ul>
 <li>Next I need to do Edgar Twine:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like 'Twine, E%';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like 'Twine, E%';
 </code></pre><ul>
 <li>But it doesn&rsquo;t look like any of his existing entries are linked to an authority which has an ORCID, so I edited the metadata via &ldquo;Edit this Item&rdquo; and looked up his ORCID and linked it there</li>
 <li>Now I should be able to set his name variations to the new authority:</li>
 </ul>
-<pre><code>dspace=# update metadatavalue set authority='f70d0a01-d562-45b8-bca3-9cf7f249bc8b', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Twine, E%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set authority='f70d0a01-d562-45b8-bca3-9cf7f249bc8b', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Twine, E%';
 </code></pre><ul>
 <li>Run the corrections on CGSpace and then update discovery / authority</li>
 <li>I notice that there are a handful of <code>java.lang.OutOfMemoryError: Java heap space</code> errors in the Catalina logs on CGSpace, I should go look into that&hellip;</li>

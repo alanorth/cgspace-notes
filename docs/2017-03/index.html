@@ -54,7 +54,7 @@ Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing reg
 $ identify ~/Desktop/alc_contrastes_desafios.jpg
 /Users/aorth/Desktop/alc_contrastes_desafios.jpg JPEG 464x600 464x600&#43;0&#43;0 8-bit CMYK 168KB 0.000u 0:00.000
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -156,7 +156,7 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 <li>Discovered that the ImageMagic <code>filter-media</code> plugin creates JPG thumbnails with the CMYK colorspace when the source PDF is using CMYK</li>
 <li>Interestingly, it seems DSpace 4.x&rsquo;s thumbnails were sRGB, but forcing regeneration using DSpace 5.x&rsquo;s ImageMagick plugin creates CMYK JPGs if the source PDF was CMYK (see <a href="https://cgspace.cgiar.org/handle/10568/51999">10568/51999</a>):</li>
 </ul>
-<pre><code>$ identify ~/Desktop/alc_contrastes_desafios.jpg
+<pre tabindex="0"><code>$ identify ~/Desktop/alc_contrastes_desafios.jpg
 /Users/aorth/Desktop/alc_contrastes_desafios.jpg JPEG 464x600 464x600+0+0 8-bit CMYK 168KB 0.000u 0:00.000
 </code></pre><ul>
 <li>This results in discolored thumbnails when compared to the original PDF, for example sRGB and CMYK:</li>
@@ -171,7 +171,7 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 <li>I created a patch for DS-3517 and made a pull request against upstream <code>dspace-5_x</code>: <a href="https://github.com/DSpace/DSpace/pull/1669">https://github.com/DSpace/DSpace/pull/1669</a></li>
 <li>Looks like <code>-colorspace sRGB</code> alone isn&rsquo;t enough, we need to use profiles:</li>
 </ul>
-<pre><code>$ convert alc_contrastes_desafios.pdf\[0\] -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf.jpg
+<pre tabindex="0"><code>$ convert alc_contrastes_desafios.pdf\[0\] -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_cmyk.icc -thumbnail 300x300 -flatten -profile /opt/brew/Cellar/ghostscript/9.20/share/ghostscript/9.20/iccprofiles/default_rgb.icc alc_contrastes_desafios.pdf.jpg
 </code></pre><ul>
 <li>This reads the input file, applies the CMYK profile, applies the RGB profile, then writes the file</li>
 <li>Note that you should set the first profile immediately after the input file</li>
@@ -180,7 +180,7 @@ $ identify ~/Desktop/alc_contrastes_desafios.jpg
 <li>Somehow we need to detect the color system being used by the input file and handle each case differently (with profiles)</li>
 <li>This is trivial with <code>identify</code> (even by the <a href="http://im4java.sourceforge.net/api/org/im4java/core/IMOps.html#identify">Java ImageMagick API</a>):</li>
 </ul>
-<pre><code>$ identify -format '%r\n' alc_contrastes_desafios.pdf\[0\]
+<pre tabindex="0"><code>$ identify -format '%r\n' alc_contrastes_desafios.pdf\[0\]
 DirectClass CMYK
 $ identify -format '%r\n' Africa\ group\ of\ negotiators.pdf\[0\]
 DirectClass sRGB Alpha
@@ -196,7 +196,7 @@ DirectClass sRGB Alpha
 <li>They want something like the items that are returned by the general &ldquo;LAND&rdquo; query in the search interface, but we cannot do that</li>
 <li>We can only return specific results for metadata fields, like:</li>
 </ul>
-<pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;LAND REFORM&quot;, &quot;language&quot;: null}' | json_pp
+<pre tabindex="0"><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;LAND REFORM&quot;, &quot;language&quot;: null}' | json_pp
 </code></pre><ul>
 <li>But there are hundreds of combinations of fields and values (like <code>dc.subject</code> and all the center subjects), and we can&rsquo;t use wildcards in REST!</li>
 <li>Reading about enabling multiple handle prefixes in DSpace</li>
@@ -204,7 +204,7 @@ DirectClass sRGB Alpha
 <li>And a comment from Atmire&rsquo;s Bram about it on the DSpace wiki: <a href="https://wiki.lyrasis.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296">https://wiki.lyrasis.org/display/DSDOC5x/Installing+DSpace?focusedCommentId=78163296#comment-78163296</a></li>
 <li>Bram mentions an undocumented configuration option <code>handle.plugin.checknameauthority</code>, but I noticed another one in <code>dspace.cfg</code>:</li>
 </ul>
-<pre><code># List any additional prefixes that need to be managed by this handle server
+<pre tabindex="0"><code># List any additional prefixes that need to be managed by this handle server
 # (as for examle handle prefix coming from old dspace repository merged in
 # that repository)
 # handle.additional.prefixes = prefix1[, prefix2]
@@ -212,20 +212,20 @@ DirectClass sRGB Alpha
 <li>Because of this I noticed that our Handle server&rsquo;s <code>config.dct</code> was potentially misconfigured!</li>
 <li>We had some default values still present:</li>
 </ul>
-<pre><code>&quot;300:0.NA/YOUR_NAMING_AUTHORITY&quot;
+<pre tabindex="0"><code>&quot;300:0.NA/YOUR_NAMING_AUTHORITY&quot;
 </code></pre><ul>
 <li>I&rsquo;ve changed them to the following and restarted the handle server:</li>
 </ul>
-<pre><code>&quot;300:0.NA/10568&quot;
+<pre tabindex="0"><code>&quot;300:0.NA/10568&quot;
 </code></pre><ul>
 <li>In looking at all the configs I just noticed that we are not providing a DOI in the Google-specific metadata crosswalk</li>
 <li>From <code>dspace/config/crosswalks/google-metadata.properties</code>:</li>
 </ul>
-<pre><code>google.citation_doi = cg.identifier.doi
+<pre tabindex="0"><code>google.citation_doi = cg.identifier.doi
 </code></pre><ul>
 <li>This works, and makes DSpace output the following metadata on the item view page:</li>
 </ul>
-<pre><code>&lt;meta content=&quot;https://dx.doi.org/10.1186/s13059-017-1153-y&quot; name=&quot;citation_doi&quot;&gt;
+<pre tabindex="0"><code>&lt;meta content=&quot;https://dx.doi.org/10.1186/s13059-017-1153-y&quot; name=&quot;citation_doi&quot;&gt;
 </code></pre><ul>
 <li>Submitted and merged pull request for this: <a href="https://github.com/ilri/DSpace/pull/305">https://github.com/ilri/DSpace/pull/305</a></li>
 <li>Submit pull request to set the author separator for XMLUI item lists to a semicolon instead of &ldquo;,&quot;: <a href="https://github.com/ilri/DSpace/pull/306">https://github.com/ilri/DSpace/pull/306</a></li>
@@ -260,18 +260,18 @@ DirectClass sRGB Alpha
 <ul>
 <li>Export list of sponsors so Peter can clean it up:</li>
 </ul>
-<pre><code>dspace=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'description' and qualifier = 'sponsorship') group by text_value order by count desc) to /tmp/sponsorship.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'description' and qualifier = 'sponsorship') group by text_value order by count desc) to /tmp/sponsorship.csv with csv;
 COPY 285
 </code></pre><h2 id="2017-03-12">2017-03-12</h2>
 <ul>
 <li>Test the sponsorship fixes and deletes from Peter:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i Investors-Fix-51.csv -f dc.description.sponsorship -t Action -m 29 -d dspace -u dspace -p fuuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Investors-Fix-51.csv -f dc.description.sponsorship -t Action -m 29 -d dspace -u dspace -p fuuuu
 $ ./delete-metadata-values.py -i Investors-Delete-121.csv -f dc.description.sponsorship -m 29 -d dspace -u dspace -p fuuu
 </code></pre><ul>
 <li>Generate a new list of unique sponsors so we can update the controlled vocabulary:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'description' and qualifier = 'sponsorship')) to /tmp/sponsorship.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'description' and qualifier = 'sponsorship')) to /tmp/sponsorship.csv with csv;
 </code></pre><ul>
 <li>Pull request for controlled vocabulary if Peter approves: <a href="https://github.com/ilri/DSpace/pull/308">https://github.com/ilri/DSpace/pull/308</a></li>
 <li>Review Sisay&rsquo;s roots, tubers, and bananas (RTB) theme, which still needs some fixes to work properly: <a href="https://github.com/ilri/DSpace/pull/307">https://github.com/ilri/DSpace/pull/307</a></li>
@@ -311,12 +311,12 @@ $ ./delete-metadata-values.py -i Investors-Delete-121.csv -f dc.description.spon
 <ul>
 <li>CCAFS said they are ready for the flagship updates for Phase II to be run (<code>cg.subject.ccafs</code>), so I ran them on CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i ccafs-flagships-feb7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ccafs-flagships-feb7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
 </code></pre><ul>
 <li>We&rsquo;ve been waiting since February to run these</li>
 <li>Also, I generated a list of all CCAFS flagships because there are a dozen or so more than there should be:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=210 group by text_value order by count desc) to /tmp/ccafs.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=210 group by text_value order by count desc) to /tmp/ccafs.csv with csv;
 </code></pre><ul>
 <li>I sent a list to CCAFS people so they can tell me if some should be deleted or moved, etc</li>
 <li>Test, squash, and merge Sisay&rsquo;s RTB theme into <code>5_x-prod</code>: <a href="https://github.com/ilri/DSpace/pull/316">https://github.com/ilri/DSpace/pull/316</a></li>
@@ -325,11 +325,11 @@ $ ./delete-metadata-values.py -i Investors-Delete-121.csv -f dc.description.spon
 <ul>
 <li>Dump a list of fields in the DC and CG schemas to compare with CG Core:</li>
 </ul>
-<pre><code>dspace=# select case when metadata_schema_id=1 then 'dc' else 'cg' end as schema, element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id in (1, 2);
+<pre tabindex="0"><code>dspace=# select case when metadata_schema_id=1 then 'dc' else 'cg' end as schema, element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id in (1, 2);
 </code></pre><ul>
 <li>Ooh, a better one!</li>
 </ul>
-<pre><code>dspace=# select coalesce(case when metadata_schema_id=1 then 'dc.' else 'cg.' end) || concat_ws('.', element, qualifier) as field, scope_note from metadatafieldregistry where metadata_schema_id in (1, 2);
+<pre tabindex="0"><code>dspace=# select coalesce(case when metadata_schema_id=1 then 'dc.' else 'cg.' end) || concat_ws('.', element, qualifier) as field, scope_note from metadatafieldregistry where metadata_schema_id in (1, 2);
 </code></pre><h2 id="2017-03-30">2017-03-30</h2>
 <ul>
 <li>Adjust the Linode CPU usage alerts for the CGSpace server from 150% to 200%, as generally the nightly Solr indexing causes a usage around 150–190%, so this should make the alerts less regular</li>

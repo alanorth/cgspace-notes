@@ -38,7 +38,7 @@ The code finally builds and runs with a fresh install
 
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -138,11 +138,11 @@ The code finally builds and runs with a fresh install
 <ul>
 <li>Now we don&rsquo;t specify the build environment because site modification are in <code>local.cfg</code>, so we just build like this:</li>
 </ul>
-<pre><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false clean package
+<pre tabindex="0"><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false clean package
 </code></pre><ul>
 <li>And it seems that we need to enabled <code>pg_crypto</code> now (used for UUIDs):</li>
 </ul>
-<pre><code>$ psql -h localhost -U postgres dspace63
+<pre tabindex="0"><code>$ psql -h localhost -U postgres dspace63
 dspace63=# CREATE EXTENSION pgcrypto;
 CREATE EXTENSION pgcrypto;
 </code></pre><ul>
@@ -153,11 +153,11 @@ CREATE EXTENSION pgcrypto;
 </ul>
 </li>
 </ul>
-<pre><code>dspace63=# DELETE FROM schema_version WHERE version IN ('5.0.2015.01.27', '5.6.2015.12.03.2', '5.6.2016.08.08', '5.0.2017.04.28', '5.0.2017.09.25', '5.8.2015.12.03.3');
+<pre tabindex="0"><code>dspace63=# DELETE FROM schema_version WHERE version IN ('5.0.2015.01.27', '5.6.2015.12.03.2', '5.6.2016.08.08', '5.0.2017.04.28', '5.0.2017.09.25', '5.8.2015.12.03.3');
 </code></pre><ul>
 <li>Then I ran <code>dspace database migrate</code> and got an error:</li>
 </ul>
-<pre><code>$ ~/dspace63/bin/dspace database migrate
+<pre tabindex="0"><code>$ ~/dspace63/bin/dspace database migrate
 
 Database URL: jdbc:postgresql://localhost:5432/dspace63?ApplicationName=dspaceCli
 Migrating database to latest version... (Check dspace logs for details)
@@ -225,7 +225,7 @@ Caused by: org.postgresql.util.PSQLException: ERROR: cannot drop table metadatav
 <li>A thread on the dspace-tech mailing list regarding this migration noticed that his database had some views created that were using the <code>resource_id</code> column</li>
 <li>Our database had the same issue, where the <code>eperson_metadata</code> view was created by something (Atmire module?) but has no references in the vanilla DSpace code, so I dropped it and tried the migration again:</li>
 </ul>
-<pre><code>dspace63=# DROP VIEW eperson_metadata;
+<pre tabindex="0"><code>dspace63=# DROP VIEW eperson_metadata;
 DROP VIEW
 </code></pre><ul>
 <li>After that the migration was successful and DSpace starts up successfully and begins indexing
@@ -252,7 +252,7 @@ DROP VIEW
 </li>
 <li>There are lots of errors in the DSpace log, which might explain some of the issues with recent submissions / Solr:</li>
 </ul>
-<pre><code>2020-02-03 10:27:14,485 ERROR org.dspace.browse.ItemCountDAOSolr @ caught exception: 
+<pre tabindex="0"><code>2020-02-03 10:27:14,485 ERROR org.dspace.browse.ItemCountDAOSolr @ caught exception: 
 org.dspace.discovery.SearchServiceException: Invalid UUID string: 1
 2020-02-03 13:20:20,475 ERROR org.dspace.app.xmlui.aspect.discovery.AbstractRecentSubmissionTransformer @ Caught SearchServiceException while retrieving recent submission for: home page
 org.dspace.discovery.SearchServiceException: Invalid UUID string: 111210
@@ -260,11 +260,11 @@ org.dspace.discovery.SearchServiceException: Invalid UUID string: 111210
 <li>If I look in Solr&rsquo;s search core I do actually see items with integers for their resource ID, which I think are all supposed to be UUIDs now&hellip;</li>
 <li>I dropped all the documents in the search core:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8080/solr/search/update?stream.body=&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&amp;commit=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8080/solr/search/update?stream.body=&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&amp;commit=true'
 </code></pre><ul>
 <li>Still didn&rsquo;t work, so I&rsquo;m going to try a clean database import and migration:</li>
 </ul>
-<pre><code>$ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspace63
+<pre tabindex="0"><code>$ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspace63
 $ psql -h localhost -U postgres -c 'alter user dspacetest superuser;'
 $ pg_restore -h localhost -U postgres -d dspace63 -O --role=dspacetest -h localhost dspace_2020-01-27.backup
 $ psql -h localhost -U postgres -c 'alter user dspacetest nosuperuser;'
@@ -301,7 +301,7 @@ $ ~/dspace63/bin/dspace database migrate
 </ul>
 </li>
 </ul>
-<pre><code>$ git checkout -b 6_x-dev64 6_x-dev
+<pre tabindex="0"><code>$ git checkout -b 6_x-dev64 6_x-dev
 $ git rebase -i upstream/dspace-6_x
 </code></pre><ul>
 <li>I finally understand why our themes show all the &ldquo;Browse by&rdquo; buttons on community and collection pages in DSpace 6.x
@@ -321,7 +321,7 @@ $ git rebase -i upstream/dspace-6_x
 <li>UptimeRobot told me that AReS Explorer crashed last night, so I logged into it, ran all updates, and rebooted it</li>
 <li>Testing Discovery indexing speed on my local DSpace 6.3:</li>
 </ul>
-<pre><code>$ time schedtool -D -e ~/dspace63/bin/dspace index-discovery -b
+<pre tabindex="0"><code>$ time schedtool -D -e ~/dspace63/bin/dspace index-discovery -b
 schedtool -D -e ~/dspace63/bin/dspace index-discovery -b  3771.78s user 93.63s system 41% cpu 2:34:19.53 total
 schedtool -D -e ~/dspace63/bin/dspace index-discovery -b  3360.28s user 82.63s system 38% cpu 2:30:22.07 total
 schedtool -D -e ~/dspace63/bin/dspace index-discovery -b  4678.72s user 138.87s system 42% cpu 3:08:35.72 total
@@ -329,7 +329,7 @@ schedtool -D -e ~/dspace63/bin/dspace index-discovery -b  3334.19s user 86.54s s
 </code></pre><ul>
 <li>DSpace 5.8 was taking about 1 hour (or less on this laptop), so this is 2-3 times longer!</li>
 </ul>
-<pre><code>$ time schedtool -D -e ~/dspace/bin/dspace index-discovery -b
+<pre tabindex="0"><code>$ time schedtool -D -e ~/dspace/bin/dspace index-discovery -b
 schedtool -D -e ~/dspace/bin/dspace index-discovery -b  299.53s user 69.67s system 20% cpu 30:34.47 total
 schedtool -D -e ~/dspace/bin/dspace index-discovery -b  270.31s user 69.88s system 19% cpu 29:01.38 total
 </code></pre><ul>
@@ -360,7 +360,7 @@ schedtool -D -e ~/dspace/bin/dspace index-discovery -b  270.31s user 69.88s syst
 <li>I sent a mail to the dspace-tech mailing list asking about slow Discovery indexing speed in DSpace 6</li>
 <li>I destroyed my PostgreSQL 9.6 containers and re-created them using PostgreSQL 10 to see if there are any speedups with DSpace 6.x:</li>
 </ul>
-<pre><code>$ podman pull postgres:10-alpine
+<pre tabindex="0"><code>$ podman pull postgres:10-alpine
 $ podman run --name dspacedb10 -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:10-alpine
 $ createuser -h localhost -U postgres --pwprompt dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
@@ -379,29 +379,29 @@ dspace63=# \q
 </code></pre><ul>
 <li>I purged ~33,000 hits from the &ldquo;Jersey/2.6&rdquo; bot in CGSpace&rsquo;s statistics using my <code>check-spider-hits.sh</code> script:</li>
 </ul>
-<pre><code>$ ./check-spider-hits.sh -d -p -f /tmp/jersey -s statistics -u http://localhost:8081/solr
+<pre tabindex="0"><code>$ ./check-spider-hits.sh -d -p -f /tmp/jersey -s statistics -u http://localhost:8081/solr
 $ for year in 2018 2017 2016 2015; do ./check-spider-hits.sh -d -p -f /tmp/jersey -s &quot;statistics-${year}&quot; -u http://localhost:8081/solr; done
 </code></pre><ul>
 <li>I noticed another user agen in the logs that we should add to the list:</li>
 </ul>
-<pre><code>ReactorNetty/0.9.2.RELEASE
+<pre tabindex="0"><code>ReactorNetty/0.9.2.RELEASE
 </code></pre><ul>
 <li>I made <a href="https://github.com/atmire/COUNTER-Robots/issues/31">an issue on the COUNTER-Robots repository</a></li>
 <li>I found a <a href="https://github.com/freedev/solr-import-export-json">nice tool for exporting and importing Solr records</a> and it seems to work for exporting our 2019 stats from the large statistics core!</li>
 </ul>
-<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2019-01.json -f 'dateYearMonth:2019-01' -k uid
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2019-01.json -f 'dateYearMonth:2019-01' -k uid
 $ ls -lh /tmp/statistics-2019-01.json
 -rw-rw-r-- 1 aorth aorth 3.7G Feb  6 09:26 /tmp/statistics-2019-01.json
 </code></pre><ul>
 <li>Then I tested importing this by creating a new core in my development environment:</li>
 </ul>
-<pre><code>$ curl 'http://localhost:8080/solr/admin/cores?action=CREATE&amp;name=statistics-2019&amp;instanceDir=/home/aorth/dspace/solr/statistics&amp;dataDir=/home/aorth/dspace/solr/statistics-2019/data'
+<pre tabindex="0"><code>$ curl 'http://localhost:8080/solr/admin/cores?action=CREATE&amp;name=statistics-2019&amp;instanceDir=/home/aorth/dspace/solr/statistics&amp;dataDir=/home/aorth/dspace/solr/statistics-2019/data'
 $ ./run.sh -s http://localhost:8080/solr/statistics-2019 -a import -o ~/Downloads/statistics-2019-01.json -k uid
 </code></pre><ul>
 <li>This imports the records into the core, but DSpace can&rsquo;t see them, and when I restart Tomcat the core is not seen by Solr&hellip;</li>
 <li>I got the core to load by adding it to <code>dspace/solr/solr.xml</code> manually, ie:</li>
 </ul>
-<pre><code>  &lt;cores adminPath=&quot;/admin/cores&quot;&gt;
+<pre tabindex="0"><code>  &lt;cores adminPath=&quot;/admin/cores&quot;&gt;
   ...
     &lt;core name=&quot;statistics&quot; instanceDir=&quot;statistics&quot; /&gt;
     &lt;core name=&quot;statistics-2019&quot; instanceDir=&quot;statistics&quot;&gt;
@@ -415,11 +415,11 @@ $ ./run.sh -s http://localhost:8080/solr/statistics-2019 -a import -o ~/Download
 <li>Just for fun I tried to load these stats into a Solr 7.7.2 instance using the DSpace 7 solr config:</li>
 <li>First, create a Solr statistics core using the DSpace 7 config:</li>
 </ul>
-<pre><code>$ ./bin/solr create_core -c statistics -d ~/src/git/DSpace/dspace/solr/statistics/conf -p 8983
+<pre tabindex="0"><code>$ ./bin/solr create_core -c statistics -d ~/src/git/DSpace/dspace/solr/statistics/conf -p 8983
 </code></pre><ul>
 <li>Then try to import the stats, skipping a shitload of fields that are apparently added to our Solr statistics by Atmire modules:</li>
 </ul>
-<pre><code>$ ./run.sh -s http://localhost:8983/solr/statistics -a import -o ~/Downloads/statistics-2019-01.json -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8983/solr/statistics -a import -o ~/Downloads/statistics-2019-01.json -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
 </code></pre><ul>
 <li>OK that imported! I wonder if it works&hellip; maybe I&rsquo;ll try another day</li>
 </ul>
@@ -433,7 +433,7 @@ $ ./run.sh -s http://localhost:8080/solr/statistics-2019 -a import -o ~/Download
 </ul>
 </li>
 </ul>
-<pre><code>$ cd ~/src/git/perf-map-agent
+<pre tabindex="0"><code>$ cd ~/src/git/perf-map-agent
 $ cmake     .
 $ make
 $ ./bin/create-links-in ~/.local/bin
@@ -467,7 +467,7 @@ $ perf-java-flames 11359
 <ul>
 <li>This weekend I did a lot more testing of indexing performance with our DSpace 5.8 branch, vanilla DSpace 5.10, and vanilla DSpace 6.4-SNAPSHOT:</li>
 </ul>
-<pre><code># CGSpace 5.8
+<pre tabindex="0"><code># CGSpace 5.8
 schedtool -D -e ~/dspace/bin/dspace index-discovery -b  385.72s user 131.16s system 19% cpu 43:21.18 total
 schedtool -D -e ~/dspace/bin/dspace index-discovery -b  382.95s user 127.31s system 20% cpu 42:10.07 total
 schedtool -D -e ~/dspace/bin/dspace index-discovery -b  368.56s user 143.97s system 20% cpu 42:22.66 total
@@ -483,7 +483,7 @@ schedtool -D -e ~/dspace63/bin/dspace index-discovery -b  5112.96s user 127.80s 
 </code></pre><ul>
 <li>I generated better flame graphs for the DSpace indexing process by using <code>perf-record-stack</code> and filtering out the java process:</li>
 </ul>
-<pre><code>$ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+<pre tabindex="0"><code>$ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
 $ export PERF_RECORD_SECONDS=60
 $ export JAVA_OPTS=&quot;-XX:+PreserveFramePointer&quot;
 $ time schedtool -D -e ~/dspace/bin/dspace index-discovery -b &amp;
@@ -525,14 +525,14 @@ $ cat out.dspace510-1 | ../FlameGraph/stackcollapse-perf.pl | grep -E '^java' | 
 <ul>
 <li>Maria from Bioversity asked me to add some ORCID iDs to our controlled vocabulary so I combined them with our existing ones and updated the names from the ORCID API:</li>
 </ul>
-<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcid-ids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2020-02-11-combined-orcids.txt
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcid-ids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2020-02-11-combined-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2020-02-11-combined-orcids.txt -o /tmp/2020-02-11-combined-names.txt -d
 # sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 </code></pre><ul>
 <li>Then I noticed some author names had changed, so I captured the old and new names in a CSV file and fixed them using <code>fix-metadata-values.py</code>:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2020-02-11-correct-orcid-ids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -t correct -m 240 -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2020-02-11-correct-orcid-ids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -t correct -m 240 -d
 </code></pre><ul>
 <li>On a hunch I decided to try to add these ORCID iDs to existing items that might not have them yet
 <ul>
@@ -540,7 +540,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 </li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Staver, Charles&quot;,charles staver: 0000-0002-4532-6077
 &quot;Staver, C.&quot;,charles staver: 0000-0002-4532-6077
 &quot;Fungo, R.&quot;,Robert Fungo: 0000-0002-4264-6905
@@ -556,7 +556,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </code></pre><ul>
 <li>Running the <code>add-orcid-identifiers-csv.py</code> script I added 144 ORCID iDs to items on CGSpace!</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i /tmp/2020-02-11-add-orcid-ids.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i /tmp/2020-02-11-add-orcid-ids.csv -db dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>Minor updates to all Python utility scripts in the CGSpace git repository</li>
 <li>Update the spider agent patterns in CGSpace <code>5_x-prod</code> branch from the latest <a href="https://github.com/atmire/COUNTER-Robots">COUNTER-Robots</a> project
@@ -575,7 +575,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </li>
 <li>Peter asked me to update John McIntire&rsquo;s name format on CGSpace so I ran the following PostgreSQL query:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value='McIntire, John M.' WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value='McIntire, John';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value='McIntire, John M.' WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value='McIntire, John';
 UPDATE 26
 </code></pre><h2 id="2020-02-17">2020-02-17</h2>
 <ul>
@@ -607,12 +607,12 @@ UPDATE 26
 <ul>
 <li>I see a new spider in the nginx logs on CGSpace:</li>
 </ul>
-<pre><code>Mozilla/5.0 (compatible;Linespider/1.1;+https://lin.ee/4dwXkTH)
+<pre tabindex="0"><code>Mozilla/5.0 (compatible;Linespider/1.1;+https://lin.ee/4dwXkTH)
 </code></pre><ul>
 <li>I think this should be covered by the <a href="https://github.com/atmire/COUNTER-Robots">COUNTER-Robots</a> patterns for the statistics at least&hellip;</li>
 <li>I see some IP (186.32.217.255) in Costa Rica making requests like a bot with the following user agent:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36
 </code></pre><ul>
 <li>Another IP address (31.6.77.23) in the UK making a few hundred requests without a user agent</li>
 <li>I will add the IP addresses to the nginx badbots list</li>
@@ -622,7 +622,7 @@ UPDATE 26
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=dns:/squeeze3.bronco.co.uk./&amp;rows=0&quot;
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=dns:/squeeze3.bronco.co.uk./&amp;rows=0&quot;
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;response&gt;
 &lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;4&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;dns:/squeeze3.bronco.co.uk./&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;86044&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
@@ -641,7 +641,7 @@ UPDATE 26
 </li>
 <li>I will purge them from each core one by one, ie:</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:squeeze3.bronco.co.uk.&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:squeeze3.bronco.co.uk.&lt;/query&gt;&lt;/delete&gt;&quot;
 $ curl -s &quot;http://localhost:8081/solr/statistics-2014/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:squeeze3.bronco.co.uk.&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><ul>
 <li>Deploy latest Tomcat and PostgreSQL JDBC driver changes on CGSpace (linode18)</li>
@@ -654,12 +654,12 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2014/update?softCommit=tru
 </li>
 <li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
 </ul>
-<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(183996) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>The solution is, as always:</li>
 </ul>
-<pre><code># su - postgres
+<pre tabindex="0"><code># su - postgres
 $ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (183996);'
 UPDATE 1
 </code></pre><ul>
@@ -671,7 +671,7 @@ UPDATE 1
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace user -a -m wow@me.com -g Felix -s Shaw -p 'fuananaaa'
+<pre tabindex="0"><code>$ dspace user -a -m wow@me.com -g Felix -s Shaw -p 'fuananaaa'
 </code></pre><ul>
 <li>For some reason the Atmire Content and Usage Analysis (CUA) module&rsquo;s Usage Statistics is drawing blank graphs
 <ul>
@@ -679,7 +679,7 @@ UPDATE 1
 </ul>
 </li>
 </ul>
-<pre><code>2020-02-23 11:28:13,696 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+<pre tabindex="0"><code>2020-02-23 11:28:13,696 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
 org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.NoClassDefFoundError: Could not
  initialize class org.jfree.chart.JFreeChart
 </code></pre><ul>
@@ -694,11 +694,11 @@ org.springframework.web.util.NestedServletException: Handler processing failed; 
 </li>
 <li>I copied the <code>jfreechart-1.0.5.jar</code> file to the Tomcat lib folder and then there was a different error when I loaded Atmire CUA:</li>
 </ul>
-<pre><code>2020-02-23 16:25:10,841 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!  org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper
+<pre tabindex="0"><code>2020-02-23 16:25:10,841 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!  org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper
 </code></pre><ul>
 <li>Some search results suggested commenting out the following line in <code>/etc/java-8-openjdk/accessibility.properties</code>:</li>
 </ul>
-<pre><code>assistive_technologies=org.GNOME.Accessibility.AtkWrapper
+<pre tabindex="0"><code>assistive_technologies=org.GNOME.Accessibility.AtkWrapper
 </code></pre><ul>
 <li>And removing the extra jfreechart library and restarting Tomcat I was able to load the usage statistics graph on DSpace Test&hellip;
 <ul>
@@ -708,7 +708,7 @@ org.springframework.web.util.NestedServletException: Handler processing failed; 
 </ul>
 </li>
 </ul>
-<pre><code># grep -c 'initialize class org.jfree.chart.JFreeChart' dspace.log.2020-0*
+<pre tabindex="0"><code># grep -c 'initialize class org.jfree.chart.JFreeChart' dspace.log.2020-0*
 dspace.log.2020-01-12:4
 dspace.log.2020-01-13:66
 dspace.log.2020-01-14:4
@@ -724,7 +724,7 @@ dspace.log.2020-01-21:4
 <li>I deployed the fix on CGSpace (linode18) and I was able to see the graphs in the Atmire CUA Usage Statistics&hellip;</li>
 <li>On an unrelated note there is something weird going on in that I see millions of hits from IP 34.218.226.147 in Solr statistics, but if I remember correctly that IP belongs to CodeObia&rsquo;s AReS explorer, but it should only be using REST and therefore no Solr statistics&hellip;?</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/select&quot; -d &quot;q=ip:34.218.226.147&amp;rows=0&quot;
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/select&quot; -d &quot;q=ip:34.218.226.147&amp;rows=0&quot;
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;response&gt;
 &lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;811&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;ip:34.218.226.147&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;5536097&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
@@ -732,7 +732,7 @@ dspace.log.2020-01-21:4
 </code></pre><ul>
 <li>And there are apparently two million from last month (2020-01):</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=ip:34.218.226.147&amp;fq=dateYearMonth:2020-01&amp;rows=0&quot;
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=ip:34.218.226.147&amp;fq=dateYearMonth:2020-01&amp;rows=0&quot;
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;response&gt;
 &lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;248&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;ip:34.218.226.147&lt;/str&gt;&lt;str name=&quot;fq&quot;&gt;dateYearMonth:2020-01&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;2173455&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
@@ -740,7 +740,7 @@ dspace.log.2020-01-21:4
 </code></pre><ul>
 <li>But when I look at the nginx access logs for the past month or so I only see 84,000, all of which are on <code>/rest</code> and none of which are to XMLUI:</li>
 </ul>
-<pre><code># zcat /var/log/nginx/*.log.*.gz | grep -c 34.218.226.147
+<pre tabindex="0"><code># zcat /var/log/nginx/*.log.*.gz | grep -c 34.218.226.147
 84322
 # zcat /var/log/nginx/*.log.*.gz | grep 34.218.226.147 | grep -c '/rest'
 84322
@@ -758,7 +758,7 @@ dspace.log.2020-01-21:4
 </li>
 <li>Anyways, I faceted by IP in 2020-01 and see:</li>
 </ul>
-<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=*:*&amp;fq=dateYearMonth:2020-01&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip'
+<pre tabindex="0"><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=*:*&amp;fq=dateYearMonth:2020-01&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip'
 ...
         &quot;172.104.229.92&quot;,2686876,
         &quot;34.218.226.147&quot;,2173455,
@@ -769,19 +769,19 @@ dspace.log.2020-01-21:4
 <li>Surprise surprise, the top two IPs are from AReS servers&hellip; wtf.</li>
 <li>The next three are from Online in France and they are all using this weird user agent and making tens of thousands of requests to Discovery:</li>
 </ul>
-<pre><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
+<pre tabindex="0"><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
 </code></pre><ul>
 <li>And all the same three are already inflating the statistics for 2020-02&hellip; hmmm.</li>
 <li>I need to see why AReS harvesting is inflating the stats, as it should only be making REST requests&hellip;</li>
 <li>Shiiiiit, I see 84,000 requests from the AReS IP today alone:</li>
 </ul>
-<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2020-02-22*+AND+ip:172.104.229.92&amp;rows=0&amp;wt=json&amp;indent=true'
+<pre tabindex="0"><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2020-02-22*+AND+ip:172.104.229.92&amp;rows=0&amp;wt=json&amp;indent=true'
 ...
   &quot;response&quot;:{&quot;numFound&quot;:84594,&quot;start&quot;:0,&quot;docs&quot;:[]
 </code></pre><ul>
 <li>Fuck! And of course the ILRI websites doing their daily REST harvesting are causing issues too, from today alone:</li>
 </ul>
-<pre><code>        &quot;2a01:7e00::f03c:91ff:fe9a:3a37&quot;,35512,
+<pre tabindex="0"><code>        &quot;2a01:7e00::f03c:91ff:fe9a:3a37&quot;,35512,
         &quot;2a01:7e00::f03c:91ff:fe18:7396&quot;,26155,
 </code></pre><ul>
 <li>I need to try to make some requests for these URLs and observe if they make a statistics hit:
@@ -793,7 +793,7 @@ dspace.log.2020-01-21:4
 <li>Those are the requests AReS and ILRI servers are making&hellip; nearly 150,000 per day!</li>
 <li>Well that settles it!</li>
 </ul>
-<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2020-02-23*+AND+statistics_type:view&amp;fq=ip:78.128.99.24&amp;rows=10&amp;wt=json&amp;indent=true' | grep numFound
+<pre tabindex="0"><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2020-02-23*+AND+statistics_type:view&amp;fq=ip:78.128.99.24&amp;rows=10&amp;wt=json&amp;indent=true' | grep numFound
   &quot;response&quot;:{&quot;numFound&quot;:12,&quot;start&quot;:0,&quot;docs&quot;:[
 $ curl -s 'https://dspacetest.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=50&amp;offset=82450'
 $ curl -s 'http://localhost:8081/solr/statistics/update?softCommit=true'
@@ -817,12 +817,12 @@ $ curl -s 'http://localhost:8081/solr/statistics/select?q=time:2020-02-23*+AND+s
 <li>I tried to add the IPs to our nginx IP bot mapping but it doesn&rsquo;t seem to work&hellip; WTF, why is everything broken?!</li>
 <li>Oh lord have mercy, the two AReS harvester IPs alone are responsible for 42 MILLION hits in 2019 and 2020 so far by themselves:</li>
 </ul>
-<pre><code>$ http 'http://localhost:8081/solr/statistics/select?q=ip:34.218.226.147+OR+ip:172.104.229.92&amp;rows=0&amp;wt=json&amp;indent=true' | grep numFound
+<pre tabindex="0"><code>$ http 'http://localhost:8081/solr/statistics/select?q=ip:34.218.226.147+OR+ip:172.104.229.92&amp;rows=0&amp;wt=json&amp;indent=true' | grep numFound
   &quot;response&quot;:{&quot;numFound&quot;:42395486,&quot;start&quot;:0,&quot;docs&quot;:[]
 </code></pre><ul>
 <li>I modified my <code>check-spider-hits.sh</code> script to create a version that works with IPs and purged 47 million stats from Solr on CGSpace:</li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f 2020-02-24-bot-ips.txt -s statistics -p
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f 2020-02-24-bot-ips.txt -s statistics -p
 Purging 22809216 hits from 34.218.226.147 in statistics
 Purging 19586270 hits from 172.104.229.92 in statistics
 Purging 111137 hits from 2a01:7e00::f03c:91ff:fe9a:3a37 in statistics
@@ -856,11 +856,11 @@ Total number of bot hits purged: 5535399
 </ul>
 </li>
 </ul>
-<pre><code>add_header X-debug-message &quot;ua is $ua&quot; always;
+<pre tabindex="0"><code>add_header X-debug-message &quot;ua is $ua&quot; always;
 </code></pre><ul>
 <li>Then in the HTTP response you see:</li>
 </ul>
-<pre><code>X-debug-message: ua is bot
+<pre tabindex="0"><code>X-debug-message: ua is bot
 </code></pre><ul>
 <li>So the IP to bot mapping is working, phew.</li>
 <li>More bad news, I checked the remaining IPs in our existing bot IP mapping, and there are statistics registered for them!
@@ -880,7 +880,7 @@ Total number of bot hits purged: 5535399
 <li>These IPs are all active in the REST API logs over the last few months and they account for <em>thirty-four million</em> more hits in the statistics!</li>
 <li>I purged them from CGSpace:</li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f /tmp/ips.txt -s statistics -p
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f /tmp/ips.txt -s statistics -p
 Purging 15 hits from 104.196.152.243 in statistics
 Purging 61064 hits from 35.237.175.180 in statistics
 Purging 1378 hits from 70.32.90.172 in statistics
@@ -910,7 +910,7 @@ Total number of bot hits purged: 1752548
 </li>
 <li>The client at 3.225.28.105 is using the following user agent:</li>
 </ul>
-<pre><code>Apache-HttpClient/4.3.4 (java 1.5)
+<pre tabindex="0"><code>Apache-HttpClient/4.3.4 (java 1.5)
 </code></pre><ul>
 <li>But I don&rsquo;t see any hits for it in the statistics core for some reason</li>
 <li>Looking more into the 2015 statistics I see some questionable IPs:
@@ -925,7 +925,7 @@ Total number of bot hits purged: 1752548
 </li>
 <li>For the IPs I purged them using <code>check-spider-ip-hits.sh</code>:</li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f /tmp/ips.txt -s statistics -p
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f /tmp/ips.txt -s statistics -p
 Purging 11478 hits from 95.110.154.135 in statistics
 Purging 1208 hits from 34.209.213.122 in statistics
 Purging 10 hits from 54.184.39.242 in statistics
@@ -966,7 +966,7 @@ Total number of bot hits purged: 2228
 </code></pre><ul>
 <li>Then I purged about 200,000 Baidu hits from the 2015 to 2019 statistics cores with a few manual delete queries because they didn&rsquo;t have a proper user agent and the only way to identify them was via DNS:</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:*crawl.baidu.com.&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;dns:*crawl.baidu.com.&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><ul>
 <li>Jesus, the more I keep looking, the more I see ridiculous stuff&hellip;</li>
 <li>In 2019 there were a few hundred thousand requests from CodeObia on Orange Jordan network&hellip;
@@ -982,7 +982,7 @@ Total number of bot hits purged: 2228
 <li>Also I see some IP in Greece making 130,000 requests with weird user agents: 143.233.242.130</li>
 <li>I purged a bunch more from all cores:</li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f /tmp/ips.txt -s statistics -p     
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -u http://localhost:8081/solr -f /tmp/ips.txt -s statistics -p     
 Purging 109965 hits from 45.5.186.2 in statistics
 Purging 78648 hits from 79.173.222.114 in statistics
 Purging 49032 hits from 149.200.141.57 in statistics
@@ -1024,7 +1024,7 @@ Total number of bot hits purged: 14110
 <li>Though looking in my REST logs for the last month I am second guessing my judgement on 45.5.186.2 because I see user agents like &ldquo;Microsoft Office Word 2014&rdquo;</li>
 <li>Actually no, the overwhelming majority of these are coming from something harvesting the REST API with no user agent:</li>
 </ul>
-<pre><code># zgrep 45.5.186.2 /var/log/nginx/rest.log.[1234]* | awk -F\&quot; '{print $6}' | sort | uniq -c | sort -h
+<pre tabindex="0"><code># zgrep 45.5.186.2 /var/log/nginx/rest.log.[1234]* | awk -F\&quot; '{print $6}' | sort | uniq -c | sort -h
       1 Microsoft Office Word 2014
       1 Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; Win64; x64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729; ms-office)
       1 Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729)
@@ -1038,7 +1038,7 @@ Total number of bot hits purged: 14110
 </code></pre><ul>
 <li>I see lots of requests coming from the following user agents:</li>
 </ul>
-<pre><code>&quot;Apache-HttpClient/4.5.7 (Java/11.0.3)&quot;
+<pre tabindex="0"><code>&quot;Apache-HttpClient/4.5.7 (Java/11.0.3)&quot;
 &quot;Apache-HttpClient/4.5.7 (Java/11.0.2)&quot;
 &quot;LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/4.3 +http://www.linkedin.com)&quot;
 &quot;EventMachine HttpClient&quot;
@@ -1054,7 +1054,7 @@ Total number of bot hits purged: 14110
 </li>
 <li>More weird user agents in 2019:</li>
 </ul>
-<pre><code>ecolink (+https://search.ecointernet.org/)
+<pre tabindex="0"><code>ecolink (+https://search.ecointernet.org/)
 ecoweb (+https://search.ecointernet.org/)
 EcoInternet http://www.ecointernet.org/
 EcoInternet http://ecointernet.org/
@@ -1062,12 +1062,12 @@ EcoInternet http://ecointernet.org/
 <ul>
 <li>And what&rsquo;s the 950,000 hits from Online.net IPs with the following user agent:</li>
 </ul>
-<pre><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
+<pre tabindex="0"><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
 </code></pre><ul>
 <li>Over half of the requests were to Discover and Browse pages, and the rest were to actual item pages, but they were within seconds of each other, so I&rsquo;m purging them all</li>
 <li>I looked deeper in the Solr statistics and found a bunch more weird user agents:</li>
 </ul>
-<pre><code>LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/4.3
+<pre tabindex="0"><code>LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/4.3
 EventMachine HttpClient
 ecolink (+https://search.ecointernet.org/)
 ecoweb (+https://search.ecointernet.org/)
@@ -1098,13 +1098,13 @@ HTTPie/1.0.2
 </ul>
 </li>
 </ul>
-<pre><code>Link.?Check
+<pre tabindex="0"><code>Link.?Check
 Http.?Client
 ecointernet
 </code></pre><ul>
 <li>That removes another 500,000 or so:</li>
 </ul>
-<pre><code>$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics -p
+<pre tabindex="0"><code>$ ./check-spider-hits.sh -u http://localhost:8081/solr -f /tmp/agents -s statistics -p
 Purging 253 hits from Jersey\/[0-9] in statistics
 Purging 7302 hits from Link.?Check in statistics
 Purging 85574 hits from Http.?Client in statistics
@@ -1171,12 +1171,12 @@ Total number of bot hits purged: 159
 </li>
 <li>I tried to migrate the 2019 Solr statistics again on CGSpace because the automatic sharding failed last month:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
 $ schedtool -D -e ionice -c2 -n7 dspace stats-util -s &gt;&gt; log/cron-stats-util.log.$(date --iso-8601)
 </code></pre><ul>
 <li>Interestingly I saw this in the Solr log:</li>
 </ul>
-<pre><code>2020-02-26 08:55:47,433 INFO  org.apache.solr.core.SolrCore @ [statistics-2019] Opening new SolrCore at [dspace]/solr/statistics/, dataDir=[dspace]/solr/statistics-2019/data/
+<pre tabindex="0"><code>2020-02-26 08:55:47,433 INFO  org.apache.solr.core.SolrCore @ [statistics-2019] Opening new SolrCore at [dspace]/solr/statistics/, dataDir=[dspace]/solr/statistics-2019/data/
 2020-02-26 08:55:47,511 INFO  org.apache.solr.servlet.SolrDispatchFilter @ [admin] webapp=null path=/admin/cores params={dataDir=[dspace]/solr/statistics-2019/data&amp;name=statistics-2019&amp;action=CREATE&amp;instanceDir=statistics&amp;wt=javabin&amp;version=2} status=0 QTime=590
 </code></pre><ul>
 <li>The process has been going for several hours now and I suspect it will fail eventually
@@ -1186,7 +1186,7 @@ $ schedtool -D -e ionice -c2 -n7 dspace stats-util -s &gt;&gt; log/cron-stats-ut
 </li>
 <li>Manually create a core in the DSpace 6.4-SNAPSHOT instance on my local environment:</li>
 </ul>
-<pre><code>$ curl 'http://localhost:8080/solr/admin/cores?action=CREATE&amp;name=statistics-2019&amp;instanceDir=/home/aorth/dspace63/solr/statistics&amp;dataDir=/home/aorth/dspace63/solr/statistics-2019/data'
+<pre tabindex="0"><code>$ curl 'http://localhost:8080/solr/admin/cores?action=CREATE&amp;name=statistics-2019&amp;instanceDir=/home/aorth/dspace63/solr/statistics&amp;dataDir=/home/aorth/dspace63/solr/statistics-2019/data'
 </code></pre><ul>
 <li>After that the <code>statistics-2019</code> core was immediately available in the Solr UI, but after restarting Tomcat it was gone
 <ul>
@@ -1195,11 +1195,11 @@ $ schedtool -D -e ionice -c2 -n7 dspace stats-util -s &gt;&gt; log/cron-stats-ut
 </li>
 <li>First export a small slice of 2019 stats from the main CGSpace <code>statistics</code> core, skipping Atmire schema additions:</li>
 </ul>
-<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2019-01-16.json -f 'time:2019-01-16*' -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2019-01-16.json -f 'time:2019-01-16*' -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
 </code></pre><ul>
 <li>Then import into my local <code>statistics</code> core:</li>
 </ul>
-<pre><code>$ ./run.sh -s http://localhost:8080/solr/statistics -a import -o ~/Downloads/statistics-2019-01-16.json -k uid
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8080/solr/statistics -a import -o ~/Downloads/statistics-2019-01-16.json -k uid
 $ ~/dspace63/bin/dspace stats-util -s
 Moving: 21993 into core statistics-2019
 </code></pre><ul>
@@ -1226,7 +1226,7 @@ Moving: 21993 into core statistics-2019
 </ul>
 </li>
 </ul>
-<pre><code>&lt;meta content=&quot;Thu hoạch v&amp;agrave; bảo quản c&amp;agrave; ph&amp;ecirc; ch&amp;egrave; đ&amp;uacute;ng kỹ thuật (Harvesting and storing Arabica coffee)&quot; name=&quot;citation_title&quot;&gt;
+<pre tabindex="0"><code>&lt;meta content=&quot;Thu hoạch v&amp;agrave; bảo quản c&amp;agrave; ph&amp;ecirc; ch&amp;egrave; đ&amp;uacute;ng kỹ thuật (Harvesting and storing Arabica coffee)&quot; name=&quot;citation_title&quot;&gt;
 &lt;meta name=&quot;citation_title&quot; content=&quot;Thu hoạch và bảo quản cà phê chè đúng kỹ thuật (Harvesting and storing Arabica coffee)&quot; /&gt;
 </code></pre><ul>
 <li><a href="https://jira.lyrasis.org/browse/DS-4397">DS-4397 controlled vocabulary loading speedup</a></li>
@@ -1250,7 +1250,7 @@ Moving: 21993 into core statistics-2019
 </li>
 <li>I added some debugging to the Solr core loading in DSpace 6.4-SNAPSHOT (<code>SolrLoggerServiceImpl.java</code>) and I see this when DSpace starts up now:</li>
 </ul>
-<pre><code>2020-02-27 12:26:35,695 INFO  org.dspace.statistics.SolrLoggerServiceImpl @ Alan Ping of Solr Core [statistics-2019] Failed with [org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException].  New Core Will be Created
+<pre tabindex="0"><code>2020-02-27 12:26:35,695 INFO  org.dspace.statistics.SolrLoggerServiceImpl @ Alan Ping of Solr Core [statistics-2019] Failed with [org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException].  New Core Will be Created
 </code></pre><ul>
 <li>When I check Solr I see the <code>statistics-2019</code> core loaded (from <code>stats-util -s</code> yesterday, not manually created)</li>
 </ul>

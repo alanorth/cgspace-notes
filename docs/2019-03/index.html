@@ -46,7 +46,7 @@ Most worryingly, there are encoding errors in the abstracts for eleven items, fo
 
 I think I will need to ask Udana to re-copy and paste the abstracts with more care using Google Docs
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -151,7 +151,7 @@ I think I will need to ask Udana to re-copy and paste the abstracts with more ca
 <ul>
 <li>Trying to finally upload IITA&rsquo;s 259 Feb 14 items to CGSpace so I exported them from DSpace Test:</li>
 </ul>
-<pre><code>$ mkdir 2019-03-03-IITA-Feb14
+<pre tabindex="0"><code>$ mkdir 2019-03-03-IITA-Feb14
 $ dspace export -i 10568/108684 -t COLLECTION -m -n 0 -d 2019-03-03-IITA-Feb14
 </code></pre><ul>
 <li>As I was inspecting the archive I noticed that there were some problems with the bitsreams:
@@ -163,7 +163,7 @@ $ dspace export -i 10568/108684 -t COLLECTION -m -n 0 -d 2019-03-03-IITA-Feb14
 </li>
 <li>After adding the missing bitstreams and descriptions manually I tested them again locally, then imported them to a temporary collection on CGSpace:</li>
 </ul>
-<pre><code>$ dspace import -a -c 10568/99832 -e aorth@stfu.com -m 2019-03-03-IITA-Feb14.map -s /tmp/2019-03-03-IITA-Feb14
+<pre tabindex="0"><code>$ dspace import -a -c 10568/99832 -e aorth@stfu.com -m 2019-03-03-IITA-Feb14.map -s /tmp/2019-03-03-IITA-Feb14
 </code></pre><ul>
 <li>DSpace&rsquo;s export function doesn&rsquo;t include the collections for some reason, so you need to import them somewhere first, then export the collection metadata and re-map the items to proper owning collections based on their types using OpenRefine or something</li>
 <li>After re-importing to CGSpace to apply the mappings, I deleted the collection on DSpace Test and ran the <code>dspace cleanup</code> script</li>
@@ -180,7 +180,7 @@ $ dspace export -i 10568/108684 -t COLLECTION -m -n 0 -d 2019-03-03-IITA-Feb14
 <li>I suspect it&rsquo;s related to the email issue that ICT hasn&rsquo;t responded about since last week</li>
 <li>As I thought, I still cannot send emails from CGSpace:</li>
 </ul>
-<pre><code>$ dspace test-email
+<pre tabindex="0"><code>$ dspace test-email
 
 About to send test email:
  - To: blah@stfu.com
@@ -197,7 +197,7 @@ Error sending email:
 <li>ICT reset the email password and I confirmed that it is working now</li>
 <li>Generate a controlled vocabulary of 1187 AGROVOC subjects from the top 1500 that I checked last month, dumping the terms themselves using <code>csvcut</code> and then applying XML controlled vocabulary format in vim and then checking with tidy for good measure:</li>
 </ul>
-<pre><code>$ csvcut -c name 2019-02-22-subjects.csv &gt; dspace/config/controlled-vocabularies/dc-contributor-author.xml
+<pre tabindex="0"><code>$ csvcut -c name 2019-02-22-subjects.csv &gt; dspace/config/controlled-vocabularies/dc-contributor-author.xml
 $ # apply formatting in XML file
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.xml
 </code></pre><ul>
@@ -217,7 +217,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.x
 </ul>
 </li>
 </ul>
-<pre><code># journalctl -u tomcat7 | grep -c 'Multiple update components target the same field:solr_update_time_stamp'
+<pre tabindex="0"><code># journalctl -u tomcat7 | grep -c 'Multiple update components target the same field:solr_update_time_stamp'
 1076
 </code></pre><ul>
 <li>I restarted Tomcat and it&rsquo;s OK now&hellip;</li>
@@ -238,11 +238,11 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/dc-subject.x
 <li>The FireOak report highlights the fact that several CGSpace collections have mixed-content errors due to the use of HTTP links in the Feedburner forms</li>
 <li>I see 46 occurrences of these with this query:</li>
 </ul>
-<pre><code>dspace=# SELECT text_value FROM metadatavalue WHERE resource_type_id in (3,4) AND (text_value LIKE '%http://feedburner.%' OR text_value LIKE '%http://feeds.feedburner.%');
+<pre tabindex="0"><code>dspace=# SELECT text_value FROM metadatavalue WHERE resource_type_id in (3,4) AND (text_value LIKE '%http://feedburner.%' OR text_value LIKE '%http://feeds.feedburner.%');
 </code></pre><ul>
 <li>I can replace these globally using the following SQL:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'http://feedburner.','https//feedburner.', 'g') WHERE resource_type_id in (3,4) AND text_value LIKE '%http://feedburner.%';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'http://feedburner.','https//feedburner.', 'g') WHERE resource_type_id in (3,4) AND text_value LIKE '%http://feedburner.%';
 UPDATE 43
 dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'http://feeds.feedburner.','https//feeds.feedburner.', 'g') WHERE resource_type_id in (3,4) AND text_value LIKE '%http://feeds.feedburner.%';
 UPDATE 44
@@ -254,7 +254,7 @@ UPDATE 44
 <li>Working on tagging IITA&rsquo;s items with their new research theme (<code>cg.identifier.iitatheme</code>) based on their existing IITA subjects (see <a href="/cgspace-notes/2018-02/">notes from 2019-02</a>)</li>
 <li>I exported the entire IITA community from CGSpace and then used <code>csvcut</code> to extract only the needed fields:</li>
 </ul>
-<pre><code>$ csvcut -c 'id,cg.subject.iita,cg.subject.iita[],cg.subject.iita[en],cg.subject.iita[en_US]' ~/Downloads/10568-68616.csv &gt; /tmp/iita.csv
+<pre tabindex="0"><code>$ csvcut -c 'id,cg.subject.iita,cg.subject.iita[],cg.subject.iita[en],cg.subject.iita[en_US]' ~/Downloads/10568-68616.csv &gt; /tmp/iita.csv
 </code></pre><ul>
 <li>
 <p>After importing to OpenRefine I realized that tagging items based on their subjects is tricky because of the row/record mode of OpenRefine when you split the multi-value cells as well as the fact that some items might need to be tagged twice (thus needing a <code>||</code>)</p>
@@ -263,7 +263,7 @@ UPDATE 44
 <p>I think it might actually be easier to filter by IITA subject, then by IITA theme (if needed), and then do transformations with some conditional values in GREL expressions like:</p>
 </li>
 </ul>
-<pre><code>if(isBlank(value), 'PLANT PRODUCTION &amp; HEALTH', value + '||PLANT PRODUCTION &amp; HEALTH')
+<pre tabindex="0"><code>if(isBlank(value), 'PLANT PRODUCTION &amp; HEALTH', value + '||PLANT PRODUCTION &amp; HEALTH')
 </code></pre><ul>
 <li>Then it&rsquo;s more annoying because there are four IITA subject columns&hellip;</li>
 <li>In total this would add research themes to 1,755 items</li>
@@ -288,7 +288,7 @@ UPDATE 44
 </li>
 <li>This is a bit ugly, but it works (using the <a href="https://wiki.lyrasis.org/display/DSPACE/Helper+SQL+functions+for+DSpace+5">DSpace 5 SQL helper function</a> to resolve ID to handle):</li>
 </ul>
-<pre><code>for id in $(psql -U postgres -d dspacetest -h localhost -c &quot;SELECT resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=228 AND text_value LIKE '%SWAZILAND%'&quot; | grep -oE '[0-9]{3,}'); do
+<pre tabindex="0"><code>for id in $(psql -U postgres -d dspacetest -h localhost -c &quot;SELECT resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=228 AND text_value LIKE '%SWAZILAND%'&quot; | grep -oE '[0-9]{3,}'); do
 
     echo &quot;Getting handle for id: ${id}&quot;
 
@@ -300,7 +300,7 @@ done
 </code></pre><ul>
 <li>Then I couldn&rsquo;t figure out a clever way to join all the CSVs, so I just grepped them to find the IDs with dates from 2018 and 2019 and there are apparently only three:</li>
 </ul>
-<pre><code>$ grep -oE '201[89]' /tmp/*.csv | sort -u
+<pre tabindex="0"><code>$ grep -oE '201[89]' /tmp/*.csv | sort -u
 /tmp/94834.csv:2018
 /tmp/95615.csv:2018
 /tmp/96747.csv:2018
@@ -314,7 +314,7 @@ done
 <li>CGSpace (linode18) has the blank page error again</li>
 <li>I&rsquo;m not sure if it&rsquo;s related, but I see the following error in DSpace&rsquo;s log:</li>
 </ul>
-<pre><code>2019-03-15 14:09:32,685 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
+<pre tabindex="0"><code>2019-03-15 14:09:32,685 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
 java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@55ba10b5 is closed.
         at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
         at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
@@ -326,7 +326,7 @@ java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@55ba10b5 is c
 </code></pre><ul>
 <li>Interestingly, I see a pattern of these errors increasing, with single and double digit numbers over the past month, <del>but spikes of over 1,000 today</del>, yesterday, and on 2019-03-08, which was exactly the first time we saw this blank page error recently</li>
 </ul>
-<pre><code>$ grep -I 'SQL QueryTable Error' dspace.log.2019-0* | awk -F: '{print $1}' | sort | uniq -c | tail -n 25
+<pre tabindex="0"><code>$ grep -I 'SQL QueryTable Error' dspace.log.2019-0* | awk -F: '{print $1}' | sort | uniq -c | tail -n 25
       5 dspace.log.2019-02-27
      11 dspace.log.2019-02-28
      29 dspace.log.2019-03-01
@@ -356,14 +356,14 @@ java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@55ba10b5 is c
 <li>(Update on 2019-03-23 to use correct grep query)</li>
 <li>There are not too many connections currently in PostgreSQL:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       6 dspaceApi
      10 dspaceCli
      15 dspaceWeb
 </code></pre><ul>
 <li>I didn&rsquo;t see anything interesting in the PostgreSQL logs, though this stack trace from the Tomcat logs (in the systemd journal) from earlier today <em>might</em> be related?</li>
 </ul>
-<pre><code>SEVERE: Servlet.service() for servlet [spring] in context with path [] threw exception [org.springframework.web.util.NestedServletException: Request processing failed; nested exception is java.util.EmptyStackException] with root cause
+<pre tabindex="0"><code>SEVERE: Servlet.service() for servlet [spring] in context with path [] threw exception [org.springframework.web.util.NestedServletException: Request processing failed; nested exception is java.util.EmptyStackException] with root cause
 java.util.EmptyStackException
         at java.util.Stack.peek(Stack.java:102)
         at java.util.Stack.pop(Stack.java:84)
@@ -436,13 +436,13 @@ java.util.EmptyStackException
 <li>I copied the 2019 Solr statistics core from CGSpace to DSpace Test and it works (and is only 5.5GB currently), so now we have some useful stats on DSpace Test for the CUA module and the dspace-statistics-api</li>
 <li>I ran DSpace&rsquo;s cleanup task on CGSpace (linode18) and there were errors:</li>
 </ul>
-<pre><code>$ dspace cleanup -v
+<pre tabindex="0"><code>$ dspace cleanup -v
 Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(164496) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>The solution is, as always:</li>
 </ul>
-<pre><code># su - postgres
+<pre tabindex="0"><code># su - postgres
 $ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (164496);'
 UPDATE 1
 </code></pre><h2 id="2019-03-18">2019-03-18</h2>
@@ -455,7 +455,7 @@ UPDATE 1
 </li>
 <li>Dump top 1500 subjects from CGSpace to try one more time to generate a list of invalid terms using my <code>agrovoc-lookup.py</code> script:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-03-18-top-1500-subject.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-03-18-top-1500-subject.csv WITH CSV HEADER;
 COPY 1500
 dspace=# \q
 $ csvcut -c text_value /tmp/2019-03-18-top-1500-subject.csv &gt; 2019-03-18-top-1500-subject.csv
@@ -474,7 +474,7 @@ $ wc -l 2019-03-18-subjects-unmatched.txt
 <li>Create and merge a pull request to update the controlled vocabulary for AGROVOC terms (<a href="https://github.com/ilri/DSpace/pull/416">#416</a>)</li>
 <li>We are getting the blank page issue on CGSpace again today and I see a <del>large number</del> of the &ldquo;SQL QueryTable Error&rdquo; in the DSpace log again (last time was 2019-03-15):</li>
 </ul>
-<pre><code>$ grep -c 'SQL QueryTable Error' dspace.log.2019-03-1[5678]
+<pre tabindex="0"><code>$ grep -c 'SQL QueryTable Error' dspace.log.2019-03-1[5678]
 dspace.log.2019-03-15:929
 dspace.log.2019-03-16:67
 dspace.log.2019-03-17:72
@@ -482,7 +482,7 @@ dspace.log.2019-03-18:1038
 </code></pre><ul>
 <li>Though WTF, this grep seems to be giving weird inaccurate results actually, and the real number of errors is much lower if I exclude the &ldquo;binary file matches&rdquo; result with <code>-I</code>:</li>
 </ul>
-<pre><code>$ grep -I 'SQL QueryTable Error' dspace.log.2019-03-18 | wc -l
+<pre tabindex="0"><code>$ grep -I 'SQL QueryTable Error' dspace.log.2019-03-18 | wc -l
 8
 $ grep -I 'SQL QueryTable Error' dspace.log.2019-03-{08,14,15,16,17,18} | awk -F: '{print $1}' | sort | uniq -c
       9 dspace.log.2019-03-08
@@ -495,7 +495,7 @@ $ grep -I 'SQL QueryTable Error' dspace.log.2019-03-{08,14,15,16,17,18} | awk -F
 <li>It seems to be something with grep doing binary matching on some log files for some reason, so I guess I need to always use <code>-I</code> to say binary files don&rsquo;t match</li>
 <li>Anyways, the full error in DSpace&rsquo;s log is:</li>
 </ul>
-<pre><code>2019-03-18 12:26:23,331 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error - 
+<pre tabindex="0"><code>2019-03-18 12:26:23,331 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error - 
 java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@75eaa668 is closed.
         at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.checkOpen(DelegatingConnection.java:398)
         at org.apache.tomcat.dbcp.dbcp.DelegatingConnection.prepareStatement(DelegatingConnection.java:279)
@@ -504,7 +504,7 @@ java.sql.SQLException: Connection org.postgresql.jdbc.PgConnection@75eaa668 is c
 </code></pre><ul>
 <li>There is a low number of connections to PostgreSQL currently:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | wc -l
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | wc -l
 33
 $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       6 dspaceApi
@@ -513,13 +513,13 @@ $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|ds
 </code></pre><ul>
 <li>I looked in the PostgreSQL logs, but all I see are a bunch of these errors going back two months to January:</li>
 </ul>
-<pre><code>2019-01-13 06:25:13.062 CET [9157] postgres@template1 ERROR:  column &quot;waiting&quot; does not exist at character 217
+<pre tabindex="0"><code>2019-01-13 06:25:13.062 CET [9157] postgres@template1 ERROR:  column &quot;waiting&quot; does not exist at character 217
 </code></pre><ul>
 <li>This is unrelated and apparently due to <a href="https://github.com/munin-monitoring/munin/issues/746">Munin checking a column that was changed in PostgreSQL 9.6</a></li>
 <li>I suspect that this issue with the blank pages might not be PostgreSQL after all, perhaps it&rsquo;s a Cocoon thing?</li>
 <li>Looking in the cocoon logs I see a large number of warnings about &ldquo;Can not load requested doc&rdquo; around 11AM and 12PM:</li>
 </ul>
-<pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-18 | grep -oE '2019-03-18 [0-9]{2}:' | sort | uniq -c
+<pre tabindex="0"><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-18 | grep -oE '2019-03-18 [0-9]{2}:' | sort | uniq -c
       2 2019-03-18 00:
       6 2019-03-18 02:
       3 2019-03-18 04:
@@ -535,7 +535,7 @@ $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|ds
 </code></pre><ul>
 <li>And a few days ago on 2019-03-15 when I happened last it was in the afternoon when it happened and the same pattern occurs then around 1–2PM:</li>
 </ul>
-<pre><code>$ xzgrep 'Can not load requested doc' cocoon.log.2019-03-15.xz | grep -oE '2019-03-15 [0-9]{2}:' | sort | uniq -c
+<pre tabindex="0"><code>$ xzgrep 'Can not load requested doc' cocoon.log.2019-03-15.xz | grep -oE '2019-03-15 [0-9]{2}:' | sort | uniq -c
       4 2019-03-15 01:
       3 2019-03-15 02:
       1 2019-03-15 03:
@@ -561,7 +561,7 @@ $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|ds
 </code></pre><ul>
 <li>And again on 2019-03-08, surprise surprise, it happened in the morning:</li>
 </ul>
-<pre><code>$ xzgrep 'Can not load requested doc' cocoon.log.2019-03-08.xz | grep -oE '2019-03-08 [0-9]{2}:' | sort | uniq -c
+<pre tabindex="0"><code>$ xzgrep 'Can not load requested doc' cocoon.log.2019-03-08.xz | grep -oE '2019-03-08 [0-9]{2}:' | sort | uniq -c
      11 2019-03-08 01:
       3 2019-03-08 02:
       1 2019-03-08 03:
@@ -581,7 +581,7 @@ $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|ds
 <li>I found a handful of AGROVOC subjects that use a non-breaking space (0x00a0) instead of a regular space, which makes for a pretty confusing debugging&hellip;</li>
 <li>I will replace these in the database immediately to save myself the headache later:</li>
 </ul>
-<pre><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = 57 AND text_value ~ '.+\u00a0.+';
+<pre tabindex="0"><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id = 57 AND text_value ~ '.+\u00a0.+';
  count 
 -------
     84
@@ -591,7 +591,7 @@ $ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|ds
 <li>CGSpace (linode18) is having problems with Solr again, I&rsquo;m seeing &ldquo;Error opening new searcher&rdquo; in the Solr logs and there are no stats for previous years</li>
 <li>Apparently the Solr statistics shards didn&rsquo;t load properly when we restarted Tomcat <em>yesterday</em>:</li>
 </ul>
-<pre><code>2019-03-18 12:32:39,799 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2018]: Error opening new searcher
+<pre tabindex="0"><code>2019-03-18 12:32:39,799 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2018]: Error opening new searcher
 ...
 Caused by: org.apache.solr.common.SolrException: Error opening new searcher
         at org.apache.solr.core.SolrCore.openNewSearcher(SolrCore.java:1565)
@@ -603,7 +603,7 @@ Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed 
 <li>For reference, I don&rsquo;t see the <code>ulimit -v unlimited</code> in the <code>catalina.sh</code> script, though the <code>tomcat7</code> systemd service has <code>LimitAS=infinity</code></li>
 <li>The limits of the current Tomcat java process are:</li>
 </ul>
-<pre><code># cat /proc/27182/limits 
+<pre tabindex="0"><code># cat /proc/27182/limits 
 Limit                     Soft Limit           Hard Limit           Units     
 Max cpu time              unlimited            unlimited            seconds   
 Max file size             unlimited            unlimited            bytes     
@@ -629,7 +629,7 @@ Max realtime timeout      unlimited            unlimited            us
 </li>
 <li>For now I will just stop Tomcat, delete Solr locks, then start Tomcat again:</li>
 </ul>
-<pre><code># systemctl stop tomcat7
+<pre tabindex="0"><code># systemctl stop tomcat7
 # find /home/cgspace.cgiar.org/solr/ -iname &quot;*.lock&quot; -delete
 # systemctl start tomcat7
 </code></pre><ul>
@@ -660,7 +660,7 @@ Max realtime timeout      unlimited            unlimited            us
 <ul>
 <li>It&rsquo;s been two days since we had the blank page issue on CGSpace, and looking in the Cocoon logs I see very low numbers of the errors that we were seeing the last time the issue occurred:</li>
 </ul>
-<pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-20 | grep -oE '2019-03-20 [0-9]{2}:' | sort | uniq -c
+<pre tabindex="0"><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-20 | grep -oE '2019-03-20 [0-9]{2}:' | sort | uniq -c
       3 2019-03-20 00:
      12 2019-03-20 02:
 $ grep 'Can not load requested doc' cocoon.log.2019-03-21 | grep -oE '2019-03-21 [0-9]{2}:' | sort | uniq -c
@@ -704,7 +704,7 @@ $ grep 'Can not load requested doc' cocoon.log.2019-03-21 | grep -oE '2019-03-21
 <ul>
 <li>CGSpace (linode18) is having the blank page issue again and it seems to have started last night around 21:00:</li>
 </ul>
-<pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-22 | grep -oE '2019-03-22 [0-9]{2}:' | sort | uniq -c
+<pre tabindex="0"><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-22 | grep -oE '2019-03-22 [0-9]{2}:' | sort | uniq -c
       2 2019-03-22 00:
      69 2019-03-22 01:
       1 2019-03-22 02:
@@ -742,7 +742,7 @@ $ grep 'Can not load requested doc' cocoon.log.2019-03-23 | grep -oE '2019-03-23
 <li>I was curious to see if clearing the Cocoon cache in the XMLUI control panel would fix it, but it didn&rsquo;t</li>
 <li>Trying to drill down more, I see that the bulk of the errors started aroundi 21:20:</li>
 </ul>
-<pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-22 | grep -oE '2019-03-22 21:[0-9]' | sort | uniq -c
+<pre tabindex="0"><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-22 | grep -oE '2019-03-22 21:[0-9]' | sort | uniq -c
       1 2019-03-22 21:0
       1 2019-03-22 21:1
      59 2019-03-22 21:2
@@ -752,11 +752,11 @@ $ grep 'Can not load requested doc' cocoon.log.2019-03-23 | grep -oE '2019-03-23
 </code></pre><ul>
 <li>Looking at the Cocoon log around that time I see the full error is:</li>
 </ul>
-<pre><code>2019-03-22 21:21:34,378 WARN  org.apache.cocoon.components.xslt.TraxErrorListener  - Can not load requested doc: unknown protocol: cocoon at jndi:/localhost/themes/CIAT/xsl/../../0_CGIAR/xsl//aspect/artifactbrowser/common.xsl:141:90
+<pre tabindex="0"><code>2019-03-22 21:21:34,378 WARN  org.apache.cocoon.components.xslt.TraxErrorListener  - Can not load requested doc: unknown protocol: cocoon at jndi:/localhost/themes/CIAT/xsl/../../0_CGIAR/xsl//aspect/artifactbrowser/common.xsl:141:90
 </code></pre><ul>
 <li>A few milliseconds before that time I see this in the DSpace log:</li>
 </ul>
-<pre><code>2019-03-22 21:21:34,356 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
+<pre tabindex="0"><code>2019-03-22 21:21:34,356 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error -
 org.postgresql.util.PSQLException: This statement has been closed.
         at org.postgresql.jdbc.PgStatement.checkClosed(PgStatement.java:694)
         at org.postgresql.jdbc.PgStatement.getMaxRows(PgStatement.java:501)
@@ -824,7 +824,7 @@ org.postgresql.util.PSQLException: This statement has been closed.
 <li>I did some more tests with the <a href="https://github.com/gnosly/TomcatJdbcConnectionTest">TomcatJdbcConnectionTest</a> thing and while monitoring the number of active connections in jconsole and after adjusting the limits quite low I eventually saw some connections get abandoned</li>
 <li>I forgot that to connect to a remote JMX session with jconsole you need to use a dynamic SSH SOCKS proxy (as I originally <a href="/cgspace-notes/2017-11/">discovered in 2017-11</a>:</li>
 </ul>
-<pre><code>$ jconsole -J-DsocksProxyHost=localhost -J-DsocksProxyPort=3000 service:jmx:rmi:///jndi/rmi://localhost:5400/jmxrmi -J-DsocksNonProxyHosts=
+<pre tabindex="0"><code>$ jconsole -J-DsocksProxyHost=localhost -J-DsocksProxyPort=3000 service:jmx:rmi:///jndi/rmi://localhost:5400/jmxrmi -J-DsocksNonProxyHosts=
 </code></pre><ul>
 <li>I need to remember to check the active connections next time we have issues with blank item pages on CGSpace</li>
 <li>In other news, I&rsquo;ve been running G1GC on DSpace Test (linode19) since 2018-11-08 without realizing it, which is probably a good thing</li>
@@ -855,7 +855,7 @@ org.postgresql.util.PSQLException: This statement has been closed.
 </li>
 <li>Also, CGSpace doesn&rsquo;t have many Cocoon errors yet this morning:</li>
 </ul>
-<pre><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-25 | grep -oE '2019-03-25 [0-9]{2}:' | sort | uniq -c
+<pre tabindex="0"><code>$ grep 'Can not load requested doc' cocoon.log.2019-03-25 | grep -oE '2019-03-25 [0-9]{2}:' | sort | uniq -c
       4 2019-03-25 00:
       1 2019-03-25 01:
 </code></pre><ul>
@@ -869,7 +869,7 @@ org.postgresql.util.PSQLException: This statement has been closed.
 <li>Uptime Robot reported that CGSpace went down and I see the load is very high</li>
 <li>The top IPs around the time in the nginx API and web logs were:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;25/Mar/2019:(18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;25/Mar/2019:(18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
       9 190.252.43.162
      12 157.55.39.140
      18 157.55.39.54
@@ -894,16 +894,16 @@ org.postgresql.util.PSQLException: This statement has been closed.
 </code></pre><ul>
 <li>The IPs look pretty normal except we&rsquo;ve never seen <code>93.179.69.74</code> before, and it uses the following user agent:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.20 Safari/535.1
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.20 Safari/535.1
 </code></pre><ul>
 <li>Surprisingly they are re-using their Tomcat session:</li>
 </ul>
-<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=93.179.69.74' dspace.log.2019-03-25 | sort | uniq | wc -l
+<pre tabindex="0"><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=93.179.69.74' dspace.log.2019-03-25 | sort | uniq | wc -l
 1
 </code></pre><ul>
 <li>That&rsquo;s weird because the total number of sessions today seems low compared to recent days:</li>
 </ul>
-<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-25 | sort -u | wc -l
+<pre tabindex="0"><code>$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-25 | sort -u | wc -l
 5657
 $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-24 | sort -u | wc -l
 17710
@@ -914,7 +914,7 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
 </code></pre><ul>
 <li>PostgreSQL seems to be pretty busy:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
      11 dspaceApi
      10 dspaceCli
      67 dspaceWeb
@@ -931,7 +931,7 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
 <li>UptimeRobot says CGSpace went down again and I see the load is again at 14.0!</li>
 <li>Here are the top IPs in nginx logs in the last hour:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;26/Mar/2019:(06|07)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10 
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{oai,rest,statistics}.log /var/log/nginx/{oai,rest,statistics}.log.1 | grep -E &quot;26/Mar/2019:(06|07)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10 
       3 35.174.184.209
       3 66.249.66.81
       4 104.198.9.108
@@ -960,7 +960,7 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
 <li>I will add these three to the &ldquo;bad bot&rdquo; rate limiting that I originally used for Baidu</li>
 <li>Going further, these are the IPs making requests to Discovery and Browse pages so far today:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;(discover|browse)&quot; | grep -E &quot;26/Mar/2019:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;(discover|browse)&quot; | grep -E &quot;26/Mar/2019:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     120 34.207.146.166
     128 3.91.79.74
     132 108.179.57.67
@@ -978,7 +978,7 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
 <li>I can only hope that this helps the load go down because all this traffic is disrupting the service for normal users and well-behaved bots (and interrupting my dinner and breakfast)</li>
 <li>Looking at the database usage I&rsquo;m wondering why there are so many connections from the DSpace CLI:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
        5 dspaceApi
      10 dspaceCli
      13 dspaceWeb
@@ -987,19 +987,19 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-03-22 | sort -u | wc -l
 <li>Make a minor edit to my <code>agrovoc-lookup.py</code> script to match subject terms with parentheses like <code>COCOA (PLANT)</code></li>
 <li>Test 89 corrections and 79 deletions for AGROVOC subject terms from the ones I cleaned up in the last week</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-03-26-AGROVOC-89-corrections.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d -n
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-03-26-AGROVOC-89-corrections.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d -n
 $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db dspace -u dspace -p 'fuuu' -m 57 -f dc.subject -d -n
 </code></pre><ul>
 <li>UptimeRobot says CGSpace is down again, but it seems to just be slow, as the load is over 10.0</li>
 <li>Looking at the nginx logs I don&rsquo;t see anything terribly abusive, but SemrushBot has made ~3,000 requests to Discovery and Browse pages today:</li>
 </ul>
-<pre><code># grep SemrushBot /var/log/nginx/access.log | grep -E &quot;26/Mar/2019&quot; | grep -E '(discover|browse)' | wc -l
+<pre tabindex="0"><code># grep SemrushBot /var/log/nginx/access.log | grep -E &quot;26/Mar/2019&quot; | grep -E '(discover|browse)' | wc -l
 2931
 </code></pre><ul>
 <li>So I&rsquo;m adding it to the badbot rate limiting in nginx, and actually, I kinda feel like just blocking all user agents with &ldquo;bot&rdquo; in the name for a few days to see if things calm down&hellip; maybe not just yet</li>
 <li>Otherwise, these are the top users in the web and API logs the last hour (18–19):</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;26/Mar/2019:(18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10 
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;26/Mar/2019:(18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10 
      54 41.216.228.158
      65 199.47.87.140
      75 157.55.39.238
@@ -1025,7 +1025,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 <li>For the XMLUI I see <code>18.195.78.144</code> and <code>18.196.196.108</code> requesting only CTA items and with no user agent</li>
 <li>They are responsible for almost 1,000 XMLUI sessions today:</li>
 </ul>
-<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=(18.195.78.144|18.196.196.108)' dspace.log.2019-03-26 | sort | uniq | wc -l
+<pre tabindex="0"><code>$ grep -o -E 'session_id=[A-Z0-9]{32}:ip_addr=(18.195.78.144|18.196.196.108)' dspace.log.2019-03-26 | sort | uniq | wc -l
 937
 </code></pre><ul>
 <li>I will add their IPs to the list of bot IPs in nginx so I can tag them as bots to let Tomcat&rsquo;s Crawler Session Manager Valve to force them to re-use their session</li>
@@ -1033,19 +1033,19 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 <li>I will add curl to the Tomcat Crawler Session Manager because anyone using curl is most likely an automated read-only request</li>
 <li>I will add GuzzleHttp to the nginx badbots rate limiting, because it is making requests to dynamic Discovery pages</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep 45.5.184.72 | grep -E &quot;26/Mar/2019:&quot; | grep -E '(discover|browse)' | wc -l                                        
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep 45.5.184.72 | grep -E &quot;26/Mar/2019:&quot; | grep -E '(discover|browse)' | wc -l                                        
 119
 </code></pre><ul>
 <li>What&rsquo;s strange is that I can&rsquo;t see any of their requests in the DSpace log&hellip;</li>
 </ul>
-<pre><code>$ grep -I -c 45.5.184.72 dspace.log.2019-03-26 
+<pre tabindex="0"><code>$ grep -I -c 45.5.184.72 dspace.log.2019-03-26 
 0
 </code></pre><h2 id="2019-03-28">2019-03-28</h2>
 <ul>
 <li>Run the corrections and deletions to AGROVOC (dc.subject) on DSpace Test and CGSpace, and then start a full re-index of Discovery</li>
 <li>What the hell is going on with this CTA publication?</li>
 </ul>
-<pre><code># grep Spore-192-EN-web.pdf /var/log/nginx/access.log | awk '{print $1}' | sort | uniq -c | sort -n
+<pre tabindex="0"><code># grep Spore-192-EN-web.pdf /var/log/nginx/access.log | awk '{print $1}' | sort | uniq -c | sort -n
       1 37.48.65.147
       1 80.113.172.162
       2 108.174.5.117
@@ -1077,7 +1077,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 </li>
 <li>In other news, I see that it&rsquo;s not even the end of the month yet and we have 3.6 million hits already:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
+<pre tabindex="0"><code># zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
 3654911
 </code></pre><ul>
 <li>In other other news I see that DSpace has no statistics for years before 2019 currently, yet when I connect to Solr I see all the cores up</li>
@@ -1105,7 +1105,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-03-26-AGROVOC-79-deletions.csv -db ds
 <li>It is frustrating to see that the load spikes for own own legitimate load on the server were <em>very</em> aggravated and drawn out by the contention for CPU on this host</li>
 <li>We had 4.2 million hits this month according to the web server logs:</li>
 </ul>
-<pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
+<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2019&quot;
 4218841
 
 real    0m26.609s
@@ -1114,7 +1114,7 @@ sys     0m2.551s
 </code></pre><ul>
 <li>Interestingly, now that the CPU steal is not an issue the REST API is ten seconds faster than it was in <a href="/cgspace-notes/2018-10/">2018-10</a>:</li>
 </ul>
-<pre><code>$ time http --print h 'https://cgspace.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
+<pre tabindex="0"><code>$ time http --print h 'https://cgspace.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
 ...
 0.33s user 0.07s system 2% cpu 17.167 total
 0.27s user 0.04s system 1% cpu 16.643 total
@@ -1137,7 +1137,7 @@ sys     0m2.551s
 <li>Looking at the weird issue with shitloads of downloads on the <a href="https://cgspace.cgiar.org/handle/10568/100289">CTA item</a> again</li>
 <li>The item was added on 2019-03-13 and these three IPs have attempted to download the item&rsquo;s bitstream 43,000 times since it was added eighteen days ago:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.{2..17}.gz | grep 'Spore-192-EN-web.pdf' | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 5
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.{2..17}.gz | grep 'Spore-192-EN-web.pdf' | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 5
      42 196.43.180.134
     621 185.247.144.227
    8102 18.194.46.84
@@ -1152,7 +1152,7 @@ sys     0m2.551s
 </ul>
 </li>
 </ul>
-<pre><code>2019-03-29 09:10:07,311 ERROR org.dspace.rest.Resource @ Could not delete collection(id=1451), AuthorizeException. Message: org.dspace.authorize.AuthorizeException: Authorization denied for action ADMIN on COLLECTION:1451 by user 9492
+<pre tabindex="0"><code>2019-03-29 09:10:07,311 ERROR org.dspace.rest.Resource @ Could not delete collection(id=1451), AuthorizeException. Message: org.dspace.authorize.AuthorizeException: Authorization denied for action ADMIN on COLLECTION:1451 by user 9492
 </code></pre><ul>
 <li>IWMI people emailed to ask why two items with the same DOI don&rsquo;t have the same Altmetric score:
 <ul>
@@ -1168,15 +1168,15 @@ sys     0m2.551s
 </ul>
 </li>
 </ul>
-<pre><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
+<pre tabindex="0"><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
 </code></pre><ul>
 <li>The response paylod for the second one is the same:</li>
 </ul>
-<pre><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
+<pre tabindex="0"><code>_altmetric.embed_callback({&quot;title&quot;:&quot;Distilling the role of ecosystem services in the Sustainable Development Goals&quot;,&quot;doi&quot;:&quot;10.1016/j.ecoser.2017.10.010&quot;,&quot;tq&quot;:[&quot;Progress on 12 of 17 #SDGs rely on #ecosystemservices - new paper co-authored by a number of&quot;,&quot;Distilling the role of ecosystem services in the Sustainable Development Goals - new paper by @SNAPPartnership researchers&quot;,&quot;How do #ecosystemservices underpin the #SDGs? Our new paper starts counting the ways. Check it out in the link below!&quot;,&quot;Excellent paper about the contribution of #ecosystemservices to SDGs&quot;,&quot;So great to work with amazing collaborators&quot;],&quot;altmetric_jid&quot;:&quot;521611533cf058827c00000a&quot;,&quot;issns&quot;:[&quot;2212-0416&quot;],&quot;journal&quot;:&quot;Ecosystem Services&quot;,&quot;cohorts&quot;:{&quot;sci&quot;:58,&quot;pub&quot;:239,&quot;doc&quot;:3,&quot;com&quot;:2},&quot;context&quot;:{&quot;all&quot;:{&quot;count&quot;:12732768,&quot;mean&quot;:7.8220956572788,&quot;rank&quot;:56146,&quot;pct&quot;:99,&quot;higher_than&quot;:12676701},&quot;journal&quot;:{&quot;count&quot;:549,&quot;mean&quot;:7.7567299270073,&quot;rank&quot;:2,&quot;pct&quot;:99,&quot;higher_than&quot;:547},&quot;similar_age_3m&quot;:{&quot;count&quot;:386919,&quot;mean&quot;:11.573702536454,&quot;rank&quot;:3299,&quot;pct&quot;:99,&quot;higher_than&quot;:383619},&quot;similar_age_journal_3m&quot;:{&quot;count&quot;:28,&quot;mean&quot;:9.5648148148148,&quot;rank&quot;:1,&quot;pct&quot;:96,&quot;higher_than&quot;:27}},&quot;authors&quot;:[&quot;Sylvia L.R. Wood&quot;,&quot;Sarah K. Jones&quot;,&quot;Justin A. Johnson&quot;,&quot;Kate A. Brauman&quot;,&quot;Rebecca Chaplin-Kramer&quot;,&quot;Alexander Fremier&quot;,&quot;Evan Girvetz&quot;,&quot;Line J. Gordon&quot;,&quot;Carrie V. Kappel&quot;,&quot;Lisa Mandle&quot;,&quot;Mark Mulligan&quot;,&quot;Patrick O'Farrell&quot;,&quot;William K. Smith&quot;,&quot;Louise Willemen&quot;,&quot;Wei Zhang&quot;,&quot;Fabrice A. DeClerck&quot;],&quot;type&quot;:&quot;article&quot;,&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],&quot;handle&quot;:&quot;10568/89975&quot;,&quot;altmetric_id&quot;:29816439,&quot;schema&quot;:&quot;1.5.4&quot;,&quot;is_oa&quot;:false,&quot;cited_by_posts_count&quot;:377,&quot;cited_by_tweeters_count&quot;:302,&quot;cited_by_fbwalls_count&quot;:1,&quot;cited_by_gplus_count&quot;:1,&quot;cited_by_policies_count&quot;:2,&quot;cited_by_accounts_count&quot;:306,&quot;last_updated&quot;:1554039125,&quot;score&quot;:208.65,&quot;history&quot;:{&quot;1y&quot;:54.75,&quot;6m&quot;:10.35,&quot;3m&quot;:5.5,&quot;1m&quot;:5.5,&quot;1w&quot;:1.5,&quot;6d&quot;:1.5,&quot;5d&quot;:1.5,&quot;4d&quot;:1.5,&quot;3d&quot;:1.5,&quot;2d&quot;:1,&quot;1d&quot;:1,&quot;at&quot;:208.65},&quot;url&quot;:&quot;http://dx.doi.org/10.1016/j.ecoser.2017.10.010&quot;,&quot;added_on&quot;:1512153726,&quot;published_on&quot;:1517443200,&quot;readers&quot;:{&quot;citeulike&quot;:0,&quot;mendeley&quot;:248,&quot;connotea&quot;:0},&quot;readers_count&quot;:248,&quot;images&quot;:{&quot;small&quot;:&quot;https://badges.altmetric.com/?size=64&amp;score=209&amp;types=tttttfdg&quot;,&quot;medium&quot;:&quot;https://badges.altmetric.com/?size=100&amp;score=209&amp;types=tttttfdg&quot;,&quot;large&quot;:&quot;https://badges.altmetric.com/?size=180&amp;score=209&amp;types=tttttfdg&quot;},&quot;details_url&quot;:&quot;http://www.altmetric.com/details.php?citation_id=29816439&quot;})
 </code></pre><ul>
 <li>Very interesting to see this in the response:</li>
 </ul>
-<pre><code>&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],
+<pre tabindex="0"><code>&quot;handles&quot;:[&quot;10568/89975&quot;,&quot;10568/89846&quot;],
 &quot;handle&quot;:&quot;10568/89975&quot;
 </code></pre><ul>
 <li>On further inspection I see that the Altmetric explorer pages for each of these Handles is actually doing the right thing:

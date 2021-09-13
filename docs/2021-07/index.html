@@ -30,7 +30,7 @@ Export another list of ALL subjects on CGSpace, including AGROVOC and non-AGROVO
 localhost/dspace63= &gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
 COPY 20994
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -120,13 +120,13 @@ COPY 20994
 <ul>
 <li>Export another list of ALL subjects on CGSpace, including AGROVOC and non-AGROVOC for Enrico:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
 COPY 20994
 </code></pre><h2 id="2021-07-04">2021-07-04</h2>
 <ul>
 <li>Update all Docker containers on the AReS server (linode20) and rebuild OpenRXV:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cd OpenRXV
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cd OpenRXV
 $ docker-compose -f docker/docker-compose.yml down
 $ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
 $ docker-compose -f docker/docker-compose.yml build
@@ -172,7 +172,7 @@ $ docker-compose -f docker/docker-compose.yml build
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f /tmp/spiders -p
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f /tmp/spiders -p
 Purging 95 hits from Drupal in statistics
 Purging 38 hits from DTS Agent in statistics
 Purging 601 hits from Microsoft Office Existence Discovery in statistics
@@ -189,7 +189,7 @@ Total number of bot hits purged: 15030
 <li>Meet with the CGIAR–AGROVOC task group to discuss how we want to do the workflow for submitting new terms to AGROVOC</li>
 <li>I extracted another list of all subjects to check against AGROVOC:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">\COPY (SELECT DISTINCT(LOWER(text_value)) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-06-all-subjects.csv WITH CSV HEADER;
+<pre tabindex="0"><code class="language-console" data-lang="console">\COPY (SELECT DISTINCT(LOWER(text_value)) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-06-all-subjects.csv WITH CSV HEADER;
 $ csvcut -c 1 /tmp/2021-07-06-all-subjects.csv | sed 1d &gt; /tmp/2021-07-06-all-subjects.txt
 $ ./ilri/agrovoc-lookup.py -i /tmp/2021-07-06-all-subjects.txt -o /tmp/2021-07-06-agrovoc-results-all-subjects.csv -d
 </code></pre><ul>
@@ -205,7 +205,7 @@ $ ./ilri/agrovoc-lookup.py -i /tmp/2021-07-06-all-subjects.txt -o /tmp/2021-07-0
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console"># for num in {10..26}; do echo &quot;2021-06-$num&quot;; zcat /var/log/nginx/access.log.*.gz /var/log/nginx/library-access.log.*.gz | grep &quot;$num/Jun/2021&quot; | awk '{print $1}' | sort | uniq | wc -l; done
+<pre tabindex="0"><code class="language-console" data-lang="console"># for num in {10..26}; do echo &quot;2021-06-$num&quot;; zcat /var/log/nginx/access.log.*.gz /var/log/nginx/library-access.log.*.gz | grep &quot;$num/Jun/2021&quot; | awk '{print $1}' | sort | uniq | wc -l; done
 2021-06-10
 10693
 2021-06-11
@@ -243,7 +243,7 @@ $ ./ilri/agrovoc-lookup.py -i /tmp/2021-07-06-all-subjects.txt -o /tmp/2021-07-0
 </code></pre><ul>
 <li>Similarly, the number of connections to the REST API was around the average for the recent weeks before:</li>
 </ul>
-<pre><code class="language-console" data-lang="console"># for num in {10..26}; do echo &quot;2021-06-$num&quot;; zcat /var/log/nginx/rest.*.gz | grep &quot;$num/Jun/2021&quot; | awk '{print $1}' | sort | uniq | wc -l; done
+<pre tabindex="0"><code class="language-console" data-lang="console"># for num in {10..26}; do echo &quot;2021-06-$num&quot;; zcat /var/log/nginx/rest.*.gz | grep &quot;$num/Jun/2021&quot; | awk '{print $1}' | sort | uniq | wc -l; done
 2021-06-10
 1183
 2021-06-11
@@ -281,7 +281,7 @@ $ ./ilri/agrovoc-lookup.py -i /tmp/2021-07-06-all-subjects.txt -o /tmp/2021-07-0
 </code></pre><ul>
 <li>According to goaccess, the traffic spike started at 2AM (remember that the first &ldquo;Pool empty&rdquo; error in dspace.log was at 4:01AM):</li>
 </ul>
-<pre><code class="language-console" data-lang="console"># zcat /var/log/nginx/access.log.1[45].gz /var/log/nginx/library-access.log.1[45].gz | grep -E '23/Jun/2021' | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code class="language-console" data-lang="console"># zcat /var/log/nginx/access.log.1[45].gz /var/log/nginx/library-access.log.1[45].gz | grep -E '23/Jun/2021' | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>Moayad sent a fix for the add missing items plugins issue (<a href="https://github.com/ilri/OpenRXV/pull/107">#107</a>)
 <ul>
@@ -311,7 +311,7 @@ $ ./ilri/agrovoc-lookup.py -i /tmp/2021-07-06-all-subjects.txt -o /tmp/2021-07-0
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 2302
 postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 2564
@@ -320,7 +320,7 @@ postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activi
 </code></pre><ul>
 <li>The locks are held by XMLUI, not REST API or OAI:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | grep -o -E '(dspaceWeb|dspaceApi)' | sort | uniq -c | sort -n
+<pre tabindex="0"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | grep -o -E '(dspaceWeb|dspaceApi)' | sort | uniq -c | sort -n
      57 dspaceApi
    2671 dspaceWeb
 </code></pre><ul>
@@ -338,7 +338,7 @@ postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activi
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console"># grepcidr 91.243.191.0/24 /var/log/nginx/access.log | awk '{print $1}' | sort | uniq -c | sort -n
+<pre tabindex="0"><code class="language-console" data-lang="console"># grepcidr 91.243.191.0/24 /var/log/nginx/access.log | awk '{print $1}' | sort | uniq -c | sort -n
      32 91.243.191.124
      33 91.243.191.129
      33 91.243.191.200
@@ -392,7 +392,7 @@ postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activi
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./asn -n 45.80.217.235  
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./asn -n 45.80.217.235  
 
 ╭──────────────────────────────╮
 │ ASN lookup for 45.80.217.235 │
@@ -410,7 +410,7 @@ postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activi
 </code></pre><ul>
 <li>Slowly slowly I manually built up a list of the IPs, ISP names, and network blocks, for example:</li>
 </ul>
-<pre><code class="language-csv" data-lang="csv">IP, Organization, Website, Network
+<pre tabindex="0"><code class="language-csv" data-lang="csv">IP, Organization, Website, Network
 45.148.126.246, TrafficTransitSolution LLC, traffictransitsolution.us, 45.148.126.0/24 (Net-traffictransitsolution-15)
 45.138.102.253, TrafficTransitSolution LLC, traffictransitsolution.us, 45.138.102.0/24 (Net-traffictransitsolution-11)
 45.140.205.104, Bulgakov Alexey Yurievich, finegroupservers.com, 45.140.204.0/23 (CHINA_NETWORK)
@@ -496,17 +496,17 @@ postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activi
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console"># grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; /var/log/nginx/access.log | awk '{print $1}' | sort | uniq  &gt; /tmp/ips-sorted.txt
+<pre tabindex="0"><code class="language-console" data-lang="console"># grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; /var/log/nginx/access.log | awk '{print $1}' | sort | uniq  &gt; /tmp/ips-sorted.txt
 # wc -l /tmp/ips-sorted.txt 
 10776 /tmp/ips-sorted.txt
 </code></pre><ul>
 <li>Then resolve them all:</li>
 </ul>
-<pre><code class="language-console:" data-lang="console:">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/ips-sorted.txt -o /tmp/out.csv
+<pre tabindex="0"><code class="language-console:" data-lang="console:">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/ips-sorted.txt -o /tmp/out.csv
 </code></pre><ul>
 <li>Then get the top 10 organizations and top ten ASNs:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ csvcut -c 2 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 2 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10
     213 AMAZON-AES
     218 ASN-QUADRANET-GLOBAL
     246 Silverstar Invest Limited
@@ -531,7 +531,7 @@ $ csvcut -c 3 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10
 </code></pre><ul>
 <li>I will download blocklists for all these except Ethiopian Telecom, Quadranet, and Amazon, though I&rsquo;m concerned about Global Layer because it&rsquo;s a huge ASN that seems to have legit hosts too&hellip;?</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ wget https://asn.ipinfo.app/api/text/nginx/AS49453
+<pre tabindex="0"><code class="language-console" data-lang="console">$ wget https://asn.ipinfo.app/api/text/nginx/AS49453
 $ wget https://asn.ipinfo.app/api/text/nginx/AS46844
 $ wget https://asn.ipinfo.app/api/text/nginx/AS206485
 $ wget https://asn.ipinfo.app/api/text/nginx/AS62282
@@ -543,7 +543,7 @@ $ wc -l /tmp/abusive-networks.txt
 </code></pre><ul>
 <li>Combining with my existing rules and filtering uniques:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat roles/dspace/templates/nginx/abusive-networks.conf.j2 /tmp/abusive-networks.txt | grep deny | sort | uniq | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat roles/dspace/templates/nginx/abusive-networks.conf.j2 /tmp/abusive-networks.txt | grep deny | sort | uniq | wc -l
 2298
 </code></pre><ul>
 <li><a href="https://scamalytics.com/ip/isp/2021-06">According to Scamalytics all these are high risk ISPs</a> (as recently as 2021-06) so I will just keep blocking them</li>
@@ -558,7 +558,7 @@ $ wc -l /tmp/abusive-networks.txt
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ sudo zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2 | grep -E &quot; (200|499) &quot; | awk '{print $1}' | sort | uniq &gt; /tmp/all-ips.txt
+<pre tabindex="0"><code class="language-console" data-lang="console">$ sudo zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2 | grep -E &quot; (200|499) &quot; | awk '{print $1}' | sort | uniq &gt; /tmp/all-ips.txt
 $ ./ilri/resolve-addresses-geoip2.py -i /tmp/all-ips.txt -o /tmp/all-ips-out.csv
 $ csvgrep -c asn -r '^(206485|35624|36352|46844|49453|62282)$' /tmp/all-ips-out.csv | csvcut -c ip | sed 1d | sort | uniq &gt; /tmp/all-ips-to-block.txt
 $ wc -l /tmp/all-ips-to-block.txt 
@@ -571,7 +571,7 @@ $ wc -l /tmp/all-ips-to-block.txt
 </li>
 <li>I decided to extract the networks from the GeoIP database with <code>resolve-addresses-geoip2.py</code> so I can block them more efficiently than using the 5,000 IPs in an ipset:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ csvgrep -c asn -r '^(206485|35624|36352|46844|49453|62282)$' /tmp/all-ips-out.csv | csvcut -c network | sed 1d | sort | uniq &gt; /tmp/all-networks-to-block.txt
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvgrep -c asn -r '^(206485|35624|36352|46844|49453|62282)$' /tmp/all-ips-out.csv | csvcut -c network | sed 1d | sort | uniq &gt; /tmp/all-networks-to-block.txt
 $ grep deny roles/dspace/templates/nginx/abusive-networks.conf.j2 | sort | uniq | wc -l
 2354
 </code></pre><ul>
@@ -582,7 +582,7 @@ $ grep deny roles/dspace/templates/nginx/abusive-networks.conf.j2 | sort | uniq 
 </li>
 <li>Then I got a list of all the 5,095 IPs from above and used <code>check-spider-ip-hits.sh</code> to purge them from Solr:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ilri/check-spider-ip-hits.sh -f /tmp/all-ips-to-block.txt -p
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ilri/check-spider-ip-hits.sh -f /tmp/all-ips-to-block.txt -p
 ...
 Total number of bot hits purged: 197116
 </code></pre><ul>
@@ -592,13 +592,13 @@ Total number of bot hits purged: 197116
 <ul>
 <li>Looking again at the IPs making connections to CGSpace over the last few days from these seven ASNs, it&rsquo;s much higher than I noticed yesterday:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624)$' /tmp/out.csv | csvcut -c ip | sed 1d | sort | uniq | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624)$' /tmp/out.csv | csvcut -c ip | sed 1d | sort | uniq | wc -l
 5643
 </code></pre><ul>
 <li>I purged 27,000 more hits from the Solr stats using this new list of IPs with my <code>check-spider-ip-hits.sh</code> script</li>
 <li>Surprise surprise, I checked the nginx logs from 2021-06-23 when we last had issues with thousands of XMLUI sessions and PostgreSQL connections and I see IPs from the same ASNs!</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ sudo zcat --force /var/log/nginx/access.log.27.gz /var/log/nginx/access.log.28.gz | grep -E &quot; (200|499) &quot; | grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; | awk '{print $1}' | sort | uniq &gt; /tmp/all-ips-june-23.txt
+<pre tabindex="0"><code class="language-console" data-lang="console">$ sudo zcat --force /var/log/nginx/access.log.27.gz /var/log/nginx/access.log.28.gz | grep -E &quot; (200|499) &quot; | grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; | awk '{print $1}' | sort | uniq &gt; /tmp/all-ips-june-23.txt
 $ ./ilri/resolve-addresses-geoip2.py -i /tmp/all-ips-june-23.txt -o /tmp/out.csv
 $ csvcut -c 2,4 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 15
     265 GOOGLE,15169
@@ -619,12 +619,12 @@ $ csvcut -c 2,4 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 15
 </code></pre><ul>
 <li>Again it was over 5,000 IPs:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624)$' /tmp/out.csv | csvcut -c ip | sed 1d | sort | uniq | wc -l         
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624)$' /tmp/out.csv | csvcut -c ip | sed 1d | sort | uniq | wc -l         
 5228
 </code></pre><ul>
 <li>Interestingly, it seems these are five thousand <em>different</em> IP addresses than the attack from last weekend, as there are over 10,000 unique ones if I combine them!</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat /tmp/ips-june23.txt /tmp/ips-jul16.txt | sort | uniq | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat /tmp/ips-june23.txt /tmp/ips-jul16.txt | sort | uniq | wc -l
 10458
 </code></pre><ul>
 <li>I purged all the (26,000) hits from these new IP addresses from Solr as well</li>
@@ -636,7 +636,7 @@ $ csvcut -c 2,4 /tmp/out.csv | sed 1d | sort | uniq -c | sort -n | tail -n 15
 </li>
 <li>Adding QuadraNet brings the total networks seen during these two attacks to 262, and the number of unique IPs to 10900:</li>
 </ul>
-<pre><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2 /var/log/nginx/access.log.3 /var/log/nginx/access.log.4 /var/log/nginx/access.log.5 /var/log/nginx/access.log.27.gz /var/log/nginx/access.log.28.gz | grep -E &quot; (200|499) &quot; | grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; | awk '{print $1}' | sort | uniq &gt; /tmp/ddos-ips.txt
+<pre tabindex="0"><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2 /var/log/nginx/access.log.3 /var/log/nginx/access.log.4 /var/log/nginx/access.log.5 /var/log/nginx/access.log.27.gz /var/log/nginx/access.log.28.gz | grep -E &quot; (200|499) &quot; | grep -v -E &quot;(mahider|Googlebot|Turnitin|Grammarly|Unpaywall|UptimeRobot|bot)&quot; | awk '{print $1}' | sort | uniq &gt; /tmp/ddos-ips.txt
 # wc -l /tmp/ddos-ips.txt 
 54002 /tmp/ddos-ips.txt
 $ ./ilri/resolve-addresses-geoip2.py -i /tmp/ddos-ips.txt -o /tmp/ddos-ips.csv
@@ -649,7 +649,7 @@ $ wc -l /tmp/ddos-networks-to-block.txt
 </code></pre><ul>
 <li>The new total number of networks to block, including the network prefixes for these ASNs downloaded from asn.ipinfo.app, is 4,007:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ wget https://asn.ipinfo.app/api/text/nginx/AS49453 \
+<pre tabindex="0"><code class="language-console" data-lang="console">$ wget https://asn.ipinfo.app/api/text/nginx/AS49453 \
 https://asn.ipinfo.app/api/text/nginx/AS46844 \
 https://asn.ipinfo.app/api/text/nginx/AS206485 \
 https://asn.ipinfo.app/api/text/nginx/AS62282 \

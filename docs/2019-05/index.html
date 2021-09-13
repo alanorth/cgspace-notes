@@ -48,7 +48,7 @@ DELETE 1
 
 But after this I tried to delete the item from the XMLUI and it is still present&hellip;
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -145,7 +145,7 @@ But after this I tried to delete the item from the XMLUI and it is still present
 </li>
 <li>The item seems to be in a pre-submitted state, so I tried to delete it from there:</li>
 </ul>
-<pre><code>dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+<pre tabindex="0"><code>dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 DELETE 1
 </code></pre><ul>
 <li>But after this I tried to delete the item from the XMLUI and it is <em>still</em> present&hellip;</li>
@@ -158,7 +158,7 @@ DELETE 1
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# DELETE FROM metadatavalue WHERE resource_id=74648;
+<pre tabindex="0"><code>dspace=# DELETE FROM metadatavalue WHERE resource_id=74648;
 dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 dspace=# DELETE FROM item WHERE item_id=74648;
 </code></pre><ul>
@@ -168,12 +168,12 @@ dspace=# DELETE FROM item WHERE item_id=74648;
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -f -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
+<pre tabindex="0"><code>$ curl -f -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
 curl: (22) The requested URL returned error: 401 Unauthorized
 </code></pre><ul>
 <li>The DSpace log shows the item ID (because I modified the error text):</li>
 </ul>
-<pre><code>2019-05-01 11:41:11,069 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item(id=77708)!
+<pre tabindex="0"><code>2019-05-01 11:41:11,069 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item(id=77708)!
 </code></pre><ul>
 <li>If I delete that one I get another, making the list of item IDs so far:
 <ul>
@@ -202,7 +202,7 @@ curl: (22) The requested URL returned error: 401 Unauthorized
 </ul>
 </li>
 </ul>
-<pre><code>https://cgspace.cgiar.org/rest/collections/1179/items?limit=812&amp;expand=metadata
+<pre tabindex="0"><code>https://cgspace.cgiar.org/rest/collections/1179/items?limit=812&amp;expand=metadata
 </code></pre><h2 id="2019-05-03">2019-05-03</h2>
 <ul>
 <li>A user from CIAT emailed to say that CGSpace submission emails have not been working the last few weeks
@@ -211,7 +211,7 @@ curl: (22) The requested URL returned error: 401 Unauthorized
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace test-email
+<pre tabindex="0"><code>$ dspace test-email
 
 About to send test email:
  - To: woohoo@cgiar.org
@@ -255,11 +255,11 @@ Please see the DSpace documentation for assistance.
 </ul>
 </li>
 </ul>
-<pre><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
+<pre tabindex="0"><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
 </code></pre><ul>
 <li>As well as this error in the logs:</li>
 </ul>
-<pre><code>Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
+<pre tabindex="0"><code>Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
 </code></pre><ul>
 <li>Strangely enough, I <em>do</em> see the statistics-2018, statistics-2017, etc cores in the Admin UI&hellip;</li>
 <li>I restarted Tomcat a few times (and even deleted all the Solr write locks) and at least five times there were issues loading one statistics core, causing the Atmire stats to be incomplete
@@ -282,7 +282,7 @@ Please see the DSpace documentation for assistance.
 <ul>
 <li>The number of unique sessions today is <em>ridiculously</em> high compared to the last few days considering it&rsquo;s only 12:30PM right now:</li>
 </ul>
-<pre><code>$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-05-06 | sort | uniq | wc -l
+<pre tabindex="0"><code>$ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-05-06 | sort | uniq | wc -l
 101108
 $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-05-05 | sort | uniq | wc -l
 14618
@@ -297,7 +297,7 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-05-01 | sort | uniq | wc 
 </code></pre><ul>
 <li>The number of unique IP addresses from 2 to 6 AM this morning is already several times higher than the average for that time of the morning this past week:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | awk '{print $1}' | sort | uniq | wc -l
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | awk '{print $1}' | sort | uniq | wc -l
 7127
 # zcat --force /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep -E '05/May/2019:(02|03|04|05|06)' | awk '{print $1}' | sort | uniq | wc -l
 1231
@@ -312,7 +312,7 @@ $ grep -o -E 'session_id=[A-Z0-9]{32}' dspace.log.2019-05-01 | sort | uniq | wc 
 </code></pre><ul>
 <li>Just this morning between the hours of 2 and 6 the number of unique sessions was <em>very</em> high compared to previous mornings:</li>
 </ul>
-<pre><code>$ cat dspace.log.2019-05-06 | grep -E '2019-05-06 (02|03|04|05|06):' | grep -o -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2019-05-06 | grep -E '2019-05-06 (02|03|04|05|06):' | grep -o -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 83650
 $ cat dspace.log.2019-05-05 | grep -E '2019-05-05 (02|03|04|05|06):' | grep -o -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 2547
@@ -327,7 +327,7 @@ $ cat dspace.log.2019-05-01 | grep -E '2019-05-01 (02|03|04|05|06):' | grep -o -
 </code></pre><ul>
 <li>Most of the requests were GETs:</li>
 </ul>
-<pre><code># cat /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -o -E &quot;(GET|HEAD|POST|PUT)&quot; | sort | uniq -c | sort -n
+<pre tabindex="0"><code># cat /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -o -E &quot;(GET|HEAD|POST|PUT)&quot; | sort | uniq -c | sort -n
       1 PUT
      98 POST
    2845 HEAD
@@ -336,19 +336,19 @@ $ cat dspace.log.2019-05-01 | grep -E '2019-05-01 (02|03|04|05|06):' | grep -o -
 <li>I&rsquo;m not exactly sure what happened this morning, but it looks like some legitimate user traffic—perhaps someone launched a new publication and it got a bunch of hits?</li>
 <li>Looking again, I see 84,000 requests to <code>/handle</code> this morning (not including logs for library.cgiar.org because those get HTTP 301 redirect to CGSpace and appear here in <code>access.log</code>):</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -c -o -E &quot; /handle/[0-9]+/[0-9]+&quot;
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -c -o -E &quot; /handle/[0-9]+/[0-9]+&quot;
 84350
 </code></pre><ul>
 <li>But it would be difficult to find a pattern for those requests because they cover 78,000 <em>unique</em> Handles (ie direct browsing of items, collections, or communities) and only 2,492 discover/browse (total, not unique):</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -o -E &quot; /handle/[0-9]+/[0-9]+ HTTP&quot; | sort | uniq | wc -l
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -o -E &quot; /handle/[0-9]+/[0-9]+ HTTP&quot; | sort | uniq | wc -l
 78104
 # cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '06/May/2019:(02|03|04|05|06)' | grep -o -E &quot; /handle/[0-9]+/[0-9]+/(discover|browse)&quot; | wc -l
 2492
 </code></pre><ul>
 <li>In other news, I see some IP is making several requests per second to the exact same REST API endpoints, for example:</li>
 </ul>
-<pre><code># grep /rest/handle/10568/3703?expand=all rest.log | awk '{print $1}' | sort | uniq -c
+<pre tabindex="0"><code># grep /rest/handle/10568/3703?expand=all rest.log | awk '{print $1}' | sort | uniq -c
       3 2a01:7e00::f03c:91ff:fe0a:d645
     113 63.32.242.35
 </code></pre><ul>
@@ -363,7 +363,7 @@ $ cat dspace.log.2019-05-01 | grep -E '2019-05-01 (02|03|04|05|06):' | grep -o -
 <ul>
 <li>The total number of unique IPs on CGSpace yesterday was almost 14,000, which is several thousand higher than previous day totals:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep -E '06/May/2019' | awk '{print $1}' | sort | uniq | wc -l
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep -E '06/May/2019' | awk '{print $1}' | sort | uniq | wc -l
 13969
 # zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E '05/May/2019' | awk '{print $1}' | sort | uniq | wc -l
 5936
@@ -374,7 +374,7 @@ $ cat dspace.log.2019-05-01 | grep -E '2019-05-01 (02|03|04|05|06):' | grep -o -
 </code></pre><ul>
 <li>Total number of sessions yesterday was <em>much</em> higher compared to days last week:</li>
 </ul>
-<pre><code>$ cat dspace.log.2019-05-06 | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2019-05-06 | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 144160
 $ cat dspace.log.2019-05-05 | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
 57269
@@ -407,7 +407,7 @@ $ cat dspace.log.2019-05-01 | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | 
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace test-email
+<pre tabindex="0"><code>$ dspace test-email
 
 About to send test email:
  - To: wooooo@cgiar.org
@@ -423,7 +423,7 @@ Please see the DSpace documentation for assistance.
 <li>Help Moayad with certbot-auto for Let&rsquo;s Encrypt scripts on the new AReS server (linode20)</li>
 <li>Normalize all <code>text_lang</code> values for metadata on CGSpace and DSpace Test (as I had tested last month):</li>
 </ul>
-<pre><code>UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('ethnob', 'en', '*', 'E.', '');
+<pre tabindex="0"><code>UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('ethnob', 'en', '*', 'E.', '');
 UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IS NULL;
 UPDATE metadatavalue SET text_lang='es_ES' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('es', 'spa');
 </code></pre><ul>
@@ -454,7 +454,7 @@ UPDATE metadatavalue SET text_lang='es_ES' WHERE resource_type_id=2 AND metadata
 </li>
 <li>All of the IPs from these networks are using generic user agents like this, but MANY more, and they change many times:</li>
 </ul>
-<pre><code>&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2703.0 Safari/537.36&quot;
+<pre tabindex="0"><code>&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2703.0 Safari/537.36&quot;
 </code></pre><ul>
 <li>I found a <a href="https://www.qurium.org/alerts/azerbaijan/azerbaijan-and-the-region40-ddos-service/">blog post from 2018 detailing an attack from a DDoS service</a> that matches our pattern exactly</li>
 <li>They specifically mention:</li>
@@ -473,7 +473,7 @@ UPDATE metadatavalue SET text_lang='es_ES' WHERE resource_type_id=2 AND metadata
 <ul>
 <li>I see that the Unpaywall bot is resonsible for a few thousand XMLUI sessions every day (IP addresses come from nginx access.log):</li>
 </ul>
-<pre><code>$ cat dspace.log.2019-05-11 | grep -E 'ip_addr=(100.26.206.188|100.27.19.233|107.22.98.199|174.129.156.41|18.205.243.110|18.205.245.200|18.207.176.164|18.207.209.186|18.212.126.89|18.212.5.59|18.213.4.150|18.232.120.6|18.234.180.224|18.234.81.13|3.208.23.222|34.201.121.183|34.201.241.214|34.201.39.122|34.203.188.39|34.207.197.154|34.207.232.63|34.207.91.147|34.224.86.47|34.227.205.181|34.228.220.218|34.229.223.120|35.171.160.166|35.175.175.202|3.80.201.39|3.81.120.70|3.81.43.53|3.84.152.19|3.85.113.253|3.85.237.139|3.85.56.100|3.87.23.95|3.87.248.240|3.87.250.3|3.87.62.129|3.88.13.9|3.88.57.237|3.89.71.15|3.90.17.242|3.90.68.247|3.91.44.91|3.92.138.47|3.94.250.180|52.200.78.128|52.201.223.200|52.90.114.186|52.90.48.73|54.145.91.243|54.160.246.228|54.165.66.180|54.166.219.216|54.166.238.172|54.167.89.152|54.174.94.223|54.196.18.211|54.198.234.175|54.208.8.172|54.224.146.147|54.234.169.91|54.235.29.216|54.237.196.147|54.242.68.231|54.82.6.96|54.87.12.181|54.89.217.141|54.89.234.182|54.90.81.216|54.91.104.162)' | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l   
+<pre tabindex="0"><code>$ cat dspace.log.2019-05-11 | grep -E 'ip_addr=(100.26.206.188|100.27.19.233|107.22.98.199|174.129.156.41|18.205.243.110|18.205.245.200|18.207.176.164|18.207.209.186|18.212.126.89|18.212.5.59|18.213.4.150|18.232.120.6|18.234.180.224|18.234.81.13|3.208.23.222|34.201.121.183|34.201.241.214|34.201.39.122|34.203.188.39|34.207.197.154|34.207.232.63|34.207.91.147|34.224.86.47|34.227.205.181|34.228.220.218|34.229.223.120|35.171.160.166|35.175.175.202|3.80.201.39|3.81.120.70|3.81.43.53|3.84.152.19|3.85.113.253|3.85.237.139|3.85.56.100|3.87.23.95|3.87.248.240|3.87.250.3|3.87.62.129|3.88.13.9|3.88.57.237|3.89.71.15|3.90.17.242|3.90.68.247|3.91.44.91|3.92.138.47|3.94.250.180|52.200.78.128|52.201.223.200|52.90.114.186|52.90.48.73|54.145.91.243|54.160.246.228|54.165.66.180|54.166.219.216|54.166.238.172|54.167.89.152|54.174.94.223|54.196.18.211|54.198.234.175|54.208.8.172|54.224.146.147|54.234.169.91|54.235.29.216|54.237.196.147|54.242.68.231|54.82.6.96|54.87.12.181|54.89.217.141|54.89.234.182|54.90.81.216|54.91.104.162)' | grep -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l   
 2206
 </code></pre><ul>
 <li>I added &ldquo;Unpaywall&rdquo; to the list of bots in the Tomcat Crawler Session Manager Valve</li>
@@ -505,7 +505,7 @@ UPDATE metadatavalue SET text_lang='es_ES' WHERE resource_type_id=2 AND metadata
 <ul>
 <li>Export a list of all investors (<code>dc.description.sponsorship</code>) for Peter to look through and correct:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 29 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-05-16-investors.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 29 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-05-16-investors.csv WITH CSV HEADER;
 COPY 995
 </code></pre><ul>
 <li>Fork the <a href="https://github.com/icarda-git/AReS">ICARDA AReS v1 repository</a> to <a href="https://github.com/ilri/AReS">ILRI&rsquo;s GitHub</a> and give access to CodeObia guys
@@ -519,19 +519,19 @@ COPY 995
 <li>Peter sent me a bunch of fixes for investors from yesterday</li>
 <li>I did a quick check in Open Refine (trim and collapse whitespace, clean smart quotes, etc) and then applied them on CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-05-16-fix-306-Investors.csv -db dspace-u dspace-p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-05-16-fix-306-Investors.csv -db dspace-u dspace-p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
 $ ./delete-metadata-values.py -i /tmp/2019-05-16-delete-297-Investors.csv -db dspace -u dspace -p 'fuuu' -m 29 -f dc.description.sponsorship -d
 </code></pre><ul>
 <li>Then I started a full Discovery re-indexing:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 </code></pre><ul>
 <li>I was going to make a new controlled vocabulary of the top 100 terms after these corrections, but I noticed a bunch of duplicates and variations when I sorted them alphabetically</li>
 <li>Instead, I exported a new list and asked Peter to look at it again</li>
 <li>Apply Peter&rsquo;s new corrections on DSpace Test and CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-05-17-fix-25-Investors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-05-17-fix-25-Investors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
 $ ./delete-metadata-values.py -i /tmp/2019-05-17-delete-14-Investors.csv -db dspace -u dspace -p 'fuuu' -m 29 -f dc.description.sponsorship -d
 </code></pre><ul>
 <li>Then I re-exported the sponsors and took the top 100 to update the existing controlled vocabulary (<a href="https://github.com/ilri/DSpace/pull/423">#423</a>)
@@ -564,7 +564,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-05-17-delete-14-Investors.csv -db dsp
 </li>
 <li>Generate Simple Archive Format bundle with SAFBuilder and import into the <a href="https://cgspace.cgiar.org/handle/10568/101106">AfricaRice Articles in Journals</a> collection on CGSpace:</li>
 </ul>
-<pre><code>$ dspace import -a -e me@cgiar.org -m 2019-05-25-AfricaRice.map -s /tmp/SimpleArchiveFormat
+<pre tabindex="0"><code>$ dspace import -a -e me@cgiar.org -m 2019-05-25-AfricaRice.map -s /tmp/SimpleArchiveFormat
 </code></pre><h2 id="2019-05-27">2019-05-27</h2>
 <ul>
 <li>Peter sent me over two thousand corrections for the authors on CGSpace that I had dumped last month
@@ -573,16 +573,16 @@ $ ./delete-metadata-values.py -i /tmp/2019-05-17-delete-14-Investors.csv -db dsp
 </ul>
 </li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-05-27-fix-2472-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t corrections -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-05-27-fix-2472-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t corrections -d
 </code></pre><ul>
 <li>Then start a full Discovery re-indexing on each server:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;                                   
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;                                   
 $ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 </code></pre><ul>
 <li>Export new list of all authors from CGSpace database to send to Peter:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-05-27-all-authors.csv with csv header;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-05-27-all-authors.csv with csv header;
 COPY 64871
 </code></pre><ul>
 <li>Run all system updates on DSpace Test (linode19) and reboot it</li>
@@ -605,11 +605,11 @@ COPY 64871
 <ul>
 <li>I see the following error in the DSpace log when the user tries to log in with her CGIAR email and password on the LDAP login:</li>
 </ul>
-<pre><code>2019-05-30 07:19:35,166 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=A5E0C836AF8F3ABB769FE47107AE1CFF:ip_addr=185.71.4.34:failed_login:no DN found for user sa.saini@cgiar.org
+<pre tabindex="0"><code>2019-05-30 07:19:35,166 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=A5E0C836AF8F3ABB769FE47107AE1CFF:ip_addr=185.71.4.34:failed_login:no DN found for user sa.saini@cgiar.org
 </code></pre><ul>
 <li>For now I just created an eperson with her personal email address until I have time to check LDAP to see what&rsquo;s up with her CGIAR account:</li>
 </ul>
-<pre><code>$ dspace user -a -m blah@blah.com -g Sakshi -s Saini -p 'sknflksnfksnfdls'
+<pre tabindex="0"><code>$ dspace user -a -m blah@blah.com -g Sakshi -s Saini -p 'sknflksnfksnfdls'
 </code></pre><!-- raw HTML omitted -->
 
   

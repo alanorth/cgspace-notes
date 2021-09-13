@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGSpace DSpace 6 Upgrade"/>
 <meta name="twitter:description" content="Documenting the DSpace 6 upgrade."/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -129,14 +129,14 @@
 </ul>
 <h3 id="re-import-oai-with-clean-index">Re-import OAI with clean index</h3>
 <p>After the upgrade is complete, re-index all items into OAI with a clean index:</p>
-<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m&quot;
 $ dspace oai -c import
 </code></pre><p>The process ran out of memory several times so I had to keep trying again with more JVM heap memory.</p>
 <h3 id="processing-solr-statistics-with-solr-upgrade-statistics-6x">Processing Solr Statistics With solr-upgrade-statistics-6x</h3>
 <p>After the main upgrade process was finished and DSpace was running I started processing the Solr statistics with <code>solr-upgrade-statistics-6x</code> to migrate all IDs to UUIDs.</p>
 <h2 id="statistics">statistics</h2>
 <p>First process the current year&rsquo;s statistics core:</p>
-<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
 $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
 ...
 =================================================================
@@ -159,10 +159,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
 <li>698,000: <code>*:* NOT id:/.{36}/</code></li>
 <li>Majority are <code>type: 5</code> (aka SITE, according to <code>Constants.java</code>) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2019">statistics-2019</h2>
 <p>Processing the statistics-2019 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -184,10 +184,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
 <li>4,184,896: <code>*:* NOT id:/.{36}/</code></li>
 <li>4,172,929 are <code>type: 5</code> (aka SITE) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2019/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2019/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2018">statistics-2018</h2>
 <p>Processing the statistics-2018 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -203,7 +203,7 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
            5,561,166    TOTAL
 =================================================================
 </code></pre><p>After some time I got an error about Java heap space so I increased the JVM memory and restarted processing:</p>
-<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx4096m'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx4096m'
 $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 </code></pre><p>Eventually the processing finished. Here are some statistics about unmigrated documents:</p>
 <ul>
@@ -212,10 +212,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>923,158: <code>*:* NOT id:/.{36}/</code></li>
 <li>823,293: are <code>type: 5</code> so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2017">statistics-2017</h2>
 <p>Processing the statistics-2017 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2017
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2017
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -237,10 +237,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>1,702,177: <code>*:* NOT id:/.{36}/</code></li>
 <li>1,660,524 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2017/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2017/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2016">statistics-2016</h2>
 <p>Processing the statistics-2016 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2016
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2016
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -261,10 +261,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>1,477,155: <code>*:* NOT id:/.{36}/</code></li>
 <li>1,469,706 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2015">statistics-2015</h2>
 <p>Processing the statistics-2015 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2015
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2015
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -286,10 +286,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>262,439: <code>*:* NOT id:/.{36}/</code></li>
 <li>247,400 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2014">statistics-2014</h2>
 <p>Processing the statistics-2014 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2014
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2014
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -312,10 +312,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>222,078: <code>*:* NOT id:/.{36}/</code></li>
 <li>188,791 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2014/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2014/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2013">statistics-2013</h2>
 <p>Processing the statistics-2013 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2013
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2013
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -338,10 +338,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>32,320: <code>*:* NOT id:/.{36}/</code></li>
 <li>15,691 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2013/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2013/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2012">statistics-2012</h2>
 <p>Processing the statistics-2012 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2012
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2012
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -360,10 +360,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>33,161: <code>*:* NOT id:/.{36}/</code></li>
 <li>33,161 are <code>type: 3</code> (COLLECTION), which is different than I&rsquo;ve seen previously&hellip; but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2011">statistics-2011</h2>
 <p>Processing the statistics-2011 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2011
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2011
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -382,10 +382,10 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>17,551: <code>*:* NOT id:/.{36}/</code></li>
 <li>12,116 are <code>type: 3</code> (COLLECTION), which is different than I&rsquo;ve seen previously&hellip; but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2011/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2011/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h2 id="statistics-2010">statistics-2010</h2>
 <p>Processing the statistics-2010 core:</p>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2010
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2010
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
@@ -404,52 +404,52 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
 <li>1,012: <code>*:* NOT id:/.{36}/</code></li>
 <li>654 are <code>type: 3</code> (COLLECTION), which is different than I&rsquo;ve seen previously&hellip; but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><h3 id="processing-solr-statistics-with-atomicstatisticsupdatecli">Processing Solr statistics with AtomicStatisticsUpdateCLI</h3>
 <p>On 2020-11-18 I finished processing the Solr statistics with solr-upgrade-statistics-6x and I started processing them with AtomicStatisticsUpdateCLI.</p>
 <h2 id="statistics-1">statistics</h2>
 <p>First the current year&rsquo;s statistics core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics
 </code></pre><p>It took ~38 hours to finish processing this core.</p>
 <h2 id="statistics-2019-1">statistics-2019</h2>
 <p>The statistics-2019 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2019
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2019
 </code></pre><p>It took ~32 hours to finish processing this core.</p>
 <h2 id="statistics-2018-1">statistics-2018</h2>
 <p>The statistics-2018 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2018
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2018
 </code></pre><p>It took ~28 hours to finish processing this core.</p>
 <h2 id="statistics-2017-1">statistics-2017</h2>
 <p>The statistics-2017 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2017
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2017
 </code></pre><p>It took ~24 hours to finish processing this core.</p>
 <h2 id="statistics-2016-1">statistics-2016</h2>
 <p>The statistics-2016 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2016
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2016
 </code></pre><p>It took ~20 hours to finish processing this core.</p>
 <h2 id="statistics-2015-1">statistics-2015</h2>
 <p>The statistics-2015 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2015
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2015
 </code></pre><p>It took ~21 hours to finish processing this core.</p>
 <h2 id="statistics-2014-1">statistics-2014</h2>
 <p>The statistics-2014 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2014
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2014
 </code></pre><p>It took ~12 hours to finish processing this core.</p>
 <h2 id="statistics-2013-1">statistics-2013</h2>
 <p>The statistics-2013 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2013
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2013
 </code></pre><p>It took ~3 hours to finish processing this core.</p>
 <h2 id="statistics-2012-1">statistics-2012</h2>
 <p>The statistics-2012 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2012
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2012
 </code></pre><p>It took ~2 hours to finish processing this core.</p>
 <h2 id="statistics-2011-1">statistics-2011</h2>
 <p>The statistics-2011 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2011
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2011
 </code></pre><p>It took 1 hour to finish processing this core.</p>
 <h2 id="statistics-2010-1">statistics-2010</h2>
 <p>The statistics-2010 core, in 12-hour batches:</p>
-<pre><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2010
+<pre tabindex="0"><code>$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2010
 </code></pre><p>It took five minutes to finish processing this core.</p>
 
   

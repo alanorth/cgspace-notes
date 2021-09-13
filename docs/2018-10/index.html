@@ -26,7 +26,7 @@ I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nai
 Phil Thornton got an ORCID identifier so we need to add it to the list on CGSpace and tag his existing items
 I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nairobi right now
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -121,7 +121,7 @@ I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nai
 <ul>
 <li>I see Moayad was busy collecting item views and downloads from CGSpace yesterday:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     933 40.77.167.90
     971 95.108.181.88
    1043 41.204.190.40
@@ -135,18 +135,18 @@ I created a GitHub issue to track this #389, because I&rsquo;m super busy in Nai
 </code></pre><ul>
 <li>Of those, about 20% were HTTP 500 responses (!):</li>
 </ul>
-<pre><code>$ zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | grep 34.218.226.147 | awk '{print $9}' | sort -n | uniq -c
+<pre tabindex="0"><code>$ zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Oct/2018&quot; | grep 34.218.226.147 | awk '{print $9}' | sort -n | uniq -c
  118927 200
   31435 500
 </code></pre><ul>
 <li>I added Phil Thornton and Sonal Henson&rsquo;s ORCID identifiers to the controlled vocabulary for <code>cg.creator.orcid</code> and then re-generated the names using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
 </ul>
-<pre><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; 2018-10-03-orcids.txt
+<pre tabindex="0"><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; 2018-10-03-orcids.txt
 $ ./resolve-orcids.py -i 2018-10-03-orcids.txt -o 2018-10-03-names.txt -d
 </code></pre><ul>
 <li>I found a new corner case error that I need to check, given <em>and</em> family names deactivated:</li>
 </ul>
-<pre><code>Looking up the names associated with ORCID iD: 0000-0001-7930-5752
+<pre tabindex="0"><code>Looking up the names associated with ORCID iD: 0000-0001-7930-5752
 Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 </code></pre><ul>
 <li>It appears to be Jim Lorenzen&hellip; I need to check that later!</li>
@@ -154,7 +154,7 @@ Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 <li>Linode sent another alert about CPU usage on CGSpace (linode18) this evening</li>
 <li>It seems that Moayad is making quite a lot of requests today:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Oct/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Oct/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
    1594 157.55.39.160
    1627 157.55.39.173
    1774 136.243.6.84
@@ -169,29 +169,29 @@ Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 <li>But in super positive news, he says they are using my new <a href="https://github.com/alanorth/dspace-statistics-api">dspace-statistics-api</a> and it&rsquo;s MUCH faster than using Atmire CUA&rsquo;s internal &ldquo;restlet&rdquo; API</li>
 <li>I don&rsquo;t recognize the <code>138.201.49.199</code> IP, but it is in Germany (Hetzner) and appears to be paginating over some browse pages and downloading bitstreams:</li>
 </ul>
-<pre><code># grep 138.201.49.199 /var/log/nginx/access.log | grep -o -E 'GET /[a-z]+' | sort | uniq -c
+<pre tabindex="0"><code># grep 138.201.49.199 /var/log/nginx/access.log | grep -o -E 'GET /[a-z]+' | sort | uniq -c
    8324 GET /bitstream
    4193 GET /handle
 </code></pre><ul>
 <li>Suspiciously, it&rsquo;s only grabbing the CGIAR System Office community (handle prefix 10947):</li>
 </ul>
-<pre><code># grep 138.201.49.199 /var/log/nginx/access.log | grep -o -E 'GET /handle/[0-9]{5}' | sort | uniq -c
+<pre tabindex="0"><code># grep 138.201.49.199 /var/log/nginx/access.log | grep -o -E 'GET /handle/[0-9]{5}' | sort | uniq -c
       7 GET /handle/10568
    4186 GET /handle/10947
 </code></pre><ul>
 <li>The user agent is suspicious too:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
 </code></pre><ul>
 <li>It&rsquo;s clearly a bot and it&rsquo;s not re-using its Tomcat session, so I will add its IP to the nginx bad bot list</li>
 <li>I looked in Solr&rsquo;s statistics core and these hits were actually all counted as <code>isBot:false</code> (of course)&hellip; hmmm</li>
 <li>I tagged all of Sonal and Phil&rsquo;s items with their ORCID identifiers on CGSpace using my <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers.py</a> script:</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i 2018-10-03-add-orcids.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-10-03-add-orcids.csv -db dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>Where <code>2018-10-03-add-orcids.csv</code> contained:</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Henson, Sonal P.&quot;,Sonal Henson: 0000-0002-2002-5462
 &quot;Henson, S.&quot;,Sonal Henson: 0000-0002-2002-5462
 &quot;Thornton, P.K.&quot;,Philip Thornton: 0000-0002-1854-0182
@@ -214,7 +214,7 @@ Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 <li>So it&rsquo;s fixed, but I&rsquo;m not sure why!</li>
 <li>Peter wants to know the number of API requests per month, which was about 250,000 in September (exluding statlet requests):</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{oai,rest}.log* | grep -E 'Sep/2018' | grep -c -v 'statlets'
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{oai,rest}.log* | grep -E 'Sep/2018' | grep -c -v 'statlets'
 251226
 </code></pre><ul>
 <li>I found a logic error in the dspace-statistics-api <code>indexer.py</code> script that was causing item views to be inserted into downloads</li>
@@ -242,7 +242,7 @@ Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 <li>Peter noticed that some recently added PDFs don&rsquo;t have thumbnails</li>
 <li>When I tried to force them to be generated I got an error that I&rsquo;ve never seen before:</li>
 </ul>
-<pre><code>$ dspace filter-media -v -f -i 10568/97613
+<pre tabindex="0"><code>$ dspace filter-media -v -f -i 10568/97613
 org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: not authorized `/tmp/impdfthumb5039464037201498062.pdf' @ error/constitute.c/ReadImage/412.
 </code></pre><ul>
 <li>I see there was an update to Ubuntu&rsquo;s ImageMagick on 2018-10-05, so maybe something changed or broke?</li>
@@ -251,7 +251,7 @@ org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.c
 <li>Wow, someone on <a href="https://twitter.com/rosscampbell/status/1048268966819319808">Twitter posted about this breaking his web application</a> (and it was retweeted by the ImageMagick acount!)</li>
 <li>I commented out the line that disables PDF thumbnails in <code>/etc/ImageMagick-6/policy.xml</code>:</li>
 </ul>
-<pre><code>  &lt;!--&lt;policy domain=&quot;coder&quot; rights=&quot;none&quot; pattern=&quot;PDF&quot; /&gt;--&gt;
+<pre tabindex="0"><code>  &lt;!--&lt;policy domain=&quot;coder&quot; rights=&quot;none&quot; pattern=&quot;PDF&quot; /&gt;--&gt;
 </code></pre><ul>
 <li>This works, but I&rsquo;m not sure what ImageMagick&rsquo;s long-term plan is if they are going to disable ALL image formats&hellip;</li>
 <li>I suppose I need to enable a workaround for this in Ansible?</li>
@@ -261,7 +261,7 @@ org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.c
 <li>I emailed DuraSpace to update <a href="https://duraspace.org/registry/entry/4188/?gvid=178">our entry in their DSpace registry</a> (the data was still on DSpace 3, JSPUI, etc)</li>
 <li>Generate a list of the top 1500 values for <code>dc.subject</code> so Sisay can start making a controlled vocabulary for it:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2018-10-11-top-1500-subject.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 57 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2018-10-11-top-1500-subject.csv WITH CSV HEADER;
 COPY 1500
 </code></pre><ul>
 <li>Give WorldFish advice about Handles because they are talking to some company called KnowledgeArc who recommends they do not use Handles!</li>
@@ -269,7 +269,7 @@ COPY 1500
 <li>Altmetric support responded to say no, but the reason is that Land Portal is doing even more strange stuff by not using <code>&lt;meta&gt;</code> tags in their page header, and using &ldquo;dct:identifier&rdquo; property instead of &ldquo;dc:identifier&rdquo;</li>
 <li>I re-created my local DSpace databse container using <a href="https://github.com/containers/libpod">podman</a> instead of Docker:</li>
 </ul>
-<pre><code>$ mkdir -p ~/.local/lib/containers/volumes/dspacedb_data
+<pre tabindex="0"><code>$ mkdir -p ~/.local/lib/containers/volumes/dspacedb_data
 $ sudo podman create --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 $ sudo podman start dspacedb
 $ createuser -h localhost -U postgres --pwprompt dspacetest
@@ -283,13 +283,13 @@ $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-s
 <li>I can pull the <code>docker.bintray.io/jfrog/artifactory-oss:latest</code> image, but not start it</li>
 <li>I decided to use a Sonatype Nexus repository instead:</li>
 </ul>
-<pre><code>$ mkdir -p ~/.local/lib/containers/volumes/nexus_data
+<pre tabindex="0"><code>$ mkdir -p ~/.local/lib/containers/volumes/nexus_data
 $ sudo podman run --name nexus -d -v /home/aorth/.local/lib/containers/volumes/nexus_data:/nexus_data -p 8081:8081 sonatype/nexus3
 </code></pre><ul>
 <li>With a few changes to my local Maven <code>settings.xml</code> it is working well</li>
 <li>Generate a list of the top 10,000 authors for Peter Ballantyne to look through:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 3 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 10000) to /tmp/2018-10-11-top-10000-authors.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 3 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 10000) to /tmp/2018-10-11-top-10000-authors.csv WITH CSV HEADER;
 COPY 10000
 </code></pre><ul>
 <li>CTA uploaded some infographics that are very tall and their thumbnails disrupt the item lists on the front page and in their communities and collections</li>
@@ -301,7 +301,7 @@ COPY 10000
 <li>Look through Peter&rsquo;s list of 746 author corrections in OpenRefine</li>
 <li>I first facet by blank, trim whitespace, and then check for weird characters that might be indicative of encoding issues with this GREL:</li>
 </ul>
-<pre><code>or(
+<pre tabindex="0"><code>or(
   isNotNull(value.match(/.*\uFFFD.*/)),
   isNotNull(value.match(/.*\u00A0.*/)),
   isNotNull(value.match(/.*\u200A.*/)),
@@ -311,7 +311,7 @@ COPY 10000
 </code></pre><ul>
 <li>Then I exported and applied them on my local test server:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2018-10-11-top-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t CORRECT -m 3
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2018-10-11-top-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t CORRECT -m 3
 </code></pre><ul>
 <li>I will apply these on CGSpace when I do the other updates tomorrow, as well as double check the high scoring ones to see if they are correct in Sisay&rsquo;s author controlled vocabulary</li>
 </ul>
@@ -321,7 +321,7 @@ COPY 10000
 <li>Switch to new CGIAR LDAP server on CGSpace, as it&rsquo;s been running (at least for authentication) on DSpace Test for the last few weeks, and I think they old one will be deprecated soon (today?)</li>
 <li>Apply Peter&rsquo;s 746 author corrections on CGSpace and DSpace Test using my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897">fix-metadata-values.py</a> script:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-10-11-top-authors.csv -f dc.contributor.author -t CORRECT -m 3 -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-10-11-top-authors.csv -f dc.contributor.author -t CORRECT -m 3 -db dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>Run all system updates on CGSpace (linode19) and reboot the server</li>
 <li>After rebooting the server I noticed that Handles are not resolving, and the <code>dspace-handle-server</code> systemd service is not running (or rather, it exited with success)</li>
@@ -352,7 +352,7 @@ COPY 10000
 </li>
 <li>I ended up having some issues with podman and went back to Docker, so I had to re-create my containers:</li>
 </ul>
-<pre><code>$ sudo docker run --name nexus --network dspace-build -d -v /home/aorth/.local/lib/containers/volumes/nexus_data:/nexus_data -p 8081:8081 sonatype/nexus3
+<pre tabindex="0"><code>$ sudo docker run --name nexus --network dspace-build -d -v /home/aorth/.local/lib/containers/volumes/nexus_data:/nexus_data -p 8081:8081 sonatype/nexus3
 $ sudo docker run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 $ createuser -h localhost -U postgres --pwprompt dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
@@ -364,12 +364,12 @@ $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser
 <ul>
 <li>Generate a list of the schema on CGSpace so CodeObia can compare with MELSpace:</li>
 </ul>
-<pre><code>dspace=# \copy (SELECT (CASE when metadata_schema_id=1 THEN 'dc' WHEN metadata_schema_id=2 THEN 'cg' END) AS schema, element, qualifier, scope_note FROM metadatafieldregistry where metadata_schema_id IN (1,2)) TO /tmp/cgspace-schema.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \copy (SELECT (CASE when metadata_schema_id=1 THEN 'dc' WHEN metadata_schema_id=2 THEN 'cg' END) AS schema, element, qualifier, scope_note FROM metadatafieldregistry where metadata_schema_id IN (1,2)) TO /tmp/cgspace-schema.csv WITH CSV HEADER;
 </code></pre><ul>
 <li>Talking to the CodeObia guys about the REST API I started to wonder why it&rsquo;s so slow and how I can quantify it in order to ask the dspace-tech mailing list for help profiling it</li>
 <li>Interestingly, the speed doesn&rsquo;t get better after you request the same thing multiple times–it&rsquo;s consistently bad on both CGSpace and DSpace Test!</li>
 </ul>
-<pre><code>$ time http --print h 'https://cgspace.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
+<pre tabindex="0"><code>$ time http --print h 'https://cgspace.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
 ...
 0.35s user 0.06s system 1% cpu 25.133 total
 0.31s user 0.04s system 1% cpu 25.223 total
@@ -389,7 +389,7 @@ $ time http --print h 'https://dspacetest.cgiar.org/rest/items?expand=metadata,b
 <li>I wonder if the Java garbage collector is important here, or if there are missing indexes in PostgreSQL?</li>
 <li>I switched DSpace Test to the G1GC garbage collector and tried again and now the results are worse!</li>
 </ul>
-<pre><code>$ time http --print h 'https://dspacetest.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
+<pre tabindex="0"><code>$ time http --print h 'https://dspacetest.cgiar.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
 ...
 0.20s user 0.03s system 0% cpu 25.017 total
 0.23s user 0.02s system 1% cpu 23.299 total
@@ -399,7 +399,7 @@ $ time http --print h 'https://dspacetest.cgiar.org/rest/items?expand=metadata,b
 </code></pre><ul>
 <li>If I make a request without the expands it is ten time faster:</li>
 </ul>
-<pre><code>$ time http --print h 'https://dspacetest.cgiar.org/rest/items?limit=100&amp;offset=0'
+<pre tabindex="0"><code>$ time http --print h 'https://dspacetest.cgiar.org/rest/items?limit=100&amp;offset=0'
 ...
 0.20s user 0.03s system 7% cpu 3.098 total
 0.22s user 0.03s system 8% cpu 2.896 total
@@ -414,7 +414,7 @@ $ time http --print h 'https://dspacetest.cgiar.org/rest/items?expand=metadata,b
 <li>Most of the are from Bioversity, and I asked Maria for permission before updating them</li>
 <li>I manually went through and looked at the existing values and updated them in several batches:</li>
 </ul>
-<pre><code>UPDATE metadatavalue SET text_value='CC-BY-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%CC BY %';
+<pre tabindex="0"><code>UPDATE metadatavalue SET text_value='CC-BY-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%CC BY %';
 UPDATE metadatavalue SET text_value='CC-BY-NC-ND-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value LIKE '%BY-NC-ND%' AND text_value LIKE '%by-nc-nd%';
 UPDATE metadatavalue SET text_value='CC-BY-NC-SA-4.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%4.0%' AND text_value LIKE '%BY-NC-SA%' AND text_value LIKE '%by-nc-sa%';
 UPDATE metadatavalue SET text_value='CC-BY-3.0' WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%3.0%' AND text_value LIKE '%/by/%';
@@ -436,7 +436,7 @@ UPDATE metadatavalue SET text_value='CC-BY-NC-4.0' WHERE resource_type_id=2 AND 
 <li>Ask Jane if we can use some of the BDP money to host AReS explorer on a more powerful server</li>
 <li>IWMI sent me a list of new ORCID identifiers for their staff so I combined them with our list, updated the names with my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script, and regenerated the controlled vocabulary:</li>
 </ul>
-<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json MEL\ ORCID_V2.json 2018-10-17-IWMI-ORCIDs.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt;
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json MEL\ ORCID_V2.json 2018-10-17-IWMI-ORCIDs.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt;
 2018-10-17-orcids.txt
 $ ./resolve-orcids.py -i 2018-10-17-orcids.txt -o 2018-10-17-names.txt -d
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
@@ -444,7 +444,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 <li>I also decided to add the ORCID identifiers that MEL had sent us a few months ago&hellip;</li>
 <li>One problem I had with the <code>resolve-orcids.py</code> script is that one user seems to have disabled their profile data since we last updated:</li>
 </ul>
-<pre><code>Looking up the names associated with ORCID iD: 0000-0001-7930-5752
+<pre tabindex="0"><code>Looking up the names associated with ORCID iD: 0000-0001-7930-5752
 Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 </code></pre><ul>
 <li>So I need to handle that situation in the script for sure, but I&rsquo;m not sure what to do organizationally or ethically, since that user disabled their name! Do we remove him from the list?</li>
@@ -457,7 +457,7 @@ Given Names Deactivated Family Name Deactivated: 0000-0001-7930-5752
 <li>After they do some tests and we check the values Enrico will send a formal email to Peter et al to ask that they start depositing officially</li>
 <li>I upgraded PostgreSQL to 9.6 on DSpace Test using Ansible, then had to manually <a href="https://wiki.postgresql.org/wiki/Using_pg_upgrade_on_Ubuntu/Debian">migrate from 9.5 to 9.6</a>:</li>
 </ul>
-<pre><code># su - postgres
+<pre tabindex="0"><code># su - postgres
 $ /usr/lib/postgresql/9.6/bin/pg_upgrade -b /usr/lib/postgresql/9.5/bin -B /usr/lib/postgresql/9.6/bin -d /var/lib/postgresql/9.5/main -D /var/lib/postgresql/9.6/main -o ' -c config_file=/etc/postgresql/9.5/main/postgresql.conf' -O ' -c config_file=/etc/postgresql/9.6/main/postgresql.conf'
 $ exit
 # systemctl start postgresql
@@ -468,7 +468,7 @@ $ exit
 <li>Linode emailed me to say that CGSpace (linode18) had high CPU usage for a few hours this afternoon</li>
 <li>Looking at the nginx logs around that time I see the following IPs making the most requests:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Oct/2018:(12|13|14|15)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Oct/2018:(12|13|14|15)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     361 207.46.13.179
     395 181.115.248.74
     485 66.249.64.93
@@ -487,7 +487,7 @@ $ exit
 <li>I was going to try to run Solr in Docker because I learned I can run Docker on Travis-CI (for testing my dspace-statistics-api), but the oldest official Solr images are for 5.5, and DSpace&rsquo;s Solr configuration is for 4.9</li>
 <li>This means our existing Solr configuration doesn&rsquo;t run in Solr 5.5:</li>
 </ul>
-<pre><code>$ sudo docker pull solr:5
+<pre tabindex="0"><code>$ sudo docker pull solr:5
 $ sudo docker run --name my_solr -v ~/dspace/solr/statistics/conf:/tmp/conf -d -p 8983:8983 -t solr:5
 $ sudo docker logs my_solr
 ...
@@ -498,7 +498,7 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 <li>Linode sent a message that the CPU usage was high on CGSpace (linode18) last night</li>
 <li>According to the nginx logs around that time it was 5.9.6.51 (MegaIndex) again:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Oct/2018:(14|15|16)&quot; | awk '{print $1}' | sort
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Oct/2018:(14|15|16)&quot; | awk '{print $1}' | sort
  | uniq -c | sort -n | tail -n 10
     249 207.46.13.179
     250 157.55.39.173
@@ -513,7 +513,7 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 </code></pre><ul>
 <li>This bot is only using the XMLUI and it does <em>not</em> seem to be re-using its sessions:</li>
 </ul>
-<pre><code># grep -c 5.9.6.51 /var/log/nginx/*.log
+<pre tabindex="0"><code># grep -c 5.9.6.51 /var/log/nginx/*.log
 /var/log/nginx/access.log:9323
 /var/log/nginx/error.log:0
 /var/log/nginx/library-access.log:0
@@ -525,7 +525,7 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 </code></pre><ul>
 <li>Last month I added &ldquo;crawl&rdquo; to the Tomcat Crawler Session Manager Valve&rsquo;s regular expression matching, and it seems to be working for MegaIndex&rsquo;s user agent:</li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/1' User-Agent:'&quot;Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)&quot;'
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/1' User-Agent:'&quot;Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)&quot;'
 </code></pre><ul>
 <li>So I&rsquo;m not sure why this bot uses so many sessions — is it because it requests very slowly?</li>
 </ul>
@@ -539,7 +539,7 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 <li>Change <code>build.properties</code> to use HTTPS for Handles in our <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a></li>
 <li>We will still need to do a batch update of the <code>dc.identifier.uri</code> and other fields in the database:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value=replace(text_value, 'http://', 'https://') WHERE resource_type_id=2 AND text_value LIKE 'http://hdl.handle.net%';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value=replace(text_value, 'http://', 'https://') WHERE resource_type_id=2 AND text_value LIKE 'http://hdl.handle.net%';
 </code></pre><ul>
 <li>While I was doing that I found two items using CGSpace URLs instead of handles in their <code>dc.identifier.uri</code> so I corrected those</li>
 <li>I also found several items that had invalid characters or multiple Handles in some related URL field like <code>cg.link.reference</code> so I corrected those too</li>
@@ -547,7 +547,7 @@ ERROR: Error CREATEing SolrCore 'statistics': Unable to create core [statistics]
 <li>I deployed the changes on CGSpace, ran all system updates, and rebooted the server</li>
 <li>Also, I updated all Handles in the database to use HTTPS:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value=replace(text_value, 'http://', 'https://') WHERE resource_type_id=2 AND text_value LIKE 'http://hdl.handle.net%';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value=replace(text_value, 'http://', 'https://') WHERE resource_type_id=2 AND text_value LIKE 'http://hdl.handle.net%';
 UPDATE 76608
 </code></pre><ul>
 <li>Skype with Peter about ToRs for the AReS open source work and future plans to develop tools around the DSpace ecosystem</li>
@@ -560,14 +560,14 @@ UPDATE 76608
 <li>I emailed the MARLO guys to ask if they can send us a dump of rights data and Handles from their system so we can tag our older items on CGSpace</li>
 <li>Testing REST login and logout via httpie because Felix from Earlham says he&rsquo;s having issues:</li>
 </ul>
-<pre><code>$ http --print b POST 'https://dspacetest.cgiar.org/rest/login' email='testdeposit@cgiar.org' password=deposit
+<pre tabindex="0"><code>$ http --print b POST 'https://dspacetest.cgiar.org/rest/login' email='testdeposit@cgiar.org' password=deposit
 acef8a4a-41f3-4392-b870-e873790f696b
 
 $ http POST 'https://dspacetest.cgiar.org/rest/logout' rest-dspace-token:acef8a4a-41f3-4392-b870-e873790f696b
 </code></pre><ul>
 <li>Also works via curl (login, check status, logout, check status):</li>
 </ul>
-<pre><code>$ curl -H &quot;Content-Type: application/json&quot; --data '{&quot;email&quot;:&quot;testdeposit@cgiar.org&quot;, &quot;password&quot;:&quot;deposit&quot;}' https://dspacetest.cgiar.org/rest/login
+<pre tabindex="0"><code>$ curl -H &quot;Content-Type: application/json&quot; --data '{&quot;email&quot;:&quot;testdeposit@cgiar.org&quot;, &quot;password&quot;:&quot;deposit&quot;}' https://dspacetest.cgiar.org/rest/login
 e09fb5e1-72b0-4811-a2e5-5c1cd78293cc
 $ curl -X GET -H &quot;Content-Type: application/json&quot; -H &quot;Accept: application/json&quot; -H &quot;rest-dspace-token: e09fb5e1-72b0-4811-a2e5-5c1cd78293cc&quot; https://dspacetest.cgiar.org/rest/status
 {&quot;okay&quot;:true,&quot;authenticated&quot;:true,&quot;email&quot;:&quot;testdeposit@cgiar.org&quot;,&quot;fullname&quot;:&quot;Test deposit&quot;,&quot;token&quot;:&quot;e09fb5e1-72b0-4811-a2e5-5c1cd78293cc&quot;}

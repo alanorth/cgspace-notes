@@ -60,7 +60,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
   }
 }
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -157,7 +157,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 <li>I had a call with CodeObia to discuss the work on OpenRXV</li>
 <li>Check the results of the AReS harvesting from last night:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 100875,
   &quot;_shards&quot; : {
@@ -170,18 +170,18 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 </code></pre><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-01
 </code></pre><ul>
 <li>Delete the current items index and clone the temp one to it:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
 $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
 </code></pre><ul>
 <li>Then delete the temp and backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 {&quot;acknowledged&quot;:true}%
 $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-01'
 </code></pre><ul>
@@ -196,7 +196,7 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-01'
 </li>
 <li>I tried to export the ILRI community from CGSpace but I got an error:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ dspace metadata-export -i 10568/1 -f /tmp/2021-02-01-ILRI.csv
+<pre tabindex="0"><code class="language-console" data-lang="console">$ dspace metadata-export -i 10568/1 -f /tmp/2021-02-01-ILRI.csv
 Loading @mire database changes for module MQM
 Changes have been processed
 Exporting community 'International Livestock Research Institute (ILRI)' (10568/1)
@@ -234,16 +234,16 @@ java.lang.NullPointerException
 <li>Maria Garruccio sent me some new ORCID iDs for Bioversity authors, as well as a correction for Stefan Burkart&rsquo;s iD</li>
 <li>I saved the new ones to a text file, combined them with the others, extracted the ORCID iDs themselves, and updated the names using <code>resolve-orcids.py</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcid-ids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2021-02-02-combined-orcids.txt
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcid-ids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2021-02-02-combined-orcids.txt
 $ ./ilri/resolve-orcids.py -i /tmp/2021-02-02-combined-orcids.txt -o /tmp/2021-02-02-combined-orcid-names.txt
 </code></pre><ul>
 <li>I sorted the names and added the XML formatting in vim, then ran it through tidy:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ tidy -xml -utf8 -m -iq -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+<pre tabindex="0"><code class="language-console" data-lang="console">$ tidy -xml -utf8 -m -iq -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 </code></pre><ul>
 <li>Then I added all the changed names plus Stefan&rsquo;s incorrect ones to a CSV and processed them with <code>fix-metadata-values.py</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat 2021-02-02-fix-orcid-ids.csv 
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat 2021-02-02-fix-orcid-ids.csv 
 cg.creator.id,correct
 Burkart Stefan: 0000-0001-5297-2184,Stefan Burkart: 0000-0001-5297-2184
 Burkart Stefan: 0000-0002-7558-9177,Stefan Burkart: 0000-0001-5297-2184
@@ -263,7 +263,7 @@ $ ./ilri/fix-metadata-values.py -i 2021-02-02-fix-orcid-ids.csv -db dspace63 -u 
 <ul>
 <li>Tag forty-three items from Bioversity&rsquo;s new authors with ORCID iDs using <code>add-orcid-identifiers-csv.py</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat /tmp/2021-02-02-add-orcid-ids.csv
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat /tmp/2021-02-02-add-orcid-ids.csv
 dc.contributor.author,cg.creator.id
 &quot;Nchanji, E.&quot;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
 &quot;Nchanji, Eileen&quot;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
@@ -300,7 +300,7 @@ $ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2021-02-02-add-orcid-ids.csv -db d
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ time chrt -b 0 dspace index-discovery -b
+<pre tabindex="0"><code class="language-console" data-lang="console">$ time chrt -b 0 dspace index-discovery -b
 $ dspace oai import -c
 </code></pre><ul>
 <li>Attend Accenture meeting for repository managers
@@ -333,7 +333,7 @@ $ dspace oai import -c
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/delete-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p 'fuuu' -f dc.relation.ispartofseries -m 43
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/delete-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p 'fuuu' -f dc.relation.ispartofseries -m 43
 </code></pre><ul>
 <li>The corrected versions have a lot of encoding issues so I asked Peter to give me the correct ones so I can search/replace them:
 <ul>
@@ -358,7 +358,7 @@ $ dspace oai import -c
 <li>I ended up using <a href="https://github.com/LuminosoInsight/python-ftfy">python-ftfy</a> to fix those very easily, then replaced them in the CSV</li>
 <li>Then I trimmed whitespace at the beginning, end, and around the &ldquo;;&rdquo;, and applied the 1,600 fixes using <code>fix-metadata-values.py</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/fix-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p 'fuuu' -f dc.relation.ispartofseries -t 'correct' -m 43
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/fix-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p 'fuuu' -f dc.relation.ispartofseries -t 'correct' -m 43
 </code></pre><ul>
 <li>Help Peter debug an issue with one of Alan Duncan&rsquo;s new FEAST Data reports on CGSpace
 <ul>
@@ -372,7 +372,7 @@ $ dspace oai import -c
 <li>Run system updates on CGSpace (linode18), deploy latest 6_x-prod branch, and reboot the server</li>
 <li>After the server came back up I started a full Discovery re-indexing:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    247m30.850s
 user    160m36.657s
@@ -385,13 +385,13 @@ sys     2m26.050s
 </li>
 <li>Delete the old Elasticsearch temp index to prepare for starting an AReS re-harvest:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 # start indexing in AReS
 </code></pre><h2 id="2021-02-08">2021-02-08</h2>
 <ul>
 <li>Finish rotating the AReS indexes after the harvesting last night:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 100983,
   &quot;_shards&quot; : {
@@ -429,7 +429,7 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-08'
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed '1d' | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed '1d' | wc -l
 30354
 $ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed '1d' | sort -u | wc -l
 18555
@@ -452,15 +452,15 @@ $ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed '1d' | sort | uniq -c | sort -h | 
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ csvcut -c 'id,dc.date.issued,dc.date.issued[],dc.date.issued[en_US],dc.rights,dc.rights[],dc.rights[en],dc.rights[en_US],dc.publisher,dc.publisher[],dc.publisher[en_US],dc.type[en_US]' /tmp/2021-02-10-ILRI.csv | csvgrep -c 'dc.type[en_US]' -r '^.+[^(Journal Item|Journal Article|Book|Book Chapter)]'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'id,dc.date.issued,dc.date.issued[],dc.date.issued[en_US],dc.rights,dc.rights[],dc.rights[en],dc.rights[en_US],dc.publisher,dc.publisher[],dc.publisher[en_US],dc.type[en_US]' /tmp/2021-02-10-ILRI.csv | csvgrep -c 'dc.type[en_US]' -r '^.+[^(Journal Item|Journal Article|Book|Book Chapter)]'
 </code></pre><ul>
 <li>I imported the CSV into OpenRefine and converted the date text values to date types so I could facet by dates before 2010:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">if(diff(value,&quot;01/01/2010&quot;.toDate(),&quot;days&quot;)&lt;0, true, false)
+<pre tabindex="0"><code class="language-console" data-lang="console">if(diff(value,&quot;01/01/2010&quot;.toDate(),&quot;days&quot;)&lt;0, true, false)
 </code></pre><ul>
 <li>Then I filtered by publisher to make sure they were only ours:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">or(
+<pre tabindex="0"><code class="language-console" data-lang="console">or(
   value.contains(&quot;International Livestock Research Institute&quot;),
   value.contains(&quot;ILRI&quot;),
   value.contains(&quot;International Livestock Centre for Africa&quot;),
@@ -488,7 +488,7 @@ $ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed '1d' | sort | uniq -c | sort -h | 
 <li>Run system updates, deploy latest <code>6_x-prod</code> branch, and reboot CGSpace (linode18)</li>
 <li>Normalize <code>text_lang</code> of DSpace item metadata on CGSpace:</li>
 </ul>
-<pre><code>dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) GROUP BY text_lang ORDER BY count DESC;
+<pre tabindex="0"><code>dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) GROUP BY text_lang ORDER BY count DESC;
  text_lang |  count  
 -----------+---------
  en_US     | 2567413
@@ -504,7 +504,7 @@ dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (S
 <ul>
 <li>Clear the OpenRXV temp items index:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 </code></pre><ul>
 <li>Then start a full harvesting of CGSpace in the AReS Explorer admin dashboard</li>
 <li>Peter asked me about a few other recently submitted FEAST items that are restricted
@@ -521,12 +521,12 @@ dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (S
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/move-metadata-values.py -i /tmp/move.txt -db dspace -u dspace -p 'fuuu' -f 43 -t 55
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/move-metadata-values.py -i /tmp/move.txt -db dspace -u dspace -p 'fuuu' -f 43 -t 55
 </code></pre><h2 id="2021-02-15">2021-02-15</h2>
 <ul>
 <li>Check the results of the AReS Harvesting from last night:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 101126,
   &quot;_shards&quot; : {
@@ -539,12 +539,12 @@ dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (S
 </code></pre><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-15
 </code></pre><ul>
 <li>Delete the current items index and clone the temp one:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
 $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
 $ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
@@ -563,18 +563,18 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-15'
 </li>
 <li>They are definitely bots posing as users, as I see they have created six thousand DSpace sessions today:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat dspace.log.2021-02-16 | grep -E 'session_id=[A-Z0-9]{32}:ip_addr=45.146.165.203' | sort | uniq | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat dspace.log.2021-02-16 | grep -E 'session_id=[A-Z0-9]{32}:ip_addr=45.146.165.203' | sort | uniq | wc -l
 4007
 $ cat dspace.log.2021-02-16 | grep -E 'session_id=[A-Z0-9]{32}:ip_addr=130.255.161.231' | sort | uniq | wc -l
 2128
 </code></pre><ul>
 <li>Ah, actually 45.146.165.203 is making requests like this:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">&quot;http://cgspace.cgiar.org:80/bitstream/handle/10568/238/Res_report_no3.pdf;jsessionid=7311DD88B30EEF9A8F526FF89378C2C5%' AND 4313=CONCAT(CHAR(113)+CHAR(98)+CHAR(106)+CHAR(112)+CHAR(113),(SELECT (CASE WHEN (4313=4313) THEN CHAR(49) ELSE CHAR(48) END)),CHAR(113)+CHAR(106)+CHAR(98)+CHAR(112)+CHAR(113)) AND 'XzQO%'='XzQO&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">&quot;http://cgspace.cgiar.org:80/bitstream/handle/10568/238/Res_report_no3.pdf;jsessionid=7311DD88B30EEF9A8F526FF89378C2C5%' AND 4313=CONCAT(CHAR(113)+CHAR(98)+CHAR(106)+CHAR(112)+CHAR(113),(SELECT (CASE WHEN (4313=4313) THEN CHAR(49) ELSE CHAR(48) END)),CHAR(113)+CHAR(106)+CHAR(98)+CHAR(112)+CHAR(113)) AND 'XzQO%'='XzQO&quot;
 </code></pre><ul>
 <li>I purged the hits from these two using my <code>check-spider-ip-hits.sh</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
 Purging 4005 hits from 45.146.165.203 in statistics
 Purging 3493 hits from 130.255.161.231 in statistics
 
@@ -582,7 +582,7 @@ Total number of bot hits purged: 7498
 </code></pre><ul>
 <li>Ugh, I looked in Solr for the top IPs in 2021-01 and found a few more of these Russian IPs so I purged them too:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
 Purging 27163 hits from 45.146.164.176 in statistics
 Purging 19556 hits from 45.146.165.105 in statistics
 Purging 15927 hits from 45.146.165.83 in statistics
@@ -596,7 +596,7 @@ Total number of bot hits purged: 70731
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
 Purging 3 hits from 130.255.161.231 in statistics
 Purging 16773 hits from 64.39.99.15 in statistics
 Purging 6976 hits from 64.39.99.13 in statistics
@@ -627,7 +627,7 @@ Total number of bot hits purged: 23789
 <li>Abenet asked me to add Tom Randolph&rsquo;s ORCID identifier to CGSpace</li>
 <li>I also tagged all his 247 existing items on CGSpace:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat 2021-02-17-add-tom-orcid.csv 
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat 2021-02-17-add-tom-orcid.csv 
 dc.contributor.author,cg.creator.id
 &quot;Randolph, Thomas F.&quot;,&quot;Thomas Fitz Randolph: 0000-0003-1849-9877&quot;
 $ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace -u dspace -p 'fuuu'
@@ -640,7 +640,7 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace
 <li>Start the CG Core v2 migration on CGSpace (linode18)</li>
 <li>After deploying the latest <code>6_x-prod</code> branch and running <code>migrate-fields.sh</code> I started a full Discovery reindex:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    311m12.617s
 user    217m3.102s
@@ -648,7 +648,7 @@ sys     2m37.363s
 </code></pre><ul>
 <li>Then update OAI:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ dspace oai import -c
+<pre tabindex="0"><code class="language-console" data-lang="console">$ dspace oai import -c
 $ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m&quot;
 </code></pre><ul>
 <li>Ben Hack was asking if there is a REST API query that will give him all ILRI outputs for their new Sharepoint intranet
@@ -668,14 +668,14 @@ $ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m&quot;
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx1024m'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx1024m'
 $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
 </code></pre><ul>
 <li>The process took an hour or so!</li>
 <li>I added colorized output to the csv-metadata-quality tool and tagged <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.4.4">version 0.4.4 on GitHub</a></li>
 <li>I updated the fields in AReS Explorer and then removed the old temp index so I can start a fresh re-harvest of CGSpace:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 # start indexing in AReS
 </code></pre><h2 id="2021-02-22">2021-02-22</h2>
 <ul>
@@ -687,7 +687,7 @@ $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, '^(.+?);$','\1', 'g') WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ ';$';
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, '^(.+?);$','\1', 'g') WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ ';$';
 UPDATE 104
 </code></pre><ul>
 <li>As for splitting the other values, I think I can export the <code>dspace_object_id</code> and <code>text_value</code> and then upload it as a CSV rather than writing a Python script to create the new metadata values</li>
@@ -696,7 +696,7 @@ UPDATE 104
 <ul>
 <li>Check the results of the AReS harvesting from last night:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 101380,
   &quot;_shards&quot; : {
@@ -709,18 +709,18 @@ UPDATE 104
 </code></pre><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-22
 </code></pre><ul>
 <li>Delete the current items index and clone the temp one to it:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
 $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
 </code></pre><ul>
 <li>Then delete the temp and backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 {&quot;acknowledged&quot;:true}%
 $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-22'
 </code></pre><h2 id="2021-02-23">2021-02-23</h2>
@@ -732,21 +732,21 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-02-22'
 </li>
 <li>Remove semicolons from series names without numbers:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">dspace=# BEGIN;
+<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# BEGIN;
 dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, '^(.+?);$','\1', 'g') WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ ';$';
 UPDATE 104
 dspace=# COMMIT;
 </code></pre><ul>
 <li>Set all <code>text_lang</code> values on CGSpace to <code>en_US</code> to make the series replacements easier (this didn&rsquo;t work, read below):</li>
 </ul>
-<pre><code class="language-console" data-lang="console">dspace=# BEGIN;
+<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# BEGIN;
 dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE text_lang !='en_US' AND dspace_object_id IN (SELECT uuid FROM item);
 UPDATE 911
 cgspace=# COMMIT;
 </code></pre><ul>
 <li>Then export all series with their IDs to CSV:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">dspace=# \COPY (SELECT dspace_object_id, text_value as &quot;dcterms.isPartOf[en_US]&quot; FROM metadatavalue WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item)) TO /tmp/2021-02-23-series.csv WITH CSV HEADER;
+<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# \COPY (SELECT dspace_object_id, text_value as &quot;dcterms.isPartOf[en_US]&quot; FROM metadatavalue WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item)) TO /tmp/2021-02-23-series.csv WITH CSV HEADER;
 </code></pre><ul>
 <li>In OpenRefine I trimmed and consolidated whitespace, then made some quick cleanups to normalize the fields based on a sanity check
 <ul>
@@ -761,22 +761,22 @@ cgspace=# COMMIT;
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE metadata_value_id=5355845;
+<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE metadata_value_id=5355845;
 UPDATE 1
 </code></pre><ul>
 <li>This also seems to work, using the id for just that one item:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id='9840d19b-a6ae-4352-a087-6d74d2629322';
+<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id='9840d19b-a6ae-4352-a087-6d74d2629322';
 UPDATE 37
 </code></pre><ul>
 <li>This seems to work better for some reason:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">dspacetest=# UPDATE metadatavalue SET text_lang='en_US' WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item);
+<pre tabindex="0"><code class="language-console" data-lang="console">dspacetest=# UPDATE metadatavalue SET text_lang='en_US' WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item);
 UPDATE 18659
 </code></pre><ul>
 <li>I split the CSV file in batches of 5,000 using xsv, then imported them one by one in CGSpace:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ dspace metadata-import -f /tmp/0.csv
+<pre tabindex="0"><code class="language-console" data-lang="console">$ dspace metadata-import -f /tmp/0.csv
 </code></pre><ul>
 <li>It took FOREVER to import each file&hellip; like several hours <em>each</em>. MY GOD DSpace 6 is slow.</li>
 <li>Help Dominique Perera debug some issues with the WordPress DSpace importer plugin from Macaroni Bros
@@ -785,7 +785,7 @@ UPDATE 18659
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">104.198.97.97 - - [23/Feb/2021:11:41:17 +0100] &quot;GET /rest/communities?limit=1000 HTTP/1.1&quot; 200 188779 &quot;https://cgspace.cgiar.org/rest /communities?limit=1000&quot; &quot;RTB website BOT&quot;
+<pre tabindex="0"><code class="language-console" data-lang="console">104.198.97.97 - - [23/Feb/2021:11:41:17 +0100] &quot;GET /rest/communities?limit=1000 HTTP/1.1&quot; 200 188779 &quot;https://cgspace.cgiar.org/rest /communities?limit=1000&quot; &quot;RTB website BOT&quot;
 104.198.97.97 - - [23/Feb/2021:11:41:18 +0100] &quot;GET /rest/communities//communities HTTP/1.1&quot; 404 714 &quot;https://cgspace.cgiar.org/rest/communities//communities&quot; &quot;RTB website BOT&quot;
 </code></pre><ul>
 <li>The first request is OK, but the second one is malformed for sure</li>
@@ -794,12 +794,12 @@ UPDATE 18659
 <ul>
 <li>Export a list of journals for Peter to look through:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.journal&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.journal&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
 COPY 3345
 </code></pre><ul>
 <li>Start a fresh harvesting on AReS because Udana mapped some items today and wants to include them in his report:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 # start indexing in AReS
 </code></pre><ul>
 <li>Also, I want to include the new series name/number cleanups so it&rsquo;s not a total waste of time</li>
@@ -808,7 +808,7 @@ COPY 3345
 <ul>
 <li>Hmm the AReS harvest last night seems to have finished successfully, but the number of items is less than I was expecting:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 99546,
   &quot;_shards&quot; : {
@@ -843,7 +843,7 @@ COPY 3345
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/\(.*\)/,&quot;&quot;)
+<pre tabindex="0"><code class="language-console" data-lang="console">value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/\(.*\)/,&quot;&quot;)
 value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&quot;$1&quot;)
 </code></pre><ul>
 <li>This <code>value.partition</code> was new to me&hellip; and it took me a bit of time to figure out whether I needed to escape the parentheses in the issue number or not (no) and how to reference a capture group with <code>value.replace</code></li>
@@ -857,7 +857,7 @@ value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&quot;$1&quot;)
 <li>Niroshini from IWMI is still having issues adding WLE subjects to items during the metadata review step in the workflow</li>
 <li>It seems the BatchEditConsumer log spam is gone since I applied <a href="https://github.com/ilri/DSpace/pull/462">Atmire&rsquo;s patch</a></li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ grep -c 'BatchEditConsumer should not have been given' dspace.log.2021-02-[12]*
+<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c 'BatchEditConsumer should not have been given' dspace.log.2021-02-[12]*
 dspace.log.2021-02-10:5067
 dspace.log.2021-02-11:2647
 dspace.log.2021-02-12:4231

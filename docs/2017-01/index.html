@@ -28,7 +28,7 @@ I checked to see if the Solr sharding task that is supposed to run on January 1s
 I tested on DSpace Test as well and it doesn&rsquo;t work there either
 I asked on the dspace-tech mailing list because it seems to be broken, and actually now I&rsquo;m not sure if we&rsquo;ve ever had the sharding task run successfully over all these years
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -124,7 +124,7 @@ I asked on the dspace-tech mailing list because it seems to be broken, and actua
 <ul>
 <li>I tried to shard my local dev instance and it fails the same way:</li>
 </ul>
-<pre><code>$ JAVA_OPTS=&quot;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dspace stats-util -s
+<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dspace stats-util -s
 Moving: 9318 into core statistics-2016
 Exception: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
 org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
@@ -171,7 +171,7 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 </code></pre><ul>
 <li>And the DSpace log shows:</li>
 </ul>
-<pre><code>2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2016
+<pre tabindex="0"><code>2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2016
 2017-01-04 22:39:05,412 INFO  org.dspace.statistics.SolrLogger @ Moving: 9318 records into core statistics-2016
 2017-01-04 22:39:07,310 INFO  org.apache.http.impl.client.SystemDefaultHttpClient @ I/O exception (java.net.SocketException) caught when processing request to {}-&gt;http://localhost:8081: Broken pipe (Write failed)
 2017-01-04 22:39:07,310 INFO  org.apache.http.impl.client.SystemDefaultHttpClient @ Retrying request to {}-&gt;http://localhost:8081
@@ -179,7 +179,7 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>Despite failing instantly, a <code>statistics-2016</code> directory was created, but it only has a data dir (no conf)</li>
 <li>The Tomcat access logs show more:</li>
 </ul>
-<pre><code>127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 107
+<pre tabindex="0"><code>127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 107
 127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=*%3A*&amp;rows=0&amp;facet=true&amp;facet.range=time&amp;facet.range.start=NOW%2FYEAR-17YEARS&amp;facet.range.end=NOW%2FYEAR%2B0YEARS&amp;facet.range.gap=%2B1YEAR&amp;facet.mincount=1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 423
 127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/admin/cores?action=STATUS&amp;core=statistics-2016&amp;indexInfo=true&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 77
 127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/admin/cores?action=CREATE&amp;name=statistics-2016&amp;instanceDir=statistics&amp;dataDir=%2FUsers%2Faorth%2Fdspace%2Fsolr%2Fstatistics-2016%2Fdata&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 63
@@ -208,11 +208,11 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>I found an old post on the mailing list discussing a similar issue, and listing some SQL commands that might help</li>
 <li>For example, this shows 186 mappings for the item, the first three of which are real:</li>
 </ul>
-<pre><code>dspace=#  select * from collection2item where item_id = '80596';
+<pre tabindex="0"><code>dspace=#  select * from collection2item where item_id = '80596';
 </code></pre><ul>
 <li>Then I deleted the others:</li>
 </ul>
-<pre><code>dspace=# delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
+<pre tabindex="0"><code>dspace=# delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
 </code></pre><ul>
 <li>And in the item view it now shows the correct mappings</li>
 <li>I will have to ask the DSpace people if this is a valid approach</li>
@@ -223,24 +223,24 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>Maria found another item with duplicate mappings: <a href="https://cgspace.cgiar.org/handle/10568/78658">https://cgspace.cgiar.org/handle/10568/78658</a></li>
 <li>Error in <code>fix-metadata-values.py</code> when it tries to print the value for Entwicklung &amp; Ländlicher Raum:</li>
 </ul>
-<pre><code>Traceback (most recent call last):
+<pre tabindex="0"><code>Traceback (most recent call last):
   File &quot;./fix-metadata-values.py&quot;, line 80, in &lt;module&gt;
     print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0]))
 UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15: ordinal not in range(128)
 </code></pre><ul>
 <li>Seems we need to encode as UTF-8 before printing to screen, ie:</li>
 </ul>
-<pre><code>print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0].encode('utf-8')))
+<pre tabindex="0"><code>print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0].encode('utf-8')))
 </code></pre><ul>
 <li>See: <a href="http://stackoverflow.com/a/36427358/487333">http://stackoverflow.com/a/36427358/487333</a></li>
 <li>I&rsquo;m actually not sure if we need to encode() the strings to UTF-8 before writing them to the database&hellip; I&rsquo;ve never had this issue before</li>
 <li>Now back to cleaning up some journal titles so we can make the controlled vocabulary:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>Now get the top 500 journal titles:</li>
 </ul>
-<pre><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
+<pre tabindex="0"><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
 </code></pre><ul>
 <li>The values are a bit dirty and outdated, since the file I had given to Abenet and Peter was from November</li>
 <li>I will have to go through these and fix some more before making the controlled vocabulary</li>
@@ -254,7 +254,7 @@ UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15:
 <ul>
 <li>Fix the two items Maria found with duplicate mappings with this script:</li>
 </ul>
-<pre><code>/* 184 in correct mappings: https://cgspace.cgiar.org/handle/10568/78596 */
+<pre tabindex="0"><code>/* 184 in correct mappings: https://cgspace.cgiar.org/handle/10568/78596 */
 delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
 /* 1 incorrect mapping: https://cgspace.cgiar.org/handle/10568/78658 */
 delete from collection2item where id = '91082';
@@ -266,20 +266,20 @@ delete from collection2item where id = '91082';
 <li>And the file names don&rsquo;t really matter either, as long as the SAF Builder tool can read them—after that DSpace renames them with a hash in the assetstore</li>
 <li>Seems like the only ones I should replace are the <code>'</code> apostrophe characters, as <code>%27</code>:</li>
 </ul>
-<pre><code>value.replace(&quot;'&quot;,'%27')
+<pre tabindex="0"><code>value.replace(&quot;'&quot;,'%27')
 </code></pre><ul>
 <li>Add the item&rsquo;s Type to the filename column as a hint to SAF Builder so it can set a more useful description field:</li>
 </ul>
-<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+<pre tabindex="0"><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
 </code></pre><ul>
 <li>Test importing of the new CIAT records (actually there are 232, not 234):</li>
 </ul>
-<pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
+<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
 </code></pre><ul>
 <li>Many of the PDFs are 20, 30, 40, 50+ MB, which makes a total of 4GB</li>
 <li>These are scanned from paper and likely have no compression, so we should try to test if these compression techniques help without comprimising the quality too much:</li>
 </ul>
-<pre><code>$ convert -compress Zip -density 150x150 input.pdf output.pdf
+<pre tabindex="0"><code>$ convert -compress Zip -density 150x150 input.pdf output.pdf
 $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf
 </code></pre><ul>
 <li>Somewhere on the Internet suggested using a DPI of 144</li>
@@ -289,7 +289,7 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 <li>In testing a random sample of CIAT&rsquo;s PDFs for compressability, it looks like all of these methods generally increase the file size so we will just import them as they are</li>
 <li>Import 232 CIAT records into CGSpace:</li>
 </ul>
-<pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/68704 --source /home/aorth/CIAT_232/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
+<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/68704 --source /home/aorth/CIAT_232/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
 </code></pre><h2 id="2017-01-22">2017-01-22</h2>
 <ul>
 <li>Looking at some records that Sisay is having problems importing into DSpace Test (seems to be because of copious whitespace return characters from Excel&rsquo;s CSV exporter)</li>
@@ -300,22 +300,22 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 <li>I merged Atmire&rsquo;s pull request into the development branch so they can deploy it on DSpace Test</li>
 <li>Move some old ILRI Program communities to a new subcommunity for former programs (10568/79164):</li>
 </ul>
-<pre><code>$ for community in 10568/171 10568/27868 10568/231 10568/27869 10568/150 10568/230 10568/32724 10568/172; do /home/cgspace.cgiar.org/bin/dspace community-filiator --remove --parent=10568/27866 --child=&quot;$community&quot; &amp;&amp; /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/79164 --child=&quot;$community&quot;; done
+<pre tabindex="0"><code>$ for community in 10568/171 10568/27868 10568/231 10568/27869 10568/150 10568/230 10568/32724 10568/172; do /home/cgspace.cgiar.org/bin/dspace community-filiator --remove --parent=10568/27866 --child=&quot;$community&quot; &amp;&amp; /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/79164 --child=&quot;$community&quot;; done
 </code></pre><ul>
 <li>Move some collections with <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515"><code>move-collections.sh</code></a> using the following config:</li>
 </ul>
-<pre><code>10568/42161 10568/171 10568/79341
+<pre tabindex="0"><code>10568/42161 10568/171 10568/79341
 10568/41914 10568/171 10568/79340
 </code></pre><h2 id="2017-01-24">2017-01-24</h2>
 <ul>
 <li>Run all updates on DSpace Test and reboot the server</li>
 <li>Run fixes for Journal titles on CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/fix-49-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'password'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/fix-49-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'password'
 </code></pre><ul>
 <li>Create a new list of the top 500 journal titles from the database:</li>
 </ul>
-<pre><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
+<pre tabindex="0"><code>dspace-# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc limit 500) to /tmp/journal-titles.csv with csv;
 </code></pre><ul>
 <li>Then sort them in OpenRefine and create a controlled vocabulary by manually adding the XML markup, pull request (<a href="https://github.com/ilri/DSpace/pull/298">#298</a>)</li>
 <li>This would be the last issue remaining to close the meta issue about switching to controlled vocabularies (<a href="https://github.com/ilri/DSpace/pull/69">#69</a>)</li>

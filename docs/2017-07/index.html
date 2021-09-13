@@ -36,7 +36,7 @@ Merge changes for WLE Phase II theme rename (#329)
 Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace
 We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the output into quasi XML:
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -132,7 +132,7 @@ We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the
 <li>Looking at extracting the metadata registries from ICARDA&rsquo;s MEL DSpace database so we can compare fields with CGSpace</li>
 <li>We can use PostgreSQL&rsquo;s extended output format (<code>-x</code>) plus <code>sed</code> to format the output into quasi XML:</li>
 </ul>
-<pre><code>$ psql dspacenew -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=5 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::'
+<pre tabindex="0"><code>$ psql dspacenew -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=5 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::'
 </code></pre><ul>
 <li>The <code>sed</code> script is from a post on the <a href="https://www.postgresql.org/message-id/437E44A5.508%40ultimeth.com">PostgreSQL mailing list</a></li>
 <li>Abenet says the ILRI board wants to be able to have &ldquo;lead author&rdquo; for every item, so I&rsquo;ve whipped up a WIP test in the <code>5_x-lead-author</code> branch</li>
@@ -151,11 +151,11 @@ We can use PostgreSQL&rsquo;s extended output format (-x) plus sed to format the
 <li>Adjust WLE Research Theme to include both Phase I and II on the submission form according to editor feedback (<a href="https://github.com/ilri/DSpace/pull/330">#330</a>)</li>
 <li>Generate list of fields in the current CGSpace <code>cg</code> scheme so we can record them properly in the metadata registry:</li>
 </ul>
-<pre><code>$ psql dspace -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=2 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::' &gt; cg-types.xml
+<pre tabindex="0"><code>$ psql dspace -x -c 'select element, qualifier, scope_note from metadatafieldregistry where metadata_schema_id=2 order by element, qualifier;' | sed -r 's:^-\[ RECORD (.*) \]-+$:&lt;/dc-type&gt;\n&lt;dc-type&gt;\n&lt;schema&gt;cg&lt;/schema&gt;:;s:([^ ]*) +\| (.*):  &lt;\1&gt;\2&lt;/\1&gt;:;s:^$:&lt;/dc-type&gt;:;1s:&lt;/dc-type&gt;\n::' &gt; cg-types.xml
 </code></pre><ul>
 <li>CGSpace was unavailable briefly, and I saw this error in the DSpace log file:</li>
 </ul>
-<pre><code>2017-07-05 13:05:36,452 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+<pre tabindex="0"><code>2017-07-05 13:05:36,452 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
 org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserved for non-replication superuser connections
 </code></pre><ul>
 <li>Looking at the <code>pg_stat_activity</code> table I saw there were indeed 98 active connections to PostgreSQL, and at this time the limit is 100, so that makes sense</li>
@@ -163,7 +163,7 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 <li>Abenet said she was generating a report with Atmire&rsquo;s CUA module, so it could be due to that?</li>
 <li>Looking in the logs I see this random error again that I should report to DSpace:</li>
 </ul>
-<pre><code>2017-07-05 13:50:07,196 ERROR org.dspace.statistics.SolrLogger @ COUNTRY ERROR: EU
+<pre tabindex="0"><code>2017-07-05 13:50:07,196 ERROR org.dspace.statistics.SolrLogger @ COUNTRY ERROR: EU
 </code></pre><ul>
 <li>Seems to come from <code>dspace-api/src/main/java/org/dspace/statistics/SolrLogger.java</code></li>
 </ul>
@@ -211,7 +211,7 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 <ul>
 <li>Move two top-level communities to be sub-communities of ILRI Projects</li>
 </ul>
-<pre><code>$ for community in 10568/2347 10568/25209; do /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/27629 --child=&quot;$community&quot;; done
+<pre tabindex="0"><code>$ for community in 10568/2347 10568/25209; do /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/27629 --child=&quot;$community&quot;; done
 </code></pre><ul>
 <li>Discuss CGIAR Library data cleanup with Sisay and Abenet</li>
 </ul>
@@ -241,7 +241,7 @@ org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserve
 <ul>
 <li>Looks like the final list of metadata corrections for CCAFS project tags will be:</li>
 </ul>
-<pre><code>delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-FP4_CRMWestAfrica';
+<pre tabindex="0"><code>delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-FP4_CRMWestAfrica';
 update metadatavalue set text_value='FP3_VietnamLED' where resource_type_id=2 and metadata_field_id=134 and text_value='FP3_VeitnamLED';
 update metadatavalue set text_value='PII-FP1_PIRCCA' where resource_type_id=2 and metadata_field_id=235 and text_value='PII-SEA_PIRCCA';
 delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-WA_IntegratedInterventions';
@@ -250,7 +250,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and
 <li>Temporarily increase the nginx upload limit to 200MB for Sisay to upload the CIAT presentations</li>
 <li>Looking at CGSpace activity page, there are 52 Baidu bots concurrently crawling our website (I copied the activity page to a text file and grep it)!</li>
 </ul>
-<pre><code>$ grep 180.76. /tmp/status | awk '{print $5}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ grep 180.76. /tmp/status | awk '{print $5}' | sort | uniq | wc -l
 52
 </code></pre><ul>
 <li>From looking at the <code>dspace.log</code> I see they are all using the same session, which means our Crawler Session Manager Valve is working</li>

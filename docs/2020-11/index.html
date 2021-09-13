@@ -32,7 +32,7 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -150,12 +150,12 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 </ul>
 </li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2020-11-05-fix-862-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t 'correct' -m 211
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2020-11-05-fix-862-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t 'correct' -m 211
 $ ./delete-metadata-values.py -i 2020-11-05-delete-29-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
 </code></pre><ul>
 <li>Then I started a Discovery re-index on CGSpace:</li>
 </ul>
-<pre><code>$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code>$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    92m24.993s
 user    8m11.858s
@@ -190,7 +190,7 @@ sys     2m26.931s
 <li>The statistics-2014 core finished processing after five hours, so I started processing the statistics-2013 core on DSpace Test</li>
 <li>Since I was going to restart CGSpace and update the Discovery indexes anyways I decided to check for any straggling upper case AGROVOC entries and lower case them:</li>
 </ul>
-<pre><code>dspace=# BEGIN;
+<pre tabindex="0"><code>dspace=# BEGIN;
 dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ '[[:upper:]]';
 UPDATE 164
 dspace=# COMMIT;
@@ -211,7 +211,7 @@ dspace=# COMMIT;
 </ul>
 </li>
 </ul>
-<pre><code>2020-11-10 08:43:59,634 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2015
+<pre tabindex="0"><code>2020-11-10 08:43:59,634 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2015
 2020-11-10 08:43:59,687 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2018
 2020-11-10 08:43:59,707 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2015
 2020-11-10 08:44:00,004 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-datatables not found
@@ -227,7 +227,7 @@ dspace=# COMMIT;
 </ul>
 </li>
 </ul>
-<pre><code>2020-11-10 08:51:03,007 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2018
+<pre tabindex="0"><code>2020-11-10 08:51:03,007 INFO  org.dspace.statistics.SolrLogger @ Created core with name: statistics-2018
 2020-11-10 08:51:03,008 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2015
 2020-11-10 08:51:03,137 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2018
 2020-11-10 08:51:03,153 INFO  org.dspace.statistics.SolrLogger @ Loading core with name: statistics-2015
@@ -281,11 +281,11 @@ dspace=# COMMIT;
 </li>
 <li>First we get the total number of communities with stats (using calcdistinct):</li>
 </ul>
-<pre><code>facet=true&amp;facet.field=owningComm&amp;facet.mincount=1&amp;facet.limit=1&amp;facet.offset=0&amp;stats=true&amp;stats.field=owningComm&amp;stats.calcdistinct=true&amp;shards=http://localhost:8081/solr/statistics,http://localhost:8081/solr/statistics-2019,http://localhost:8081/solr/statistics-2018,http://localhost:8081/solr/statistics-2017,http://localhost:8081/solr/statistics-2016,http://localhost:8081/solr/statistics-2015,http://localhost:8081/solr/statistics-2014,http://localhost:8081/solr/statistics-2013,http://localhost:8081/solr/statistics-2012,http://localhost:8081/solr/statistics-2011,http://localhost:8081/solr/statistics-2010
+<pre tabindex="0"><code>facet=true&amp;facet.field=owningComm&amp;facet.mincount=1&amp;facet.limit=1&amp;facet.offset=0&amp;stats=true&amp;stats.field=owningComm&amp;stats.calcdistinct=true&amp;shards=http://localhost:8081/solr/statistics,http://localhost:8081/solr/statistics-2019,http://localhost:8081/solr/statistics-2018,http://localhost:8081/solr/statistics-2017,http://localhost:8081/solr/statistics-2016,http://localhost:8081/solr/statistics-2015,http://localhost:8081/solr/statistics-2014,http://localhost:8081/solr/statistics-2013,http://localhost:8081/solr/statistics-2012,http://localhost:8081/solr/statistics-2011,http://localhost:8081/solr/statistics-2010
 </code></pre><ul>
 <li>Then get stats themselves, iterating 100 items at a time with limit and offset:</li>
 </ul>
-<pre><code>facet=true&amp;facet.field=owningComm&amp;facet.mincount=1&amp;facet.limit=100&amp;facet.offset=0&amp;shards=http://localhost:8081/solr/statistics,http://localhost:8081/solr/statistics-2019,http://localhost:8081/solr/statistics-2018,http://localhost:8081/solr/statistics-2017,http://localhost:8081/solr/statistics-2016,http://localhost:8081/solr/statistics-2015,http://localhost:8081/solr/statistics-2014,http://localhost:8081/solr/statistics-2013,http://localhost:8081/solr/statistics-2012,http://localhost:8081/solr/statistics-2011,http://localhost:8081/solr/statistics-2010
+<pre tabindex="0"><code>facet=true&amp;facet.field=owningComm&amp;facet.mincount=1&amp;facet.limit=100&amp;facet.offset=0&amp;shards=http://localhost:8081/solr/statistics,http://localhost:8081/solr/statistics-2019,http://localhost:8081/solr/statistics-2018,http://localhost:8081/solr/statistics-2017,http://localhost:8081/solr/statistics-2016,http://localhost:8081/solr/statistics-2015,http://localhost:8081/solr/statistics-2014,http://localhost:8081/solr/statistics-2013,http://localhost:8081/solr/statistics-2012,http://localhost:8081/solr/statistics-2011,http://localhost:8081/solr/statistics-2010
 </code></pre><ul>
 <li>I was surprised to see 10,000,000 docs with <code>isBot:true</code> when I was testing on DSpace Test&hellip;
 <ul>
@@ -309,7 +309,7 @@ dspace=# COMMIT;
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace cleanup -v
+<pre tabindex="0"><code>$ dspace cleanup -v
 $ git checkout origin/6_x-dev-atmire-modules
 $ npm install -g yarn
 $ chrt -b 0 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -P \!dspace-lni,\!dspace-rdf,\!dspace-sword,\!dspace-swordv2,\!dspace-jspui clean package
@@ -329,7 +329,7 @@ $ sudo systemctl start tomcat7
 </ul>
 </li>
 </ul>
-<pre><code># systemctl stop tomcat7
+<pre tabindex="0"><code># systemctl stop tomcat7
 # pg_ctlcluster 9.6 main stop
 # tar -cvzpf var-lib-postgresql-9.6.tar.gz /var/lib/postgresql/9.6
 # tar -cvzpf etc-postgresql-9.6.tar.gz /etc/postgresql/9.6
@@ -345,7 +345,7 @@ $ sudo systemctl start tomcat7
 <li>I disabled the dspace-statistsics-api for now because it won&rsquo;t work until I migrate all the Solr statistics anyways</li>
 <li>Start a full Discovery re-indexing:</li>
 </ul>
-<pre><code>$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code>$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    211m30.726s
 user    134m40.124s
@@ -353,13 +353,13 @@ sys     2m17.979s
 </code></pre><ul>
 <li>Towards the end of the indexing there were a few dozen of these messages:</li>
 </ul>
-<pre><code>2020-11-15 13:23:21,685 INFO  com.atmire.dspace.discovery.service.AtmireSolrService @ Removed Item: null from Index
+<pre tabindex="0"><code>2020-11-15 13:23:21,685 INFO  com.atmire.dspace.discovery.service.AtmireSolrService @ Removed Item: null from Index
 </code></pre><ul>
 <li>I updated all the Ansible infrastructure and DSpace branches to be the DSpace 6 ones</li>
 <li>I will wait until the Discovery indexing is finished to start doing the Solr statistics migration</li>
 <li>I tested the email functionality and it seems to need more configuration:</li>
 </ul>
-<pre><code>$ dspace test-email
+<pre tabindex="0"><code>$ dspace test-email
 
 About to send test email:
  - To: blah@cgiar.org
@@ -372,12 +372,12 @@ Error sending email:
 <li>I copied the <code>mail.extraproperties = mail.smtp.starttls.enable=true</code> setting from the old DSpace 5 <code>dspace.cfg</code> and now the emails are working</li>
 <li>After the Discovery indexing finished I started processing the Solr stats one core and 2.5 million records at a time:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
 $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
 </code></pre><ul>
 <li>After about 6,000,000 records I got the same error that I&rsquo;ve gotten every time I test this migration process:</li>
 </ul>
-<pre><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+<pre tabindex="0"><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
 org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
         at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
@@ -407,7 +407,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <ul>
 <li>There are almost 1,500 locks:</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 1494
 </code></pre><ul>
 <li>I sent a mail to the dspace-tech mailing list to ask for help&hellip;
@@ -417,7 +417,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </li>
 <li>While processing the statistics-2018 Solr core I got the <em>same</em> memory error that I have gotten every time I processed this core in testing:</li>
 </ul>
-<pre><code>Exception: Java heap space
+<pre tabindex="0"><code>Exception: Java heap space
 java.lang.OutOfMemoryError: Java heap space
         at java.util.Arrays.copyOf(Arrays.java:3332)
         at java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractStringBuilder.java:124)
@@ -454,7 +454,7 @@ java.lang.OutOfMemoryError: Java heap space
 </ul>
 </li>
 </ul>
-<pre><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+<pre tabindex="0"><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
 org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
         at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
@@ -486,7 +486,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <ul>
 <li>There are over 2,000 locks:</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 2071
 </code></pre><h2 id="2020-11-18">2020-11-18</h2>
 <ul>
@@ -534,7 +534,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </li>
 <li>Peter got a strange message this evening when trying to update metadata:</li>
 </ul>
-<pre><code>2020-11-18 16:57:33,309 ERROR org.hibernate.engine.jdbc.batch.internal.BatchingBatch @ HHH000315: Exception executing batch [Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1]
+<pre tabindex="0"><code>2020-11-18 16:57:33,309 ERROR org.hibernate.engine.jdbc.batch.internal.BatchingBatch @ HHH000315: Exception executing batch [Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1]
 2020-11-18 16:57:33,316 ERROR org.hibernate.engine.jdbc.batch.internal.BatchingBatch @ HHH000315: Exception executing batch [Batch update returned unexpected row count from update [13]; actual row count: 0; expected: 1]
 2020-11-18 16:57:33,385 INFO  org.hibernate.engine.jdbc.batch.internal.AbstractBatchImpl @ HHH000010: On release of batch it still contained JDBC statements
 </code></pre><ul>
@@ -603,25 +603,25 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT item_id,uuid FROM item WHERE in_archive='t' AND withdrawn='f' AND item_id IS NOT NULL) TO /tmp/2020-11-22-item-id2uuid.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT item_id,uuid FROM item WHERE in_archive='t' AND withdrawn='f' AND item_id IS NOT NULL) TO /tmp/2020-11-22-item-id2uuid.csv WITH CSV HEADER;
 COPY 87411
 </code></pre><ul>
 <li>Saving some notes I wrote down about faceting by community and collection in Solr, for potential use in the future in the DSpace Statistics API</li>
 <li>Facet by owningComm to see total number of distinct communities (136):</li>
 </ul>
-<pre><code>  facet=true&amp;facet.mincount=1&amp;facet.field=owningComm&amp;facet.limit=1&amp;facet.offset=0&amp;stats=true&amp;stats.field=id&amp;stats.calcdistinct=true
+<pre tabindex="0"><code>  facet=true&amp;facet.mincount=1&amp;facet.field=owningComm&amp;facet.limit=1&amp;facet.offset=0&amp;stats=true&amp;stats.field=id&amp;stats.calcdistinct=true
 </code></pre><ul>
 <li>Facet by owningComm and get the first 5 distinct:</li>
 </ul>
-<pre><code>  facet=true&amp;facet.mincount=1&amp;facet.field=owningComm&amp;facet.limit=5&amp;facet.offset=0&amp;facet.pivot=id,countryCode
+<pre tabindex="0"><code>  facet=true&amp;facet.mincount=1&amp;facet.field=owningComm&amp;facet.limit=5&amp;facet.offset=0&amp;facet.pivot=id,countryCode
 </code></pre><ul>
 <li>Facet by owningComm and countryCode using facet.pivot and maybe I can just skip the normal facet params?</li>
 </ul>
-<pre><code>facet=true&amp;f.owningComm.facet.limit=5&amp;f.owningComm.facet.offset=5&amp;facet.pivot=owningComm,countryCode
+<pre tabindex="0"><code>facet=true&amp;f.owningComm.facet.limit=5&amp;f.owningComm.facet.offset=5&amp;facet.pivot=owningComm,countryCode
 </code></pre><ul>
 <li>Facet by owningComm and countryCode using facet.pivot and limiting to top five countries&hellip; fuck it&rsquo;s possible!</li>
 </ul>
-<pre><code>facet=true&amp;f.owningComm.facet.limit=5&amp;f.owningComm.facet.offset=5&amp;f.countryCode.facet.limit=5&amp;facet.pivot=owningComm,countryCode
+<pre tabindex="0"><code>facet=true&amp;f.owningComm.facet.limit=5&amp;f.owningComm.facet.offset=5&amp;f.countryCode.facet.limit=5&amp;facet.pivot=owningComm,countryCode
 </code></pre><h2 id="2020-11-23">2020-11-23</h2>
 <ul>
 <li>I created the sub-communities and collections for IWMI&rsquo;s Strategic Priorities and Research Groups on CGSpace: <a href="https://cgspace.cgiar.org/handle/10568/110259">https://cgspace.cgiar.org/handle/10568/110259</a></li>
@@ -688,18 +688,18 @@ COPY 87411
 </ul>
 </li>
 </ul>
-<pre><code>$ xml sel -t -m '//value-pairs[@value-pairs-name=&quot;ilrisubject&quot;]/pair/displayed-value/text()' -c '.' -n dspace/config/input-forms.xml
+<pre tabindex="0"><code>$ xml sel -t -m '//value-pairs[@value-pairs-name=&quot;ilrisubject&quot;]/pair/displayed-value/text()' -c '.' -n dspace/config/input-forms.xml
 </code></pre><ul>
 <li>IWMI sent me a few new ORCID identifiers so I combined them with our existing ones as well as another ILRI one that Tezira asked me to update, filtered the unique ones, and then resolved their names using my <code>resolve-orcids.py</code> script:</li>
 </ul>
-<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt /tmp/hung.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2020-11-30-combined-orcids.txt
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt /tmp/hung.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2020-11-30-combined-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2020-11-30-combined-orcids.txt -o /tmp/2020-11-30-combined-orcids-names.txt -d
 # sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 </code></pre><ul>
 <li>I used my <code>fix-metadata-values.py</code> script to update the old occurences of Hung&rsquo;s ORCID and some others that I see have changed:</li>
 </ul>
-<pre><code>$ cat 2020-11-30-fix-hung-orcid.csv
+<pre tabindex="0"><code>$ cat 2020-11-30-fix-hung-orcid.csv
 cg.creator.id,correct
 &quot;Hung Nguyen-Viet: 0000-0001-9877-0596&quot;,&quot;Hung Nguyen-Viet: 0000-0003-1549-2733&quot;
 &quot;Adriana Tofiño: 0000-0001-7115-7169&quot;,&quot;Adriana Tofiño Rivera: 0000-0001-7115-7169&quot;

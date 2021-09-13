@@ -34,7 +34,7 @@ Last week I had increased the limit from 30 to 60, which seemed to help, but now
 $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspace
 78
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -126,7 +126,7 @@ $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspac
 <li>Looks like DSpace exhausted its PostgreSQL connection pool</li>
 <li>Last week I had increased the limit from 30 to 60, which seemed to help, but now there are many more idle connections:</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
+<pre tabindex="0"><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
 78
 </code></pre><ul>
 <li>For now I have increased the limit from 60 to 90, run updates, and rebooted the server</li>
@@ -137,7 +137,7 @@ $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspac
 <li>Getting emails from uptimeRobot and uptimeButler that it&rsquo;s down, and Google Webmaster Tools is sending emails that there is an increase in crawl errors</li>
 <li>Looks like there are still a bunch of idle PostgreSQL connections:</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
+<pre tabindex="0"><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
 96
 </code></pre><ul>
 <li>For some reason the number of idle connections is very high since we upgraded to DSpace 5</li>
@@ -147,7 +147,7 @@ $ psql -c &#39;SELECT * from pg_stat_activity;&#39; | grep idle | grep -c cgspac
 <li>Troubleshoot the DSpace 5 OAI breakage caused by nginx routing config</li>
 <li>The OAI application requests stylesheets and javascript files with the path <code>/oai/static/css</code>, which gets matched here:</li>
 </ul>
-<pre><code># static assets we can load from the file system directly with nginx
+<pre tabindex="0"><code># static assets we can load from the file system directly with nginx
 location ~ /(themes|static|aspects/ReportingSuite) {
     try_files $uri @tomcat;
 ...
@@ -158,21 +158,21 @@ location ~ /(themes|static|aspects/ReportingSuite) {
 <li>We simply need to add <code>include extra-security.conf;</code> to the above location block (but research and test first)</li>
 <li>We should add WOFF assets to the list of things to set expires for:</li>
 </ul>
-<pre><code>location ~* \.(?:ico|css|js|gif|jpe?g|png|woff)$ {
+<pre tabindex="0"><code>location ~* \.(?:ico|css|js|gif|jpe?g|png|woff)$ {
 </code></pre><ul>
 <li>We should also add <code>aspects/Statistics</code> to the location block for static assets (minus <code>static</code> from above):</li>
 </ul>
-<pre><code>location ~ /(themes|aspects/ReportingSuite|aspects/Statistics) {
+<pre tabindex="0"><code>location ~ /(themes|aspects/ReportingSuite|aspects/Statistics) {
 </code></pre><ul>
 <li>Need to check <code>/about</code> on CGSpace, as it&rsquo;s blank on my local test server and we might need to add something there</li>
 <li>CGSpace has been up and down all day due to PostgreSQL idle connections (current DSpace pool is 90):</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
+<pre tabindex="0"><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep idle | grep -c cgspace
 93
 </code></pre><ul>
 <li>I looked closer at the idle connections and saw that many have been idle for hours (current time on server is <code>2015-11-25T20:20:42+0000</code>):</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | less -S
+<pre tabindex="0"><code>$ psql -c 'SELECT * from pg_stat_activity;' | less -S
 datid | datname  |  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |          xact_start           |
 -------+----------+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-------------------------------+---
 20951 | cgspace  | 10966 |    18205 | cgspace  |                  | 127.0.0.1   |                 |       37731 | 2015-11-25 13:13:02.837624+00 |                               | 20
@@ -191,13 +191,13 @@ datid | datname  |  pid  | usesysid | usename  | application_name | client_addr 
 <li>CCAFS colleagues mentioned that the REST API is very slow, 24 seconds for one item</li>
 <li>Not as bad for me, but still unsustainable if you have to get many:</li>
 </ul>
-<pre><code>$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
+<pre tabindex="0"><code>$ curl -o /dev/null -s -w %{time_total}\\n https://cgspace.cgiar.org/rest/handle/10568/32802?expand=all
 8.415
 </code></pre><ul>
 <li>Monitoring e-mailed in the evening to say CGSpace was down</li>
 <li>Idle connections in PostgreSQL again:</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
+<pre tabindex="0"><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
 66
 </code></pre><ul>
 <li>At the time, the current DSpace pool size was 50&hellip;</li>
@@ -208,14 +208,14 @@ datid | datname  |  pid  | usesysid | usename  | application_name | client_addr 
 <li>Still more alerts that CGSpace has been up and down all day</li>
 <li>Current database settings for DSpace:</li>
 </ul>
-<pre><code>db.maxconnections = 30
+<pre tabindex="0"><code>db.maxconnections = 30
 db.maxwait = 5000
 db.maxidle = 8
 db.statementpool = true
 </code></pre><ul>
 <li>And idle connections:</li>
 </ul>
-<pre><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
+<pre tabindex="0"><code>$ psql -c 'SELECT * from pg_stat_activity;' | grep cgspace | grep -c idle
 49
 </code></pre><ul>
 <li>Perhaps I need to start drastically increasing the connection limits—like to 300—to see if DSpace&rsquo;s thirst can ever be quenched</li>

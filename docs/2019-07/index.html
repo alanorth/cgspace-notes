@@ -38,7 +38,7 @@ CGSpace
 
 Abenet had another similar issue a few days ago when trying to find the stats for 2018 in the RTB community
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -153,12 +153,12 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 </ul>
 </li>
 </ul>
-<pre><code>org.apache.solr.common.SolrException: Error CREATEing SolrCore 'statistics-2010': Unable to create core [statistics-2010] Caused by: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2010/data/index/write.lock
+<pre tabindex="0"><code>org.apache.solr.common.SolrException: Error CREATEing SolrCore 'statistics-2010': Unable to create core [statistics-2010] Caused by: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2010/data/index/write.lock
 </code></pre><ul>
 <li>I restarted Tomcat <em>ten times</em> and it never worked&hellip;</li>
 <li>I tried to stop Tomcat and delete the write locks:</li>
 </ul>
-<pre><code># systemctl stop tomcat7
+<pre tabindex="0"><code># systemctl stop tomcat7
 # find /dspace/solr/statistics* -iname &quot;*.lock&quot; -print -delete
 /dspace/solr/statistics/data/index/write.lock
 /dspace/solr/statistics-2010/data/index/write.lock
@@ -176,23 +176,23 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 <li>But it still didn&rsquo;t work!</li>
 <li>I stopped Tomcat, deleted the old locks, and will try to use the &ldquo;simple&rdquo; lock file type in <code>solr/statistics/conf/solrconfig.xml</code>:</li>
 </ul>
-<pre><code>&lt;lockType&gt;${solr.lock.type:simple}&lt;/lockType&gt;
+<pre tabindex="0"><code>&lt;lockType&gt;${solr.lock.type:simple}&lt;/lockType&gt;
 </code></pre><ul>
 <li>And after restarting Tomcat it still doesn&rsquo;t work</li>
 <li>Now I&rsquo;ll try going back to &ldquo;native&rdquo; locking with <code>unlockAtStartup</code>:</li>
 </ul>
-<pre><code>&lt;unlockOnStartup&gt;true&lt;/unlockOnStartup&gt;
+<pre tabindex="0"><code>&lt;unlockOnStartup&gt;true&lt;/unlockOnStartup&gt;
 </code></pre><ul>
 <li>Now the cores seem to load, but I still see an error in the Solr Admin UI and I still can&rsquo;t access any stats before 2018</li>
 <li>I filed an <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=685">issue with Atmire</a>, so let&rsquo;s see if they can help</li>
 <li>And since I&rsquo;m annoyed and it&rsquo;s been a few months, I&rsquo;m going to move the JVM heap settings that I&rsquo;ve been testing on DSpace Test to CGSpace</li>
 <li>The old ones were:</li>
 </ul>
-<pre><code>-Djava.awt.headless=true -Xms8192m -Xmx8192m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=5400 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
+<pre tabindex="0"><code>-Djava.awt.headless=true -Xms8192m -Xmx8192m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=5400 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
 </code></pre><ul>
 <li>And the new ones come from Solr 4.10.x&rsquo;s startup scripts:</li>
 </ul>
-<pre><code>    -Djava.awt.headless=true
+<pre tabindex="0"><code>    -Djava.awt.headless=true
     -Xms8192m -Xmx8192m
     -Dfile.encoding=UTF-8
     -XX:NewRatio=3
@@ -221,14 +221,14 @@ Abenet had another similar issue a few days ago when trying to find the stats fo
 </ul>
 </li>
 </ul>
-<pre><code>$ sed -i 's/CC-BY 4.0/CC-BY-4.0/' item_*/dublin_core.xml
+<pre tabindex="0"><code>$ sed -i 's/CC-BY 4.0/CC-BY-4.0/' item_*/dublin_core.xml
 $ echo &quot;10568/101992&quot; &gt;&gt; item_*/collections
 $ dspace import -a -e me@cgiar.org -m 2019-07-02-Sharefair.map -s /tmp/Sharefair_mapped
 </code></pre><ul>
 <li>I noticed that all twenty-seven items had double dates like &ldquo;2019-05||2019-05&rdquo; so I fixed those, but the rest of the metadata looked good so I unmapped them from the temporary collection</li>
 <li>Finish looking at the fifty-six AfricaRice items and upload them to CGSpace:</li>
 </ul>
-<pre><code>$ dspace import -a -e me@cgiar.org -m 2019-07-02-AfricaRice-11to73.map -s /tmp/SimpleArchiveFormat
+<pre tabindex="0"><code>$ dspace import -a -e me@cgiar.org -m 2019-07-02-AfricaRice-11to73.map -s /tmp/SimpleArchiveFormat
 </code></pre><ul>
 <li>Peter pointed out that the Sharefair dates I fixed were not actually fixed
 <ul>
@@ -249,20 +249,20 @@ $ dspace import -a -e me@cgiar.org -m 2019-07-02-Sharefair.map -s /tmp/Sharefair
 </ul>
 </li>
 </ul>
-<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/new-bioversity-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort -u &gt; /tmp/2019-07-04-orcid-ids.txt
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/new-bioversity-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort -u &gt; /tmp/2019-07-04-orcid-ids.txt
 $ ./resolve-orcids.py -i /tmp/2019-07-04-orcid-ids.txt -o 2019-07-04-orcid-names.txt -d
 </code></pre><ul>
 <li>Send and merge a pull request for the new ORCID identifiers (<a href="https://github.com/ilri/DSpace/pull/428">#428</a>)</li>
 <li>I created a CSV with some ORCID identifiers that I had seen change so I could update any existing ones in the databse:</li>
 </ul>
-<pre><code>cg.creator.id,correct
+<pre tabindex="0"><code>cg.creator.id,correct
 &quot;Marius Ekué: 0000-0002-5829-6321&quot;,&quot;Marius R.M. Ekué: 0000-0002-5829-6321&quot;
 &quot;Mwungu: 0000-0001-6181-8445&quot;,&quot;Chris Miyinzi Mwungu: 0000-0001-6181-8445&quot;
 &quot;Mwungu: 0000-0003-1658-287X&quot;,&quot;Chris Miyinzi Mwungu: 0000-0003-1658-287X&quot;
 </code></pre><ul>
 <li>But when I ran <code>fix-metadata-values.py</code> I didn&rsquo;t see any changes:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2019-07-04-update-orcids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -m 240 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2019-07-04-update-orcids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -m 240 -t correct -d
 </code></pre><h2 id="2019-07-06">2019-07-06</h2>
 <ul>
 <li>Send a reminder to Marie about my notes on the <a href="https://github.com/AgriculturalSemantics/cg-core/issues/2">CG Core v2 issue I created two weeks ago</a></li>
@@ -282,7 +282,7 @@ $ ./resolve-orcids.py -i /tmp/2019-07-04-orcid-ids.txt -o 2019-07-04-orcid-names
 </li>
 <li>Playing with the idea of using <a href="https://github.com/BurntSushi/xsv">xsv</a> to do some basic batch quality checks on CSVs, for example to find items that might be duplicates if they have the same DOI or title:</li>
 </ul>
-<pre><code>$ xsv frequency --select cg.identifier.doi --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E ',1'
+<pre tabindex="0"><code>$ xsv frequency --select cg.identifier.doi --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E ',1'
 field,value,count
 cg.identifier.doi,https://doi.org/10.1016/j.agwat.2018.06.018,2
 $ xsv frequency --select dc.title --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E ',1'         
@@ -291,13 +291,13 @@ dc.title,Reference evapotranspiration prediction using hybridized fuzzy model wi
 </code></pre><ul>
 <li>Or perhaps if DOIs are valid or not (having doi.org in the URL):</li>
 </ul>
-<pre><code>$ xsv frequency --select cg.identifier.doi --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E 'doi.org'
+<pre tabindex="0"><code>$ xsv frequency --select cg.identifier.doi --no-nulls cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v -E 'doi.org'
 field,value,count
 cg.identifier.doi,https://hdl.handle.net/10520/EJC-1236ac700f,1
 </code></pre><ul>
 <li>Or perhaps items with invalid ISSNs (according to the <a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Code_format">ISSN code format</a>):</li>
 </ul>
-<pre><code>$ xsv select dc.identifier.issn cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v '&quot;' | grep -v -E '^[0-9]{4}-[0-9]{3}[0-9xX]$'
+<pre tabindex="0"><code>$ xsv select dc.identifier.issn cgspace_metadata_africaRice-11to73_ay_id.csv | grep -v '&quot;' | grep -v -E '^[0-9]{4}-[0-9]{3}[0-9xX]$'
 dc.identifier.issn
 978-3-319-71997-9
 978-3-319-71997-9
@@ -333,7 +333,7 @@ dc.identifier.issn
 <li>Yesterday Theirry from CTA asked me about an error he was getting while submitting an item on CGSpace: &ldquo;Unable to load Submission Information, since WorkspaceID (ID:S106658) is not a valid in-process submission.&rdquo;</li>
 <li>I looked in the DSpace logs and found this right around the time of the screenshot he sent me:</li>
 </ul>
-<pre><code>2019-07-10 11:50:27,433 INFO  org.dspace.submit.step.CompleteStep @ lewyllie@cta.int:session_id=A920730003BCAECE8A3B31DCDE11A97E:submission_complete:Completed submission with id=106658
+<pre tabindex="0"><code>2019-07-10 11:50:27,433 INFO  org.dspace.submit.step.CompleteStep @ lewyllie@cta.int:session_id=A920730003BCAECE8A3B31DCDE11A97E:submission_complete:Completed submission with id=106658
 </code></pre><ul>
 <li>I&rsquo;m assuming something happened in his browser (like a refresh) after the item was submitted&hellip;</li>
 </ul>
@@ -350,24 +350,24 @@ dc.identifier.issn
 <li>Run all system updates on DSpace Test (linode19) and reboot it</li>
 <li>Try to run <code>dspace cleanup -v</code> on CGSpace and ran into an error:</li>
 </ul>
-<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(167394) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>The solution is, as always:</li>
 </ul>
-<pre><code># su - postgres
+<pre tabindex="0"><code># su - postgres
 $ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (167394);'
 UPDATE 1
 </code></pre><h2 id="2019-07-16">2019-07-16</h2>
 <ul>
 <li>Completely reset the Podman configuration on my laptop because there were some layers that I couldn&rsquo;t delete and it had been some time since I did a cleanup:</li>
 </ul>
-<pre><code>$ podman system prune -a -f --volumes
+<pre tabindex="0"><code>$ podman system prune -a -f --volumes
 $ sudo rm -rf ~/.local/share/containers
 </code></pre><ul>
 <li>Then pull a new PostgreSQL 9.6 image and load a CGSpace database dump into a new local test container:</li>
 </ul>
-<pre><code>$ podman pull postgres:9.6-alpine
+<pre tabindex="0"><code>$ podman pull postgres:9.6-alpine
 $ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 $ createuser -h localhost -U postgres --pwprompt dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
@@ -388,7 +388,7 @@ $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-s
 </li>
 <li>Sisay said a user was having problems registering on CGSpace and it looks like the email account expired again:</li>
 </ul>
-<pre><code>$ dspace test-email
+<pre tabindex="0"><code>$ dspace test-email
 
 About to send test email:
  - To: blahh@cgiar.org
@@ -414,7 +414,7 @@ Please see the DSpace documentation for assistance.
 <ul>
 <li>Create an account for Lionelle Samnick on CGSpace because the registration isn&rsquo;t working for some reason:</li>
 </ul>
-<pre><code>$ dspace user --add --givenname Lionelle --surname Samnick --email blah@blah.com --password 'blah'
+<pre tabindex="0"><code>$ dspace user --add --givenname Lionelle --surname Samnick --email blah@blah.com --password 'blah'
 </code></pre><ul>
 <li>I added her as a submitter to <a href="https://cgspace.cgiar.org/handle/10568/74536">CTA ISF Pro-Agro series</a></li>
 <li>Start looking at 1429 records for the Bioversity batch import
@@ -442,7 +442,7 @@ Please see the DSpace documentation for assistance.
 </ul>
 </li>
 </ul>
-<pre><code>    &lt;dct:coverage&gt;
+<pre tabindex="0"><code>    &lt;dct:coverage&gt;
         &lt;dct:spatial&gt;
             &lt;type&gt;Country&lt;/type&gt;
             &lt;dct:identifier&gt;http://sws.geonames.org/192950&lt;/dct:identifier&gt;
@@ -484,14 +484,14 @@ Please see the DSpace documentation for assistance.
 <p>I might be able to use <a href="https://pypi.org/project/isbnlib/">isbnlib</a> to validate ISBNs in Python:</p>
 </li>
 </ul>
-<pre><code>if isbnlib.is_isbn10('9966-955-07-0') or isbnlib.is_isbn13('9966-955-07-0'):
+<pre tabindex="0"><code>if isbnlib.is_isbn10('9966-955-07-0') or isbnlib.is_isbn13('9966-955-07-0'):
     print(&quot;Yes&quot;)
 else:
     print(&quot;No&quot;)
 </code></pre><ul>
 <li>Or with <a href="https://github.com/arthurdejong/python-stdnum">python-stdnum</a>:</li>
 </ul>
-<pre><code>from stdnum import isbn
+<pre tabindex="0"><code>from stdnum import isbn
 from stdnum import issn
 
 isbn.validate('978-92-9043-389-7')
@@ -510,7 +510,7 @@ issn.validate('1020-3362')
 <p>I figured out a GREL to trim spaces in multi-value cells without splitting them:</p>
 </li>
 </ul>
-<pre><code>value.replace(/\s+\|\|/,&quot;||&quot;).replace(/\|\|\s+/,&quot;||&quot;)
+<pre tabindex="0"><code>value.replace(/\s+\|\|/,&quot;||&quot;).replace(/\|\|\s+/,&quot;||&quot;)
 </code></pre><ul>
 <li>I whipped up a quick script using Python Pandas to do whitespace cleanup</li>
 </ul>

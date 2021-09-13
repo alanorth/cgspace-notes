@@ -36,7 +36,7 @@ During the mvn package stage on the 5.8 branch I kept getting issues with java r
 
 There is insufficient memory for the Java Runtime Environment to continue.
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -126,20 +126,20 @@ There is insufficient memory for the Java Runtime Environment to continue.
 <ul>
 <li>I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:</li>
 </ul>
-<pre><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
+<pre tabindex="0"><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
 </code></pre><ul>
 <li>During the <code>mvn package</code> stage on the 5.8 branch I kept getting issues with java running out of memory:</li>
 </ul>
-<pre><code>There is insufficient memory for the Java Runtime Environment to continue.
+<pre tabindex="0"><code>There is insufficient memory for the Java Runtime Environment to continue.
 </code></pre><ul>
 <li>As the machine only has 8GB of RAM, I reduced the Tomcat memory heap from 5120m to 4096m so I could try to allocate more to the build process:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -Denv=dspacetest.cgiar.org -P \!dspace-lni,\!dspace-rdf,\!dspace-sword,\!dspace-swordv2 clean package
 </code></pre><ul>
 <li>Then I stopped the Tomcat 7 service, ran the ant update, and manually ran the old and ignored SQL migrations:</li>
 </ul>
-<pre><code>$ sudo su - postgres
+<pre tabindex="0"><code>$ sudo su - postgres
 $ psql dspace
 ...
 dspace=# begin;
@@ -171,13 +171,13 @@ $ dspace database migrate ignored
 </ul>
 </li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/2018-06-27-New-CIFOR-Archive.csv
 $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/2018-06-27-New-CIFOR-Archive2.csv
 </code></pre><ul>
 <li>I noticed there are many items that use HTTP instead of HTTPS for their Google Books URL, and some missing HTTP entirely:</li>
 </ul>
-<pre><code>dspace=# select count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=222 and text_value like 'http://books.google.%';
+<pre tabindex="0"><code>dspace=# select count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=222 and text_value like 'http://books.google.%';
  count
 -------
    785
@@ -188,7 +188,7 @@ dspace=# select count(*) from metadatavalue where resource_type_id=2 and metadat
 </code></pre><ul>
 <li>I think I should fix that as well as some other garbage values like &ldquo;test&rdquo; and &ldquo;dspace.ilri.org&rdquo; etc:</li>
 </ul>
-<pre><code>dspace=# begin;
+<pre tabindex="0"><code>dspace=# begin;
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://books.google', 'https://books.google') where resource_type_id=2 and metadata_field_id=222 and text_value like 'http://books.google.%';
 UPDATE 785
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'books.google', 'https://books.google') where resource_type_id=2 and metadata_field_id=222 and text_value ~ '^books\.google\..*';
@@ -201,7 +201,7 @@ dspace=# commit;
 </code></pre><ul>
 <li>Testing DSpace 5.8 with PostgreSQL 9.6 and Tomcat 8.5.32 (instead of my usual 7.0.88) and for some reason I get autowire errors on Catalina startup with 8.5.32:</li>
 </ul>
-<pre><code>03-Jul-2018 19:51:37.272 SEVERE [localhost-startStop-1] org.apache.catalina.core.StandardContext.listenerStart Exception sending context initialized event to listener instance of class [org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener]
+<pre tabindex="0"><code>03-Jul-2018 19:51:37.272 SEVERE [localhost-startStop-1] org.apache.catalina.core.StandardContext.listenerStart Exception sending context initialized event to listener instance of class [org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener]
  java.lang.RuntimeException: Failure during filter init: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'conversionService' defined in file [/home/aorth/dspace/config/spring/xmlui/spring-dspace-addon-cua-services.xml]: Cannot create inner bean 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a' of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter] while setting bean property 'converters' with key [1]; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter#3f6c3e6a': Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$ColumnsConverter.filterConverter; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No matching bean of type [com.atmire.app.xmlui.aspect.statistics.mostpopular.MostPopularConfig$FilterConverter] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
 	at org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener.contextInitialized(DSpaceKernelServletContextListener.java:92)
 	at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4792)
@@ -241,7 +241,7 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 <li>It looks like I added Solr to the <code>backup_to_s3.sh</code> script, but that script is not even being used (<code>s3cmd</code> is run directly from root&rsquo;s crontab)</li>
 <li>For now I have just initiated a manual S3 backup of the Solr data:</li>
 </ul>
-<pre><code># s3cmd sync --delete-removed /home/backup/solr/ s3://cgspace.cgiar.org/solr/
+<pre tabindex="0"><code># s3cmd sync --delete-removed /home/backup/solr/ s3://cgspace.cgiar.org/solr/
 </code></pre><ul>
 <li>But I need to add this to cron!</li>
 <li>I wonder if I should convert some of the cron jobs to systemd services / timers&hellip;</li>
@@ -249,7 +249,7 @@ Caused by: java.lang.RuntimeException: Failed to startup the DSpace Service Mana
 <li>Abenet wants to be able to search by journal title (dc.source) in the advanced Discovery search so I opened an issue for it (<a href="https://github.com/ilri/DSpace/issues/384">#384</a>)</li>
 <li>I regenerated the list of names for all our ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
 </ul>
-<pre><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; /tmp/2018-07-08-orcids.txt
+<pre tabindex="0"><code>$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml | sort | uniq &gt; /tmp/2018-07-08-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2018-07-08-orcids.txt -o /tmp/2018-07-08-names.txt -d
 </code></pre><ul>
 <li>But after comparing to the existing list of names I didn&rsquo;t see much change, so I just ignored it</li>
@@ -259,22 +259,22 @@ $ ./resolve-orcids.py -i /tmp/2018-07-08-orcids.txt -o /tmp/2018-07-08-names.txt
 <li>Uptime Robot said that CGSpace was down for two minutes early this morning but I don&rsquo;t see anything in Tomcat logs or dmesg</li>
 <li>Uptime Robot said that CGSpace was down for two minutes again later in the day, and this time I saw a memory error in Tomcat&rsquo;s <code>catalina.out</code>:</li>
 </ul>
-<pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-557&quot; java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-557&quot; java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>I&rsquo;m not sure if it&rsquo;s the same error, but I see this in DSpace&rsquo;s <code>solr.log</code>:</li>
 </ul>
-<pre><code>2018-07-09 06:25:09,913 ERROR org.apache.solr.servlet.SolrDispatchFilter @ null:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>2018-07-09 06:25:09,913 ERROR org.apache.solr.servlet.SolrDispatchFilter @ null:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>I see a strange error around that time in <code>dspace.log.2018-07-08</code>:</li>
 </ul>
-<pre><code>2018-07-09 06:23:43,510 ERROR com.atmire.statistics.SolrLogThread @ IOException occured when talking to server at: http://localhost:8081/solr/statistics
+<pre tabindex="0"><code>2018-07-09 06:23:43,510 ERROR com.atmire.statistics.SolrLogThread @ IOException occured when talking to server at: http://localhost:8081/solr/statistics
 org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr/statistics
 </code></pre><ul>
 <li>But not sure what caused that&hellip;</li>
 <li>I got a message from Linode tonight that CPU usage was high on CGSpace for the past few hours around 8PM GMT</li>
 <li>Looking in the nginx logs I see the top ten IP addresses active today:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;09/Jul/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;09/Jul/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
    1691 40.77.167.84
    1701 40.77.167.69
    1718 50.116.102.77
@@ -288,7 +288,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 </code></pre><ul>
 <li>Of those, <em>all</em> except <code>70.32.83.92</code> and <code>50.116.102.77</code> are <em>NOT</em> re-using their Tomcat sessions, for example from the XMLUI logs:</li>
 </ul>
-<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2018-07-09
+<pre tabindex="0"><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2018-07-09
 4435
 </code></pre><ul>
 <li><code>95.108.181.88</code> appears to be Yandex, so I dunno why it&rsquo;s creating so many sessions, as its user agent should match Tomcat&rsquo;s Crawler Session Manager Valve</li>
@@ -314,7 +314,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <li>Linode sent an alert about CPU usage on CGSpace again, about 13:00UTC</li>
 <li>These are the top ten users in the last two hours:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Jul/2018:(11|12|13)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Jul/2018:(11|12|13)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
      81 193.95.22.113
      82 50.116.102.77
     112 40.77.167.90
@@ -328,7 +328,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 </code></pre><ul>
 <li>Looks like <code>213.139.52.250</code> is Moayad testing his new CGSpace vizualization thing:</li>
 </ul>
-<pre><code>213.139.52.250 - - [10/Jul/2018:13:39:41 +0000] &quot;GET /bitstream/handle/10568/75668/dryad.png HTTP/2.0&quot; 200 53750 &quot;http://localhost:4200/&quot; &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36&quot;
+<pre tabindex="0"><code>213.139.52.250 - - [10/Jul/2018:13:39:41 +0000] &quot;GET /bitstream/handle/10568/75668/dryad.png HTTP/2.0&quot; 200 53750 &quot;http://localhost:4200/&quot; &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36&quot;
 </code></pre><ul>
 <li>He said there was a bug that caused his app to request a bunch of invalid URLs</li>
 <li>I&rsquo;ll have to keep and eye on this and see how their platform evolves</li>
@@ -349,7 +349,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <li>Uptime Robot said that CGSpace went down a few times last night, around 10:45 PM and 12:30 AM</li>
 <li>Here are the top ten IPs from last night and this morning:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;11/Jul/2018:22&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;11/Jul/2018:22&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
      48 66.249.64.91
      50 35.227.26.162
      57 157.55.39.234
@@ -377,7 +377,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <li>A brief Google search doesn&rsquo;t turn up any information about what this bot is, but lots of users complaining about it</li>
 <li>This bot does make a lot of requests all through the day, although it seems to re-use its Tomcat session:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
   17098 208.110.72.10
 # grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=208.110.72.10' dspace.log.2018-07-11
 1161
@@ -386,7 +386,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 </code></pre><ul>
 <li>I think the problem is that, despite the bot requesting <code>robots.txt</code>, it almost exlusively requests dynamic pages from <code>/discover</code>:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | grep -o -E &quot;GET /(browse|discover|search-filter)&quot; | sort -n | uniq -c | sort -rn
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;Pcore-HTTP&quot; | grep -o -E &quot;GET /(browse|discover|search-filter)&quot; | sort -n | uniq -c | sort -rn
   13364 GET /discover
     993 GET /search-filter
     804 GET /browse
@@ -397,7 +397,7 @@ org.apache.solr.client.solrj.SolrServerException: IOException occured when talki
 <li>I&rsquo;ll also add it to Tomcat&rsquo;s Crawler Session Manager Valve to force the re-use of a common Tomcat sesssion for all crawlers just in case</li>
 <li>Generate a list of all affiliations in CGSpace to send to Mohamed Salem to compare with the list on MEL (sorting the list by most occurrences):</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv header
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv header
 COPY 4518
 dspace=# \q
 $ csvcut -c 1 &lt; /tmp/affiliations.csv &gt; /tmp/affiliations-1.csv
@@ -408,7 +408,7 @@ $ csvcut -c 1 &lt; /tmp/affiliations.csv &gt; /tmp/affiliations-1.csv
 <ul>
 <li>Generate a list of affiliations for Peter and Abenet to go over so we can batch correct them before we deploy the new data visualization dashboard:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv header;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv header;
 COPY 4518
 </code></pre><h2 id="2018-07-15">2018-07-15</h2>
 <ul>
@@ -420,7 +420,7 @@ COPY 4518
 <li>Altmetric help said that <a href="https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:cgspace.cgiar.org:10568/82810">according to OAI that item is only in one department</a></li>
 <li>I noticed that indeed there was only one collection listed, so I forced an OAI re-import on CGSpace:</li>
 </ul>
-<pre><code>$ dspace oai import -c
+<pre tabindex="0"><code>$ dspace oai import -c
 OAI 2.0 manager action started
 Clearing index
 Index cleared
@@ -438,19 +438,19 @@ OAI 2.0 manager action ended. It took 697 seconds.
 <li>I need to ask the dspace-tech mailing list if the nightly OAI import catches the case of old items that have had metadata or mappings change</li>
 <li>ICARDA sent me a list of the ORCID iDs they have in the MEL system and it looks like almost 150 are new and unique to us!</li>
 </ul>
-<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
 1020
 $ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
 1158
 </code></pre><ul>
 <li>I combined the two lists and regenerated the names for all our the ORCID iDs using my <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
 </ul>
-<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2018-07-15-orcid-ids.txt
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml MEL\ ORCID.json | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2018-07-15-orcid-ids.txt
 $ ./resolve-orcids.py -i /tmp/2018-07-15-orcid-ids.txt -o /tmp/2018-07-15-resolved-orcids.txt -d
 </code></pre><ul>
 <li>Then I added the XML formatting for controlled vocabularies, sorted the list with GNU sort in vim via <code>% !sort</code> and then checked the formatting with tidy:</li>
 </ul>
-<pre><code>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+<pre tabindex="0"><code>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 </code></pre><ul>
 <li>I will check with the CGSpace team to see if they want me to add these to CGSpace</li>
 <li>Help Udana from WLE understand some Altmetrics concepts</li>
@@ -465,7 +465,7 @@ $ ./resolve-orcids.py -i /tmp/2018-07-15-orcid-ids.txt -o /tmp/2018-07-15-resolv
 <li>For every day in the past week I only see about 50 to 100 requests per day, but then about nine days ago I see 1500 requsts</li>
 <li>In there I see two bots making about 750 requests each, and this one is probably Altmetric:</li>
 </ul>
-<pre><code>178.33.237.157 - - [09/Jul/2018:17:00:46 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100 HTTP/1.1&quot; 200 58653 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
+<pre tabindex="0"><code>178.33.237.157 - - [09/Jul/2018:17:00:46 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100 HTTP/1.1&quot; 200 58653 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
 178.33.237.157 - - [09/Jul/2018:17:01:11 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////200 HTTP/1.1&quot; 200 67950 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
 ...
 178.33.237.157 - - [09/Jul/2018:22:10:39 +0000] &quot;GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////73900 HTTP/1.1&quot; 20 0 25049 &quot;-&quot; &quot;Apache-HttpClient/4.5.2 (Java/1.8.0_121)&quot;
@@ -474,7 +474,7 @@ $ ./resolve-orcids.py -i /tmp/2018-07-15-orcid-ids.txt -o /tmp/2018-07-15-resolv
 <li>I wonder if I should add this user agent to the Tomcat Crawler Session Manager valve&hellip; does OAI use Tomcat sessions?</li>
 <li>Appears not:</li>
 </ul>
-<pre><code>$ http --print Hh 'https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100'
+<pre tabindex="0"><code>$ http --print Hh 'https://cgspace.cgiar.org/oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100'
 GET /oai/request?verb=ListRecords&amp;resumptionToken=oai_dc////100 HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate
@@ -511,7 +511,7 @@ X-XSS-Protection: 1; mode=block
 <li>They say that it is a burden for them to capture the issue dates, so I cautioned them that this is in their own benefit for future posterity and that everyone else on CGSpace manages to capture the issue dates!</li>
 <li>For future reference, as I had previously noted in <a href="/cgspace-notes/2018-04/">2018-04</a>, sort options are configured in <code>dspace.cfg</code>, for example:</li>
 </ul>
-<pre><code>webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
+<pre tabindex="0"><code>webui.itemlist.sort-option.3 = dateaccessioned:dc.date.accessioned:date
 </code></pre><ul>
 <li>Just because I was curious I made sure that these options are working as expected in DSpace 5.8 on DSpace Test (they are)</li>
 <li>I tested the Atmire Listings and Reports (L&amp;R) module one last time on my local test environment with a new snapshot of CGSpace&rsquo;s database and re-generated Discovery index and it worked fine</li>
@@ -523,7 +523,7 @@ X-XSS-Protection: 1; mode=block
 <li>Still discussing dates with IWMI</li>
 <li>I looked in the database to see the breakdown of date formats used in <code>dc.date.issued</code>, ie YYYY, YYYY-MM, or YYYY-MM-DD:</li>
 </ul>
-<pre><code>dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=15 and text_value ~ '^[0-9]{4}$';
+<pre tabindex="0"><code>dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=15 and text_value ~ '^[0-9]{4}$';
  count
 -------
  53292

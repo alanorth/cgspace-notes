@@ -26,7 +26,7 @@ Add dc.type to the output options for Atmire&rsquo;s Listings and Reports module
 Add dc.type to the output options for Atmire&rsquo;s Listings and Reports module (#286)
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -125,7 +125,7 @@ Add dc.type to the output options for Atmire&rsquo;s Listings and Reports module
 <li>Indexing Discovery on DSpace Test took 332 minutes, which is like five times as long as it usually takes</li>
 <li>At the end it appeared to finish correctly but there were lots of errors right after it finished:</li>
 </ul>
-<pre><code>2016-11-02 15:09:48,578 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76454 to Index
+<pre tabindex="0"><code>2016-11-02 15:09:48,578 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76454 to Index
 2016-11-02 15:09:48,584 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Community: 10568/3202 to Index
 2016-11-02 15:09:48,589 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Collection: 10568/76455 to Index
 2016-11-02 15:09:48,590 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Wrote Community: 10568/51693 to Index
@@ -145,7 +145,7 @@ java.lang.NullPointerException
 <li>DSpace is still up, and a few minutes later I see the default DSpace indexer is still running</li>
 <li>Sure enough, looking back before the first one finished, I see output from both indexers interleaved in the log:</li>
 </ul>
-<pre><code>2016-11-02 15:09:28,545 INFO  org.dspace.discovery.SolrServiceImpl @ Wrote Item: 10568/47242 to Index
+<pre tabindex="0"><code>2016-11-02 15:09:28,545 INFO  org.dspace.discovery.SolrServiceImpl @ Wrote Item: 10568/47242 to Index
 2016-11-02 15:09:28,633 INFO  org.dspace.discovery.SolrServiceImpl @ Wrote Item: 10568/60785 to Index
 2016-11-02 15:09:28,678 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (55695 of 55722): 43557
 2016-11-02 15:09:28,688 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (55703 of 55722): 34476
@@ -160,17 +160,17 @@ java.lang.NullPointerException
 <ul>
 <li>Horrible one liner to get Linode ID from certain Ansible host vars:</li>
 </ul>
-<pre><code>$ grep -A 3 contact_info * | grep -E &quot;(Orth|Sisay|Peter|Daniel|Tsega)&quot; | awk -F'-' '{print $1}' | grep linode | uniq | xargs grep linode_id
+<pre tabindex="0"><code>$ grep -A 3 contact_info * | grep -E &quot;(Orth|Sisay|Peter|Daniel|Tsega)&quot; | awk -F'-' '{print $1}' | grep linode | uniq | xargs grep linode_id
 </code></pre><ul>
 <li>I noticed some weird CRPs in the database, and they don&rsquo;t show up in Discovery for some reason, perhaps the <code>:</code></li>
 <li>I&rsquo;ll export these and fix them in batch:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=230 group by text_value order by count desc) to /tmp/crp.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=230 group by text_value order by count desc) to /tmp/crp.csv with csv;
 COPY 22
 </code></pre><ul>
 <li>Test running the replacements:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/CRPs.csv -f cg.contributor.crp -t correct -m 230 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/CRPs.csv -f cg.contributor.crp -t correct -m 230 -d dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>Add <code>AMR</code> to ILRI subjects and remove one duplicate instance of IITA in author affiliations controlled vocabulary (<a href="https://github.com/ilri/DSpace/pull/288">#288</a>)</li>
 </ul>
@@ -188,7 +188,7 @@ COPY 22
 <li>The way to go is probably to have a CSV of author names and authority IDs, then to batch update them in PostgreSQL</li>
 <li>Dump of the top ~200 authors in CGSpace:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=3 group by text_value order by count desc limit 210) to /tmp/210-authors.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id=3 group by text_value order by count desc limit 210) to /tmp/210-authors.csv with csv;
 </code></pre><h2 id="2016-11-09">2016-11-09</h2>
 <ul>
 <li>CGSpace crashed so I quickly ran system updates, applied one or two of the waiting changes from the <code>5_x-prod</code> branch, and rebooted the server</li>
@@ -200,11 +200,11 @@ COPY 22
 <li>Helping Megan Zandstra and CIAT with some questions about the REST API</li>
 <li>Playing with <code>find-by-metadata-field</code>, this works:</li>
 </ul>
-<pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}'
+<pre tabindex="0"><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}'
 </code></pre><ul>
 <li>But the results are deceiving because metadata fields can have text languages and your query must match exactly!</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, text_lang from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS';
+<pre tabindex="0"><code>dspace=# select distinct text_value, text_lang from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS';
  text_value | text_lang
 ------------+-----------
  SEEDS      |
@@ -215,7 +215,7 @@ COPY 22
 <li>So basically, the text language here could be null, blank, or en_US</li>
 <li>To query metadata with these properties, you can do:</li>
 </ul>
-<pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}' | jq length
+<pre tabindex="0"><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}' | jq length
 55
 $ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;, &quot;language&quot;:&quot;&quot;}' | jq length
 34
@@ -223,7 +223,7 @@ $ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: applica
 </code></pre><ul>
 <li>The results (55+34=89) don&rsquo;t seem to match those from the database:</li>
 </ul>
-<pre><code>dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS' and text_lang is null;
+<pre tabindex="0"><code>dspace=# select count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS' and text_lang is null;
  count
 -------
     15
@@ -241,7 +241,7 @@ dspace=# select count(text_value) from metadatavalue where resource_type_id=2 an
 <li>I&rsquo;ll ask a question on the dspace-tech mailing list</li>
 <li>And speaking of <code>text_lang</code>, this is interesting:</li>
 </ul>
-<pre><code>dspacetest=# select distinct text_lang from metadatavalue where resource_type_id=2;
+<pre tabindex="0"><code>dspacetest=# select distinct text_lang from metadatavalue where resource_type_id=2;
  text_lang
 -----------
 
@@ -262,28 +262,28 @@ dspace=# select count(text_value) from metadatavalue where resource_type_id=2 an
 </code></pre><ul>
 <li>Generate a list of all these so I can maybe fix them in batch:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_lang, count(*) from metadatavalue where resource_type_id=2 group by text_lang order by count desc) to /tmp/text-langs.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_lang, count(*) from metadatavalue where resource_type_id=2 group by text_lang order by count desc) to /tmp/text-langs.csv with csv;
 COPY 14
 </code></pre><ul>
 <li>Perhaps we need to fix them all in batch, or experiment with fixing only certain metadatavalues:</li>
 </ul>
-<pre><code>dspace=# update metadatavalue set text_lang='en_US' where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_lang='en_US' where resource_type_id=2 and metadata_field_id=203 and text_value='SEEDS';
 UPDATE 85
 </code></pre><ul>
 <li>The <code>fix-metadata.py</code> script I have is meant for specific metadata values, so if I want to update some <code>text_lang</code> values I should just do it directly in the database</li>
 <li>For example, on a limited set:</li>
 </ul>
-<pre><code>dspace=# update metadatavalue set text_lang=NULL where resource_type_id=2 and metadata_field_id=203 and text_value='LIVESTOCK' and text_lang='';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_lang=NULL where resource_type_id=2 and metadata_field_id=203 and text_value='LIVESTOCK' and text_lang='';
 UPDATE 420
 </code></pre><ul>
 <li>And assuming I want to do it for all fields:</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set text_lang=NULL where resource_type_id=2 and text_lang='';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set text_lang=NULL where resource_type_id=2 and text_lang='';
 UPDATE 183726
 </code></pre><ul>
 <li>After that restarted Tomcat and PostgreSQL (because I&rsquo;m superstitious about caches) and now I see the following in REST API query:</li>
 </ul>
-<pre><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}' | jq length
+<pre tabindex="0"><code>$ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;}' | jq length
 71
 $ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;http://localhost:8080/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;: &quot;cg.subject.ilri&quot;,&quot;value&quot;: &quot;SEEDS&quot;, &quot;language&quot;:&quot;&quot;}' | jq length
 0
@@ -298,7 +298,7 @@ $ curl -s -H &quot;accept: application/json&quot; -H &quot;Content-Type: applica
 <li>So there is apparently this Tomcat native way to limit web crawlers to one session: <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/valve.html#Crawler_Session_Manager_Valve">Crawler Session Manager</a></li>
 <li>After adding that to <code>server.xml</code> bots matching the pattern in the configuration will all use ONE session, just like normal users:</li>
 </ul>
-<pre><code>$ http --print h https://dspacetest.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+<pre tabindex="0"><code>$ http --print h https://dspacetest.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Encoding: gzip
@@ -336,7 +336,7 @@ X-Cocoon-Version: 2.2.0
 <ul>
 <li>Seems the default regex doesn&rsquo;t catch Baidu, though:</li>
 </ul>
-<pre><code>$ http --print h https://dspacetest.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
+<pre tabindex="0"><code>$ http --print h https://dspacetest.cgiar.org 'User-Agent:Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Encoding: gzip
@@ -364,13 +364,13 @@ X-Cocoon-Version: 2.2.0
 </code></pre><ul>
 <li>Adding Baiduspider to the list of user agents seems to work, and the final configuration should be:</li>
 </ul>
-<pre><code>&lt;!-- Crawler Session Manager Valve helps mitigate damage done by web crawlers --&gt;
+<pre tabindex="0"><code>&lt;!-- Crawler Session Manager Valve helps mitigate damage done by web crawlers --&gt;
 &lt;Valve className=&quot;org.apache.catalina.valves.CrawlerSessionManagerValve&quot;
        crawlerUserAgents=&quot;.*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Baiduspider.*&quot; /&gt;
 </code></pre><ul>
 <li>Looking at the bots that were active yesterday it seems the above regex should be sufficient:</li>
 </ul>
-<pre><code>$ grep -o -E 'Mozilla/5\.0 \(compatible;.*\&quot;' /var/log/nginx/access.log | sort | uniq
+<pre tabindex="0"><code>$ grep -o -E 'Mozilla/5\.0 \(compatible;.*\&quot;' /var/log/nginx/access.log | sort | uniq
 Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&quot; &quot;-&quot;
 Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)&quot; &quot;-&quot;
 Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)&quot; &quot;-&quot;
@@ -379,7 +379,7 @@ Mozilla/5.0 (compatible; YandexImages/3.0; +http://yandex.com/bots)&quot; &quot;
 </code></pre><ul>
 <li>Neat maven trick to exclude some modules from being built:</li>
 </ul>
-<pre><code>$ mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -Denv=localhost -P \!dspace-lni,\!dspace-rdf,\!dspace-sword,\!dspace-swordv2 clean package
+<pre tabindex="0"><code>$ mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -Denv=localhost -P \!dspace-lni,\!dspace-rdf,\!dspace-sword,\!dspace-swordv2 clean package
 </code></pre><ul>
 <li>We absolutely don&rsquo;t use those modules, so we shouldn&rsquo;t build them in the first place</li>
 </ul>
@@ -387,13 +387,13 @@ Mozilla/5.0 (compatible; YandexImages/3.0; +http://yandex.com/bots)&quot; &quot;
 <ul>
 <li>Generate a list of journal titles for Peter and Abenet to look through so we can make a controlled vocabulary out of them:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc) to /tmp/journal-titles.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=55 group by text_value order by count desc) to /tmp/journal-titles.csv with csv;
 COPY 2515
 </code></pre><ul>
 <li>Send a message to users of the CGSpace REST API to notify them of upcoming upgrade so they can test their apps against DSpace Test</li>
 <li>Test an update old, non-HTTPS links to the CCAFS website in CGSpace metadata:</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, 'http://ccafs.cgiar.org','https://ccafs.cgiar.org') where resource_type_id=2 and text_value like '%http://ccafs.cgiar.org%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, 'http://ccafs.cgiar.org','https://ccafs.cgiar.org') where resource_type_id=2 and text_value like '%http://ccafs.cgiar.org%';
 UPDATE 164
 dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://ccafs.cgiar.org','https://ccafs.cgiar.org') where resource_type_id=2 and text_value like '%http://ccafs.cgiar.org%';
 UPDATE 7
@@ -404,11 +404,11 @@ UPDATE 7
 <li>I&rsquo;m debating forcing the re-generation of ALL thumbnails, since some come from DSpace 3 and 4 when the thumbnailing wasn&rsquo;t as good</li>
 <li>The results were very good, I think that after we upgrade to 5.5 I will do it, perhaps one community / collection at a time:</li>
 </ul>
-<pre><code>$ [dspace]/bin/dspace filter-media -f -i 10568/67156 -p &quot;ImageMagick PDF Thumbnail&quot;
+<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/67156 -p &quot;ImageMagick PDF Thumbnail&quot;
 </code></pre><ul>
 <li>In related news, I&rsquo;m looking at thumbnails of thumbnails (the ones we uploaded manually before, and now DSpace&rsquo;s media filter has made thumbnails of THEM):</li>
 </ul>
-<pre><code>dspace=# select text_value from metadatavalue where text_value like '%.jpg.jpg';
+<pre tabindex="0"><code>dspace=# select text_value from metadatavalue where text_value like '%.jpg.jpg';
 </code></pre><ul>
 <li>I&rsquo;m not sure if there&rsquo;s anything we can do, actually, because we would have to remove those from the thumbnail bundles, and replace them with the regular JPGs from the content bundle, and then remove them from the assetstore&hellip;</li>
 </ul>
@@ -464,7 +464,7 @@ UPDATE 7
 <li>One user says they are still getting a blank page when he logs in (just CGSpace header, but no community list)</li>
 <li>Looking at the Catlina logs I see there is some super long-running indexing process going on:</li>
 </ul>
-<pre><code>INFO: FrameworkServlet 'oai': initialization completed in 2600 ms
+<pre tabindex="0"><code>INFO: FrameworkServlet 'oai': initialization completed in 2600 ms
 [&gt;                                                  ] 0% time remaining: Calculating... timestamp: 2016-11-28 03:00:18
 [&gt;                                                  ] 0% time remaining: 11 hour(s) 57 minute(s) 46 seconds. timestamp: 2016-11-28 03:00:19
 [&gt;                                                  ] 0% time remaining: 23 hour(s) 4 minute(s) 28 seconds. timestamp: 2016-11-28 03:00:19
@@ -477,7 +477,7 @@ UPDATE 7
 <li>Double checking the <a href="https://wiki.lyrasis.org/display/DSDOC5x/Upgrading+DSpace">DSpace 5.x upgrade notes</a> for anything I missed, or troubleshooting tips</li>
 <li>Running some manual processes just in case:</li>
 </ul>
-<pre><code>$ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/dcterms-types.xml
+<pre tabindex="0"><code>$ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/dcterms-types.xml
 $ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/dublin-core-types.xml
 $ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/eperson-types.xml
 $ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacetest.cgiar.org/config/registries/workflow-types.xml
@@ -491,7 +491,7 @@ $ /home/dspacetest.cgiar.org/bin/dspace registry-loader -metadata /home/dspacete
 <li>Sisay tried deleting and re-creating Goshu&rsquo;s account but he still can&rsquo;t see any communities on the homepage after he logs in</li>
 <li>Around the time of his login I see this in the DSpace logs:</li>
 </ul>
-<pre><code>2016-11-29 07:56:36,350 INFO  org.dspace.authenticate.LDAPAuthentication @ g.cherinet@cgiar.org:session_id=F628E13AB4EF2BA949198A99EFD8EBE4:ip_addr=213.55.99.121:failed_login:no DN found for user g.cherinet@cgiar.org
+<pre tabindex="0"><code>2016-11-29 07:56:36,350 INFO  org.dspace.authenticate.LDAPAuthentication @ g.cherinet@cgiar.org:session_id=F628E13AB4EF2BA949198A99EFD8EBE4:ip_addr=213.55.99.121:failed_login:no DN found for user g.cherinet@cgiar.org
 2016-11-29 07:56:36,350 INFO  org.dspace.authenticate.PasswordAuthentication @ g.cherinet@cgiar.org:session_id=F628E13AB4EF2BA949198A99EFD8EBE4:ip_addr=213.55.99.121:authenticate:attempting password auth of user=g.cherinet@cgiar.org
 2016-11-29 07:56:36,352 INFO  org.dspace.app.xmlui.utils.AuthenticationUtil @ g.cherinet@cgiar.org:session_id=F628E13AB4EF2BA949198A99EFD8EBE4:ip_addr=213.55.99.121:failed_login:email=g.cherinet@cgiar.org, realm=null, result=2
 2016-11-29 07:56:36,545 INFO  com.atmire.utils.UpdateSolrStatsMetadata @ Start processing item 10568/50391 id:51744
@@ -513,7 +513,7 @@ org.dspace.discovery.SearchServiceException: Error executing query
 </code></pre><ul>
 <li>At about the same time in the solr log I see a super long query:</li>
 </ul>
-<pre><code>2016-11-29 07:56:36,734 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=*:*&amp;fl=dateIssued.year,handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=dateIssued.year:[*+TO+*]&amp;fq=read:(g0+OR+e574+OR+g0+OR+g3+OR+g9+OR+g10+OR+g14+OR+g16+OR+g18+OR+g20+OR+g23+OR+g24+OR+g2072+OR+g2074+OR+g28+OR+g2076+OR+g29+OR+g2078+OR+g2080+OR+g34+OR+g2082+OR+g2084+OR+g38+OR+g2086+OR+g2088+OR+g2091+OR+g43+OR+g2092+OR+g2093+OR+g2095+OR+g2097+OR+g50+OR+g2099+OR+g51+OR+g2103+OR+g62+OR+g65+OR+g2115+OR+g2117+OR+g2119+OR+g2121+OR+g2123+OR+g2125+OR+g77+OR+g78+OR+g79+OR+g2127+OR+g80+OR+g2129+OR+g2131+OR+g2133+OR+g2134+OR+g2135+OR+g2136+OR+g2137+OR+g2138+OR+g2139+OR+g2140+OR+g2141+OR+g2142+OR+g2148+OR+g2149+OR+g2150+OR+g2151+OR+g2152+OR+g2153+OR+g2154+OR+g2156+OR+g2165+OR+g2167+OR+g2171+OR+g2174+OR+g2175+OR+g129+OR+g2182+OR+g2186+OR+g2189+OR+g153+OR+g158+OR+g166+OR+g167+OR+g168+OR+g169+OR+g2225+OR+g179+OR+g2227+OR+g2229+OR+g183+OR+g2231+OR+g184+OR+g2233+OR+g186+OR+g2235+OR+g2237+OR+g191+OR+g192+OR+g193+OR+g202+OR+g203+OR+g204+OR+g205+OR+g207+OR+g208+OR+g218+OR+g219+OR+g222+OR+g223+OR+g230+OR+g231+OR+g238+OR+g241+OR+g244+OR+g254+OR+g255+OR+g262+OR+g265+OR+g268+OR+g269+OR+g273+OR+g276+OR+g277+OR+g279+OR+g282+OR+g2332+OR+g2335+OR+g2338+OR+g292+OR+g293+OR+g2341+OR+g296+OR+g2344+OR+g297+OR+g2347+OR+g301+OR+g2350+OR+g303+OR+g305+OR+g2356+OR+g310+OR+g311+OR+g2359+OR+g313+OR+g2362+OR+g2365+OR+g2368+OR+g321+OR+g2371+OR+g325+OR+g2374+OR+g328+OR+g2377+OR+g2380+OR+g333+OR+g2383+OR+g2386+OR+g2389+OR+g342+OR+g343+OR+g2392+OR+g345+OR+g2395+OR+g348+OR+g2398+OR+g2401+OR+g2404+OR+g2407+OR+g364+OR+g366+OR+g2425+OR+g2427+OR+g385+OR+g387+OR+g388+OR+g389+OR+g2442+OR+g395+OR+g2443+OR+g2444+OR+g401+OR+g403+OR+g405+OR+g408+OR+g2457+OR+g2458+OR+g411+OR+g2459+OR+g414+OR+g2463+OR+g417+OR+g2465+OR+g2467+OR+g421+OR+g2469+OR+g2471+OR+g424+OR+g2473+OR+g2475+OR+g2476+OR+g429+OR+g433+OR+g2481+OR+g2482+OR+g2483+OR+g443+OR+g444+OR+g445+OR+g446+OR+g448+OR+g453+OR+g455+OR+g456+OR+g457+OR+g458+OR+g459+OR+g461+OR+g462+OR+g463+OR+g464+OR+g465+OR+g467+OR+g468+OR+g469+OR+g474+OR+g476+OR+g477+OR+g480+OR+g483+OR+g484+OR+g493+OR+g496+OR+g497+OR+g498+OR+g500+OR+g502+OR+g504+OR+g505+OR+g2559+OR+g2560+OR+g513+OR+g2561+OR+g515+OR+g516+OR+g518+OR+g519+OR+g2567+OR+g520+OR+g521+OR+g522+OR+g2570+OR+g523+OR+g2571+OR+g524+OR+g525+OR+g2573+OR+g526+OR+g2574+OR+g527+OR+g528+OR+g2576+OR+g529+OR+g531+OR+g2579+OR+g533+OR+g534+OR+g2582+OR+g535+OR+g2584+OR+g538+OR+g2586+OR+g540+OR+g2588+OR+g541+OR+g543+OR+g544+OR+g545+OR+g546+OR+g548+OR+g2596+OR+g549+OR+g551+OR+g555+OR+g556+OR+g558+OR+g561+OR+g569+OR+g570+OR+g571+OR+g2619+OR+g572+OR+g2620+OR+g573+OR+g2621+OR+g2622+OR+g575+OR+g578+OR+g581+OR+g582+OR+g584+OR+g585+OR+g586+OR+g587+OR+g588+OR+g590+OR+g591+OR+g593+OR+g595+OR+g596+OR+g598+OR+g599+OR+g601+OR+g602+OR+g603+OR+g604+OR+g605+OR+g606+OR+g608+OR+g609+OR+g610+OR+g612+OR+g614+OR+g616+OR+g620+OR+g621+OR+g623+OR+g630+OR+g635+OR+g636+OR+g646+OR+g649+OR+g683+OR+g684+OR+g687+OR+g689+OR+g691+OR+g695+OR+g697+OR+g698+OR+g699+OR+g700+OR+g701+OR+g707+OR+g708+OR+g709+OR+g710+OR+g711+OR+g712+OR+g713+OR+g714+OR+g715+OR+g716+OR+g717+OR+g719+OR+g720+OR+g729+OR+g732+OR+g733+OR+g734+OR+g736+OR+g737+OR+g738+OR+g2786+OR+g752+OR+g754+OR+g2804+OR+g757+OR+g2805+OR+g2806+OR+g760+OR+g761+OR+g2810+OR+g2815+OR+g769+OR+g771+OR+g773+OR+g776+OR+g786+OR+g787+OR+g788+OR+g789+OR+g791+OR+g792+OR+g793+OR+g794+OR+g795+OR+g796+OR+g798+OR+g800+OR+g802+OR+g803+OR+g806+OR+g808+OR+g810+OR+g814+OR+g815+OR+g817+OR+g829+OR+g830+OR+g849+OR+g893+OR+g895+OR+g898+OR+g902+OR+g903+OR+g917+OR+g919+OR+g921+OR+g922+OR+g923+OR+g924+OR+g925+OR+g926+OR+g927+OR+g928+OR+g929+OR+g930+OR+g932+OR+g933+OR+g934+OR+g938+OR+g939+OR+g944+OR+g945+OR+g946+OR+g947+OR+g948+OR+g949+OR+g950+OR+g951+OR+g953+OR+g954+OR+g955+OR+g956+OR+g958+OR+g959+OR+g960+OR+g963+OR+g964+OR+g965+OR+g968+OR+g969+OR+g970+OR+g971+OR+g972+OR+g973+OR+g974+OR+g976+OR+g978+OR+g979+OR+g984+OR+g985+OR+g987+OR+g988+OR+g991+OR+g993+OR+g994+OR+g999+OR+g1000+OR+g1003+OR+g1005+OR+g1006+OR+g1007+OR+g1012+OR+g1013+OR+g1015+OR+g1016+OR+g1018+OR+g1023+OR+g1024+OR+g1026+OR+g1028+OR+g1030+OR+g1032+OR+g1033+OR+g1035+OR+g1036+OR+g1038+OR+g1039+OR+g1041+OR+g1042+OR+g1044+OR+g1045+OR+g1047+OR+g1048+OR+g1050+OR+g1051+OR+g1053+OR+g1054+OR+g1056+OR+g1057+OR+g1058+OR+g1059+OR+g1060+OR+g1061+OR+g1062+OR+g1063+OR+g1064+OR+g1065+OR+g1066+OR+g1068+OR+g1071+OR+g1072+OR+g1074+OR+g1075+OR+g1076+OR+g1077+OR+g1078+OR+g1080+OR+g1081+OR+g1082+OR+g1084+OR+g1085+OR+g1087+OR+g1088+OR+g1089+OR+g1090+OR+g1091+OR+g1092+OR+g1093+OR+g1094+OR+g1095+OR+g1096+OR+g1097+OR+g1106+OR+g1108+OR+g1110+OR+g1112+OR+g1114+OR+g1117+OR+g1120+OR+g1121+OR+g1126+OR+g1128+OR+g1129+OR+g1131+OR+g1136+OR+g1138+OR+g1140+OR+g1141+OR+g1143+OR+g1145+OR+g1146+OR+g1148+OR+g1152+OR+g1154+OR+g1156+OR+g1158+OR+g1159+OR+g1160+OR+g1162+OR+g1163+OR+g1165+OR+g1166+OR+g1168+OR+g1170+OR+g1172+OR+g1175+OR+g1177+OR+g1179+OR+g1181+OR+g1185+OR+g1191+OR+g1193+OR+g1197+OR+g1199+OR+g1201+OR+g1203+OR+g1204+OR+g1215+OR+g1217+OR+g1219+OR+g1221+OR+g1224+OR+g1226+OR+g1227+OR+g1228+OR+g1230+OR+g1231+OR+g1232+OR+g1233+OR+g1234+OR+g1235+OR+g1236+OR+g1237+OR+g1238+OR+g1240+OR+g1241+OR+g1242+OR+g1243+OR+g1244+OR+g1246+OR+g1248+OR+g1250+OR+g1252+OR+g1254+OR+g1256+OR+g1257+OR+g1259+OR+g1261+OR+g1263+OR+g1275+OR+g1276+OR+g1277+OR+g1278+OR+g1279+OR+g1282+OR+g1284+OR+g1288+OR+g1290+OR+g1293+OR+g1296+OR+g1297+OR+g1299+OR+g1303+OR+g1304+OR+g1306+OR+g1309+OR+g1310+OR+g1311+OR+g1312+OR+g1313+OR+g1316+OR+g1318+OR+g1320+OR+g1322+OR+g1323+OR+g1324+OR+g1325+OR+g1326+OR+g1329+OR+g1331+OR+g1347+OR+g1348+OR+g1361+OR+g1362+OR+g1363+OR+g1364+OR+g1367+OR+g1368+OR+g1369+OR+g1370+OR+g1371+OR+g1374+OR+g1376+OR+g1377+OR+g1378+OR+g1380+OR+g1381+OR+g1386+OR+g1389+OR+g1391+OR+g1392+OR+g1393+OR+g1395+OR+g1396+OR+g1397+OR+g1400+OR+g1402+OR+g1406+OR+g1408+OR+g1415+OR+g1417+OR+g1433+OR+g1435+OR+g1441+OR+g1442+OR+g1443+OR+g1444+OR+g1446+OR+g1448+OR+g1450+OR+g1451+OR+g1452+OR+g1453+OR+g1454+OR+g1456+OR+g1458+OR+g1460+OR+g1462+OR+g1464+OR+g1466+OR+g1468+OR+g1470+OR+g1471+OR+g1475+OR+g1476+OR+g1477+OR+g1478+OR+g1479+OR+g1481+OR+g1482+OR+g1483+OR+g1484+OR+g1485+OR+g1486+OR+g1487+OR+g1488+OR+g1489+OR+g1490+OR+g1491+OR+g1492+OR+g1493+OR+g1495+OR+g1497+OR+g1499+OR+g1501+OR+g1503+OR+g1504+OR+g1506+OR+g1508+OR+g1511+OR+g1512+OR+g1513+OR+g1516+OR+g1522+OR+g1535+OR+g1536+OR+g1537+OR+g1539+OR+g1540+OR+g1541+OR+g1542+OR+g1547+OR+g1549+OR+g1551+OR+g1553+OR+g1555+OR+g1557+OR+g1559+OR+g1561+OR+g1563+OR+g1565+OR+g1567+OR+g1569+OR+g1571+OR+g1573+OR+g1580+OR+g1583+OR+g1588+OR+g1590+OR+g1592+OR+g1594+OR+g1595+OR+g1596+OR+g1598+OR+g1599+OR+g1600+OR+g1601+OR+g1602+OR+g1604+OR+g1606+OR+g1610+OR+g1611+OR+g1612+OR+g1613+OR+g1616+OR+g1619+OR+g1622+OR+g1624+OR+g1625+OR+g1626+OR+g1628+OR+g1629+OR+g1631+OR+g1632+OR+g1692+OR+g1694+OR+g1695+OR+g1697+OR+g1705+OR+g1706+OR+g1707+OR+g1708+OR+g1711+OR+g1715+OR+g1717+OR+g1719+OR+g1721+OR+g1722+OR+g1723+OR+g1724+OR+g1725+OR+g1726+OR+g1727+OR+g1731+OR+g1732+OR+g1736+OR+g1737+OR+g1738+OR+g1740+OR+g1742+OR+g1743+OR+g1753+OR+g1755+OR+g1758+OR+g1759+OR+g1764+OR+g1766+OR+g1769+OR+g1774+OR+g1782+OR+g1794+OR+g1796+OR+g1797+OR+g1814+OR+g1818+OR+g1826+OR+g1853+OR+g1855+OR+g1857+OR+g1858+OR+g1859+OR+g1860+OR+g1861+OR+g1863+OR+g1864+OR+g1865+OR+g1867+OR+g1869+OR+g1871+OR+g1873+OR+g1875+OR+g1877+OR+g1879+OR+g1881+OR+g1883+OR+g1884+OR+g1885+OR+g1887+OR+g1889+OR+g1891+OR+g1892+OR+g1894+OR+g1896+OR+g1898+OR+g1900+OR+g1902+OR+g1907+OR+g1910+OR+g1915+OR+g1916+OR+g1917+OR+g1918+OR+g1929+OR+g1931+OR+g1932+OR+g1933+OR+g1934+OR+g1936+OR+g1937+OR+g1938+OR+g1939+OR+g1940+OR+g1942+OR+g1944+OR+g1945+OR+g1948+OR+g1950+OR+g1955+OR+g1961+OR+g1962+OR+g1964+OR+g1966+OR+g1968+OR+g1970+OR+g1972+OR+g1974+OR+g1976+OR+g1979+OR+g1982+OR+g1984+OR+g1985+OR+g1986+OR+g1987+OR+g1989+OR+g1991+OR+g1996+OR+g2003+OR+g2007+OR+g2011+OR+g2019+OR+g2020+OR+g2046)&amp;sort=dateIssued.year_sort+desc&amp;rows=1&amp;wt=javabin&amp;version=2} hits=56080 status=0 QTime=3
+<pre tabindex="0"><code>2016-11-29 07:56:36,734 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=*:*&amp;fl=dateIssued.year,handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=dateIssued.year:[*+TO+*]&amp;fq=read:(g0+OR+e574+OR+g0+OR+g3+OR+g9+OR+g10+OR+g14+OR+g16+OR+g18+OR+g20+OR+g23+OR+g24+OR+g2072+OR+g2074+OR+g28+OR+g2076+OR+g29+OR+g2078+OR+g2080+OR+g34+OR+g2082+OR+g2084+OR+g38+OR+g2086+OR+g2088+OR+g2091+OR+g43+OR+g2092+OR+g2093+OR+g2095+OR+g2097+OR+g50+OR+g2099+OR+g51+OR+g2103+OR+g62+OR+g65+OR+g2115+OR+g2117+OR+g2119+OR+g2121+OR+g2123+OR+g2125+OR+g77+OR+g78+OR+g79+OR+g2127+OR+g80+OR+g2129+OR+g2131+OR+g2133+OR+g2134+OR+g2135+OR+g2136+OR+g2137+OR+g2138+OR+g2139+OR+g2140+OR+g2141+OR+g2142+OR+g2148+OR+g2149+OR+g2150+OR+g2151+OR+g2152+OR+g2153+OR+g2154+OR+g2156+OR+g2165+OR+g2167+OR+g2171+OR+g2174+OR+g2175+OR+g129+OR+g2182+OR+g2186+OR+g2189+OR+g153+OR+g158+OR+g166+OR+g167+OR+g168+OR+g169+OR+g2225+OR+g179+OR+g2227+OR+g2229+OR+g183+OR+g2231+OR+g184+OR+g2233+OR+g186+OR+g2235+OR+g2237+OR+g191+OR+g192+OR+g193+OR+g202+OR+g203+OR+g204+OR+g205+OR+g207+OR+g208+OR+g218+OR+g219+OR+g222+OR+g223+OR+g230+OR+g231+OR+g238+OR+g241+OR+g244+OR+g254+OR+g255+OR+g262+OR+g265+OR+g268+OR+g269+OR+g273+OR+g276+OR+g277+OR+g279+OR+g282+OR+g2332+OR+g2335+OR+g2338+OR+g292+OR+g293+OR+g2341+OR+g296+OR+g2344+OR+g297+OR+g2347+OR+g301+OR+g2350+OR+g303+OR+g305+OR+g2356+OR+g310+OR+g311+OR+g2359+OR+g313+OR+g2362+OR+g2365+OR+g2368+OR+g321+OR+g2371+OR+g325+OR+g2374+OR+g328+OR+g2377+OR+g2380+OR+g333+OR+g2383+OR+g2386+OR+g2389+OR+g342+OR+g343+OR+g2392+OR+g345+OR+g2395+OR+g348+OR+g2398+OR+g2401+OR+g2404+OR+g2407+OR+g364+OR+g366+OR+g2425+OR+g2427+OR+g385+OR+g387+OR+g388+OR+g389+OR+g2442+OR+g395+OR+g2443+OR+g2444+OR+g401+OR+g403+OR+g405+OR+g408+OR+g2457+OR+g2458+OR+g411+OR+g2459+OR+g414+OR+g2463+OR+g417+OR+g2465+OR+g2467+OR+g421+OR+g2469+OR+g2471+OR+g424+OR+g2473+OR+g2475+OR+g2476+OR+g429+OR+g433+OR+g2481+OR+g2482+OR+g2483+OR+g443+OR+g444+OR+g445+OR+g446+OR+g448+OR+g453+OR+g455+OR+g456+OR+g457+OR+g458+OR+g459+OR+g461+OR+g462+OR+g463+OR+g464+OR+g465+OR+g467+OR+g468+OR+g469+OR+g474+OR+g476+OR+g477+OR+g480+OR+g483+OR+g484+OR+g493+OR+g496+OR+g497+OR+g498+OR+g500+OR+g502+OR+g504+OR+g505+OR+g2559+OR+g2560+OR+g513+OR+g2561+OR+g515+OR+g516+OR+g518+OR+g519+OR+g2567+OR+g520+OR+g521+OR+g522+OR+g2570+OR+g523+OR+g2571+OR+g524+OR+g525+OR+g2573+OR+g526+OR+g2574+OR+g527+OR+g528+OR+g2576+OR+g529+OR+g531+OR+g2579+OR+g533+OR+g534+OR+g2582+OR+g535+OR+g2584+OR+g538+OR+g2586+OR+g540+OR+g2588+OR+g541+OR+g543+OR+g544+OR+g545+OR+g546+OR+g548+OR+g2596+OR+g549+OR+g551+OR+g555+OR+g556+OR+g558+OR+g561+OR+g569+OR+g570+OR+g571+OR+g2619+OR+g572+OR+g2620+OR+g573+OR+g2621+OR+g2622+OR+g575+OR+g578+OR+g581+OR+g582+OR+g584+OR+g585+OR+g586+OR+g587+OR+g588+OR+g590+OR+g591+OR+g593+OR+g595+OR+g596+OR+g598+OR+g599+OR+g601+OR+g602+OR+g603+OR+g604+OR+g605+OR+g606+OR+g608+OR+g609+OR+g610+OR+g612+OR+g614+OR+g616+OR+g620+OR+g621+OR+g623+OR+g630+OR+g635+OR+g636+OR+g646+OR+g649+OR+g683+OR+g684+OR+g687+OR+g689+OR+g691+OR+g695+OR+g697+OR+g698+OR+g699+OR+g700+OR+g701+OR+g707+OR+g708+OR+g709+OR+g710+OR+g711+OR+g712+OR+g713+OR+g714+OR+g715+OR+g716+OR+g717+OR+g719+OR+g720+OR+g729+OR+g732+OR+g733+OR+g734+OR+g736+OR+g737+OR+g738+OR+g2786+OR+g752+OR+g754+OR+g2804+OR+g757+OR+g2805+OR+g2806+OR+g760+OR+g761+OR+g2810+OR+g2815+OR+g769+OR+g771+OR+g773+OR+g776+OR+g786+OR+g787+OR+g788+OR+g789+OR+g791+OR+g792+OR+g793+OR+g794+OR+g795+OR+g796+OR+g798+OR+g800+OR+g802+OR+g803+OR+g806+OR+g808+OR+g810+OR+g814+OR+g815+OR+g817+OR+g829+OR+g830+OR+g849+OR+g893+OR+g895+OR+g898+OR+g902+OR+g903+OR+g917+OR+g919+OR+g921+OR+g922+OR+g923+OR+g924+OR+g925+OR+g926+OR+g927+OR+g928+OR+g929+OR+g930+OR+g932+OR+g933+OR+g934+OR+g938+OR+g939+OR+g944+OR+g945+OR+g946+OR+g947+OR+g948+OR+g949+OR+g950+OR+g951+OR+g953+OR+g954+OR+g955+OR+g956+OR+g958+OR+g959+OR+g960+OR+g963+OR+g964+OR+g965+OR+g968+OR+g969+OR+g970+OR+g971+OR+g972+OR+g973+OR+g974+OR+g976+OR+g978+OR+g979+OR+g984+OR+g985+OR+g987+OR+g988+OR+g991+OR+g993+OR+g994+OR+g999+OR+g1000+OR+g1003+OR+g1005+OR+g1006+OR+g1007+OR+g1012+OR+g1013+OR+g1015+OR+g1016+OR+g1018+OR+g1023+OR+g1024+OR+g1026+OR+g1028+OR+g1030+OR+g1032+OR+g1033+OR+g1035+OR+g1036+OR+g1038+OR+g1039+OR+g1041+OR+g1042+OR+g1044+OR+g1045+OR+g1047+OR+g1048+OR+g1050+OR+g1051+OR+g1053+OR+g1054+OR+g1056+OR+g1057+OR+g1058+OR+g1059+OR+g1060+OR+g1061+OR+g1062+OR+g1063+OR+g1064+OR+g1065+OR+g1066+OR+g1068+OR+g1071+OR+g1072+OR+g1074+OR+g1075+OR+g1076+OR+g1077+OR+g1078+OR+g1080+OR+g1081+OR+g1082+OR+g1084+OR+g1085+OR+g1087+OR+g1088+OR+g1089+OR+g1090+OR+g1091+OR+g1092+OR+g1093+OR+g1094+OR+g1095+OR+g1096+OR+g1097+OR+g1106+OR+g1108+OR+g1110+OR+g1112+OR+g1114+OR+g1117+OR+g1120+OR+g1121+OR+g1126+OR+g1128+OR+g1129+OR+g1131+OR+g1136+OR+g1138+OR+g1140+OR+g1141+OR+g1143+OR+g1145+OR+g1146+OR+g1148+OR+g1152+OR+g1154+OR+g1156+OR+g1158+OR+g1159+OR+g1160+OR+g1162+OR+g1163+OR+g1165+OR+g1166+OR+g1168+OR+g1170+OR+g1172+OR+g1175+OR+g1177+OR+g1179+OR+g1181+OR+g1185+OR+g1191+OR+g1193+OR+g1197+OR+g1199+OR+g1201+OR+g1203+OR+g1204+OR+g1215+OR+g1217+OR+g1219+OR+g1221+OR+g1224+OR+g1226+OR+g1227+OR+g1228+OR+g1230+OR+g1231+OR+g1232+OR+g1233+OR+g1234+OR+g1235+OR+g1236+OR+g1237+OR+g1238+OR+g1240+OR+g1241+OR+g1242+OR+g1243+OR+g1244+OR+g1246+OR+g1248+OR+g1250+OR+g1252+OR+g1254+OR+g1256+OR+g1257+OR+g1259+OR+g1261+OR+g1263+OR+g1275+OR+g1276+OR+g1277+OR+g1278+OR+g1279+OR+g1282+OR+g1284+OR+g1288+OR+g1290+OR+g1293+OR+g1296+OR+g1297+OR+g1299+OR+g1303+OR+g1304+OR+g1306+OR+g1309+OR+g1310+OR+g1311+OR+g1312+OR+g1313+OR+g1316+OR+g1318+OR+g1320+OR+g1322+OR+g1323+OR+g1324+OR+g1325+OR+g1326+OR+g1329+OR+g1331+OR+g1347+OR+g1348+OR+g1361+OR+g1362+OR+g1363+OR+g1364+OR+g1367+OR+g1368+OR+g1369+OR+g1370+OR+g1371+OR+g1374+OR+g1376+OR+g1377+OR+g1378+OR+g1380+OR+g1381+OR+g1386+OR+g1389+OR+g1391+OR+g1392+OR+g1393+OR+g1395+OR+g1396+OR+g1397+OR+g1400+OR+g1402+OR+g1406+OR+g1408+OR+g1415+OR+g1417+OR+g1433+OR+g1435+OR+g1441+OR+g1442+OR+g1443+OR+g1444+OR+g1446+OR+g1448+OR+g1450+OR+g1451+OR+g1452+OR+g1453+OR+g1454+OR+g1456+OR+g1458+OR+g1460+OR+g1462+OR+g1464+OR+g1466+OR+g1468+OR+g1470+OR+g1471+OR+g1475+OR+g1476+OR+g1477+OR+g1478+OR+g1479+OR+g1481+OR+g1482+OR+g1483+OR+g1484+OR+g1485+OR+g1486+OR+g1487+OR+g1488+OR+g1489+OR+g1490+OR+g1491+OR+g1492+OR+g1493+OR+g1495+OR+g1497+OR+g1499+OR+g1501+OR+g1503+OR+g1504+OR+g1506+OR+g1508+OR+g1511+OR+g1512+OR+g1513+OR+g1516+OR+g1522+OR+g1535+OR+g1536+OR+g1537+OR+g1539+OR+g1540+OR+g1541+OR+g1542+OR+g1547+OR+g1549+OR+g1551+OR+g1553+OR+g1555+OR+g1557+OR+g1559+OR+g1561+OR+g1563+OR+g1565+OR+g1567+OR+g1569+OR+g1571+OR+g1573+OR+g1580+OR+g1583+OR+g1588+OR+g1590+OR+g1592+OR+g1594+OR+g1595+OR+g1596+OR+g1598+OR+g1599+OR+g1600+OR+g1601+OR+g1602+OR+g1604+OR+g1606+OR+g1610+OR+g1611+OR+g1612+OR+g1613+OR+g1616+OR+g1619+OR+g1622+OR+g1624+OR+g1625+OR+g1626+OR+g1628+OR+g1629+OR+g1631+OR+g1632+OR+g1692+OR+g1694+OR+g1695+OR+g1697+OR+g1705+OR+g1706+OR+g1707+OR+g1708+OR+g1711+OR+g1715+OR+g1717+OR+g1719+OR+g1721+OR+g1722+OR+g1723+OR+g1724+OR+g1725+OR+g1726+OR+g1727+OR+g1731+OR+g1732+OR+g1736+OR+g1737+OR+g1738+OR+g1740+OR+g1742+OR+g1743+OR+g1753+OR+g1755+OR+g1758+OR+g1759+OR+g1764+OR+g1766+OR+g1769+OR+g1774+OR+g1782+OR+g1794+OR+g1796+OR+g1797+OR+g1814+OR+g1818+OR+g1826+OR+g1853+OR+g1855+OR+g1857+OR+g1858+OR+g1859+OR+g1860+OR+g1861+OR+g1863+OR+g1864+OR+g1865+OR+g1867+OR+g1869+OR+g1871+OR+g1873+OR+g1875+OR+g1877+OR+g1879+OR+g1881+OR+g1883+OR+g1884+OR+g1885+OR+g1887+OR+g1889+OR+g1891+OR+g1892+OR+g1894+OR+g1896+OR+g1898+OR+g1900+OR+g1902+OR+g1907+OR+g1910+OR+g1915+OR+g1916+OR+g1917+OR+g1918+OR+g1929+OR+g1931+OR+g1932+OR+g1933+OR+g1934+OR+g1936+OR+g1937+OR+g1938+OR+g1939+OR+g1940+OR+g1942+OR+g1944+OR+g1945+OR+g1948+OR+g1950+OR+g1955+OR+g1961+OR+g1962+OR+g1964+OR+g1966+OR+g1968+OR+g1970+OR+g1972+OR+g1974+OR+g1976+OR+g1979+OR+g1982+OR+g1984+OR+g1985+OR+g1986+OR+g1987+OR+g1989+OR+g1991+OR+g1996+OR+g2003+OR+g2007+OR+g2011+OR+g2019+OR+g2020+OR+g2046)&amp;sort=dateIssued.year_sort+desc&amp;rows=1&amp;wt=javabin&amp;version=2} hits=56080 status=0 QTime=3
 </code></pre><ul>
 <li>Which, according to some old threads on DSpace Tech, means that the user has a lot of permissions (from groups or on the individual eperson) which increases the Solr query size / query URL</li>
 <li>It might be fixed by increasing the Tomcat <code>maxHttpHeaderSize</code>, which is <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html">8192 (or 8KB) by default</a></li>

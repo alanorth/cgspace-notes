@@ -44,7 +44,7 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 
 In this case the select query was showing 95 results before the update
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -135,7 +135,7 @@ In this case the select query was showing 95 results before the update
 <li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
 <li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
 UPDATE 95
 dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
  text_value
@@ -158,7 +158,7 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <li>We <em>really</em> only need <code>statistics</code> and <code>authority</code> but meh</li>
 <li>Fix metadata for species on DSpace Test:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 94 -d dspacetest -u dspacetest -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 94 -d dspacetest -u dspacetest -p 'fuuu'
 </code></pre><ul>
 <li>Will run later on CGSpace</li>
 <li>A user is still having problems with Sherpa/Romeo causing crashes during the submission process when the journal is &ldquo;ungraded&rdquo;</li>
@@ -169,7 +169,7 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <ul>
 <li>Delete 23 blank metadata values from CGSpace:</li>
 </ul>
-<pre><code>cgspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>cgspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 DELETE 23
 </code></pre><ul>
 <li>Complete phase three of metadata migration, for the following fields:
@@ -188,7 +188,7 @@ DELETE 23
 </li>
 <li>Also, run fixes and deletes for species and author affiliations (over 1000 corrections!)</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 212 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 212 -d dspace -u dspace -p 'fuuu'
 $ ./fix-metadata-values.py -i Affiliations-Fix-1045-Peter-Abenet.csv -f dc.contributor.affiliation -t Correct -m 211 -d dspace -u dspace -p 'fuuu'
 $ ./delete-metadata-values.py -f dc.contributor.affiliation -i Affiliations-Delete-Peter-Abenet.csv -m 211 -u dspace -d dspace -p 'fuuu'
 </code></pre><ul>
@@ -198,7 +198,7 @@ $ ./delete-metadata-values.py -f dc.contributor.affiliation -i Affiliations-Dele
 <ul>
 <li>Doing some author cleanups from Peter and Abenet:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/Authors-Fix-205-UTF8.csv -f dc.contributor.author -t correct -m 3 -d dspacetest -u dspacetest -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/Authors-Fix-205-UTF8.csv -f dc.contributor.author -t correct -m 3 -d dspacetest -u dspacetest -p fuuu
 $ ./delete-metadata-values.py -f dc.contributor.author -i /tmp/Authors-Delete-UTF8.csv -m 3 -u dspacetest -d dspacetest -p fuuu
 </code></pre><h2 id="2016-07-13">2016-07-13</h2>
 <ul>
@@ -215,20 +215,20 @@ $ ./delete-metadata-values.py -f dc.contributor.author -i /tmp/Authors-Delete-UT
 <li>Add species and breed to the XMLUI item display</li>
 <li>CGSpace crashed late at night and the DSpace logs were showing:</li>
 </ul>
-<pre><code>2016-07-18 20:26:30,941 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
+<pre tabindex="0"><code>2016-07-18 20:26:30,941 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 ...
 </code></pre><ul>
 <li>I suspect it&rsquo;s someone hitting REST too much:</li>
 </ul>
-<pre><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
     710 66.249.78.38
    1781 181.118.144.29
   24904 70.32.99.142
 </code></pre><ul>
 <li>I just blocked access to <code>/rest</code> for that last IP for now:</li>
 </ul>
-<pre><code>     # log rest requests
+<pre tabindex="0"><code>     # log rest requests
      location /rest {
          access_log /var/log/nginx/rest.log;
          proxy_pass http://127.0.0.1:8443;
@@ -248,23 +248,23 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>We might need to use <code>index.authority.ignore-prefered=true</code> to tell the Discovery index to prefer the variation that exists in the metadatavalue rather than what it finds in the authority cache.</li>
 <li>Trying these on DSpace Test after a discussion by Daniel Scharon on the dspace-tech mailing list:</li>
 </ul>
-<pre><code>index.authority.ignore-prefered.dc.contributor.author=true
+<pre tabindex="0"><code>index.authority.ignore-prefered.dc.contributor.author=true
 index.authority.ignore-variants.dc.contributor.author=false
 </code></pre><ul>
 <li>After reindexing I don&rsquo;t see any change in Discovery&rsquo;s display of authors, and still have entries like:</li>
 </ul>
-<pre><code>Grace, D. (464)
+<pre tabindex="0"><code>Grace, D. (464)
 Grace, D. (62)
 </code></pre><ul>
 <li>I asked for clarification of the following options on the DSpace mailing list:</li>
 </ul>
-<pre><code>index.authority.ignore
+<pre tabindex="0"><code>index.authority.ignore
 index.authority.ignore-prefered
 index.authority.ignore-variants
 </code></pre><ul>
 <li>In the mean time, I will try these on DSpace Test (plus a reindex):</li>
 </ul>
-<pre><code>index.authority.ignore=true
+<pre tabindex="0"><code>index.authority.ignore=true
 index.authority.ignore-prefered=true
 index.authority.ignore-variants=true
 </code></pre><ul>
@@ -272,7 +272,7 @@ index.authority.ignore-variants=true
 <li>It was misconfigured and disabled, but already working for some reason <em>sigh</em></li>
 <li>&hellip; no luck. Trying with just:</li>
 </ul>
-<pre><code>index.authority.ignore=true
+<pre tabindex="0"><code>index.authority.ignore=true
 </code></pre><ul>
 <li>After re-indexing and clearing the XMLUI cache nothing has changed</li>
 </ul>
@@ -280,7 +280,7 @@ index.authority.ignore-variants=true
 <ul>
 <li>Trying a few more settings (plus reindex) for Discovery on DSpace Test:</li>
 </ul>
-<pre><code>index.authority.ignore-prefered.dc.contributor.author=true
+<pre tabindex="0"><code>index.authority.ignore-prefered.dc.contributor.author=true
 index.authority.ignore-variants=true
 </code></pre><ul>
 <li>Run all OS updates and reboot DSpace Test server</li>
@@ -291,7 +291,7 @@ index.authority.ignore-variants=true
 <ul>
 <li>The DSpace source code mentions the configuration key <code>discovery.index.authority.ignore-prefered.*</code> (with prefix of discovery, despite the docs saying otherwise), so I&rsquo;m trying the following on DSpace Test:</li>
 </ul>
-<pre><code>discovery.index.authority.ignore-prefered.dc.contributor.author=true
+<pre tabindex="0"><code>discovery.index.authority.ignore-prefered.dc.contributor.author=true
 discovery.index.authority.ignore-variants=true
 </code></pre><ul>
 <li>Still no change!</li>

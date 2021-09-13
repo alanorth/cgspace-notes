@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGIAR Library Migration"/>
 <meta name="twitter:description" content="Notes on the migration of the CGIAR Library to CGSpace"/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -132,7 +132,7 @@
 <li><input checked="" disabled="" type="checkbox"> Temporarily disable nightly <code>index-discovery</code> cron job because the import process will be taking place during some of this time and I don&rsquo;t want them to be competing to update the Solr index</li>
 <li><input checked="" disabled="" type="checkbox"> Copy HTTPS certificate key pair from CGIAR Library server&rsquo;s Tomcat keystore:</li>
 </ul>
-<pre><code>$ keytool -list -keystore tomcat.keystore
+<pre tabindex="0"><code>$ keytool -list -keystore tomcat.keystore
 $ keytool -importkeystore -srckeystore tomcat.keystore -destkeystore library.cgiar.org.p12 -deststoretype PKCS12 -srcalias tomcat
 $ openssl pkcs12 -in library.cgiar.org.p12 -nokeys -out library.cgiar.org.crt.pem
 $ openssl pkcs12 -in library.cgiar.org.p12 -nodes -nocerts -out library.cgiar.org.key.pem
@@ -140,7 +140,7 @@ $ wget https://certs.godaddy.com/repository/gdroot-g2.crt https://certs.godaddy.
 $ cat library.cgiar.org.crt.pem gdig2.crt.pem &gt; library.cgiar.org-chained.pem
 </code></pre><h2 id="migration-process">Migration Process</h2>
 <p><strong>Export all top-level communities and collections from DSpace Test:</strong></p>
-<pre><code>$ export PATH=$PATH:/home/dspacetest.cgiar.org/bin
+<pre tabindex="0"><code>$ export PATH=$PATH:/home/dspacetest.cgiar.org/bin
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2515 10947-2515/10947-2515.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2516 10947-2516/10947-2516.zip
 $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/2517 10947-2517/10947-2517.zip
@@ -158,12 +158,12 @@ $ dspace packager -d -a -t AIP -e aorth@mjanja.ch -i 10947/1 10947-1/10947-1.zip
 <li><input checked="" disabled="" type="checkbox"> Copy all exports from DSpace Test</li>
 <li><input checked="" disabled="" type="checkbox"> Add ingestion overrides to <code>dspace.cfg</code> before import:</li>
 </ul>
-<pre><code>mets.dspaceAIP.ingest.crosswalk.METSRIGHTS = NIL
+<pre tabindex="0"><code>mets.dspaceAIP.ingest.crosswalk.METSRIGHTS = NIL
 mets.dspaceAIP.ingest.crosswalk.DSPACE-ROLES = NIL
 </code></pre><ul>
 <li><input checked="" disabled="" type="checkbox"> Import communities and collections, paying attention to options to skip missing parents and ignore handles:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
 $ export PATH=$PATH:/home/cgspace.cgiar.org/bin
 $ dspace packager -r -u -a -t AIP -o skipIfParentMissing=true -e aorth@mjanja.ch -p 10568/83389 10947-2515/10947-2515.zip
 $ dspace packager -r -u -a -t AIP -o skipIfParentMissing=true -e aorth@mjanja.ch -p 10568/83389 10947-2516/10947-2516.zip
@@ -189,7 +189,7 @@ $ for item in 10947-1/ITEM@10947-*; do dspace packager -r -f -u -t AIP -e aorth@
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace packager -r -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83536 10568-93760/COLLECTION@10947-4651.zip
+<pre tabindex="0"><code>$ dspace packager -r -t AIP -o ignoreHandle=false -e aorth@mjanja.ch -p 10568/83536 10568-93760/COLLECTION@10947-4651.zip
 $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e aorth@mjanja.ch $item; done
 </code></pre><ul>
 <li><input checked="" disabled="" type="checkbox"> Create <em>CGIAR System Management Office</em> sub-community: <code>10568/83537</code>
@@ -199,17 +199,17 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 </ul>
 </li>
 </ul>
-<pre><code>$ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
+<pre tabindex="0"><code>$ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
 </code></pre><p><strong>Get the handles for the last few items from CGIAR Library that were created since we did the migration to DSpace Test in May:</strong></p>
-<pre><code>dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) &gt; '2017-05-01T00:00:00Z');
+<pre tabindex="0"><code>dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) &gt; '2017-05-01T00:00:00Z');
 </code></pre><ul>
 <li>Export them from the CGIAR Library:</li>
 </ul>
-<pre><code># for handle in 10947/4658 10947/4659 10947/4660 10947/4661 10947/4665 10947/4664 10947/4666 10947/4669; do /usr/local/dspace/bin/dspace packager -d -a -t AIP -e m.marus@cgiar.org -i $handle ${handle}.zip; done
+<pre tabindex="0"><code># for handle in 10947/4658 10947/4659 10947/4660 10947/4661 10947/4665 10947/4664 10947/4666 10947/4669; do /usr/local/dspace/bin/dspace packager -d -a -t AIP -e m.marus@cgiar.org -i $handle ${handle}.zip; done
 </code></pre><ul>
 <li>Import on CGSpace:</li>
 </ul>
-<pre><code>$ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
+<pre tabindex="0"><code>$ for item in 10947-latest/*.zip; do dspace packager -r -u -t AIP -e aorth@mjanja.ch $item; done
 </code></pre><h2 id="post-migration">Post Migration</h2>
 <ul>
 <li><input checked="" disabled="" type="checkbox"> Shut down Tomcat and run <code>update-sequences.sql</code> as the system&rsquo;s <code>postgres</code> user</li>
@@ -218,7 +218,7 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><input checked="" disabled="" type="checkbox"> Enable nightly <code>index-discovery</code> cron job</li>
 <li><input checked="" disabled="" type="checkbox"> Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</li>
 </ul>
-<pre><code>&quot;server_admins&quot; = (
+<pre tabindex="0"><code>&quot;server_admins&quot; = (
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
 )
@@ -244,22 +244,22 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><input checked="" disabled="" type="checkbox"> Run system updates and reboot server</li>
 <li><input checked="" disabled="" type="checkbox"> Switch to Let&rsquo;s Encrypt HTTPS certificates (after DNS is updated and server isn&rsquo;t busy):</li>
 </ul>
-<pre><code>$ sudo systemctl stop nginx
+<pre tabindex="0"><code>$ sudo systemctl stop nginx
 $ /opt/certbot-auto certonly --standalone -d library.cgiar.org
 $ sudo systemctl start nginx
 </code></pre><h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="foreign-key-error-in-dspace-cleanup">Foreign Key Error in <code>dspace cleanup</code></h3>
 <p>The cleanup script is sometimes used during import processes to clean the database and assetstore after failed AIP imports. If you see the following error with <code>dspace cleanup -v</code>:</p>
-<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;                                                                                                                       
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;                                                                                                                       
   Detail: Key (bitstream_id)=(119841) is still referenced from table &quot;bundle&quot;.
 </code></pre><p>The solution is to set the <code>primary_bitstream_id</code> to NULL in PostgreSQL:</p>
-<pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (119841);
+<pre tabindex="0"><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (119841);
 </code></pre><h3 id="psqlexception-during-aip-ingest">PSQLException During AIP Ingest</h3>
 <p>After a few rounds of ingesting—possibly with failures—you might end up with inconsistent IDs in the database. In this case, during AIP ingest of a single collection in submit mode (-s):</p>
-<pre><code>org.dspace.content.packager.PackageValidationException: Exception while ingesting 10947-2527/10947-2527.zip, Reason: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;                                    
+<pre tabindex="0"><code>org.dspace.content.packager.PackageValidationException: Exception while ingesting 10947-2527/10947-2527.zip, Reason: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;                                    
   Detail: Key (handle_id)=(86227) already exists.
 </code></pre><p>The normal solution is to run the <code>update-sequences.sql</code> script (with Tomcat shut down) but it doesn&rsquo;t seem to work in this case. Finding the maximum <code>handle_id</code> and manually updating the sequence seems to work:</p>
-<pre><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
+<pre tabindex="0"><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
 dspace=# select setval('handle_seq',86873);
 </code></pre>
 

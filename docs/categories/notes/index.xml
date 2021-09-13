@@ -41,7 +41,7 @@
 &lt;ul&gt;
 &lt;li&gt;Update Docker images on AReS server (linode20) and reboot the server:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;# docker images | grep -v ^REPO | sed &#39;s/ \+/:/g&#39; | cut -d: -f1,2 | grep -v none | xargs -L1 docker pull
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;# docker images | grep -v ^REPO | sed &#39;s/ \+/:/g&#39; | cut -d: -f1,2 | grep -v none | xargs -L1 docker pull
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;I decided to upgrade linode20 from Ubuntu 18.04 to 20.04&lt;/li&gt;
 &lt;/ul&gt;</description>
@@ -57,7 +57,7 @@
 &lt;ul&gt;
 &lt;li&gt;Export another list of ALL subjects on CGSpace, including AGROVOC and non-AGROVOC for Enrico:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
 COPY 20994
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
@@ -164,7 +164,7 @@ COPY 20994
 &lt;li&gt;I had a call with CodeObia to discuss the work on OpenRXV&lt;/li&gt;
 &lt;li&gt;Check the results of the AReS harvesting from last night:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;amp;pretty&#39;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;amp;pretty&#39;
 {
   &amp;quot;count&amp;quot; : 100875,
   &amp;quot;_shards&amp;quot; : {
@@ -471,7 +471,7 @@ COPY 20994
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# apt update &amp;amp;&amp;amp; apt full-upgrade
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# apt update &amp;amp;&amp;amp; apt full-upgrade
 # apt-get autoremove &amp;amp;&amp;amp; apt-get autoclean
 # dpkg -C
 # reboot
@@ -492,7 +492,7 @@ COPY 20994
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/*access.log.*.gz | grep -cE &amp;quot;[0-9]{1,2}/Oct/2019&amp;quot;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# zcat --force /var/log/nginx/*access.log.*.gz | grep -cE &amp;quot;[0-9]{1,2}/Oct/2019&amp;quot;
 4671942
 # zcat --force /var/log/nginx/{rest,oai,statistics}.log.*.gz | grep -cE &amp;quot;[0-9]{1,2}/Oct/2019&amp;quot;
 1277694
@@ -500,7 +500,7 @@ COPY 20994
 &lt;li&gt;So 4.6 million from XMLUI and another 1.2 million from API requests&lt;/li&gt;
 &lt;li&gt;Let&amp;rsquo;s see how many of the REST API requests were for bitstreams (because they are counted in Solr stats):&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/rest.log.*.gz | grep -c -E &amp;quot;[0-9]{1,2}/Oct/2019&amp;quot;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# zcat --force /var/log/nginx/rest.log.*.gz | grep -c -E &amp;quot;[0-9]{1,2}/Oct/2019&amp;quot;
 1183456 
 # zcat --force /var/log/nginx/rest.log.*.gz | grep -E &amp;quot;[0-9]{1,2}/Oct/2019&amp;quot; | grep -c -E &amp;quot;/rest/bitstreams&amp;quot;
 106781
@@ -527,7 +527,7 @@ COPY 20994
 &lt;li&gt;Linode emailed to say that CGSpace (linode18) had a high rate of outbound traffic for several hours this morning&lt;/li&gt;
 &lt;li&gt;Here are the top ten IPs in the nginx XMLUI and REST/OAI logs this morning:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &amp;quot;01/Sep/2019:0&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &amp;quot;01/Sep/2019:0&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
     440 17.58.101.255
     441 157.55.39.101
     485 207.46.13.43
@@ -628,7 +628,7 @@ COPY 20994
 &lt;/li&gt;
 &lt;li&gt;The item seems to be in a pre-submitted state, so I tried to delete it from there:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
 DELETE 1
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;But after this I tried to delete the item from the XMLUI and it is &lt;em&gt;still&lt;/em&gt; present&amp;hellip;&lt;/li&gt;
@@ -654,13 +654,13 @@ DELETE 1
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &#39;Spore-192-EN-web.pdf&#39; | grep -E &#39;(18.196.196.108|18.195.78.144|18.195.218.6)&#39; | awk &#39;{print $9}&#39; | sort | uniq -c | sort -n | tail -n 5
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &#39;Spore-192-EN-web.pdf&#39; | grep -E &#39;(18.196.196.108|18.195.78.144|18.195.218.6)&#39; | awk &#39;{print $9}&#39; | sort | uniq -c | sort -n | tail -n 5
    4432 200
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;In the last two weeks there have been 47,000 downloads of this &lt;em&gt;same exact PDF&lt;/em&gt; by these three IP addresses&lt;/li&gt;
 &lt;li&gt;Apply country and region corrections and deletions on DSpace Test and CGSpace:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.country -m 228 -t ACTION -d
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.country -m 228 -t ACTION -d
 $ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.region -m 231 -t action -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 228 -f cg.coverage.country -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 231 -f cg.coverage.region -d
@@ -701,7 +701,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 &lt;li&gt;Linode has alerted a few times since last night that the CPU usage on CGSpace (linode18) was high despite me increasing the alert threshold last week from 250% to 275%—I might need to increase it again!&lt;/li&gt;
 &lt;li&gt;The top IPs before, during, and after this latest alert tonight were:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;01/Feb/2019:(17|18|19|20|21)&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;01/Feb/2019:(17|18|19|20|21)&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
     245 207.46.13.5
     332 54.70.40.11
     385 5.143.231.38
@@ -717,7 +717,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 &lt;li&gt;The Solr statistics the past few months have been very high and I was wondering if the web server logs also showed an increase&lt;/li&gt;
 &lt;li&gt;There were just over 3 million accesses in the nginx logs last month:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# time zcat --force /var/log/nginx/* | grep -cE &amp;quot;[0-9]{1,2}/Jan/2019&amp;quot;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# time zcat --force /var/log/nginx/* | grep -cE &amp;quot;[0-9]{1,2}/Jan/2019&amp;quot;
 3018243
 
 real    0m19.873s
@@ -737,7 +737,7 @@ sys     0m1.979s
 &lt;li&gt;Linode alerted that CGSpace (linode18) had a higher outbound traffic rate than normal early this morning&lt;/li&gt;
 &lt;li&gt;I don&amp;rsquo;t see anything interesting in the web server logs around that time though:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;02/Jan/2019:0(1|2|3)&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &amp;quot;02/Jan/2019:0(1|2|3)&amp;quot; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
      92 40.77.167.4
      99 210.7.29.100
     120 38.126.157.45
@@ -825,7 +825,7 @@ sys     0m1.979s
 &lt;ul&gt;
 &lt;li&gt;DSpace Test had crashed at some point yesterday morning and I see the following in &lt;code&gt;dmesg&lt;/code&gt;:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;[Tue Jul 31 00:00:41 2018] Out of memory: Kill process 1394 (java) score 668 or sacrifice child
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[Tue Jul 31 00:00:41 2018] Out of memory: Kill process 1394 (java) score 668 or sacrifice child
 [Tue Jul 31 00:00:41 2018] Killed process 1394 (java) total-vm:15601860kB, anon-rss:5355528kB, file-rss:0kB, shmem-rss:0kB
 [Tue Jul 31 00:00:41 2018] oom_reaper: reaped process 1394 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
@@ -848,11 +848,11 @@ sys     0m1.979s
 &lt;ul&gt;
 &lt;li&gt;I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;During the &lt;code&gt;mvn package&lt;/code&gt; stage on the 5.8 branch I kept getting issues with java running out of memory:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;There is insufficient memory for the Java Runtime Environment to continue.
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;There is insufficient memory for the Java Runtime Environment to continue.
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
@@ -872,12 +872,12 @@ sys     0m1.979s
 &lt;li&gt;I added the new CCAFS Phase II Project Tag &lt;code&gt;PII-FP1_PACCA2&lt;/code&gt; and merged it into the &lt;code&gt;5_x-prod&lt;/code&gt; branch (&lt;a href=&#34;https://github.com/ilri/DSpace/pull/379&#34;&gt;#379&lt;/a&gt;)&lt;/li&gt;
 &lt;li&gt;I proofed and tested the ILRI author corrections that Peter sent back to me this week:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correct -m 3 -n
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correct -m 3 -n
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;I think a sane proofing workflow in OpenRefine is to apply the custom text facets for check/delete/remove and illegal characters that I developed in &lt;a href=&#34;https://alanorth.github.io/cgspace-notes/cgspace-notes/2018-03/&#34;&gt;March, 2018&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Time to index ~70,000 items on CGSpace:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
 
 real    74m42.646s
 user    8m5.056s
@@ -958,19 +958,19 @@ sys     2m7.289s
 &lt;li&gt;In dspace.log around that time I see many errors like &amp;ldquo;Client closed the connection before file download was complete&amp;rdquo;&lt;/li&gt;
 &lt;li&gt;And just before that I see this:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;Ah hah! So the pool was actually empty!&lt;/li&gt;
 &lt;li&gt;I need to increase that, let&amp;rsquo;s try to bump it up from 50 to 75&lt;/li&gt;
 &lt;li&gt;After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&amp;rsquo;t know what the hell Uptime Robot saw&lt;/li&gt;
 &lt;li&gt;I notice this error quite a few times in dspace.log:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
 org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse &#39;dateIssued_keyword:[1976+TO+1979]&#39;: Encountered &amp;quot; &amp;quot;]&amp;quot; &amp;quot;] &amp;quot;&amp;quot; at line 1, column 32.
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;And there are many of these errors every day for the past month:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;$ grep -c &amp;quot;Error while searching for sidebar facets&amp;quot; dspace.log.*
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ grep -c &amp;quot;Error while searching for sidebar facets&amp;quot; dspace.log.*
 dspace.log.2017-11-21:4
 dspace.log.2017-11-22:1
 dspace.log.2017-11-23:4
@@ -1048,12 +1048,12 @@ dspace.log.2018-01-02:34
 &lt;ul&gt;
 &lt;li&gt;Today there have been no hits by CORE and no alerts from Linode (coincidence?)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# grep -c &amp;quot;CORE&amp;quot; /var/log/nginx/access.log
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# grep -c &amp;quot;CORE&amp;quot; /var/log/nginx/access.log
 0
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;Generate list of authors on CGSpace for Peter to go through and correct:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
 COPY 54701
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
@@ -1068,7 +1068,7 @@ COPY 54701
 &lt;ul&gt;
 &lt;li&gt;Peter emailed to point out that many items in the &lt;a href=&#34;https://cgspace.cgiar.org/handle/10568/2703&#34;&gt;ILRI archive collection&lt;/a&gt; have multiple handles:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
 &lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
 &lt;li&gt;There appears to be a pattern but I&amp;rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine&lt;/li&gt;
 &lt;li&gt;Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections&lt;/li&gt;

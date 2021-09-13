@@ -64,7 +64,7 @@ $ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u ds
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 228 -f cg.coverage.country -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 231 -f cg.coverage.region -d
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -163,13 +163,13 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </ul>
 </li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep 'Spore-192-EN-web.pdf' | grep -E '(18.196.196.108|18.195.78.144|18.195.218.6)' | awk '{print $9}' | sort | uniq -c | sort -n | tail -n 5
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep 'Spore-192-EN-web.pdf' | grep -E '(18.196.196.108|18.195.78.144|18.195.218.6)' | awk '{print $9}' | sort | uniq -c | sort -n | tail -n 5
    4432 200
 </code></pre><ul>
 <li>In the last two weeks there have been 47,000 downloads of this <em>same exact PDF</em> by these three IP addresses</li>
 <li>Apply country and region corrections and deletions on DSpace Test and CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p 'fuuu' -f cg.coverage.country -m 228 -t ACTION -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p 'fuuu' -f cg.coverage.country -m 228 -t ACTION -d
 $ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u dspace -p 'fuuu' -f cg.coverage.region -m 231 -t action -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p 'fuuu' -m 228 -f cg.coverage.country -d
 $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p 'fuuu' -m 231 -f cg.coverage.region -d
@@ -191,26 +191,26 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </ul>
 </li>
 </ul>
-<pre><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort -u &gt; /tmp/2019-04-03-orcid-ids.txt
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort -u &gt; /tmp/2019-04-03-orcid-ids.txt
 </code></pre><ul>
 <li>We currently have 1177 unique ORCID identifiers, and this brings our total to 1237!</li>
 <li>Next I will resolve all their names using my <code>resolve-orcids.py</code> script:</li>
 </ul>
-<pre><code>$ ./resolve-orcids.py -i /tmp/2019-04-03-orcid-ids.txt -o 2019-04-03-orcid-ids.txt -d
+<pre tabindex="0"><code>$ ./resolve-orcids.py -i /tmp/2019-04-03-orcid-ids.txt -o 2019-04-03-orcid-ids.txt -d
 </code></pre><ul>
 <li>After that I added the XML formatting, formatted the file with tidy, and sorted the names in vim</li>
 <li>One user&rsquo;s name has changed so I will update those using my <code>fix-metadata-values.py</code> script:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2019-04-03-update-orcids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -m 240 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2019-04-03-update-orcids.csv -db dspace -u dspace -p 'fuuu' -f cg.creator.id -m 240 -t correct -d
 </code></pre><ul>
 <li>I created a pull request and merged the changes to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/417">#417</a>)</li>
 <li>A few days ago I noticed some weird update process for the statistics-2018 Solr core and I see it&rsquo;s still going:</li>
 </ul>
-<pre><code>2019-04-03 16:34:02,262 INFO  org.dspace.statistics.SolrLogger @ Updating : 1754500/21701 docs in http://localhost:8081/solr//statistics-2018
+<pre tabindex="0"><code>2019-04-03 16:34:02,262 INFO  org.dspace.statistics.SolrLogger @ Updating : 1754500/21701 docs in http://localhost:8081/solr//statistics-2018
 </code></pre><ul>
 <li>Interestingly, there are 5666 occurences, and they are mostly for the 2018 core:</li>
 </ul>
-<pre><code>$ grep 'org.dspace.statistics.SolrLogger @ Updating' /home/cgspace.cgiar.org/log/dspace.log.2019-04-03 | awk '{print $11}' | sort | uniq -c
+<pre tabindex="0"><code>$ grep 'org.dspace.statistics.SolrLogger @ Updating' /home/cgspace.cgiar.org/log/dspace.log.2019-04-03 | awk '{print $11}' | sort | uniq -c
       1 
       3 http://localhost:8081/solr//statistics-2017
    5662 http://localhost:8081/solr//statistics-2018
@@ -222,14 +222,14 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 <li>Uptime Robot reported that CGSpace (linode18) went down tonight</li>
 <li>I see there are lots of PostgreSQL connections:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       5 dspaceApi
      10 dspaceCli
     250 dspaceWeb
 </code></pre><ul>
 <li>I still see those weird messages about updating the statistics-2018 Solr core:</li>
 </ul>
-<pre><code>2019-04-05 21:06:53,770 INFO  org.dspace.statistics.SolrLogger @ Updating : 2444600/21697 docs in http://localhost:8081/solr//statistics-2018
+<pre tabindex="0"><code>2019-04-05 21:06:53,770 INFO  org.dspace.statistics.SolrLogger @ Updating : 2444600/21697 docs in http://localhost:8081/solr//statistics-2018
 </code></pre><ul>
 <li>Looking at <code>iostat 1 10</code> I also see some CPU steal has come back, and I can confirm it by looking at the Munin graphs:</li>
 </ul>
@@ -242,7 +242,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </ul>
 </li>
 </ul>
-<pre><code>statistics-2017: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
+<pre tabindex="0"><code>statistics-2017: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
 </code></pre><ul>
 <li>I restarted it again and all the Solr cores came up properly&hellip;</li>
 </ul>
@@ -257,7 +257,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </li>
 <li>Linode sent an alert that there was high CPU usage this morning on CGSpace (linode18) and these were the top IPs in the webserver access logs around the time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;06/Apr/2019:(06|07|08|09)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{access,error,library-access}.log /var/log/nginx/{access,error,library-access}.log.1 | grep -E &quot;06/Apr/2019:(06|07|08|09)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     222 18.195.78.144
     245 207.46.13.58
     303 207.46.13.194
@@ -282,17 +282,17 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </code></pre><ul>
 <li><code>45.5.184.72</code> is in Colombia so it&rsquo;s probably CIAT, and I see they are indeed trying to get crawl the Discover pages on CIAT&rsquo;s datasets collection:</li>
 </ul>
-<pre><code>GET /handle/10568/72970/discover?filtertype_0=type&amp;filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_relational_operator_0=equals&amp;filter_1=&amp;filter_0=Dataset&amp;filtertype=dateIssued&amp;filter_relational_operator=equals&amp;filter=2014
+<pre tabindex="0"><code>GET /handle/10568/72970/discover?filtertype_0=type&amp;filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_relational_operator_0=equals&amp;filter_1=&amp;filter_0=Dataset&amp;filtertype=dateIssued&amp;filter_relational_operator=equals&amp;filter=2014
 </code></pre><ul>
 <li>Their user agent is the one I added to the badbots list in nginx last week: &ldquo;GuzzleHttp/6.3.3 curl/7.47.0 PHP/7.0.30-0ubuntu0.16.04.1&rdquo;</li>
 <li>They made 22,000 requests to Discover on this collection today alone (and it&rsquo;s only 11AM):</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;06/Apr/2019&quot; | grep 45.5.184.72 | grep -oE '/handle/[0-9]+/[0-9]+/discover' | sort | uniq -c 
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;06/Apr/2019&quot; | grep 45.5.184.72 | grep -oE '/handle/[0-9]+/[0-9]+/discover' | sort | uniq -c 
   22077 /handle/10568/72970/discover
 </code></pre><ul>
 <li>Yesterday they made 43,000 requests and we actually blocked most of them:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep &quot;05/Apr/2019&quot; | grep 45.5.184.72 | grep -oE '/handle/[0-9]+/[0-9]+/discover' | sort | uniq -c 
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep &quot;05/Apr/2019&quot; | grep 45.5.184.72 | grep -oE '/handle/[0-9]+/[0-9]+/discover' | sort | uniq -c 
   43631 /handle/10568/72970/discover
 # zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep &quot;05/Apr/2019&quot; | grep 45.5.184.72 | grep -E '/handle/[0-9]+/[0-9]+/discover' | awk '{print $9}' | sort | uniq -c 
     142 200
@@ -315,7 +315,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </ul>
 </li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=type%3A0+AND+(ip%3A18.196.196.108+OR+ip%3A18.195.78.144+OR+ip%3A18.195.218.6)&amp;fq=statistics_type%3Aview&amp;fq=bundleName%3AORIGINAL&amp;fq=dateYearMonth%3A2019-03&amp;rows=0&amp;wt=json&amp;indent=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=type%3A0+AND+(ip%3A18.196.196.108+OR+ip%3A18.195.78.144+OR+ip%3A18.195.218.6)&amp;fq=statistics_type%3Aview&amp;fq=bundleName%3AORIGINAL&amp;fq=dateYearMonth%3A2019-03&amp;rows=0&amp;wt=json&amp;indent=true'
 {
     &quot;response&quot;: {
         &quot;docs&quot;: [],
@@ -341,7 +341,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </code></pre><ul>
 <li>Strangely I don&rsquo;t see many hits in 2019-04:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=type%3A0+AND+(ip%3A18.196.196.108+OR+ip%3A18.195.78.144+OR+ip%3A18.195.218.6)&amp;fq=statistics_type%3Aview&amp;fq=bundleName%3AORIGINAL&amp;fq=dateYearMonth%3A2019-04&amp;rows=0&amp;wt=json&amp;indent=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=type%3A0+AND+(ip%3A18.196.196.108+OR+ip%3A18.195.78.144+OR+ip%3A18.195.218.6)&amp;fq=statistics_type%3Aview&amp;fq=bundleName%3AORIGINAL&amp;fq=dateYearMonth%3A2019-04&amp;rows=0&amp;wt=json&amp;indent=true'
 {
     &quot;response&quot;: {
         &quot;docs&quot;: [],
@@ -367,7 +367,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace 
 </code></pre><ul>
 <li>Making some tests on GET vs HEAD requests on the <a href="https://dspacetest.cgiar.org/handle/10568/100289">CTA Spore 192 item</a> on DSpace Test:</li>
 </ul>
-<pre><code>$ http --print Hh GET https://dspacetest.cgiar.org/bitstream/handle/10568/100289/Spore-192-EN-web.pdf
+<pre tabindex="0"><code>$ http --print Hh GET https://dspacetest.cgiar.org/bitstream/handle/10568/100289/Spore-192-EN-web.pdf
 GET /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate
@@ -419,7 +419,7 @@ X-XSS-Protection: 1; mode=block
 </code></pre><ul>
 <li>And from the server side, the nginx logs show:</li>
 </ul>
-<pre><code>78.x.x.x - - [07/Apr/2019:01:38:35 -0700] &quot;GET /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1&quot; 200 68078 &quot;-&quot; &quot;HTTPie/1.0.2&quot;
+<pre tabindex="0"><code>78.x.x.x - - [07/Apr/2019:01:38:35 -0700] &quot;GET /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1&quot; 200 68078 &quot;-&quot; &quot;HTTPie/1.0.2&quot;
 78.x.x.x - - [07/Apr/2019:01:39:01 -0700] &quot;HEAD /bitstream/handle/10568/100289/Spore-192-EN-web.pdf HTTP/1.1&quot; 200 0 &quot;-&quot; &quot;HTTPie/1.0.2&quot;
 </code></pre><ul>
 <li>So definitely the <em>size</em> of the transfer is more efficient with a HEAD, but I need to wait to see if these requests show up in Solr
@@ -428,7 +428,7 @@ X-XSS-Protection: 1; mode=block
 </ul>
 </li>
 </ul>
-<pre><code>2019-04-07 02:05:30,966 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous:session_id=EF2DB6E4F69926C5555B3492BB0071A8:ip_addr=78.x.x.x:view_bitstream:bitstream_id=165818
+<pre tabindex="0"><code>2019-04-07 02:05:30,966 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous:session_id=EF2DB6E4F69926C5555B3492BB0071A8:ip_addr=78.x.x.x:view_bitstream:bitstream_id=165818
 2019-04-07 02:05:39,265 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous:session_id=B6381FC590A5160D84930102D068C7A3:ip_addr=78.x.x.x:view_bitstream:bitstream_id=165818
 </code></pre><ul>
 <li>So my inclination is that both HEAD and GET requests are registered as views as far as Solr and DSpace are concerned
@@ -437,7 +437,7 @@ X-XSS-Protection: 1; mode=block
 </ul>
 </li>
 </ul>
-<pre><code>2019-04-07 02:08:44,186 INFO  org.apache.solr.update.UpdateHandler @ start commit{,optimize=true,openSearcher=true,waitSearcher=true,expungeDeletes=false,softCommit=false,prepareCommit=false}
+<pre tabindex="0"><code>2019-04-07 02:08:44,186 INFO  org.apache.solr.update.UpdateHandler @ start commit{,optimize=true,openSearcher=true,waitSearcher=true,expungeDeletes=false,softCommit=false,prepareCommit=false}
 </code></pre><ul>
 <li>Ugh, even after optimizing there are no Solr results for requests from my IP, and actually I only see 18 results from 2019-04 so far and none of them are <code>statistics_type:view</code>&hellip; very weird
 <ul>
@@ -448,7 +448,7 @@ X-XSS-Protection: 1; mode=block
 <li>According to the <a href="https://wiki.lyrasis.org/display/DSDOC5x/SOLR+Statistics">DSpace 5.x Solr documentation</a> the default commit time is after 15 minutes or 10,000 documents (see <code>solrconfig.xml</code>)</li>
 <li>I looped some GET and HEAD requests to a bitstream on my local instance and after some time I see that they <em>do</em> register as downloads (even though they are internal):</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8080/solr/statistics/select?q=type%3A0+AND+time%3A2019-04-07*&amp;fq=statistics_type%3Aview&amp;fq=isInternal%3Atrue&amp;rows=0&amp;wt=json&amp;indent=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8080/solr/statistics/select?q=type%3A0+AND+time%3A2019-04-07*&amp;fq=statistics_type%3Aview&amp;fq=isInternal%3Atrue&amp;rows=0&amp;wt=json&amp;indent=true'
 {
     &quot;response&quot;: {
         &quot;docs&quot;: [],
@@ -496,12 +496,12 @@ X-XSS-Protection: 1; mode=block
 <li>UptimeRobot said CGSpace went down and up a few times tonight, and my first instict was to check <code>iostat 1 10</code> and I saw that CPU steal is around 10–30 percent right now&hellip;</li>
 <li>The load average is super high right now, as I&rsquo;ve noticed the last few times UptimeRobot said that CGSpace went down:</li>
 </ul>
-<pre><code>$ cat /proc/loadavg 
+<pre tabindex="0"><code>$ cat /proc/loadavg 
 10.70 9.17 8.85 18/633 4198
 </code></pre><ul>
 <li>According to the server logs there is actually not much going on right now:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E &quot;07/Apr/2019:(18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E &quot;07/Apr/2019:(18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     118 18.195.78.144
     128 207.46.13.219
     129 167.114.64.100
@@ -529,7 +529,7 @@ X-XSS-Protection: 1; mode=block
 <li><code>2408:8214:7a00:868f:7c1e:e0f3:20c6:c142</code> is some stupid Chinese bot making malicious POST requests</li>
 <li>There are free database connections in the pool:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       5 dspaceApi
       7 dspaceCli
      23 dspaceWeb
@@ -546,7 +546,7 @@ X-XSS-Protection: 1; mode=block
 </ul>
 </li>
 </ul>
-<pre><code>$ lein run ~/src/git/DSpace/2019-02-22-affiliations.csv name id
+<pre tabindex="0"><code>$ lein run ~/src/git/DSpace/2019-02-22-affiliations.csv name id
 </code></pre><ul>
 <li>After matching the values and creating some new matches I had trouble remembering how to copy the reconciled values to a new column
 <ul>
@@ -555,34 +555,34 @@ X-XSS-Protection: 1; mode=block
 </ul>
 </li>
 </ul>
-<pre><code>if(cell.recon.matched, cell.recon.match.name, value)
+<pre tabindex="0"><code>if(cell.recon.matched, cell.recon.match.name, value)
 </code></pre><ul>
 <li>See the <a href="https://github.com/OpenRefine/OpenRefine/wiki/Variables#recon">OpenRefine variables documentation</a> for more notes about the <code>recon</code> object</li>
 <li>I also noticed a handful of errors in our current list of affiliations so I corrected them:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2019-04-08-fix-13-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2019-04-08-fix-13-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct -d
 </code></pre><ul>
 <li>We should create a new list of affiliations to update our controlled vocabulary again</li>
 <li>I dumped a list of the top 1500 affiliations:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 211 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-04-08-top-1500-affiliations.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 211 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-04-08-top-1500-affiliations.csv WITH CSV HEADER;
 COPY 1500
 </code></pre><ul>
 <li>Fix a few more messed up affiliations that have return characters in them (use Ctrl-V Ctrl-M to re-create control character):</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value='International Institute for Environment and Development' WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE 'International Institute^M%';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value='International Institute for Environment and Development' WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE 'International Institute^M%';
 dspace=# UPDATE metadatavalue SET text_value='Kenya Agriculture and Livestock Research Organization' WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE 'Kenya Agricultural  and Livestock  Research^M%';
 </code></pre><ul>
 <li>I noticed a bunch of subjects and affiliations that use stylized apostrophes so I will export those and then batch update them:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE '%’%') to /tmp/2019-04-08-affiliations-apostrophes.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 AND text_value LIKE '%’%') to /tmp/2019-04-08-affiliations-apostrophes.csv WITH CSV HEADER;
 COPY 60
 dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 57 AND text_value LIKE '%’%') to /tmp/2019-04-08-subject-apostrophes.csv WITH CSV HEADER;
 COPY 20
 </code></pre><ul>
 <li>I cleaned them up in OpenRefine and then applied the fixes on CGSpace and DSpace Test:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-60-affiliations-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-60-affiliations-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211 -t correct -d
 $ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-20-subject-apostrophes.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d
 </code></pre><ul>
 <li>UptimeRobot said that CGSpace (linode18) went down tonight
@@ -592,14 +592,14 @@ $ ./fix-metadata-values.py -i /tmp/2019-04-08-fix-20-subject-apostrophes.csv -db
 </ul>
 </li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       5 dspaceApi
       7 dspaceCli
     250 dspaceWeb
 </code></pre><ul>
 <li>On a related note I see connection pool errors in the DSpace log:</li>
 </ul>
-<pre><code>2019-04-08 19:01:10,472 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
+<pre tabindex="0"><code>2019-04-08 19:01:10,472 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error - 
 org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-319] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:250; busy:250; idle:0; lastwait:5000].
 </code></pre><ul>
 <li>But still I see 10 to 30% CPU steal in <code>iostat</code> that is also reflected in the Munin graphs:</li>
@@ -609,7 +609,7 @@ org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exe
 <li>Linode Support still didn&rsquo;t respond to my ticket from yesterday, so I attached a new output of <code>iostat 1 10</code> and asked them to move the VM to a less busy host</li>
 <li>The web server logs are not very busy:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E &quot;08/Apr/2019:(17|18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E &quot;08/Apr/2019:(17|18|19)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     124 40.77.167.135
     135 95.108.181.88
     139 157.55.39.206
@@ -636,7 +636,7 @@ org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exe
 <li>Linode sent an alert that CGSpace (linode18) was 440% CPU for the last two hours this morning</li>
 <li>Here are the top IPs in the web server logs around that time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/{rest,oai}.log /var/log/nginx/{rest,oai}.log.1 | grep -E &quot;09/Apr/2019:(06|07|08)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/{rest,oai}.log /var/log/nginx/{rest,oai}.log.1 | grep -E &quot;09/Apr/2019:(06|07|08)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
      18 66.249.79.139
      21 157.55.39.160
      29 66.249.79.137
@@ -661,11 +661,11 @@ org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exe
 </code></pre><ul>
 <li><code>45.5.186.2</code> is at CIAT in Colombia and I see they are mostly making requests to the REST API, but also to XMLUI with the following user agent:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36
 </code></pre><ul>
 <li>Database connection usage looks fine:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       5 dspaceApi
       7 dspaceCli
      11 dspaceWeb
@@ -683,13 +683,13 @@ org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exe
 <li>Abenet pointed out a possibility of validating funders against the <a href="https://support.crossref.org/hc/en-us/articles/215788143-Funder-data-via-the-API">CrossRef API</a></li>
 <li>Note that if you use HTTPS and specify a contact address in the API request you have less likelihood of being blocked</li>
 </ul>
-<pre><code>$ http 'https://api.crossref.org/funders?query=mercator&amp;mailto=me@cgiar.org'
+<pre tabindex="0"><code>$ http 'https://api.crossref.org/funders?query=mercator&amp;mailto=me@cgiar.org'
 </code></pre><ul>
 <li>Otherwise, they provide the funder data in <a href="https://www.crossref.org/services/funder-registry/">CSV and RDF format</a></li>
 <li>I did a quick test with the recent IITA records against reconcile-csv in OpenRefine and it matched a few, but the ones that didn&rsquo;t match will need a human to go and do some manual checking and informed decision making&hellip;</li>
 <li>If I want to write a script for this I could use the Python <a href="https://habanero.readthedocs.io/en/latest/modules/crossref.html">habanero library</a>:</li>
 </ul>
-<pre><code>from habanero import Crossref
+<pre tabindex="0"><code>from habanero import Crossref
 cr = Crossref(mailto=&quot;me@cgiar.org&quot;)
 x = cr.funders(query = &quot;mercator&quot;)
 </code></pre><h2 id="2019-04-11">2019-04-11</h2>
@@ -720,7 +720,7 @@ x = cr.funders(query = &quot;mercator&quot;)
 </li>
 <li>I captured a few general corrections and deletions for AGROVOC subjects while looking at IITA&rsquo;s records, so I applied them to DSpace Test and CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-04-11-fix-14-subjects.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-04-11-fix-14-subjects.csv -db dspace -u dspace -p 'fuuu' -f dc.subject -m 57 -t correct -d
 $ ./delete-metadata-values.py -i /tmp/2019-04-11-delete-6-subjects.csv -db dspace -u dspace -p 'fuuu' -m 57 -f dc.subject -d
 </code></pre><ul>
 <li>Answer more questions about DOIs and Altmetric scores from WLE</li>
@@ -753,7 +753,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-04-11-delete-6-subjects.csv -db dspac
 <ul>
 <li>Change DSpace Test (linode19) to use the Java GC tuning from the Solr 4.10.4 startup script:</li>
 </ul>
-<pre><code>GC_TUNE=&quot;-XX:NewRatio=3 \
+<pre tabindex="0"><code>GC_TUNE=&quot;-XX:NewRatio=3 \
     -XX:SurvivorRatio=4 \
     -XX:TargetSurvivorRatio=90 \
     -XX:MaxTenuringThreshold=8 \
@@ -786,7 +786,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-04-11-delete-6-subjects.csv -db dspac
 </ul>
 </li>
 </ul>
-<pre><code>import json
+<pre tabindex="0"><code>import json
 import re
 import urllib
 import urllib2
@@ -809,7 +809,7 @@ return item_id
 </li>
 <li>I ran a full Discovery indexing on CGSpace because I didn&rsquo;t do it after all the metadata updates last week:</li>
 </ul>
-<pre><code>$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code>$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    82m45.324s
 user    7m33.446s
@@ -1001,7 +1001,7 @@ sys     2m13.463s
 <li>For future reference, Linode mentioned that they consider CPU steal above 8% to be significant</li>
 <li>Regarding the other Linode issue about speed, I did a test with <code>iperf</code> between linode18 and linode19:</li>
 </ul>
-<pre><code># iperf -s
+<pre tabindex="0"><code># iperf -s
 ------------------------------------------------------------
 Server listening on TCP port 5001
 TCP window size: 85.3 KByte (default)
@@ -1049,11 +1049,11 @@ TCP window size: 85.0 KByte (default)
 </li>
 <li>I want to get rid of this annoying warning that is constantly in our DSpace logs:</li>
 </ul>
-<pre><code>2019-04-08 19:02:31,770 WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
+<pre tabindex="0"><code>2019-04-08 19:02:31,770 WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
 </code></pre><ul>
 <li>Apparently it happens once per request, which can be at least 1,500 times per day according to the DSpace logs on CGSpace (linode18):</li>
 </ul>
-<pre><code>$ grep -c 'Falling back to request address' dspace.log.2019-04-20
+<pre tabindex="0"><code>$ grep -c 'Falling back to request address' dspace.log.2019-04-20
 dspace.log.2019-04-20:1515
 </code></pre><ul>
 <li>I will fix it in <code>dspace/config/modules/oai.cfg</code></li>
@@ -1098,7 +1098,7 @@ dspace.log.2019-04-20:1515
 </ul>
 </li>
 </ul>
-<pre><code>$ csvcut -c id,dc.identifier.uri,'dc.identifier.uri[]' ~/Downloads/2019-04-24-IITA.csv &gt; /tmp/iita.csv
+<pre tabindex="0"><code>$ csvcut -c id,dc.identifier.uri,'dc.identifier.uri[]' ~/Downloads/2019-04-24-IITA.csv &gt; /tmp/iita.csv
 </code></pre><ul>
 <li>Carlos Tejo from the Land Portal had been emailing me this week to ask about the old REST API that Tsega was building in 2017
 <ul>
@@ -1108,7 +1108,7 @@ dspace.log.2019-04-20:1515
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -f -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
+<pre tabindex="0"><code>$ curl -f -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
 curl: (22) The requested URL returned error: 401
 </code></pre><ul>
 <li>Note that curl only shows the HTTP 401 error if you use <code>-f</code> (fail), and only then if you <em>don&rsquo;t</em> include <code>-s</code>
@@ -1118,7 +1118,7 @@ curl: (22) The requested URL returned error: 401
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT' AND text_lang='en_US';
+<pre tabindex="0"><code>dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT' AND text_lang='en_US';
  count 
 -------
    376
@@ -1138,7 +1138,7 @@ dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AN
 </code></pre><ul>
 <li>I see that the HTTP 401 issue seems to be a bug due to an item that the user doesn&rsquo;t have permission to access&hellip; from the DSpace log:</li>
 </ul>
-<pre><code>2019-04-24 08:11:51,129 INFO  org.dspace.rest.ItemsResource @ Looking for item with metadata(key=cg.subject.cpwf,value=WATER MANAGEMENT, language=en_US).
+<pre tabindex="0"><code>2019-04-24 08:11:51,129 INFO  org.dspace.rest.ItemsResource @ Looking for item with metadata(key=cg.subject.cpwf,value=WATER MANAGEMENT, language=en_US).
 2019-04-24 08:11:51,231 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous::view_item:handle=10568/72448
 2019-04-24 08:11:51,238 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous::view_item:handle=10568/72491
 2019-04-24 08:11:51,243 INFO  org.dspace.usage.LoggerUsageEventListener @ anonymous::view_item:handle=10568/75703
@@ -1146,14 +1146,14 @@ dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AN
 </code></pre><ul>
 <li>Nevertheless, if I request using the <code>null</code> language I get 1020 results, plus 179 for a blank language attribute:</li>
 </ul>
-<pre><code>$ curl -s -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: null}' | jq length
+<pre tabindex="0"><code>$ curl -s -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: null}' | jq length
 1020
 $ curl -s -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;&quot;}' | jq length
 179
 </code></pre><ul>
 <li>This is weird because I see 942–1156 items with &ldquo;WATER MANAGEMENT&rdquo; (depending on wildcard matching for errors in subject spelling):</li>
 </ul>
-<pre><code>dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT';
+<pre tabindex="0"><code>dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=208 AND text_value='WATER MANAGEMENT';
  count 
 -------
    942
@@ -1177,13 +1177,13 @@ dspace=# SELECT COUNT(text_value) FROM metadatavalue WHERE resource_type_id=2 AN
 </li>
 <li>I tested the REST API after logging in with my super admin account and I was able to get results for the problematic query:</li>
 </ul>
-<pre><code>$ curl -f -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/login&quot; -d '{&quot;email&quot;:&quot;example@me.com&quot;,&quot;password&quot;:&quot;fuuuuu&quot;}'
+<pre tabindex="0"><code>$ curl -f -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/login&quot; -d '{&quot;email&quot;:&quot;example@me.com&quot;,&quot;password&quot;:&quot;fuuuuu&quot;}'
 $ curl -f -H &quot;Content-Type: application/json&quot; -H &quot;rest-dspace-token: b43d41a6-5ac1-455d-b49a-616b8debc25b&quot; -X GET &quot;https://dspacetest.cgiar.org/rest/status&quot;
 $ curl -f -H &quot;rest-dspace-token: b43d41a6-5ac1-455d-b49a-616b8debc25b&quot; -H &quot;Content-Type: application/json&quot; -X POST &quot;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&quot; -d '{&quot;key&quot;:&quot;cg.subject.cpwf&quot;, &quot;value&quot;:&quot;WATER MANAGEMENT&quot;,&quot;language&quot;: &quot;en_US&quot;}'
 </code></pre><ul>
 <li>I created a normal user for Carlos to try as an unprivileged user:</li>
 </ul>
-<pre><code>$ dspace user --add --givenname Carlos --surname Tejo --email blah@blah.com --password 'ddmmdd'
+<pre tabindex="0"><code>$ dspace user --add --givenname Carlos --surname Tejo --email blah@blah.com --password 'ddmmdd'
 </code></pre><ul>
 <li>But still I get the HTTP 401 and I have no idea which item is causing it</li>
 <li>I enabled more verbose logging in <code>ItemsResource.java</code> and now I can at least see the item ID that causes the failure&hellip;
@@ -1192,7 +1192,7 @@ $ curl -f -H &quot;rest-dspace-token: b43d41a6-5ac1-455d-b49a-616b8debc25b&quot;
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT * FROM item WHERE item_id=74648;
+<pre tabindex="0"><code>dspace=# SELECT * FROM item WHERE item_id=74648;
  item_id | submitter_id | in_archive | withdrawn |       last_modified        | owning_collection | discoverable
 ---------+--------------+------------+-----------+----------------------------+-------------------+--------------
    74648 |          113 | f          | f         | 2016-03-30 09:00:52.131+00 |                   | t
@@ -1212,7 +1212,7 @@ $ curl -f -H &quot;rest-dspace-token: b43d41a6-5ac1-455d-b49a-616b8debc25b&quot;
 <ul>
 <li>Export a list of authors for Peter to look through:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-04-26-all-authors.csv with csv header;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-04-26-all-authors.csv with csv header;
 COPY 65752
 </code></pre><h2 id="2019-04-28">2019-04-28</h2>
 <ul>
@@ -1222,7 +1222,7 @@ COPY 65752
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT * FROM item WHERE item_id=74648;
+<pre tabindex="0"><code>dspace=# SELECT * FROM item WHERE item_id=74648;
  item_id | submitter_id | in_archive | withdrawn |       last_modified        | owning_collection | discoverable 
 ---------+--------------+------------+-----------+----------------------------+-------------------+--------------
    74648 |          113 | f          | f         | 2019-04-28 08:48:52.114-07 |                   | f
@@ -1230,7 +1230,7 @@ COPY 65752
 </code></pre><ul>
 <li>And I tried the <code>curl</code> command from above again, but I still get the HTTP 401 and and the same error in the DSpace log:</li>
 </ul>
-<pre><code>2019-04-28 08:53:07,170 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item(id=74648)!
+<pre tabindex="0"><code>2019-04-28 08:53:07,170 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item(id=74648)!
 </code></pre><ul>
 <li>I even tried to &ldquo;expunge&rdquo; the item using an <a href="https://wiki.lyrasis.org/display/DSDOC5x/Batch+Metadata+Editing#BatchMetadataEditing-Performing'actions'onitems">action in CSV</a>, and it said &ldquo;EXPUNGED!&rdquo; but the item is still there&hellip;</li>
 </ul>
@@ -1239,7 +1239,7 @@ COPY 65752
 <li>Send mail to the dspace-tech mailing list to ask about the item expunge issue</li>
 <li>Delete and re-create Podman container for dspacedb after pulling a new PostgreSQL container:</li>
 </ul>
-<pre><code>$ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
+<pre tabindex="0"><code>$ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 </code></pre><ul>
 <li>Carlos from LandPortal asked if I could export CGSpace in a machine-readable format so I think I&rsquo;ll try to do a CSV
 <ul>
@@ -1247,7 +1247,7 @@ COPY 65752
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT DISTINCT text_lang, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id != 28 GROUP BY text_lang;
+<pre tabindex="0"><code>dspace=# SELECT DISTINCT text_lang, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id != 28 GROUP BY text_lang;
  text_lang |  count
 -----------+---------
            |  358647

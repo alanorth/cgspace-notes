@@ -34,7 +34,7 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 # awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | uniq | wc -l
 3168
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -126,13 +126,13 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 <li>I have blocked access to the API now</li>
 <li>There are 3,000 IPs accessing the REST API in a 24-hour period!</li>
 </ul>
-<pre><code># awk '{print $1}' /var/log/nginx/rest.log  | uniq | wc -l
+<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/rest.log  | uniq | wc -l
 3168
 </code></pre><ul>
 <li>The two most often requesters are in Ethiopia and Colombia: 213.55.99.121 and 181.118.144.29</li>
 <li>100% of the requests coming from Ethiopia are like this and result in an HTTP 500:</li>
 </ul>
-<pre><code>GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1
+<pre tabindex="0"><code>GET /rest/handle/10568/NaN?expand=parentCommunityList,metadata HTTP/1.1
 </code></pre><ul>
 <li>For now I&rsquo;ll block just the Ethiopian IP</li>
 <li>The owner of that application has said that the <code>NaN</code> (not a number) is an error in his code and he&rsquo;ll fix it</li>
@@ -152,7 +152,7 @@ There are 3,000 IPs accessing the REST API in a 24-hour period!
 <li>I will re-generate the Discovery indexes after re-deploying</li>
 <li>Testing <code>renew-letsencrypt.sh</code> script for nginx</li>
 </ul>
-<pre><code>#!/usr/bin/env bash
+<pre tabindex="0"><code>#!/usr/bin/env bash
 
 readonly SERVICE_BIN=/usr/sbin/service
 readonly LETSENCRYPT_BIN=/opt/letsencrypt/letsencrypt-auto
@@ -214,7 +214,7 @@ fi
 <p>After completing the rebase I tried to build with the module versions Atmire had indicated as being 5.5 ready but I got this error:</p>
 </li>
 </ul>
-<pre><code>[ERROR] Failed to execute goal on project additions: Could not resolve dependencies for project org.dspace.modules:additions:jar:5.5: Could not find artifact com.atmire:atmire-metadata-quality-api:jar:5.5-2.10.1-0 in sonatype-releases (https://oss.sonatype.org/content/repositories/releases/) -&gt; [Help 1]
+<pre tabindex="0"><code>[ERROR] Failed to execute goal on project additions: Could not resolve dependencies for project org.dspace.modules:additions:jar:5.5: Could not find artifact com.atmire:atmire-metadata-quality-api:jar:5.5-2.10.1-0 in sonatype-releases (https://oss.sonatype.org/content/repositories/releases/) -&gt; [Help 1]
 </code></pre><ul>
 <li>I&rsquo;ve sent them a question about it</li>
 <li>A user mentioned having problems with uploading a 33 MB PDF</li>
@@ -240,7 +240,7 @@ fi
 </li>
 <li>Found ~200 messed up CIAT values in <code>dc.publisher</code>:</li>
 </ul>
-<pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=39 and text_value similar to &quot;%  %&quot;;
+<pre tabindex="0"><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=39 and text_value similar to &quot;%  %&quot;;
 </code></pre><h2 id="2016-05-13">2016-05-13</h2>
 <ul>
 <li>More theorizing about CGcore</li>
@@ -259,7 +259,7 @@ fi
 <li>They have thumbnails on Flickr and elsewhere</li>
 <li>In OpenRefine I created a new <code>filename</code> column based on the <code>thumbnail</code> column with the following GREL:</li>
 </ul>
-<pre><code>if(cells['thumbnails'].value.contains('hqdefault'), cells['thumbnails'].value.split('/')[-2] + '.jpg', cells['thumbnails'].value.split('/')[-1])
+<pre tabindex="0"><code>if(cells['thumbnails'].value.contains('hqdefault'), cells['thumbnails'].value.split('/')[-2] + '.jpg', cells['thumbnails'].value.split('/')[-1])
 </code></pre><ul>
 <li>Because ~400 records had the same filename on Flickr (hqdefault.jpg) but different UUIDs in the URL</li>
 <li>So for the <code>hqdefault.jpg</code> ones I just take the UUID (-2) and use it as the filename</li>
@@ -269,7 +269,7 @@ fi
 <ul>
 <li>More quality control on <code>filename</code> field of CCAFS records to make processing in shell and SAFBuilder more reliable:</li>
 </ul>
-<pre><code>value.replace('_','').replace('-','')
+<pre tabindex="0"><code>value.replace('_','').replace('-','')
 </code></pre><ul>
 <li>We need to hold off on moving <code>dc.Species</code> to <code>cg.species</code> because it is only used for plants, and might be better to move it to something like <code>cg.species.plant</code></li>
 <li>And <code>dc.identifier.fund</code> is MOSTLY used for CPWF project identifier but has some other sponsorship things
@@ -281,17 +281,17 @@ fi
 </ul>
 </li>
 </ul>
-<pre><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA');
+<pre tabindex="0"><code># select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA');
 </code></pre><h2 id="2016-05-20">2016-05-20</h2>
 <ul>
 <li>More work on CCAFS Video and Images records</li>
 <li>For SAFBuilder we need to modify filename column to have the thumbnail bundle:</li>
 </ul>
-<pre><code>value + &quot;__bundle:THUMBNAIL&quot;
+<pre tabindex="0"><code>value + &quot;__bundle:THUMBNAIL&quot;
 </code></pre><ul>
 <li>Also, I fixed some weird characters using OpenRefine&rsquo;s transform with the following GREL:</li>
 </ul>
-<pre><code>value.replace(/\u0081/,'')
+<pre tabindex="0"><code>value.replace(/\u0081/,'')
 </code></pre><ul>
 <li>Write shell script to resize thumbnails with height larger than 400: <a href="https://gist.github.com/alanorth/131401dcd39d00e0ce12e1be3ed13256">https://gist.github.com/alanorth/131401dcd39d00e0ce12e1be3ed13256</a></li>
 <li>Upload 707 CCAFS records to DSpace Test</li>
@@ -309,12 +309,12 @@ fi
 <ul>
 <li>Export CCAFS video and image records from DSpace Test using the migrate option (<code>-m</code>):</li>
 </ul>
-<pre><code>$ mkdir ~/ccafs-images
+<pre tabindex="0"><code>$ mkdir ~/ccafs-images
 $ /home/dspacetest.cgiar.org/bin/dspace export -t COLLECTION -i 10568/79355 -d ~/ccafs-images -n 0 -m
 </code></pre><ul>
 <li>And then import to CGSpace:</li>
 </ul>
-<pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/70974 --source /tmp/ccafs-images --mapfile=/tmp/ccafs-images-may30.map &amp;&gt; /tmp/ccafs-images-may30.log
+<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/70974 --source /tmp/ccafs-images --mapfile=/tmp/ccafs-images-may30.map &amp;&gt; /tmp/ccafs-images-may30.log
 </code></pre><ul>
 <li>But now we have double authors for &ldquo;CGIAR Research Program on Climate Change, Agriculture and Food Security&rdquo; in the authority</li>
 <li>I&rsquo;m trying to do a Discovery index before messing with the authority index</li>
@@ -322,19 +322,19 @@ $ /home/dspacetest.cgiar.org/bin/dspace export -t COLLECTION -i 10568/79355 -d ~
 <li>Run system updates on DSpace Test, re-deploy code, and reboot the server</li>
 <li>Clean up and import ~200 CTA records to CGSpace via CSV like:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot;
 $ /home/cgspace.cgiar.org/bin/dspace metadata-import -e aorth@mjanja.ch -f ~/CTA-May30/CTA-42229.csv &amp;&gt; ~/CTA-May30/CTA-42229.log
 </code></pre><ul>
 <li>Discovery indexing took a few hours for some reason, and after that I started the <code>index-authority</code> script</li>
 </ul>
-<pre><code>$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace index-authority
+<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace index-authority
 </code></pre><h2 id="2016-05-31">2016-05-31</h2>
 <ul>
 <li>The <code>index-authority</code> script ran over night and was finished in the morning</li>
 <li>Hopefully this was because we haven&rsquo;t been running it regularly and it will speed up next time</li>
 <li>I am running it again with a timer to see:</li>
 </ul>
-<pre><code>$ time /home/cgspace.cgiar.org/bin/dspace index-authority
+<pre tabindex="0"><code>$ time /home/cgspace.cgiar.org/bin/dspace index-authority
 Retrieving all data
 Initialize org.dspace.authority.indexer.DSpaceAuthorityIndexer
 Cleaning the old index

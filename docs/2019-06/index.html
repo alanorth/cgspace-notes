@@ -34,7 +34,7 @@ Run system updates on CGSpace (linode18) and reboot it
 
 Skype with Marie-Angélique and Abenet about CG Core v2
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -169,7 +169,7 @@ Skype with Marie-Angélique and Abenet about CG Core v2
 <ul>
 <li>Thierry noticed that the CUA statistics were missing previous years again, and I see that the Solr admin UI has the following message:</li>
 </ul>
-<pre><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
+<pre tabindex="0"><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
 </code></pre><ul>
 <li>I had to restart Tomcat a few times for all the stats cores to get loaded with no issue</li>
 </ul>
@@ -197,13 +197,13 @@ Skype with Marie-Angélique and Abenet about CG Core v2
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 228 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC) to /tmp/countries.csv WITH CSV HEADER
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE metadata_field_id = 228 AND resource_type_id = 2 GROUP BY text_value ORDER BY count DESC) to /tmp/countries.csv WITH CSV HEADER
 COPY 192
 $ csvcut -l -c 0 /tmp/countries.csv &gt; 2019-06-10-countries.csv
 </code></pre><ul>
 <li>Get a list of all the unique AGROVOC subject terms in IITA&rsquo;s data and export it to a text file so I can validate them with my <code>agrovoc-lookup.py</code> script:</li>
 </ul>
-<pre><code>$ csvcut -c dc.subject ~/Downloads/2019-06-10-IITA-20194th-Round-2.csv| sed 's/||/\n/g' | grep -v dc.subject | sort -u &gt; iita-agrovoc.txt
+<pre tabindex="0"><code>$ csvcut -c dc.subject ~/Downloads/2019-06-10-IITA-20194th-Round-2.csv| sed 's/||/\n/g' | grep -v dc.subject | sort -u &gt; iita-agrovoc.txt
 $ ./agrovoc-lookup.py -i iita-agrovoc.txt -om iita-agrovoc-matches.txt -or iita-agrovoc-rejects.txt
 $ wc -l iita-agrovoc*
   402 iita-agrovoc-matches.txt
@@ -212,11 +212,11 @@ $ wc -l iita-agrovoc*
 </code></pre><ul>
 <li>Combine these IITA matches with the subjects I matched a few months ago:</li>
 </ul>
-<pre><code>$ csvcut -c name 2019-03-18-subjects-matched.csv | grep -v name | cat - iita-agrovoc-matches.txt | sort -u &gt; 2019-06-10-subjects-matched.txt
+<pre tabindex="0"><code>$ csvcut -c name 2019-03-18-subjects-matched.csv | grep -v name | cat - iita-agrovoc-matches.txt | sort -u &gt; 2019-06-10-subjects-matched.txt
 </code></pre><ul>
 <li>Then make a new list to use with reconcile-csv by adding line numbers with csvcut and changing the line number header to <code>id</code>:</li>
 </ul>
-<pre><code>$ csvcut -c name -l 2019-06-10-subjects-matched.txt | sed 's/line_number/id/' &gt; 2019-06-10-subjects-matched.csv
+<pre tabindex="0"><code>$ csvcut -c name -l 2019-06-10-subjects-matched.txt | sed 's/line_number/id/' &gt; 2019-06-10-subjects-matched.csv
 </code></pre><h2 id="2019-06-20">2019-06-20</h2>
 <ul>
 <li>Share some feedback about AReS v2 with the colleagues and encourage them to do the same</li>
@@ -231,14 +231,14 @@ $ wc -l iita-agrovoc*
 </li>
 <li>Update my local PostgreSQL container:</li>
 </ul>
-<pre><code>$ podman pull docker.io/library/postgres:9.6-alpine
+<pre tabindex="0"><code>$ podman pull docker.io/library/postgres:9.6-alpine
 $ podman rm dspacedb
 $ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 </code></pre><h2 id="2019-06-25">2019-06-25</h2>
 <ul>
 <li>Normalize <code>text_lang</code> values for metadata on DSpace Test and CGSpace:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('ethnob', 'en', '*', 'E.', '');
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('ethnob', 'en', '*', 'E.', '');
 UPDATE 1551
 dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IS NULL;
 UPDATE 2070
@@ -291,7 +291,7 @@ UPDATE 2
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace import -a -e me@cgiar.org -m 2019-06-30-AfricaRice-11to73.map -s /tmp/2019-06-30-AfricaRice-11to73
+<pre tabindex="0"><code>$ dspace import -a -e me@cgiar.org -m 2019-06-30-AfricaRice-11to73.map -s /tmp/2019-06-30-AfricaRice-11to73
 </code></pre><ul>
 <li>I sent feedback about a few missing PDFs and one duplicate to Ibnou to check</li>
 <li>Run all system updates on DSpace Test (linode19) and reboot it</li>

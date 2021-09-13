@@ -38,7 +38,7 @@ I noticed we have a very interesting list of countries on CGSpace:
 Not only are there 49,000 countries, we have some blanks (25)&hellip;
 Also, lots of things like &ldquo;COTE D`LVOIRE&rdquo; and &ldquo;COTE D IVOIRE&rdquo;
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -140,20 +140,20 @@ Also, lots of things like &ldquo;COTE D`LVOIRE&rdquo; and &ldquo;COTE D IVOIRE&r
 <li>Found a way to get items with null/empty metadata values from SQL</li>
 <li>First, find the <code>metadata_field_id</code> for the field you want from the <code>metadatafieldregistry</code> table:</li>
 </ul>
-<pre><code>dspacetest=# select * from metadatafieldregistry;
+<pre tabindex="0"><code>dspacetest=# select * from metadatafieldregistry;
 </code></pre><ul>
 <li>In this case our country field is 78</li>
 <li>Now find all resources with type 2 (item) that have null/empty values for that field:</li>
 </ul>
-<pre><code>dspacetest=# select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=78 and (text_value='' OR text_value IS NULL);
+<pre tabindex="0"><code>dspacetest=# select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=78 and (text_value='' OR text_value IS NULL);
 </code></pre><ul>
 <li>Then you can find the handle that owns it from its <code>resource_id</code>:</li>
 </ul>
-<pre><code>dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = '22678';
+<pre tabindex="0"><code>dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = '22678';
 </code></pre><ul>
 <li>It&rsquo;s 25 items so editing in the web UI is annoying, let&rsquo;s try SQL!</li>
 </ul>
-<pre><code>dspacetest=# delete from metadatavalue where metadata_field_id=78 and text_value='';
+<pre tabindex="0"><code>dspacetest=# delete from metadatavalue where metadata_field_id=78 and text_value='';
 DELETE 25
 </code></pre><ul>
 <li>After that perhaps a regular <code>dspace index-discovery</code> (no -b) <em>should</em> suffice&hellip;</li>
@@ -171,7 +171,7 @@ DELETE 25
 <li>I need to start running DSpace in Mac OS X instead of a Linux VM</li>
 <li>Install PostgreSQL from homebrew, then configure and import CGSpace database dump:</li>
 </ul>
-<pre><code>$ postgres -D /opt/brew/var/postgres
+<pre tabindex="0"><code>$ postgres -D /opt/brew/var/postgres
 $ createuser --superuser postgres
 $ createuser --pwprompt dspacetest
 $ createdb -O dspacetest --encoding=UNICODE dspacetest
@@ -187,7 +187,7 @@ $ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sq
 </code></pre><ul>
 <li>After building and running a <code>fresh_install</code> I symlinked the webapps into Tomcat&rsquo;s webapps folder:</li>
 </ul>
-<pre><code>$ mv /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT.orig
+<pre tabindex="0"><code>$ mv /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT.orig
 $ ln -sfv ~/dspace/webapps/xmlui /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/ROOT
 $ ln -sfv ~/dspace/webapps/rest /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/rest
 $ ln -sfv ~/dspace/webapps/jspui /opt/brew/Cellar/tomcat/8.0.30/libexec/webapps/jspui
@@ -198,11 +198,11 @@ $ /opt/brew/Cellar/tomcat/8.0.30/bin/catalina start
 <li>Add CATALINA_OPTS in <code>/opt/brew/Cellar/tomcat/8.0.30/libexec/bin/setenv.sh</code>, as this script is sourced by the <code>catalina</code> startup script</li>
 <li>For example:</li>
 </ul>
-<pre><code>CATALINA_OPTS=&quot;-Djava.awt.headless=true -Xms2048m -Xmx2048m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>CATALINA_OPTS=&quot;-Djava.awt.headless=true -Xms2048m -Xmx2048m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8&quot;
 </code></pre><ul>
 <li>After verifying that the site is working, start a full index:</li>
 </ul>
-<pre><code>$ ~/dspace/bin/dspace index-discovery -b
+<pre tabindex="0"><code>$ ~/dspace/bin/dspace index-discovery -b
 </code></pre><h2 id="2016-02-08">2016-02-08</h2>
 <ul>
 <li>Finish cleaning up and importing ~400 DAGRIS items into CGSpace</li>
@@ -216,7 +216,7 @@ $ /opt/brew/Cellar/tomcat/8.0.30/bin/catalina start
 <li>Help Sisay with OpenRefine</li>
 <li>Enable HTTPS on DSpace Test using Let&rsquo;s Encrypt:</li>
 </ul>
-<pre><code>$ cd ~/src/git
+<pre tabindex="0"><code>$ cd ~/src/git
 $ git clone https://github.com/letsencrypt/letsencrypt
 $ cd letsencrypt
 $ sudo service nginx stop
@@ -231,15 +231,15 @@ $ ansible-playbook dspace.yml -l linode02 -t nginx,firewall -u aorth --ask-becom
 <li>Getting more and more hangs on DSpace Test, seemingly random but also during CSV import</li>
 <li>Logs don&rsquo;t always show anything right when it fails, but eventually one of these appears:</li>
 </ul>
-<pre><code>org.dspace.discovery.SearchServiceException: Error while processing facet fields: java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>org.dspace.discovery.SearchServiceException: Error while processing facet fields: java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>or</li>
 </ul>
-<pre><code>Caused by: java.util.NoSuchElementException: Timeout waiting for idle object
+<pre tabindex="0"><code>Caused by: java.util.NoSuchElementException: Timeout waiting for idle object
 </code></pre><ul>
 <li>Right now DSpace Test&rsquo;s Tomcat heap is set to 1536m and we have quite a bit of free RAM:</li>
 </ul>
-<pre><code># free -m
+<pre tabindex="0"><code># free -m
              total       used       free     shared    buffers     cached
 Mem:          3950       3902         48          9         37       1311
 -/+ buffers/cache:       2552       1397
@@ -253,11 +253,11 @@ Swap:          255         57        198
 <li>There are 1200 records that have PDFs, and will need to be imported into CGSpace</li>
 <li>I created a <code>filename</code> column based on the <code>dc.identifier.url</code> column using the following transform:</li>
 </ul>
-<pre><code>value.split('/')[-1]
+<pre tabindex="0"><code>value.split('/')[-1]
 </code></pre><ul>
 <li>Then I wrote a tool called <a href="https://gist.github.com/alanorth/2206f24483fe5f0454fc"><code>generate-thumbnails.py</code></a> to download the PDFs and generate thumbnails for them, for example:</li>
 </ul>
-<pre><code>$ ./generate-thumbnails.py ciat-reports.csv
+<pre tabindex="0"><code>$ ./generate-thumbnails.py ciat-reports.csv
 Processing 64661.pdf
 &gt; Downloading 64661.pdf
 &gt; Creating thumbnail for 64661.pdf
@@ -278,13 +278,13 @@ Processing 64195.pdf
 <li>Looking at CIAT&rsquo;s records again, there are some files linking to PDFs on Slide Share, Embrapa, UEA UK, and Condesan, so I&rsquo;m not sure if we can use those</li>
 <li>265 items have dirty, URL-encoded filenames:</li>
 </ul>
-<pre><code>$ ls | grep -c -E &quot;%&quot;
+<pre tabindex="0"><code>$ ls | grep -c -E &quot;%&quot;
 265
 </code></pre><ul>
 <li>I suggest that we import ~850 or so of the clean ones first, then do the rest after I can find a clean/reliable way to decode the filenames</li>
 <li>This python2 snippet seems to work in the CLI, but not so well in OpenRefine:</li>
 </ul>
-<pre><code>$ python -c &quot;import urllib, sys; print urllib.unquote(sys.argv[1])&quot; CIAT_COLOMBIA_000169_T%C3%A9cnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_yuca.pdf
+<pre tabindex="0"><code>$ python -c &quot;import urllib, sys; print urllib.unquote(sys.argv[1])&quot; CIAT_COLOMBIA_000169_T%C3%A9cnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_yuca.pdf
 CIAT_COLOMBIA_000169_Técnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_yuca.pdf
 </code></pre><ul>
 <li>Merge pull requests for submission form theming (<a href="https://github.com/ilri/DSpace/pull/178">#178</a>) and missing center subjects in XMLUI item views (<a href="https://github.com/ilri/DSpace/pull/176">#176</a>)</li>
@@ -294,7 +294,7 @@ CIAT_COLOMBIA_000169_Técnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_
 <ul>
 <li>Turns out OpenRefine has an unescape function!</li>
 </ul>
-<pre><code>value.unescape(&quot;url&quot;)
+<pre tabindex="0"><code>value.unescape(&quot;url&quot;)
 </code></pre><ul>
 <li>This turns the URLs into human-readable versions that we can use as proper filenames</li>
 <li>Run web server and system updates on DSpace Test and reboot</li>
@@ -316,7 +316,7 @@ CIAT_COLOMBIA_000169_Técnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_
 <li>Turns out the &ldquo;bug&rdquo; in SAFBuilder isn&rsquo;t a bug, it&rsquo;s a feature that allows you to encode extra information like the destintion bundle in the filename</li>
 <li>Also, it seems DSpace&rsquo;s SAF import tool doesn&rsquo;t like importing filenames that have accents in them:</li>
 </ul>
-<pre><code>java.io.FileNotFoundException: /usr/share/tomcat7/SimpleArchiveFormat/item_1021/CIAT_COLOMBIA_000075_Medición_de_palatabilidad_en_forrajes.pdf (No such file or directory)
+<pre tabindex="0"><code>java.io.FileNotFoundException: /usr/share/tomcat7/SimpleArchiveFormat/item_1021/CIAT_COLOMBIA_000075_Medición_de_palatabilidad_en_forrajes.pdf (No such file or directory)
 </code></pre><ul>
 <li>Need to rename files to have no accents or umlauts, etc&hellip;</li>
 <li>Useful custom text facet for URLs ending with &ldquo;.pdf&rdquo;: <code>value.endsWith(&quot;.pdf&quot;)</code></li>
@@ -325,12 +325,12 @@ CIAT_COLOMBIA_000169_Técnicas_para_el_aislamiento_y_cultivo_de_protoplastos_de_
 <ul>
 <li>To change Spanish accents to ASCII in OpenRefine:</li>
 </ul>
-<pre><code>value.replace('ó','o').replace('í','i').replace('á','a').replace('é','e').replace('ñ','n')
+<pre tabindex="0"><code>value.replace('ó','o').replace('í','i').replace('á','a').replace('é','e').replace('ñ','n')
 </code></pre><ul>
 <li>But actually, the accents might not be an issue, as I can successfully import files containing Spanish accents on my Mac</li>
 <li>On closer inspection, I can import files with the following names on Linux (DSpace Test):</li>
 </ul>
-<pre><code>Bitstream: tést.pdf
+<pre tabindex="0"><code>Bitstream: tést.pdf
 Bitstream: tést señora.pdf
 Bitstream: tést señora alimentación.pdf
 </code></pre><ul>
@@ -353,7 +353,7 @@ Bitstream: tést señora alimentación.pdf
 <li>Looking at the filenames for the CIAT Reports, some have some really ugly characters, like: <code>'</code> or <code>,</code> or <code>=</code> or <code>[</code> or <code>]</code> or <code>(</code> or <code>)</code> or <code>_.pdf</code> or <code>._</code> etc</li>
 <li>It&rsquo;s tricky to parse those things in some programming languages so I&rsquo;d rather just get rid of the weird stuff now in OpenRefine:</li>
 </ul>
-<pre><code>value.replace(&quot;'&quot;,'').replace('_=_','_').replace(',','').replace('[','').replace(']','').replace('(','').replace(')','').replace('_.pdf','.pdf').replace('._','_')
+<pre tabindex="0"><code>value.replace(&quot;'&quot;,'').replace('_=_','_').replace(',','').replace('[','').replace(']','').replace('(','').replace(')','').replace('_.pdf','.pdf').replace('._','_')
 </code></pre><ul>
 <li>Finally import the 1127 CIAT items into CGSpace: <a href="https://cgspace.cgiar.org/handle/10568/35710">https://cgspace.cgiar.org/handle/10568/35710</a></li>
 <li>Re-deploy CGSpace with the Google Scholar fix, but I&rsquo;m waiting on the Atmire fixes for now, as the branch history is ugly</li>

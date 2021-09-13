@@ -30,7 +30,7 @@ The logs say &ldquo;Timeout waiting for idle object&rdquo;
 PostgreSQL activity says there are 115 connections currently
 The list of connections to XMLUI and REST API for today:
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -123,7 +123,7 @@ The list of connections to XMLUI and REST API for today:
 <li>PostgreSQL activity says there are 115 connections currently</li>
 <li>The list of connections to XMLUI and REST API for today:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;1/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;1/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     763 2.86.122.76
     907 207.46.13.94
    1018 157.55.39.206
@@ -137,12 +137,12 @@ The list of connections to XMLUI and REST API for today:
 </code></pre><ul>
 <li>The number of DSpace sessions isn&rsquo;t even that high:</li>
 </ul>
-<pre><code>$ cat /home/cgspace.cgiar.org/log/dspace.log.2017-12-01 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ cat /home/cgspace.cgiar.org/log/dspace.log.2017-12-01 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 5815
 </code></pre><ul>
 <li>Connections in the last two hours:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;1/Dec/2017:(09|10)&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail                                                      
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;1/Dec/2017:(09|10)&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail                                                      
      78 93.160.60.22
     101 40.77.167.122
     113 66.249.66.70
@@ -157,18 +157,18 @@ The list of connections to XMLUI and REST API for today:
 <li>What the fuck is going on?</li>
 <li>I&rsquo;ve never seen this 2.86.122.76 before, it has made quite a few unique Tomcat sessions today:</li>
 </ul>
-<pre><code>$ grep 2.86.122.76 /home/cgspace.cgiar.org/log/dspace.log.2017-12-01 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ grep 2.86.122.76 /home/cgspace.cgiar.org/log/dspace.log.2017-12-01 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 822
 </code></pre><ul>
 <li>Appears to be some new bot:</li>
 </ul>
-<pre><code>2.86.122.76 - - [01/Dec/2017:09:02:53 +0000] &quot;GET /handle/10568/78444?show=full HTTP/1.1&quot; 200 29307 &quot;-&quot; &quot;Mozilla/3.0 (compatible; Indy Library)&quot;
+<pre tabindex="0"><code>2.86.122.76 - - [01/Dec/2017:09:02:53 +0000] &quot;GET /handle/10568/78444?show=full HTTP/1.1&quot; 200 29307 &quot;-&quot; &quot;Mozilla/3.0 (compatible; Indy Library)&quot;
 </code></pre><ul>
 <li>I restarted Tomcat and everything came back up</li>
 <li>I can add Indy Library to the Tomcat crawler session manager valve but it would be nice if I could simply remap the useragent in nginx</li>
 <li>I will also add &lsquo;Drupal&rsquo; to the Tomcat crawler session manager valve because there are Drupals out there harvesting and they should be considered as bots</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;1/Dec/2017&quot; | grep Drupal | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;1/Dec/2017&quot; | grep Drupal | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
       3 54.75.205.145
       6 70.32.83.92
      14 2a01:7e00::f03c:91ff:fe18:7396
@@ -206,7 +206,7 @@ The list of connections to XMLUI and REST API for today:
 <li>I don&rsquo;t see any errors in the DSpace logs but I see in nginx&rsquo;s access.log that UptimeRobot was returned with HTTP 499 status (Client Closed Request)</li>
 <li>Looking at the REST API logs I see some new client IP I haven&rsquo;t noticed before:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;6/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;6/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
      18 95.108.181.88
      19 68.180.229.254
      30 207.46.13.151
@@ -228,7 +228,7 @@ The list of connections to XMLUI and REST API for today:
 <li>I looked just now and see that there are 121 PostgreSQL connections!</li>
 <li>The top users right now are:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;7/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail 
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;7/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail 
     838 40.77.167.11
     939 66.249.66.223
    1149 66.249.66.206
@@ -243,24 +243,24 @@ The list of connections to XMLUI and REST API for today:
 <li>We&rsquo;ve never seen 124.17.34.60 yet, but it&rsquo;s really hammering us!</li>
 <li>Apparently it is from China, and here is one of its user agents:</li>
 </ul>
-<pre><code>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/7.0; LCTE)
+<pre tabindex="0"><code>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/7.0; LCTE)
 </code></pre><ul>
 <li>It is responsible for 4,500 Tomcat sessions today alone:</li>
 </ul>
-<pre><code>$ grep 124.17.34.60 /home/cgspace.cgiar.org/log/dspace.log.2017-12-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ grep 124.17.34.60 /home/cgspace.cgiar.org/log/dspace.log.2017-12-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 4574
 </code></pre><ul>
 <li>I&rsquo;ve adjusted the nginx IP mapping that I set up last month to account for 124.17.34.60 and 124.17.34.59 using a regex, as it&rsquo;s the same bot on the same subnet</li>
 <li>I was running the DSpace cleanup task manually and it hit an error:</li>
 </ul>
-<pre><code>$ /home/cgspace.cgiar.org/bin/dspace cleanup -v
+<pre tabindex="0"><code>$ /home/cgspace.cgiar.org/bin/dspace cleanup -v
 ...
 Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(144666) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>The solution is like I discovered in <a href="/cgspace-notes/2017-04">2017-04</a>, to set the <code>primary_bitstream_id</code> to null:</li>
 </ul>
-<pre><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (144666);
+<pre tabindex="0"><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (144666);
 UPDATE 1
 </code></pre><h2 id="2017-12-13">2017-12-13</h2>
 <ul>
@@ -294,11 +294,11 @@ UPDATE 1
 </li>
 <li>I did a test import of the data locally after building with SAFBuilder but for some reason I had to specify the collection (even though the collections were specified in the <code>collection</code> field)</li>
 </ul>
-<pre><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/89338 --source /Users/aorth/Downloads/2016\ bulk\ upload\ thumbnails/SimpleArchiveFormat --mapfile=/tmp/ccafs.map &amp;&gt; /tmp/ccafs.log
+<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/89338 --source /Users/aorth/Downloads/2016\ bulk\ upload\ thumbnails/SimpleArchiveFormat --mapfile=/tmp/ccafs.map &amp;&gt; /tmp/ccafs.log
 </code></pre><ul>
 <li>It&rsquo;s the same on DSpace Test, I can&rsquo;t import the SAF bundle without specifying the collection:</li>
 </ul>
-<pre><code>$ dspace import --add --eperson=aorth@mjanja.ch --mapfile=/tmp/ccafs.map --source=/tmp/ccafs-2016/SimpleArchiveFormat
+<pre tabindex="0"><code>$ dspace import --add --eperson=aorth@mjanja.ch --mapfile=/tmp/ccafs.map --source=/tmp/ccafs-2016/SimpleArchiveFormat
 No collections given. Assuming 'collections' file inside item directory
 Adding items from directory: /tmp/ccafs-2016/SimpleArchiveFormat
 Generating mapfile: /tmp/ccafs.map
@@ -321,14 +321,14 @@ Elapsed time: 2 secs (2559 msecs)
 </code></pre><ul>
 <li>I even tried to debug it by adding verbose logging to the <code>JAVA_OPTS</code>:</li>
 </ul>
-<pre><code>-Dlog4j.configuration=file:/Users/aorth/dspace/config/log4j-console.properties -Ddspace.log.init.disable=true
+<pre tabindex="0"><code>-Dlog4j.configuration=file:/Users/aorth/dspace/config/log4j-console.properties -Ddspace.log.init.disable=true
 </code></pre><ul>
 <li>&hellip; but the error message was the same, just with more INFO noise around it</li>
 <li>For now I&rsquo;ll import into a collection in DSpace Test but I&rsquo;m really not sure what&rsquo;s up with this!</li>
 <li>Linode alerted that CGSpace was using high CPU from 4 to 6 PM</li>
 <li>The logs for today show the CORE bot (137.108.70.7) being active in XMLUI:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;17/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;17/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     671 66.249.66.70
     885 95.108.181.88
     904 157.55.39.96
@@ -342,7 +342,7 @@ Elapsed time: 2 secs (2559 msecs)
 </code></pre><ul>
 <li>And then some CIAT bot (45.5.184.196) is actively hitting API endpoints:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;17/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;17/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
      33 68.180.229.254
      48 157.55.39.96
      51 157.55.39.179
@@ -371,7 +371,7 @@ Elapsed time: 2 secs (2559 msecs)
 <li>Linode alerted this morning that there was high outbound traffic from 6 to 8 AM</li>
 <li>The XMLUI logs show that the CORE bot from last night (137.108.70.7) is very active still:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     190 207.46.13.146
     191 197.210.168.174
     202 86.101.203.216
@@ -385,7 +385,7 @@ Elapsed time: 2 secs (2559 msecs)
 </code></pre><ul>
 <li>On the API side (REST and OAI) there is still the same CIAT bot (45.5.184.196) from last night making quite a number of requests this morning:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
       7 104.198.9.108
       8 185.29.8.111
       8 40.77.167.176
@@ -402,7 +402,7 @@ Elapsed time: 2 secs (2559 msecs)
 <li>Linode alerted that CGSpace was using 396.3% CPU from 12 to 2 PM</li>
 <li>The REST and OAI API logs look pretty much the same as earlier this morning, but there&rsquo;s a new IP harvesting XMLUI:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail            
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;18/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail            
     360 95.108.181.88
     477 66.249.66.90
     526 86.101.203.216
@@ -416,17 +416,17 @@ Elapsed time: 2 secs (2559 msecs)
 </code></pre><ul>
 <li>2.86.72.181 appears to be from Greece, and has the following user agent:</li>
 </ul>
-<pre><code>Mozilla/3.0 (compatible; Indy Library)
+<pre tabindex="0"><code>Mozilla/3.0 (compatible; Indy Library)
 </code></pre><ul>
 <li>Surprisingly it seems they are re-using their Tomcat session for all those 17,000 requests:</li>
 </ul>
-<pre><code>$ grep 2.86.72.181 dspace.log.2017-12-18 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l                                                                                          
+<pre tabindex="0"><code>$ grep 2.86.72.181 dspace.log.2017-12-18 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l                                                                                          
 1
 </code></pre><ul>
 <li>I guess there&rsquo;s nothing I can do to them for now</li>
 <li>In other news, I am curious how many PostgreSQL connection pool errors we&rsquo;ve had in the last month:</li>
 </ul>
-<pre><code>$ grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-1* | grep -v :0
+<pre tabindex="0"><code>$ grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-1* | grep -v :0
 dspace.log.2017-11-07:15695
 dspace.log.2017-11-08:135
 dspace.log.2017-11-17:1298
@@ -456,7 +456,7 @@ dspace.log.2017-12-07:2769
 <li>So I restarted Tomcat 7 and restarted the imports</li>
 <li>I assume the PostgreSQL transactions were fine but I will remove the Discovery index for their community and re-run the light-weight indexing to hopefully re-construct everything:</li>
 </ul>
-<pre><code>$ dspace index-discovery -r 10568/42211
+<pre tabindex="0"><code>$ dspace index-discovery -r 10568/42211
 $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 </code></pre><ul>
 <li>The PostgreSQL issues are getting out of control, I need to figure out how to enable connection pools in Tomcat!</li>
@@ -476,7 +476,7 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 <li>I re-deployed the <code>5_x-prod</code> branch on CGSpace, applied all system updates, and restarted the server</li>
 <li>Looking through the dspace.log I see this error:</li>
 </ul>
-<pre><code>2017-12-19 08:17:15,740 ERROR org.dspace.statistics.SolrLogger @ Error CREATEing SolrCore 'statistics-2010': Unable to create core [statistics-2010] Caused by: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2010/data/index/write.lock
+<pre tabindex="0"><code>2017-12-19 08:17:15,740 ERROR org.dspace.statistics.SolrLogger @ Error CREATEing SolrCore 'statistics-2010': Unable to create core [statistics-2010] Caused by: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2010/data/index/write.lock
 </code></pre><ul>
 <li>I don&rsquo;t have time now to look into this but the Solr sharding has long been an issue!</li>
 <li>Looking into using JDBC / JNDI to provide a database pool to DSpace</li>
@@ -484,7 +484,7 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 <li>First, I uncomment <code>db.jndi</code> in <em>dspace/config/dspace.cfg</em></li>
 <li>Then I create a global <code>Resource</code> in the main Tomcat <em>server.xml</em> (inside <code>GlobalNamingResources</code>):</li>
 </ul>
-<pre><code>&lt;Resource name=&quot;jdbc/dspace&quot; auth=&quot;Container&quot; type=&quot;javax.sql.DataSource&quot;
+<pre tabindex="0"><code>&lt;Resource name=&quot;jdbc/dspace&quot; auth=&quot;Container&quot; type=&quot;javax.sql.DataSource&quot;
 	  driverClassName=&quot;org.postgresql.Driver&quot;
 	  url=&quot;jdbc:postgresql://localhost:5432/dspace&quot;
 	  username=&quot;dspace&quot;
@@ -500,12 +500,12 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery
 <li>Most of the parameters are from comments by Mark Wood about his JNDI setup: <a href="https://jira.duraspace.org/browse/DS-3564">https://jira.duraspace.org/browse/DS-3564</a></li>
 <li>Then I add a <code>ResourceLink</code> to each web application context:</li>
 </ul>
-<pre><code>&lt;ResourceLink global=&quot;jdbc/dspace&quot; name=&quot;jdbc/dspace&quot; type=&quot;javax.sql.DataSource&quot;/&gt;
+<pre tabindex="0"><code>&lt;ResourceLink global=&quot;jdbc/dspace&quot; name=&quot;jdbc/dspace&quot; type=&quot;javax.sql.DataSource&quot;/&gt;
 </code></pre><ul>
 <li>I am not sure why several guides show configuration snippets for <em>server.xml</em> and web application contexts that use a Local and Global jdbc&hellip;</li>
 <li>When DSpace can&rsquo;t find the JNDI context (for whatever reason) you will see this in the dspace logs:</li>
 </ul>
-<pre><code>2017-12-19 13:12:08,796 ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspace
+<pre tabindex="0"><code>2017-12-19 13:12:08,796 ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspace
 javax.naming.NameNotFoundException: Name [jdbc/dspace] is not bound in this Context. Unable to find [jdbc].
         at org.apache.naming.NamingContext.lookup(NamingContext.java:825)
         at org.apache.naming.NamingContext.lookup(NamingContext.java:173)
@@ -535,11 +535,11 @@ javax.naming.NameNotFoundException: Name [jdbc/dspace] is not bound in this Cont
 </code></pre><ul>
 <li>And indeed the Catalina logs show that it failed to set up the JDBC driver:</li>
 </ul>
-<pre><code>org.apache.tomcat.dbcp.dbcp.SQLNestedException: Cannot load JDBC driver class 'org.postgresql.Driver'
+<pre tabindex="0"><code>org.apache.tomcat.dbcp.dbcp.SQLNestedException: Cannot load JDBC driver class 'org.postgresql.Driver'
 </code></pre><ul>
 <li>There are several copies of the PostgreSQL driver installed by DSpace:</li>
 </ul>
-<pre><code>$ find ~/dspace/ -iname &quot;postgresql*jdbc*.jar&quot;
+<pre tabindex="0"><code>$ find ~/dspace/ -iname &quot;postgresql*jdbc*.jar&quot;
 /Users/aorth/dspace/webapps/jspui/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
 /Users/aorth/dspace/webapps/oai/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
 /Users/aorth/dspace/webapps/xmlui/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar
@@ -548,7 +548,7 @@ javax.naming.NameNotFoundException: Name [jdbc/dspace] is not bound in this Cont
 </code></pre><ul>
 <li>These apparently come from the main DSpace <code>pom.xml</code>:</li>
 </ul>
-<pre><code>&lt;dependency&gt;
+<pre tabindex="0"><code>&lt;dependency&gt;
    &lt;groupId&gt;postgresql&lt;/groupId&gt;
    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
    &lt;version&gt;9.1-901-1.jdbc4&lt;/version&gt;
@@ -556,12 +556,12 @@ javax.naming.NameNotFoundException: Name [jdbc/dspace] is not bound in this Cont
 </code></pre><ul>
 <li>So WTF? Let&rsquo;s try copying one to Tomcat&rsquo;s lib folder and restarting Tomcat:</li>
 </ul>
-<pre><code>$ cp ~/dspace/lib/postgresql-9.1-901-1.jdbc4.jar /usr/local/opt/tomcat@7/libexec/lib
+<pre tabindex="0"><code>$ cp ~/dspace/lib/postgresql-9.1-901-1.jdbc4.jar /usr/local/opt/tomcat@7/libexec/lib
 </code></pre><ul>
 <li>Oh that&rsquo;s fantastic, now at least Tomcat doesn&rsquo;t print an error during startup so I guess it succeeds to create the JNDI pool</li>
 <li>DSpace starts up but I have no idea if it&rsquo;s using the JNDI configuration because I see this in the logs:</li>
 </ul>
-<pre><code>2017-12-19 13:26:54,271 INFO  org.dspace.storage.rdbms.DatabaseManager @ DBMS is '{}'PostgreSQL
+<pre tabindex="0"><code>2017-12-19 13:26:54,271 INFO  org.dspace.storage.rdbms.DatabaseManager @ DBMS is '{}'PostgreSQL
 2017-12-19 13:26:54,277 INFO  org.dspace.storage.rdbms.DatabaseManager @ DBMS driver version is '{}'9.5.10
 2017-12-19 13:26:54,293 INFO  org.dspace.storage.rdbms.DatabaseUtils @ Loading Flyway DB migrations from: filesystem:/Users/aorth/dspace/etc/postgres, classpath:org.dspace.storage.rdbms.sqlmigration.postgres, classpath:org.dspace.storage.rdbms.migration
 2017-12-19 13:26:54,306 INFO  org.flywaydb.core.internal.dbsupport.DbSupportFactory @ Database: jdbc:postgresql://localhost:5432/dspacetest (PostgreSQL 9.5)
@@ -580,7 +580,7 @@ javax.naming.NameNotFoundException: Name [jdbc/dspace] is not bound in this Cont
 </li>
 <li>After adding the <code>Resource</code> to <em>server.xml</em> on Ubuntu I get this in Catalina&rsquo;s logs:</li>
 </ul>
-<pre><code>SEVERE: Unable to create initial connections of pool.
+<pre tabindex="0"><code>SEVERE: Unable to create initial connections of pool.
 java.sql.SQLException: org.postgresql.Driver
 ...
 Caused by: java.lang.ClassNotFoundException: org.postgresql.Driver
@@ -589,17 +589,17 @@ Caused by: java.lang.ClassNotFoundException: org.postgresql.Driver
 <li>I tried installing Ubuntu&rsquo;s <code>libpostgresql-jdbc-java</code> package but Tomcat still can&rsquo;t find the class</li>
 <li>Let me try to symlink the lib into Tomcat&rsquo;s libs:</li>
 </ul>
-<pre><code># ln -sv /usr/share/java/postgresql.jar /usr/share/tomcat7/lib
+<pre tabindex="0"><code># ln -sv /usr/share/java/postgresql.jar /usr/share/tomcat7/lib
 </code></pre><ul>
 <li>Now Tomcat starts but the localhost container has errors:</li>
 </ul>
-<pre><code>SEVERE: Exception sending context initialized event to listener instance of class org.dspace.app.util.DSpaceContextListener
+<pre tabindex="0"><code>SEVERE: Exception sending context initialized event to listener instance of class org.dspace.app.util.DSpaceContextListener
 java.lang.AbstractMethodError: Method org/postgresql/jdbc3/Jdbc3ResultSet.isClosed()Z is abstract
 </code></pre><ul>
 <li>Could be a version issue or something since the Ubuntu package provides 9.2 and DSpace&rsquo;s are 9.1&hellip;</li>
 <li>Let me try to remove it and copy in DSpace&rsquo;s:</li>
 </ul>
-<pre><code># rm /usr/share/tomcat7/lib/postgresql.jar
+<pre tabindex="0"><code># rm /usr/share/tomcat7/lib/postgresql.jar
 # cp [dspace]/webapps/xmlui/WEB-INF/lib/postgresql-9.1-901-1.jdbc4.jar /usr/share/tomcat7/lib/
 </code></pre><ul>
 <li>Wow, I think that actually works&hellip;</li>
@@ -608,12 +608,12 @@ java.lang.AbstractMethodError: Method org/postgresql/jdbc3/Jdbc3ResultSet.isClos
 <li>Also, since I commented out all the db parameters in DSpace.cfg, how does the command line <code>dspace</code> tool work?</li>
 <li>Let&rsquo;s try the upstream JDBC driver first:</li>
 </ul>
-<pre><code># rm /usr/share/tomcat7/lib/postgresql-9.1-901-1.jdbc4.jar
+<pre tabindex="0"><code># rm /usr/share/tomcat7/lib/postgresql-9.1-901-1.jdbc4.jar
 # wget https://jdbc.postgresql.org/download/postgresql-42.1.4.jar -O /usr/share/tomcat7/lib/postgresql-42.1.4.jar
 </code></pre><ul>
 <li>DSpace command line fails unless db settings are present in dspace.cfg:</li>
 </ul>
-<pre><code>$ dspace database info
+<pre tabindex="0"><code>$ dspace database info
 Caught exception:
 java.sql.SQLException: java.lang.ClassNotFoundException: 
         at org.dspace.storage.rdbms.DataSourceInit.getDatasource(DataSourceInit.java:171)
@@ -633,7 +633,7 @@ Caused by: java.lang.ClassNotFoundException:
 </code></pre><ul>
 <li>And in the logs:</li>
 </ul>
-<pre><code>2017-12-19 18:26:56,971 ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspace
+<pre tabindex="0"><code>2017-12-19 18:26:56,971 ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspace
 javax.naming.NoInitialContextException: Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial
         at javax.naming.spi.NamingManager.getInitialContext(NamingManager.java:662)
         at javax.naming.InitialContext.getDefaultInitCtx(InitialContext.java:313)
@@ -669,7 +669,7 @@ javax.naming.NoInitialContextException: Need to specify class name in environmen
 <li>There are short bursts of connections up to 10, but it generally stays around 5</li>
 <li>Test and import 13 records to CGSpace for Abenet:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
 $ dspace import -a -e aorth@mjanja.ch -s /home/aorth/cg_system_20Dec/SimpleArchiveFormat -m systemoffice.map &amp;&gt; systemoffice.log
 </code></pre><ul>
 <li>The fucking database went from 47 to 72 to 121 connections while I was importing so it stalled.</li>
@@ -677,7 +677,7 @@ $ dspace import -a -e aorth@mjanja.ch -s /home/aorth/cg_system_20Dec/SimpleArchi
 <li>There was an initial connection storm of 50 PostgreSQL connections, but then it settled down to 7</li>
 <li>After that CGSpace came up fine and I was able to import the 13 items just fine:</li>
 </ul>
-<pre><code>$ dspace import -a -e aorth@mjanja.ch -s /home/aorth/cg_system_20Dec/SimpleArchiveFormat -m systemoffice.map &amp;&gt; systemoffice.log
+<pre tabindex="0"><code>$ dspace import -a -e aorth@mjanja.ch -s /home/aorth/cg_system_20Dec/SimpleArchiveFormat -m systemoffice.map &amp;&gt; systemoffice.log
 $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace filter-media -i 10568/89287
 </code></pre><ul>
 <li>The final code for the JNDI work in the Ansible infrastructure scripts is here: <a href="https://github.com/ilri/rmg-ansible-public/commit/1959d9cb7a0e7a7318c77f769253e5e029bdfa3b">https://github.com/ilri/rmg-ansible-public/commit/1959d9cb7a0e7a7318c77f769253e5e029bdfa3b</a></li>
@@ -687,7 +687,7 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace filter-media -i 10568/89287
 <li>Linode alerted that CGSpace was using high CPU this morning around 6 AM</li>
 <li>I&rsquo;m playing with reading all of a month&rsquo;s nginx logs into goaccess:</li>
 </ul>
-<pre><code># find /var/log/nginx -type f -newermt &quot;2017-12-01&quot; | xargs zcat --force | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code># find /var/log/nginx -type f -newermt &quot;2017-12-01&quot; | xargs zcat --force | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>I can see interesting things using this approach, for example:
 <ul>
@@ -708,7 +708,7 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 dspace filter-media -i 10568/89287
 <ul>
 <li>Looking at some old notes for metadata to clean up, I found a few hundred corrections in <code>cg.fulltextstatus</code> and <code>dc.language.iso</code>:</li>
 </ul>
-<pre><code># update metadatavalue set text_value='Formally Published' where resource_type_id=2 and metadata_field_id=214 and text_value like 'Formally published';
+<pre tabindex="0"><code># update metadatavalue set text_value='Formally Published' where resource_type_id=2 and metadata_field_id=214 and text_value like 'Formally published';
 UPDATE 5
 # delete from metadatavalue where resource_type_id=2 and metadata_field_id=214 and text_value like 'NO';
 DELETE 17
@@ -735,7 +735,7 @@ DELETE 20
 <li>Uptime Robot noticed that the server went down for 1 minute a few hours later, around 9AM</li>
 <li>Here&rsquo;s the XMLUI logs:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;30/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;30/Dec/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     637 207.46.13.106
     641 157.55.39.186
     715 68.180.229.254
@@ -751,7 +751,7 @@ DELETE 20
 <li>They identify as &ldquo;com.plumanalytics&rdquo;, which Google says is associated with Elsevier</li>
 <li>They only seem to have used one Tomcat session so that&rsquo;s good, I guess I don&rsquo;t need to add them to the Tomcat Crawler Session Manager valve:</li>
 </ul>
-<pre><code>$ grep 54.175.208.220 dspace.log.2017-12-30 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l          
+<pre tabindex="0"><code>$ grep 54.175.208.220 dspace.log.2017-12-30 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l          
 1 
 </code></pre><ul>
 <li>216.244.66.245 seems to be moz.com&rsquo;s DotBot</li>
@@ -761,7 +761,7 @@ DELETE 20
 <li>I finished working on the 42 records for CCAFS after Magdalena sent the remaining corrections</li>
 <li>After that I uploaded them to CGSpace:</li>
 </ul>
-<pre><code>$ dspace import -a -e aorth@mjanja.ch -s /home/aorth/2016\ bulk\ upload\ thumbnails/SimpleArchiveFormat -m ccafs.map &amp;&gt; ccafs.log
+<pre tabindex="0"><code>$ dspace import -a -e aorth@mjanja.ch -s /home/aorth/2016\ bulk\ upload\ thumbnails/SimpleArchiveFormat -m ccafs.map &amp;&gt; ccafs.log
 </code></pre>
 
   

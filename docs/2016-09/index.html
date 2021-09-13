@@ -34,7 +34,7 @@ It looks like we might be able to use OUs now, instead of DCs:
 
 $ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -127,11 +127,11 @@ $ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=or
 <li>We had been using <code>DC=ILRI</code> to determine whether a user was ILRI or not</li>
 <li>It looks like we might be able to use OUs now, instead of DCs:</li>
 </ul>
-<pre><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
+<pre tabindex="0"><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
 </code></pre><ul>
 <li>User who has been migrated to the root vs user still in the hierarchical structure:</li>
 </ul>
-<pre><code>distinguishedName: CN=Last\, First (ILRI),OU=ILRI Kenya Employees,OU=ILRI Kenya,OU=ILRIHUB,DC=CGIARAD,DC=ORG
+<pre tabindex="0"><code>distinguishedName: CN=Last\, First (ILRI),OU=ILRI Kenya Employees,OU=ILRI Kenya,OU=ILRIHUB,DC=CGIARAD,DC=ORG
 distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Ethiopia,DC=ILRI,DC=CGIARAD,DC=ORG
 </code></pre><ul>
 <li>Changing the DSpace LDAP config to use <code>OU=ILRIHUB</code> seems to work:</li>
@@ -140,7 +140,7 @@ distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Eth
 <ul>
 <li>Notes for local PostgreSQL database recreation from production snapshot:</li>
 </ul>
-<pre><code>$ dropdb dspacetest
+<pre tabindex="0"><code>$ dropdb dspacetest
 $ createdb -O dspacetest --encoding=UNICODE dspacetest
 $ psql dspacetest -c 'alter user dspacetest createuser;'
 $ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-09-01.backup
@@ -150,7 +150,7 @@ $ vacuumdb dspacetest
 </code></pre><ul>
 <li>Some names that I thought I fixed in July seem not to be:</li>
 </ul>
-<pre><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %';
       text_value       |              authority               | confidence
 -----------------------+--------------------------------------+------------
  Poole, Elizabeth Jane | b6efa27f-8829-4b92-80fe-bc63e03e3ccb |        600
@@ -163,12 +163,12 @@ $ vacuumdb dspacetest
 </code></pre><ul>
 <li>At least a few of these actually have the correct ORCID, but I will unify the authority to be c3a22456-8d6a-41f9-bba0-de51ef564d45</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set authority='c3a22456-8d6a-41f9-bba0-de51ef564d45', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='c3a22456-8d6a-41f9-bba0-de51ef564d45', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %';
 UPDATE 69
 </code></pre><ul>
 <li>And for Peter Ballantyne:</li>
 </ul>
-<pre><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Ballantyne, %';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Ballantyne, %';
     text_value     |              authority               | confidence
 -------------------+--------------------------------------+------------
  Ballantyne, Peter | 2dcbcc7b-47b0-4fd7-bef9-39d554494081 |        600
@@ -180,12 +180,12 @@ UPDATE 69
 </code></pre><ul>
 <li>Again, a few have the correct ORCID, but there should only be one authority&hellip;</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set authority='4f04ca06-9a76-4206-bd9c-917ca75d278e', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Ballantyne, %';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='4f04ca06-9a76-4206-bd9c-917ca75d278e', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Ballantyne, %';
 UPDATE 58
 </code></pre><ul>
 <li>And for me:</li>
 </ul>
-<pre><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Orth, A%';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Orth, A%';
  text_value |              authority               | confidence
 ------------+--------------------------------------+------------
  Orth, Alan | 4884def0-4d7e-4256-9dd4-018cd60a5871 |        600
@@ -197,7 +197,7 @@ UPDATE 11
 </code></pre><ul>
 <li>And for CCAFS author Bruce Campbell that I had discussed with CCAFS earlier this week:</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set authority='0e414b4c-4671-4a23-b570-6077aca647d8', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Campbell, B%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='0e414b4c-4671-4a23-b570-6077aca647d8', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Campbell, B%';
 UPDATE 166
 dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Campbell, B%';
        text_value       |              authority               | confidence
@@ -215,7 +215,7 @@ dspacetest=# select distinct text_value, authority, confidence from metadatavalu
 <ul>
 <li>After one week of logging TLS connections on CGSpace:</li>
 </ul>
-<pre><code># zgrep &quot;DES-CBC3&quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
+<pre tabindex="0"><code># zgrep &quot;DES-CBC3&quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
 217
 # zcat -f -- /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
 1164376
@@ -226,7 +226,7 @@ TLSv1/EDH-RSA-DES-CBC3-SHA
 <li>So this represents <code>0.02%</code> of 1.16M connections over a one-week period</li>
 <li>Transforming some filenames in OpenRefine so they can have a useful description for SAFBuilder:</li>
 </ul>
-<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+<pre tabindex="0"><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
 </code></pre><ul>
 <li>This gives you, for example: <code>Mainstreaming gender in agricultural R&amp;D.pdf__description:Brief</code></li>
 </ul>
@@ -251,7 +251,7 @@ TLSv1/EDH-RSA-DES-CBC3-SHA
 <li>If I unzip the original zip from CIAT on Windows, re-zip it with 7zip on Windows, and then unzip it on Linux directly, the file names seem to be proper UTF-8</li>
 <li>We should definitely clean filenames so they don&rsquo;t use characters that are tricky to process in CSV and shell scripts, like: <code>,</code>, <code>'</code>, and <code>&quot;</code></li>
 </ul>
-<pre><code>value.replace(&quot;'&quot;,&quot;&quot;).replace(&quot;,&quot;,&quot;&quot;).replace('&quot;','')
+<pre tabindex="0"><code>value.replace(&quot;'&quot;,&quot;&quot;).replace(&quot;,&quot;,&quot;&quot;).replace('&quot;','')
 </code></pre><ul>
 <li>I need to write a Python script to match that for renaming files in the file system</li>
 <li>When importing SAF bundles it seems you can specify the target collection on the command line using <code>-c 10568/4003</code> or in the <code>collections</code> file inside each item in the bundle</li>
@@ -263,7 +263,7 @@ TLSv1/EDH-RSA-DES-CBC3-SHA
 </li>
 <li>Import CIAT Gender Network records to CGSpace, first creating the SAF bundles as my user, then importing as the <code>tomcat7</code> user, and deleting the bundle, for each collection&rsquo;s items:</li>
 </ul>
-<pre><code>$ ./safbuilder.sh -c /home/aorth/ciat-gender-2016-09-06/66601.csv
+<pre tabindex="0"><code>$ ./safbuilder.sh -c /home/aorth/ciat-gender-2016-09-06/66601.csv
 $ JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot; /home/cgspace.cgiar.org/bin/dspace import -a -e aorth@mjanja.ch -c 10568/66601 -s /home/aorth/ciat-gender-2016-09-06/SimpleArchiveFormat -m 66601.map
 $ rm -rf ~/ciat-gender-2016-09-06/SimpleArchiveFormat/
 </code></pre><h2 id="2016-09-07">2016-09-07</h2>
@@ -274,7 +274,7 @@ $ rm -rf ~/ciat-gender-2016-09-06/SimpleArchiveFormat/
 <li>See: <a href="https://www.postgresql.org/docs/9.3/static/routine-vacuuming.html">https://www.postgresql.org/docs/9.3/static/routine-vacuuming.html</a></li>
 <li>CGSpace went down and the error seems to be the same as always (lately):</li>
 </ul>
-<pre><code>2016-09-07 11:39:23,162 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+<pre tabindex="0"><code>2016-09-07 11:39:23,162 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 ...
 </code></pre><ul>
@@ -284,7 +284,7 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <ul>
 <li>CGSpace crashed twice today, errors from <code>catalina.out</code>:</li>
 </ul>
-<pre><code>org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+<pre tabindex="0"><code>org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
         at org.apache.commons.dbcp.PoolingDataSource.getConnection(PoolingDataSource.java:114)
 </code></pre><ul>
 <li>I enabled logging of requests to <code>/rest</code> again</li>
@@ -293,29 +293,29 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <ul>
 <li>CGSpace crashed again, errors from <code>catalina.out</code>:</li>
 </ul>
-<pre><code>org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
+<pre tabindex="0"><code>org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
         at org.apache.commons.dbcp.PoolingDataSource.getConnection(PoolingDataSource.java:114)
 </code></pre><ul>
 <li>I restarted Tomcat and it was ok again</li>
 <li>CGSpace crashed a few hours later, errors from <code>catalina.out</code>:</li>
 </ul>
-<pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
         at java.lang.StringCoding.decode(StringCoding.java:215)
 </code></pre><ul>
 <li>We haven&rsquo;t seen that in quite a while&hellip;</li>
 <li>Indeed, in a month of logs it only occurs 15 times:</li>
 </ul>
-<pre><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
+<pre tabindex="0"><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
 15
 </code></pre><ul>
 <li>I also see a bunch of errors from dspace.log:</li>
 </ul>
-<pre><code>2016-09-14 12:23:07,981 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+<pre tabindex="0"><code>2016-09-14 12:23:07,981 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 </code></pre><ul>
 <li>Looking at REST requests, it seems there is one IP hitting us nonstop:</li>
 </ul>
-<pre><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
     820 50.87.54.15
   12872 70.32.99.142
   25744 70.32.83.92
@@ -328,19 +328,19 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>I think the stability issues are definitely from REST</li>
 <li>Crashed AGAIN, errors from dspace.log:</li>
 </ul>
-<pre><code>2016-09-14 14:31:43,069 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+<pre tabindex="0"><code>2016-09-14 14:31:43,069 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 </code></pre><ul>
 <li>And more heap space errors:</li>
 </ul>
-<pre><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
+<pre tabindex="0"><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
 19
 </code></pre><ul>
 <li>There are no more rest requests since the last crash, so maybe there are other things causing this.</li>
 <li>Hmm, I noticed a shitload of IPs from 180.76.0.0/16 are connecting to both CGSpace and DSpace Test (58 unique IPs concurrently!)</li>
 <li>They seem to be coming from Baidu, and so far during today alone account for 1/6 of every connection:</li>
 </ul>
-<pre><code># grep -c ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-14
+<pre tabindex="0"><code># grep -c ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-14
 29084
 # grep -c ip_addr=180.76.15 /home/cgspace.cgiar.org/log/dspace.log.2016-09-14
 5192
@@ -349,16 +349,16 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>From the activity control panel I can see 58 unique IPs hitting the site <em>concurrently</em>, which has GOT to hurt our stability</li>
 <li>A list of all 2000 unique IPs from CGSpace logs today:</li>
 </ul>
-<pre><code># grep ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-11 | awk -F: '{print $5}' | sort -n | uniq -c | sort -h | tail -n 100
+<pre tabindex="0"><code># grep ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-11 | awk -F: '{print $5}' | sort -n | uniq -c | sort -h | tail -n 100
 </code></pre><ul>
 <li>Looking at the top 20 IPs or so, most are Yahoo, MSN, Google, Baidu, TurnitIn (iParadigm), etc&hellip; do we have any real users?</li>
 <li>Generate a list of all author affiliations for Peter Ballantyne to go through, make corrections, and create a lookup list from:</li>
 </ul>
-<pre><code>dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
+<pre tabindex="0"><code>dspacetest=# \copy (select text_value, count(*) from metadatavalue where resource_type_id=2 and metadata_field_id=211 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
 </code></pre><ul>
 <li>Looking into the Catalina logs again around the time of the first crash, I see:</li>
 </ul>
-<pre><code>Wed Sep 14 09:47:27 UTC 2016 | Query:id: 78581 AND type:2
+<pre tabindex="0"><code>Wed Sep 14 09:47:27 UTC 2016 | Query:id: 78581 AND type:2
 Wed Sep 14 09:47:28 UTC 2016 | Updating : 6/6 docs.
 Commit
 Commit done
@@ -368,7 +368,7 @@ Exception in thread &quot;http-bio-127.0.0.1-8081-exec-193&quot; java.lang.OutOf
 <li>And after that I see a bunch of &ldquo;pool error Timeout waiting for idle object&rdquo;</li>
 <li>Later, near the time of the next crash I see:</li>
 </ul>
-<pre><code>dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+<pre tabindex="0"><code>dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
 Wed Sep 14 11:29:55 UTC 2016 | Query:id: 79078 AND type:2
 Wed Sep 14 11:30:20 UTC 2016 | Updating : 6/6 docs.
 Commit
@@ -389,7 +389,7 @@ java.util.Map does not have a no-arg default constructor.
 </code></pre><ul>
 <li>Then 20 minutes later another outOfMemoryError:</li>
 </ul>
-<pre><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
         at java.lang.StringCoding.decode(StringCoding.java:215)
 </code></pre><ul>
 <li>Perhaps these particular issues <em>are</em> memory issues, the munin graphs definitely show some weird purging/allocating behavior starting this week</li>
@@ -402,7 +402,7 @@ java.util.Map does not have a no-arg default constructor.
 <li>Oh great, the configuration on the actual server is different than in configuration management!</li>
 <li>Seems we added a bunch of settings to the <code>/etc/default/tomcat7</code> in December, 2015 and never updated our ansible repository:</li>
 </ul>
-<pre><code>JAVA_OPTS=&quot;-Djava.awt.headless=true -Xms3584m -Xmx3584m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -XX:-UseGCOverheadLimit -XX:MaxGCPauseMillis=250 -XX:GCTimeRatio=9 -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:InitiatingHeapOccupancyPercent=75 -XX:+UseLargePages -XX:+AggressiveOpts&quot;
+<pre tabindex="0"><code>JAVA_OPTS=&quot;-Djava.awt.headless=true -Xms3584m -Xmx3584m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -XX:-UseGCOverheadLimit -XX:MaxGCPauseMillis=250 -XX:GCTimeRatio=9 -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:InitiatingHeapOccupancyPercent=75 -XX:+UseLargePages -XX:+AggressiveOpts&quot;
 </code></pre><ul>
 <li>So I&rsquo;m going to bump the heap +512m and remove all the other experimental shit (and update ansible!)</li>
 <li>Increased JVM heap to 4096m on CGSpace (linode01)</li>
@@ -416,7 +416,7 @@ java.util.Map does not have a no-arg default constructor.
 <ul>
 <li>CGSpace crashed again, and there are TONS of heap space errors but the datestamps aren&rsquo;t on those lines so I&rsquo;m not sure if they were yesterday:</li>
 </ul>
-<pre><code>dn:CN=Orentlicher\, Natalie (CIAT),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
+<pre tabindex="0"><code>dn:CN=Orentlicher\, Natalie (CIAT),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
 Thu Sep 15 18:45:25 UTC 2016 | Query:id: 55785 AND type:2
 Thu Sep 15 18:45:26 UTC 2016 | Updating : 100/218 docs.
 Thu Sep 15 18:45:26 UTC 2016 | Updating : 200/218 docs.
@@ -443,7 +443,7 @@ Exception in thread &quot;Thread-54216&quot; org.apache.solr.client.solrj.impl.H
 <li>I bumped the heap space from 4096m to 5120m to see if this is <em>really</em> about heap speace or not.</li>
 <li>Looking into some of these errors that I&rsquo;ve seen this week but haven&rsquo;t noticed before:</li>
 </ul>
-<pre><code># zcat -f -- /var/log/tomcat7/catalina.* | grep -c 'Failed to generate the schema for the JAX-B elements'
+<pre tabindex="0"><code># zcat -f -- /var/log/tomcat7/catalina.* | grep -c 'Failed to generate the schema for the JAX-B elements'
 113
 </code></pre><ul>
 <li>I&rsquo;ve sent a message to Atmire about the Solr error to see if it&rsquo;s related to their batch update module</li>
@@ -452,7 +452,7 @@ Exception in thread &quot;Thread-54216&quot; org.apache.solr.client.solrj.impl.H
 <ul>
 <li>Work on cleanups for author affiliations after Peter sent me his list of corrections/deletions:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i affiliations_pb-322-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i affiliations_pb-322-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p fuuu
 $ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2-deletions.csv -m 211 -u dspace -d dspace -p fuuu
 </code></pre><ul>
 <li>After that we need to take the top ~300 and make a controlled vocabulary for it</li>
@@ -474,7 +474,7 @@ $ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2
 <li>Turns out the Solr search logic switched from OR to AND in DSpace 6.0 and the change is easy to backport: <a href="https://jira.duraspace.org/browse/DS-2809">https://jira.duraspace.org/browse/DS-2809</a></li>
 <li>We just need to set this in <code>dspace/solr/search/conf/schema.xml</code>:</li>
 </ul>
-<pre><code>&lt;solrQueryParser defaultOperator=&quot;AND&quot;/&gt;
+<pre tabindex="0"><code>&lt;solrQueryParser defaultOperator=&quot;AND&quot;/&gt;
 </code></pre><ul>
 <li>It actually works really well, and search results return much less hits now (before, after):</li>
 </ul>
@@ -483,7 +483,7 @@ $ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2
 <ul>
 <li>Found a way to improve the configuration of Atmire&rsquo;s Content and Usage Analysis (CUA) module for date fields</li>
 </ul>
-<pre><code>-content.analysis.dataset.option.8=metadata:dateAccessioned:discovery
+<pre tabindex="0"><code>-content.analysis.dataset.option.8=metadata:dateAccessioned:discovery
 +content.analysis.dataset.option.8=metadata:dc.date.accessioned:date(month)
 </code></pre><ul>
 <li>This allows the module to treat the field as a date rather than a text string, so we can interrogate it more intelligently</li>
@@ -492,7 +492,7 @@ $ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2
 <li>45 minutes of downtime!</li>
 <li>Start processing the fixes to <code>dc.description.sponsorship</code> from Peter Ballantyne:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i sponsors-fix-23.csv -f dc.description.sponsorship -t correct -m 29 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i sponsors-fix-23.csv -f dc.description.sponsorship -t correct -m 29 -d dspace -u dspace -p fuuu
 $ ./delete-metadata-values.py -i sponsors-delete-8.csv -f dc.description.sponsorship -m 29 -d dspace -u dspace -p fuuu
 </code></pre><ul>
 <li>I need to run these and the others from a few days ago on CGSpace the next time we run updates</li>
@@ -511,14 +511,14 @@ $ ./delete-metadata-values.py -i sponsors-delete-8.csv -f dc.description.sponsor
 <li>Not sure if it&rsquo;s something like we already have too many filters there (30), or the filter name is reserved, etc&hellip;</li>
 <li>Generate a list of ILRI subjects for Peter and Abenet to look through/fix:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=203 group by text_value order by count desc) to /tmp/ilrisubjects.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where resource_type_id=2 and metadata_field_id=203 group by text_value order by count desc) to /tmp/ilrisubjects.csv with csv;
 </code></pre><ul>
 <li>Regenerate Discovery indexes a few times after playing with <code>discovery.xml</code> index definitions (syntax, parameters, etc).</li>
 <li>Merge changes to boolean logic in Solr search (<a href="https://github.com/ilri/DSpace/pull/274">#274</a>)</li>
 <li>Run all sponsorship and affiliation fixes on CGSpace, deploy latest <code>5_x-prod</code> branch, and re-index Discovery on CGSpace</li>
 <li>Tested OCSP stapling on DSpace Test&rsquo;s nginx and it works:</li>
 </ul>
-<pre><code>$ openssl s_client -connect dspacetest.cgiar.org:443 -servername dspacetest.cgiar.org -tls1_2 -tlsextdebug -status
+<pre tabindex="0"><code>$ openssl s_client -connect dspacetest.cgiar.org:443 -servername dspacetest.cgiar.org -tls1_2 -tlsextdebug -status
 ...
 OCSP response:
 ======================================
@@ -533,12 +533,12 @@ OCSP Response Data:
 <li>Discuss fixing some ORCIDs for CCAFS author Sonja Vermeulen with Magdalena Haman</li>
 <li>This author has a few variations:</li>
 </ul>
-<pre><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeu
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeu
 len, S%';
 </code></pre><ul>
 <li>And it looks like <code>fe4b719f-6cc4-4d65-8504-7a83130b9f83</code> is the authority with the correct ORCID linked</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set authority='fe4b719f-6cc4-4d65-8504-7a83130b9f83w', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='fe4b719f-6cc4-4d65-8504-7a83130b9f83w', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
 UPDATE 101
 </code></pre><ul>
 <li>Hmm, now her name is missing from the authors facet and only shows the authority ID</li>
@@ -547,7 +547,7 @@ UPDATE 101
 <li>On a clean snapshot of the database I see the correct authority should be <code>f01f7b7b-be3f-4df7-a61d-b73c067de88d</code>, not <code>fe4b719f-6cc4-4d65-8504-7a83130b9f83</code></li>
 <li>Updating her authorities again and reindexing:</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set authority='f01f7b7b-be3f-4df7-a61d-b73c067de88d', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='f01f7b7b-be3f-4df7-a61d-b73c067de88d', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
 UPDATE 101
 </code></pre><ul>
 <li>Use GitHub icon from Font Awesome instead of a PNG to save one extra network request</li>
@@ -564,14 +564,14 @@ UPDATE 101
 <li>Minor fix to a string in Atmire&rsquo;s CUA module (<a href="https://github.com/ilri/DSpace/pull/280">#280</a>)</li>
 <li>This seems to be what I&rsquo;ll need to do for Sonja Vermeulen (but with <code>2b4166b7-6e4d-4f66-9d8b-ddfbec9a6ae0</code> instead on the live site):</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set authority='09e4da69-33a3-45ca-b110-7d3f82d2d6d2', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='09e4da69-33a3-45ca-b110-7d3f82d2d6d2', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
 dspacetest=# update metadatavalue set authority='09e4da69-33a3-45ca-b110-7d3f82d2d6d2', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen SJ%';
 </code></pre><ul>
 <li>And then update Discovery and Authority indexes</li>
 <li>Minor fix for &ldquo;Subject&rdquo; string in Discovery search and Atmire modules (<a href="https://github.com/ilri/DSpace/pull/281">#281</a>)</li>
 <li>Start testing batch fixes for ILRI subject from Peter:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i ilrisubjects-fix-32.csv -f cg.subject.ilri -t correct -m 203 -d dspace -u dspace -p fuuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ilrisubjects-fix-32.csv -f cg.subject.ilri -t correct -m 203 -d dspace -u dspace -p fuuuu
 $ ./delete-metadata-values.py -i ilrisubjects-delete-13.csv -f cg.subject.ilri -m 203 -d dspace -u dspace -p fuuu
 </code></pre><h2 id="2016-09-29">2016-09-29</h2>
 <ul>
@@ -580,7 +580,7 @@ $ ./delete-metadata-values.py -i ilrisubjects-delete-13.csv -f cg.subject.ilri -
 <li>DSpace Test (linode02) became unresponsive for some reason, I had to hard reboot it from the Linode console</li>
 <li>People on DSpace mailing list gave me a query to get authors from certain collections:</li>
 </ul>
-<pre><code>dspacetest=# select distinct text_value from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/5472', '10568/5473')));
+<pre tabindex="0"><code>dspacetest=# select distinct text_value from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/5472', '10568/5473')));
 </code></pre><h2 id="2016-09-30">2016-09-30</h2>
 <ul>
 <li>Deny access to REST API&rsquo;s <code>find-by-metadata-field</code> endpoint to protect against an upstream security issue (DS-3250)</li>

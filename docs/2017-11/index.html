@@ -48,7 +48,7 @@ Generate list of authors on CGSpace for Peter to go through and correct:
 dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
 COPY 54701
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -142,12 +142,12 @@ COPY 54701
 <ul>
 <li>Today there have been no hits by CORE and no alerts from Linode (coincidence?)</li>
 </ul>
-<pre><code># grep -c &quot;CORE&quot; /var/log/nginx/access.log
+<pre tabindex="0"><code># grep -c &quot;CORE&quot; /var/log/nginx/access.log
 0
 </code></pre><ul>
 <li>Generate list of authors on CGSpace for Peter to go through and correct:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
 COPY 54701
 </code></pre><ul>
 <li>Abenet asked if it would be possible to generate a report of items in Listing and Reports that had &ldquo;International Fund for Agricultural Development&rdquo; as the <em>only</em> investor</li>
@@ -155,7 +155,7 @@ COPY 54701
 <li>Work on making the thumbnails in the item view clickable</li>
 <li>Basically, once you read the METS XML for an item it becomes easy to trace the structure to find the bitstream link</li>
 </ul>
-<pre><code>//mets:fileSec/mets:fileGrp[@USE='CONTENT']/mets:file/mets:FLocat[@LOCTYPE='URL']/@xlink:href
+<pre tabindex="0"><code>//mets:fileSec/mets:fileGrp[@USE='CONTENT']/mets:file/mets:FLocat[@LOCTYPE='URL']/@xlink:href
 </code></pre><ul>
 <li>METS XML is available for all items with this pattern: /metadata/handle/10568/95947/mets.xml</li>
 <li>I whipped up a quick hack to print a clickable link with this URL on the thumbnail but it needs to check a few corner cases, like when there is a thumbnail but no content bitstream!</li>
@@ -177,7 +177,7 @@ COPY 54701
 <li>It&rsquo;s the first time in a few days that this has happened</li>
 <li>I had a look to see what was going on, but it isn&rsquo;t the CORE bot:</li>
 </ul>
-<pre><code># awk '{print $1}' /var/log/nginx/access.log | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/access.log | sort -n | uniq -c | sort -h | tail
     306 68.180.229.31
     323 61.148.244.116
     414 66.249.66.91
@@ -191,7 +191,7 @@ COPY 54701
 </code></pre><ul>
 <li>138.201.52.218 is from some Hetzner server, and I see it making 40,000 requests yesterday too, but none before that:</li>
 </ul>
-<pre><code># zgrep -c 138.201.52.218 /var/log/nginx/access.log*
+<pre tabindex="0"><code># zgrep -c 138.201.52.218 /var/log/nginx/access.log*
 /var/log/nginx/access.log:24403
 /var/log/nginx/access.log.1:45958
 /var/log/nginx/access.log.2.gz:0
@@ -202,7 +202,7 @@ COPY 54701
 </code></pre><ul>
 <li>It&rsquo;s clearly a bot as it&rsquo;s making tens of thousands of requests, but it&rsquo;s using a &ldquo;normal&rdquo; user agent:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
 </code></pre><ul>
 <li>For now I don&rsquo;t know what this user is!</li>
 </ul>
@@ -216,7 +216,7 @@ COPY 54701
 <ul>
 <li>But in the database the authors are correct (none with weird <code>, /</code> characters):</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue value where resource_type_id=2 and metadata_field_id=3 and text_value like 'International Livestock Research Institute%';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue value where resource_type_id=2 and metadata_field_id=3 and text_value like 'International Livestock Research Institute%';
                  text_value                 |              authority               | confidence 
 --------------------------------------------+--------------------------------------+------------
  International Livestock Research Institute | 8f3865dc-d056-4aec-90b7-77f49ab4735c |          0
@@ -240,7 +240,7 @@ COPY 54701
 <li>Tsega had to restart Tomcat 7 to fix it temporarily</li>
 <li>I will start by looking at bot usage (access.log.1 includes usage until 6AM today):</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log.1 | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log.1 | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     619 65.49.68.184
     840 65.49.68.199
     924 66.249.66.91
@@ -254,7 +254,7 @@ COPY 54701
 </code></pre><ul>
 <li>104.196.152.243 seems to be a top scraper for a few weeks now:</li>
 </ul>
-<pre><code># zgrep -c 104.196.152.243 /var/log/nginx/access.log*
+<pre tabindex="0"><code># zgrep -c 104.196.152.243 /var/log/nginx/access.log*
 /var/log/nginx/access.log:336
 /var/log/nginx/access.log.1:4681
 /var/log/nginx/access.log.2.gz:3531
@@ -268,7 +268,7 @@ COPY 54701
 </code></pre><ul>
 <li>This user is responsible for hundreds and sometimes thousands of Tomcat sessions:</li>
 </ul>
-<pre><code>$ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 954
 $ grep 104.196.152.243 dspace.log.2017-11-03 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 6199
@@ -278,7 +278,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>The worst thing is that this user never specifies a user agent string so we can&rsquo;t lump it in with the other bots using the Tomcat Session Crawler Manager Valve</li>
 <li>They don&rsquo;t request dynamic URLs like &ldquo;/discover&rdquo; but they seem to be fetching handles from XMLUI instead of REST (and some with <code>//handle</code>, note the regex below):</li>
 </ul>
-<pre><code># grep -c 104.196.152.243 /var/log/nginx/access.log.1
+<pre tabindex="0"><code># grep -c 104.196.152.243 /var/log/nginx/access.log.1
 4681
 # grep 104.196.152.243 /var/log/nginx/access.log.1 | grep -c -P 'GET //?handle'
 4618
@@ -286,19 +286,19 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>I just realized that <code>ciat.cgiar.org</code> points to 104.196.152.243, so I should contact Leroy from CIAT to see if we can change their scraping behavior</li>
 <li>The next IP (207.46.13.36) seem to be Microsoft&rsquo;s bingbot, but all its requests specify the &ldquo;bingbot&rdquo; user agent and there are no requests for dynamic URLs that are forbidden, like &ldquo;/discover&rdquo;:</li>
 </ul>
-<pre><code>$ grep -c 207.46.13.36 /var/log/nginx/access.log.1 
+<pre tabindex="0"><code>$ grep -c 207.46.13.36 /var/log/nginx/access.log.1 
 2034
 # grep 207.46.13.36 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
 0
 </code></pre><ul>
 <li>The next IP (157.55.39.161) also seems to be bingbot, and none of its requests are for URLs forbidden by robots.txt either:</li>
 </ul>
-<pre><code># grep 157.55.39.161 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
+<pre tabindex="0"><code># grep 157.55.39.161 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
 0
 </code></pre><ul>
 <li>The next few seem to be bingbot as well, and they declare a proper user agent and do not request dynamic URLs like &ldquo;/discover&rdquo;:</li>
 </ul>
-<pre><code># grep -c -E '207.46.13.[0-9]{2,3}' /var/log/nginx/access.log.1 
+<pre tabindex="0"><code># grep -c -E '207.46.13.[0-9]{2,3}' /var/log/nginx/access.log.1 
 5997
 # grep -E '207.46.13.[0-9]{2,3}' /var/log/nginx/access.log.1 | grep -c &quot;bingbot&quot;
 5988
@@ -307,7 +307,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 </code></pre><ul>
 <li>The next few seem to be Googlebot, and they declare a proper user agent and do not request dynamic URLs like &ldquo;/discover&rdquo;:</li>
 </ul>
-<pre><code># grep -c -E '66.249.66.[0-9]{2,3}' /var/log/nginx/access.log.1 
+<pre tabindex="0"><code># grep -c -E '66.249.66.[0-9]{2,3}' /var/log/nginx/access.log.1 
 3048
 # grep -E '66.249.66.[0-9]{2,3}' /var/log/nginx/access.log.1 | grep -c Google
 3048
@@ -316,14 +316,14 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 </code></pre><ul>
 <li>The next seems to be Yahoo, which declares a proper user agent and does not request dynamic URLs like &ldquo;/discover&rdquo;:</li>
 </ul>
-<pre><code># grep -c 68.180.229.254 /var/log/nginx/access.log.1 
+<pre tabindex="0"><code># grep -c 68.180.229.254 /var/log/nginx/access.log.1 
 1131
 # grep  68.180.229.254 /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
 0
 </code></pre><ul>
 <li>The last of the top ten IPs seems to be some bot with a weird user agent, but they are not behaving too well:</li>
 </ul>
-<pre><code># grep -c -E '65.49.68.[0-9]{3}' /var/log/nginx/access.log.1 
+<pre tabindex="0"><code># grep -c -E '65.49.68.[0-9]{3}' /var/log/nginx/access.log.1 
 2950
 # grep -E '65.49.68.[0-9]{3}' /var/log/nginx/access.log.1 | grep -c &quot;GET /discover&quot;
 330
@@ -338,7 +338,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>I&rsquo;ll just keep an eye on that one for now, as it only made a few hundred requests to dynamic discovery URLs</li>
 <li>While it&rsquo;s not in the top ten, Baidu is one bot that seems to not give a fuck:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;7/Nov/2017&quot; | grep -c Baiduspider
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;7/Nov/2017&quot; | grep -c Baiduspider
 8912
 # cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;7/Nov/2017&quot; | grep Baiduspider | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
 2521
@@ -349,7 +349,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>I should look in nginx access.log, rest.log, oai.log, and DSpace&rsquo;s dspace.log.2017-11-07</li>
 <li>Here are the top IPs making requests to XMLUI from 2 to 8 AM:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     279 66.249.66.91
     373 65.49.68.199
     446 68.180.229.254
@@ -364,7 +364,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>Of those, most are Google, Bing, Yahoo, etc, except 63.143.42.244 and 63.143.42.242 which are Uptime Robot</li>
 <li>Here are the top IPs making requests to REST from 2 to 8 AM:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
       8 207.241.229.237
      10 66.249.66.90
      16 104.196.152.243
@@ -377,14 +377,14 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 </code></pre><ul>
 <li>The OAI requests during that same time period are nothing to worry about:</li>
 </ul>
-<pre><code># cat /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E '07/Nov/2017:0[2-8]' | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
       1 66.249.66.92
       4 66.249.66.90
       6 68.180.229.254
 </code></pre><ul>
 <li>The top IPs from dspace.log during the 2–8 AM period:</li>
 </ul>
-<pre><code>$ grep -E '2017-11-07 0[2-8]' dspace.log.2017-11-07 | grep -o -E 'ip_addr=[0-9.]+' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code>$ grep -E '2017-11-07 0[2-8]' dspace.log.2017-11-07 | grep -o -E 'ip_addr=[0-9.]+' | sort -n | uniq -c | sort -h | tail
     143 ip_addr=213.55.99.121
     181 ip_addr=66.249.66.91
     223 ip_addr=157.55.39.161
@@ -400,7 +400,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>The number of requests isn&rsquo;t even that high to be honest</li>
 <li>As I was looking at these logs I noticed another heavy user (124.17.34.59) that was not active during this time period, but made many requests today alone:</li>
 </ul>
-<pre><code># zgrep -c 124.17.34.59 /var/log/nginx/access.log*
+<pre tabindex="0"><code># zgrep -c 124.17.34.59 /var/log/nginx/access.log*
 /var/log/nginx/access.log:22581
 /var/log/nginx/access.log.1:0
 /var/log/nginx/access.log.2.gz:14
@@ -414,7 +414,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 </code></pre><ul>
 <li>The whois data shows the IP is from China, but the user agent doesn&rsquo;t really give any clues:</li>
 </ul>
-<pre><code># grep 124.17.34.59 /var/log/nginx/access.log | awk -F'&quot; ' '{print $3}' | sort | uniq -c | sort -h
+<pre tabindex="0"><code># grep 124.17.34.59 /var/log/nginx/access.log | awk -F'&quot; ' '{print $3}' | sort | uniq -c | sort -h
     210 &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36&quot;
   22610 &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/7.0; LCTE)&quot;
 </code></pre><ul>
@@ -424,7 +424,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>And as we speak Linode alerted that the outbound traffic rate is very high for the past two hours (about 12–14 hours)</li>
 <li>At least for now it seems to be that new Chinese IP (124.17.34.59):</li>
 </ul>
-<pre><code># grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     198 207.46.13.103
     203 207.46.13.80
     205 207.46.13.36
@@ -438,7 +438,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 </code></pre><ul>
 <li>Seems 124.17.34.59 are really downloading all our PDFs, compared to the next top active IPs during this time!</li>
 </ul>
-<pre><code># grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | grep 124.17.34.59 | grep -c pdf
+<pre tabindex="0"><code># grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | grep 124.17.34.59 | grep -c pdf
 5948
 # grep -E &quot;07/Nov/2017:1[234]:&quot; /var/log/nginx/access.log | grep 104.196.152.243 | grep -c pdf
 0
@@ -446,7 +446,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-01 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>About CIAT, I think I need to encourage them to specify a user agent string for their requests, because they are not reuising their Tomcat session and they are creating thousands of sessions per day</li>
 <li>All CIAT requests vs unique ones:</li>
 </ul>
-<pre><code>$ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-11-07 | wc -l
+<pre tabindex="0"><code>$ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-11-07 | wc -l
 3506
 $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-11-07 | sort | uniq | wc -l
 3506
@@ -459,18 +459,18 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
 <ul>
 <li>But they literally just made this request today:</li>
 </ul>
-<pre><code>180.76.15.136 - - [07/Nov/2017:06:25:11 +0000] &quot;GET /discover?filtertype_0=crpsubject&amp;filter_relational_operator_0=equals&amp;filter_0=WATER%2C+LAND+AND+ECOSYSTEMS&amp;filtertype=subject&amp;filter_relational_operator=equals&amp;filter=WATER+RESOURCES HTTP/1.1&quot; 200 82265 &quot;-&quot; &quot;Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&quot;
+<pre tabindex="0"><code>180.76.15.136 - - [07/Nov/2017:06:25:11 +0000] &quot;GET /discover?filtertype_0=crpsubject&amp;filter_relational_operator_0=equals&amp;filter_0=WATER%2C+LAND+AND+ECOSYSTEMS&amp;filtertype=subject&amp;filter_relational_operator=equals&amp;filter=WATER+RESOURCES HTTP/1.1&quot; 200 82265 &quot;-&quot; &quot;Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)&quot;
 </code></pre><ul>
 <li>Along with another thousand or so requests to URLs that are forbidden in robots.txt today alone:</li>
 </ul>
-<pre><code># grep -c Baiduspider /var/log/nginx/access.log
+<pre tabindex="0"><code># grep -c Baiduspider /var/log/nginx/access.log
 3806
 # grep Baiduspider /var/log/nginx/access.log | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
 1085
 </code></pre><ul>
 <li>I will think about blocking their IPs but they have 164 of them!</li>
 </ul>
-<pre><code># grep &quot;Baiduspider/2.0&quot; /var/log/nginx/access.log | awk '{print $1}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code># grep &quot;Baiduspider/2.0&quot; /var/log/nginx/access.log | awk '{print $1}' | sort -n | uniq | wc -l
 164
 </code></pre><h2 id="2017-11-08">2017-11-08</h2>
 <ul>
@@ -478,12 +478,12 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
 <li>Linode sent another alert about CPU usage in the morning at 6:12AM</li>
 <li>Jesus, the new Chinese IP (124.17.34.59) has downloaded 24,000 PDFs in the last 24 hours:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;0[78]/Nov/2017:&quot; | grep 124.17.34.59 | grep -v pdf.jpg | grep -c pdf
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;0[78]/Nov/2017:&quot; | grep 124.17.34.59 | grep -v pdf.jpg | grep -c pdf
 24981
 </code></pre><ul>
 <li>This is about 20,000 Tomcat sessions:</li>
 </ul>
-<pre><code>$ cat dspace.log.2017-11-07 dspace.log.2017-11-08 | grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=124.17.34.59' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2017-11-07 dspace.log.2017-11-08 | grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=124.17.34.59' | sort | uniq | wc -l
 20733
 </code></pre><ul>
 <li>I&rsquo;m getting really sick of this</li>
@@ -496,7 +496,7 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
 <li>Some clients send thousands of requests without a user agent which ends up creating thousands of Tomcat sessions, wasting precious memory, CPU, and database resources in the process</li>
 <li>Basically, we modify the nginx config to add a mapping with a modified user agent <code>$ua</code>:</li>
 </ul>
-<pre><code>map $remote_addr $ua {
+<pre tabindex="0"><code>map $remote_addr $ua {
     # 2017-11-08 Random Chinese host grabbing 20,000 PDFs
     124.17.34.59     'ChineseBot';
     default          $http_user_agent;
@@ -505,7 +505,7 @@ $ grep -Io -E 'session_id=[A-Z0-9]{32}:ip_addr=104.196.152.243' dspace.log.2017-
 <li>If the client&rsquo;s address matches then the user agent is set, otherwise the default <code>$http_user_agent</code> variable is used</li>
 <li>Then, in the server&rsquo;s <code>/</code> block we pass this header to Tomcat:</li>
 </ul>
-<pre><code>proxy_pass http://tomcat_http;
+<pre tabindex="0"><code>proxy_pass http://tomcat_http;
 proxy_set_header User-Agent $ua;
 </code></pre><ul>
 <li>Note to self: the <code>$ua</code> variable won&rsquo;t show up in nginx access logs because the default <code>combined</code> log format doesn&rsquo;t show it, so don&rsquo;t run around pulling your hair out wondering with the modified user agents aren&rsquo;t showing in the logs!</li>
@@ -516,14 +516,14 @@ proxy_set_header User-Agent $ua;
 <li>I merged the clickable thumbnails code to <code>5_x-prod</code> (<a href="https://github.com/ilri/DSpace/pull/347">#347</a>) and will deploy it later along with the new bot mapping stuff (and re-run the Asible <code>nginx</code> and <code>tomcat</code> tags)</li>
 <li>I was thinking about Baidu again and decided to see how many requests they have versus Google to URL paths that are explicitly forbidden in <code>robots.txt</code>:</li>
 </ul>
-<pre><code># zgrep Baiduspider /var/log/nginx/access.log* | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
+<pre tabindex="0"><code># zgrep Baiduspider /var/log/nginx/access.log* | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
 22229
 # zgrep Googlebot /var/log/nginx/access.log* | grep -c -E &quot;GET /(browse|discover|search-filter)&quot;
 0
 </code></pre><ul>
 <li>It seems that they rarely even bother checking <code>robots.txt</code>, but Google does multiple times per day!</li>
 </ul>
-<pre><code># zgrep Baiduspider /var/log/nginx/access.log* | grep -c robots.txt
+<pre tabindex="0"><code># zgrep Baiduspider /var/log/nginx/access.log* | grep -c robots.txt
 14
 # zgrep Googlebot  /var/log/nginx/access.log* | grep -c robots.txt
 1134
@@ -538,14 +538,14 @@ proxy_set_header User-Agent $ua;
 <ul>
 <li>Awesome, it seems my bot mapping stuff in nginx actually reduced the number of Tomcat sessions used by the CIAT scraper today, total requests and unique sessions:</li>
 </ul>
-<pre><code># zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep '09/Nov/2017' | grep -c 104.196.152.243
+<pre tabindex="0"><code># zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep '09/Nov/2017' | grep -c 104.196.152.243
 8956
 $ grep 104.196.152.243 dspace.log.2017-11-09 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 223
 </code></pre><ul>
 <li>Versus the same stats for yesterday and the day before:</li>
 </ul>
-<pre><code># zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep '08/Nov/2017' | grep -c 104.196.152.243 
+<pre tabindex="0"><code># zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep '08/Nov/2017' | grep -c 104.196.152.243 
 10216
 $ grep 104.196.152.243 dspace.log.2017-11-08 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 2592
@@ -569,7 +569,7 @@ $ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{3
 <li>Update the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure templates</a> to be a little more modular and flexible</li>
 <li>Looking at the top client IPs on CGSpace so far this morning, even though it&rsquo;s only been eight hours:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;12/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &quot;12/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     243 5.83.120.111
     335 40.77.167.103
     424 66.249.66.91
@@ -583,12 +583,12 @@ $ grep 104.196.152.243 dspace.log.2017-11-07 | grep -o -E 'session_id=[A-Z0-9]{3
 </code></pre><ul>
 <li>5.9.6.51 seems to be a Russian bot:</li>
 </ul>
-<pre><code># grep 5.9.6.51 /var/log/nginx/access.log | tail -n 1
+<pre tabindex="0"><code># grep 5.9.6.51 /var/log/nginx/access.log | tail -n 1
 5.9.6.51 - - [12/Nov/2017:08:13:13 +0000] &quot;GET /handle/10568/16515/recent-submissions HTTP/1.1&quot; 200 5097 &quot;-&quot; &quot;Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)&quot;
 </code></pre><ul>
 <li>What&rsquo;s amazing is that it seems to reuse its Java session across all requests:</li>
 </ul>
-<pre><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2017-11-12
+<pre tabindex="0"><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2017-11-12
 1558
 $ grep 5.9.6.51 dspace.log.2017-11-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 1
@@ -596,14 +596,14 @@ $ grep 5.9.6.51 dspace.log.2017-11-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | s
 <li>Bravo to MegaIndex.ru!</li>
 <li>The same cannot be said for 95.108.181.88, which appears to be YandexBot, even though Tomcat&rsquo;s Crawler Session Manager valve regex should match &lsquo;YandexBot&rsquo;:</li>
 </ul>
-<pre><code># grep 95.108.181.88 /var/log/nginx/access.log | tail -n 1
+<pre tabindex="0"><code># grep 95.108.181.88 /var/log/nginx/access.log | tail -n 1
 95.108.181.88 - - [12/Nov/2017:08:33:17 +0000] &quot;GET /bitstream/handle/10568/57004/GenebankColombia_23Feb2015.pdf HTTP/1.1&quot; 200 972019 &quot;-&quot; &quot;Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&quot;
 $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2017-11-12
 991
 </code></pre><ul>
 <li>Move some items and collections on CGSpace for Peter Ballantyne, running <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515"><code>move_collections.sh</code></a> with the following configuration:</li>
 </ul>
-<pre><code>10947/6    10947/1 10568/83389
+<pre tabindex="0"><code>10947/6    10947/1 10568/83389
 10947/34   10947/1 10568/83389
 10947/2512 10947/1 10568/83389
 </code></pre><ul>
@@ -612,7 +612,7 @@ $ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2017-11-
 <li>The solution <a href="https://github.com/ilri/rmg-ansible-public/commit/f0646991772660c505bea9c5ac586490e7c86156">I came up with</a> uses tricks from both of those</li>
 <li>I deployed the limit on CGSpace and DSpace Test and it seems to work well:</li>
 </ul>
-<pre><code>$ http --print h https://cgspace.cgiar.org/handle/10568/1 User-Agent:'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
+<pre tabindex="0"><code>$ http --print h https://cgspace.cgiar.org/handle/10568/1 User-Agent:'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Encoding: gzip
@@ -642,7 +642,7 @@ Server: nginx
 <ul>
 <li>At the end of the day I checked the logs and it really looks like the Baidu rate limiting is working, HTTP 200 vs 503:</li>
 </ul>
-<pre><code># zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep &quot;13/Nov/2017&quot; | grep &quot;Baiduspider&quot; | grep -c &quot; 200 &quot;
+<pre tabindex="0"><code># zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep &quot;13/Nov/2017&quot; | grep &quot;Baiduspider&quot; | grep -c &quot; 200 &quot;
 1132
 # zcat -f -- /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep &quot;13/Nov/2017&quot; | grep &quot;Baiduspider&quot; | grep -c &quot; 503 &quot;
 10105
@@ -675,7 +675,7 @@ Server: nginx
 <li>Started testing DSpace 6.2 and a few things have changed</li>
 <li>Now PostgreSQL needs <code>pgcrypto</code>:</li>
 </ul>
-<pre><code>$ psql dspace6
+<pre tabindex="0"><code>$ psql dspace6
 dspace6=# CREATE EXTENSION pgcrypto;
 </code></pre><ul>
 <li>Also, local settings are no longer in <code>build.properties</code>, they are now in <code>local.cfg</code></li>
@@ -695,7 +695,7 @@ dspace6=# CREATE EXTENSION pgcrypto;
 <li>After a few minutes the connecitons went down to 44 and CGSpace was kinda back up, it seems like Tsega restarted Tomcat</li>
 <li>Looking at the REST and XMLUI log files, I don&rsquo;t see anything too crazy:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep &quot;17/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep &quot;17/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
      13 66.249.66.223
      14 207.46.13.36
      17 207.46.13.137
@@ -721,7 +721,7 @@ dspace6=# CREATE EXTENSION pgcrypto;
 <li>I need to look into using JMX to analyze active sessions I think, rather than looking at log files</li>
 <li>After adding appropriate <a href="https://geekflare.com/enable-jmx-tomcat-to-monitor-administer/">JMX listener options to Tomcat&rsquo;s JAVA_OPTS</a> and restarting Tomcat, I can connect remotely using an SSH dynamic port forward (SOCKS) on port 7777 for example, and then start jconsole locally like:</li>
 </ul>
-<pre><code>$ jconsole -J-DsocksProxyHost=localhost -J-DsocksProxyPort=7777 service:jmx:rmi:///jndi/rmi://localhost:9000/jmxrmi -J-DsocksNonProxyHosts=
+<pre tabindex="0"><code>$ jconsole -J-DsocksProxyHost=localhost -J-DsocksProxyPort=7777 service:jmx:rmi:///jndi/rmi://localhost:9000/jmxrmi -J-DsocksNonProxyHosts=
 </code></pre><ul>
 <li>Looking at the MBeans you can drill down in Catalina→Manager→webapp→localhost→Attributes and see active sessions, etc</li>
 <li>I want to enable JMX listener on CGSpace but I need to do some more testing on DSpace Test and see if it causes any performance impact, for example</li>
@@ -737,7 +737,7 @@ dspace6=# CREATE EXTENSION pgcrypto;
 <li>Linode sent an alert that CGSpace was using a lot of CPU around 4–6 AM</li>
 <li>Looking in the nginx access logs I see the most active XMLUI users between 4 and 6 AM:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;19/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;19/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     111 66.249.66.155
     171 5.9.6.51
     188 54.162.241.40
@@ -751,12 +751,12 @@ dspace6=# CREATE EXTENSION pgcrypto;
 </code></pre><ul>
 <li>66.249.66.153 appears to be Googlebot:</li>
 </ul>
-<pre><code>66.249.66.153 - - [19/Nov/2017:06:26:01 +0000] &quot;GET /handle/10568/2203 HTTP/1.1&quot; 200 6309 &quot;-&quot; &quot;Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)&quot;
+<pre tabindex="0"><code>66.249.66.153 - - [19/Nov/2017:06:26:01 +0000] &quot;GET /handle/10568/2203 HTTP/1.1&quot; 200 6309 &quot;-&quot; &quot;Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)&quot;
 </code></pre><ul>
 <li>We know Googlebot is persistent but behaves well, so I guess it was just a coincidence that it came at a time when we had other traffic and server activity</li>
 <li>In related news, I see an Atmire update process going for many hours and responsible for hundreds of thousands of log entries (two thirds of all log entries)</li>
 </ul>
-<pre><code>$ wc -l dspace.log.2017-11-19 
+<pre tabindex="0"><code>$ wc -l dspace.log.2017-11-19 
 388472 dspace.log.2017-11-19
 $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19 
 267494
@@ -764,7 +764,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>WTF is this process doing every day, and for so many hours?</li>
 <li>In unrelated news, when I was looking at the DSpace logs I saw a bunch of errors like this:</li>
 </ul>
-<pre><code>2017-11-19 03:00:32,806 INFO  org.apache.pdfbox.pdfparser.PDFParser @ Document is encrypted
+<pre tabindex="0"><code>2017-11-19 03:00:32,806 INFO  org.apache.pdfbox.pdfparser.PDFParser @ Document is encrypted
 2017-11-19 03:00:32,807 ERROR org.apache.pdfbox.filter.FlateFilter @ FlateFilter: stop reading corrupt stream due to a DataFormatException
 </code></pre><ul>
 <li>It&rsquo;s been a few days since I enabled the G1GC on DSpace Test and the JVM graph definitely changed:</li>
@@ -780,13 +780,13 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <ul>
 <li>Magdalena was having problems logging in via LDAP and it seems to be a problem with the CGIAR LDAP server:</li>
 </ul>
-<pre><code>2017-11-21 11:11:09,621 WARN  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=2FEC0E5286C17B6694567FFD77C3171C:ip_addr=77.241.141.58:ldap_authentication:type=failed_auth javax.naming.CommunicationException\colon; simple bind failed\colon; svcgroot2.cgiarad.org\colon;3269 [Root exception is javax.net.ssl.SSLHandshakeException\colon; sun.security.validator.ValidatorException\colon; PKIX path validation failed\colon; java.security.cert.CertPathValidatorException\colon; validity check failed]
+<pre tabindex="0"><code>2017-11-21 11:11:09,621 WARN  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=2FEC0E5286C17B6694567FFD77C3171C:ip_addr=77.241.141.58:ldap_authentication:type=failed_auth javax.naming.CommunicationException\colon; simple bind failed\colon; svcgroot2.cgiarad.org\colon;3269 [Root exception is javax.net.ssl.SSLHandshakeException\colon; sun.security.validator.ValidatorException\colon; PKIX path validation failed\colon; java.security.cert.CertPathValidatorException\colon; validity check failed]
 </code></pre><h2 id="2017-11-22">2017-11-22</h2>
 <ul>
 <li>Linode sent an alert that the CPU usage on the CGSpace server was very high around 4 to 6 AM</li>
 <li>The logs don&rsquo;t show anything particularly abnormal between those hours:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;22/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;22/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     136 31.6.77.23
     174 68.180.229.254
     217 66.249.66.91
@@ -807,7 +807,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>Linode alerted again that CPU usage was high on CGSpace from 4:13 to 6:13 AM</li>
 <li>I see a lot of Googlebot (66.249.66.90) in the XMLUI access logs</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;23/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &quot;23/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
      88 66.249.66.91
     140 68.180.229.254
     155 54.196.2.131
@@ -821,7 +821,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 </code></pre><ul>
 <li>&hellip; and the usual REST scrapers from CIAT (45.5.184.196) and CCAFS (70.32.83.92):</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;23/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 | grep -E &quot;23/Nov/2017:0[456]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
       5 190.120.6.219
       6 104.198.9.108
      14 104.196.152.243
@@ -836,7 +836,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>These IPs crawling the REST API don&rsquo;t specify user agents and I&rsquo;d assume they are creating many Tomcat sessions</li>
 <li>I would catch them in nginx to assign a &ldquo;bot&rdquo; user agent to them so that the Tomcat Crawler Session Manager valve could deal with them, but they seem to create any really — at least not in the dspace.log:</li>
 </ul>
-<pre><code>$ grep 70.32.83.92 dspace.log.2017-11-23 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ grep 70.32.83.92 dspace.log.2017-11-23 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 2
 </code></pre><ul>
 <li>I&rsquo;m wondering if REST works differently, or just doesn&rsquo;t log these sessions?</li>
@@ -861,7 +861,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>In just a few seconds I already see a dozen requests from Googlebot (of course they get HTTP 301 redirects to cgspace.cgiar.org)</li>
 <li>I also noticed that CGNET appears to be monitoring the old domain every few minutes:</li>
 </ul>
-<pre><code>192.156.137.184 - - [24/Nov/2017:20:33:58 +0000] &quot;HEAD / HTTP/1.1&quot; 301 0 &quot;-&quot; &quot;curl/7.19.7 (x86_64-redhat-linux-gnu) libcurl/7.19.7 NSS/3.27.1 zlib/1.2.3 libidn/1.18 libssh2/1.4.2&quot;
+<pre tabindex="0"><code>192.156.137.184 - - [24/Nov/2017:20:33:58 +0000] &quot;HEAD / HTTP/1.1&quot; 301 0 &quot;-&quot; &quot;curl/7.19.7 (x86_64-redhat-linux-gnu) libcurl/7.19.7 NSS/3.27.1 zlib/1.2.3 libidn/1.18 libssh2/1.4.2&quot;
 </code></pre><ul>
 <li>I should probably tell CGIAR people to have CGNET stop that</li>
 </ul>
@@ -870,7 +870,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>Linode alerted that CGSpace server was using too much CPU from 5:18 to 7:18 AM</li>
 <li>Yet another mystery because the load for all domains looks fine at that time:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;26/Nov/2017:0[567]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;26/Nov/2017:0[567]&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     190 66.249.66.83
     195 104.196.152.243
     220 40.77.167.82
@@ -887,7 +887,7 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>About an hour later Uptime Robot said that the server was down</li>
 <li>Here are all the top XMLUI and REST users from today:</li>
 </ul>
-<pre><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;29/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
+<pre tabindex="0"><code># cat /var/log/nginx/rest.log  /var/log/nginx/rest.log.1  /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 | grep -E &quot;29/Nov/2017&quot; | awk '{print $1}' | sort -n | uniq -c | sort -h | tail
     540 66.249.66.83
     659 40.77.167.36
     663 157.55.39.214
@@ -905,12 +905,12 @@ $ grep -c com.atmire.utils.UpdateSolrStatsMetadata dspace.log.2017-11-19
 <li>I don&rsquo;t see much activity in the logs but there are 87 PostgreSQL connections</li>
 <li>But shit, there were 10,000 unique Tomcat sessions today:</li>
 </ul>
-<pre><code>$ cat dspace.log.2017-11-29 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2017-11-29 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 10037
 </code></pre><ul>
 <li>Although maybe that&rsquo;s not much, as the previous two days had more:</li>
 </ul>
-<pre><code>$ cat dspace.log.2017-11-27 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace.log.2017-11-27 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 12377
 $ cat dspace.log.2017-11-28 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 16984

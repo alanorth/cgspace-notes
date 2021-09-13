@@ -46,7 +46,7 @@ Anyways, perhaps I should increase the JVM heap from 5120m to 6144m like we did 
 The server only has 8GB of RAM so we&rsquo;ll eventually need to upgrade to a larger one because we&rsquo;ll start starving the OS, PostgreSQL, and command line batch processes
 I ran all system updates on DSpace Test and rebooted it
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -136,7 +136,7 @@ I ran all system updates on DSpace Test and rebooted it
 <ul>
 <li>DSpace Test had crashed at some point yesterday morning and I see the following in <code>dmesg</code>:</li>
 </ul>
-<pre><code>[Tue Jul 31 00:00:41 2018] Out of memory: Kill process 1394 (java) score 668 or sacrifice child
+<pre tabindex="0"><code>[Tue Jul 31 00:00:41 2018] Out of memory: Kill process 1394 (java) score 668 or sacrifice child
 [Tue Jul 31 00:00:41 2018] Killed process 1394 (java) total-vm:15601860kB, anon-rss:5355528kB, file-rss:0kB, shmem-rss:0kB
 [Tue Jul 31 00:00:41 2018] oom_reaper: reaped process 1394 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
 </code></pre><ul>
@@ -161,7 +161,7 @@ I ran all system updates on DSpace Test and rebooted it
 <ul>
 <li>DSpace Test crashed again and I don&rsquo;t see the only error I see is this in <code>dmesg</code>:</li>
 </ul>
-<pre><code>[Thu Aug  2 00:00:12 2018] Out of memory: Kill process 1407 (java) score 787 or sacrifice child
+<pre tabindex="0"><code>[Thu Aug  2 00:00:12 2018] Out of memory: Kill process 1407 (java) score 787 or sacrifice child
 [Thu Aug  2 00:00:12 2018] Killed process 1407 (java) total-vm:18876328kB, anon-rss:6323836kB, file-rss:0kB, shmem-rss:0kB
 </code></pre><ul>
 <li>I am still assuming that this is the Tomcat process that is dying, so maybe actually we need to reduce its memory instead of increasing it?</li>
@@ -179,13 +179,13 @@ I ran all system updates on DSpace Test and rebooted it
 <li>I did some quick sanity checks and small cleanups in Open Refine, checking for spaces, weird accents, and encoding errors</li>
 <li>Finally I did a test run with the <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897"><code>fix-metadata-value.py</code></a> script:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i 2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
 $ ./delete-metadata-values.py -i 2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
 </code></pre><h2 id="2018-08-16">2018-08-16</h2>
 <ul>
 <li>Generate a list of the top 1,500 authors on CGSpace for Sisay so he can create the controlled vocabulary:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc limit 1500) to /tmp/2018-08-16-top-1500-authors.csv with csv; 
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc limit 1500) to /tmp/2018-08-16-top-1500-authors.csv with csv; 
 </code></pre><ul>
 <li>Start working on adding the ORCID metadata to a handful of CIAT authors as requested by Elizabeth earlier this month</li>
 <li>I might need to overhaul the <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers-csv.py</a> script to be a little more robust about author order and ORCID metadata that might have been altered manually by editors after submission, as this script was written without that consideration</li>
@@ -195,7 +195,7 @@ $ ./delete-metadata-values.py -i 2018-08-15-Remove-11-Affiliations.csv -db dspac
 <li>I will have to update my script to extract the ORCID identifier and search for that</li>
 <li>Re-create my local DSpace database using the latest PostgreSQL 9.6 Docker image and re-import the latest CGSpace dump:</li>
 </ul>
-<pre><code>$ sudo docker run --name dspacedb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
+<pre tabindex="0"><code>$ sudo docker run --name dspacedb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 $ createuser -h localhost -U postgres --pwprompt dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
@@ -209,7 +209,7 @@ $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-s
 <li>This is less obvious and more error prone with names like &ldquo;Peters&rdquo; where there are many more authors</li>
 <li>I see some errors in the variations of names as well, for example:</li>
 </ul>
-<pre><code>Verchot, Louis
+<pre tabindex="0"><code>Verchot, Louis
 Verchot, L
 Verchot, L. V.
 Verchot, L.V
@@ -220,7 +220,7 @@ Verchot, Louis V.
 <li>I&rsquo;ll just tag them all with Louis Verchot&rsquo;s ORCID identifier&hellip;</li>
 <li>In the end, I&rsquo;ll run the following CSV with my <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Campbell, Bruce&quot;,Bruce M Campbell: 0000-0002-0123-4859
 &quot;Campbell, Bruce M.&quot;,Bruce M Campbell: 0000-0002-0123-4859
 &quot;Campbell, B.M&quot;,Bruce M Campbell: 0000-0002-0123-4859
@@ -251,13 +251,13 @@ Verchot, Louis V.
 </code></pre><ul>
 <li>The invocation would be:</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i 2018-08-16-ciat-orcid.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-08-16-ciat-orcid.csv -db dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>I ran the script on DSpace Test and CGSpace and tagged a total of 986 ORCID identifiers</li>
 <li>Looking at the list of author affialitions from Peter one last time</li>
 <li>I notice that I should add the Unicode character 0x00b4 (`) to my list of invalid characters to look for in Open Refine, making the latest version of the GREL expression being:</li>
 </ul>
-<pre><code>or(
+<pre tabindex="0"><code>or(
   isNotNull(value.match(/.*\uFFFD.*/)),
   isNotNull(value.match(/.*\u00A0.*/)),
   isNotNull(value.match(/.*\u200A.*/)),
@@ -268,12 +268,12 @@ Verchot, Louis V.
 <li>This character all by itself is indicative of encoding issues in French, Italian, and Spanish names, for example: De´veloppement and Investigacio´n</li>
 <li>I will run the following on DSpace Test and CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
 $ ./delete-metadata-values.py -i /tmp/2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
 </code></pre><ul>
 <li>Then force an update of the Discovery index on DSpace Test:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    72m12.570s
@@ -282,7 +282,7 @@ sys     2m2.461s
 </code></pre><ul>
 <li>And then on CGSpace:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    79m44.392s
@@ -292,7 +292,7 @@ sys     2m20.248s
 <li>Run system updates on DSpace Test and reboot the server</li>
 <li>In unrelated news, I see some newish Russian bot making a few thousand requests per day and not re-using its XMLUI session:</li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep '19/Aug/2018' | grep -c 5.9.6.51
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep '19/Aug/2018' | grep -c 5.9.6.51
 1553
 # grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2018-08-19
 1724
@@ -300,7 +300,7 @@ sys     2m20.248s
 <li>I don&rsquo;t even know how its possible for the bot to use MORE sessions than total requests&hellip;</li>
 <li>The user agent is:</li>
 </ul>
-<pre><code>Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)
+<pre tabindex="0"><code>Mozilla/5.0 (compatible; MegaIndex.ru/2.0; +http://megaindex.com/crawler)
 </code></pre><ul>
 <li>So I&rsquo;m thinking we should add &ldquo;crawl&rdquo; to the Tomcat Crawler Session Manager valve, as we already have &ldquo;bot&rdquo; that catches Googlebot, Bingbot, etc.</li>
 </ul>
@@ -325,7 +325,7 @@ sys     2m20.248s
 <ul>
 <li>Something must have happened, as the <code>mvn package</code> <em>always</em> takes about two hours now, stopping for a very long time near the end at this step:</li>
 </ul>
-<pre><code>[INFO] Processing overlay [ id org.dspace.modules:xmlui-mirage2]
+<pre tabindex="0"><code>[INFO] Processing overlay [ id org.dspace.modules:xmlui-mirage2]
 </code></pre><ul>
 <li>It&rsquo;s the same on DSpace Test, my local laptop, and CGSpace&hellip;</li>
 <li>It wasn&rsquo;t this way before when I was constantly building the previous 5.8 branch with Atmire patches&hellip;</li>
@@ -335,7 +335,7 @@ sys     2m20.248s
 <li>That one only took 13 minutes! So there is definitely something wrong with our 5.8 branch, now I should try vanilla DSpace 5.8</li>
 <li>I notice that the step this pauses at is:</li>
 </ul>
-<pre><code>[INFO] --- maven-war-plugin:2.4:war (default-war) @ xmlui ---
+<pre tabindex="0"><code>[INFO] --- maven-war-plugin:2.4:war (default-war) @ xmlui ---
 </code></pre><ul>
 <li>And I notice that Atmire changed something in the XMLUI module&rsquo;s <code>pom.xml</code> as part of the DSpace 5.8 changes, specifically to remove the exclude for <code>node_modules</code> in the <code>maven-war-plugin</code> step</li>
 <li>This exclude is <em>present</em> in vanilla DSpace, and if I add it back the build time goes from 1 hour 23 minutes to 12 minutes!</li>
@@ -352,23 +352,23 @@ sys     2m20.248s
 <li>It appears that the web UI&rsquo;s upload interface <em>requires</em> you to specify the collection, whereas the CLI interface allows you to omit the collection command line flag and defer to the <code>collections</code> file inside each item in the bundle</li>
 <li>I imported the CTA items on CGSpace for Sisay:</li>
 </ul>
-<pre><code>$ dspace import -a -e s.webshet@cgiar.org -s /home/swebshet/ictupdates_uploads_August_21 -m /tmp/2018-08-23-cta-ictupdates.map
+<pre tabindex="0"><code>$ dspace import -a -e s.webshet@cgiar.org -s /home/swebshet/ictupdates_uploads_August_21 -m /tmp/2018-08-23-cta-ictupdates.map
 </code></pre><h2 id="2018-08-26">2018-08-26</h2>
 <ul>
 <li>Doing the DSpace 5.8 upgrade on CGSpace (linode18)</li>
 <li>I already finished the Maven build, now I&rsquo;ll take a backup of the PostgreSQL database and do a database cleanup just in case:</li>
 </ul>
-<pre><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-08-26-before-dspace-58.backup dspace
+<pre tabindex="0"><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-08-26-before-dspace-58.backup dspace
 $ dspace cleanup -v
 </code></pre><ul>
 <li>Now I can stop Tomcat and do the install:</li>
 </ul>
-<pre><code>$ cd dspace/target/dspace-installer
+<pre tabindex="0"><code>$ cd dspace/target/dspace-installer
 $ ant update clean_backups update_geolite
 </code></pre><ul>
 <li>After the successful Ant update I can run the database migrations:</li>
 </ul>
-<pre><code>$ psql dspace dspace
+<pre tabindex="0"><code>$ psql dspace dspace
 
 dspace=&gt; \i /tmp/Atmire-DSpace-5.8-Schema-Migration.sql 
 DELETE 0
@@ -380,7 +380,7 @@ $ dspace database migrate ignored
 </code></pre><ul>
 <li>Then I&rsquo;ll run all system updates and reboot the server:</li>
 </ul>
-<pre><code>$ sudo su -
+<pre tabindex="0"><code>$ sudo su -
 # apt update &amp;&amp; apt full-upgrade
 # apt clean &amp;&amp; apt autoclean &amp;&amp; apt autoremove
 # reboot
@@ -391,11 +391,11 @@ $ dspace database migrate ignored
 <li>I exported a list of items from Listings and Reports with the following criteria: from year 2013 until now, have WLE subject <code>GENDER</code> or <code>GENDER POVERTY AND INSTITUTIONS</code>, and CRP <code>Water, Land and Ecosystems</code></li>
 <li>Then I extracted the Handle links from the report so I could export each item&rsquo;s metadata as CSV</li>
 </ul>
-<pre><code>$ grep -o -E &quot;[0-9]{5}/[0-9]{0,5}&quot; listings-export.txt &gt; /tmp/iwmi-gender-items.txt
+<pre tabindex="0"><code>$ grep -o -E &quot;[0-9]{5}/[0-9]{0,5}&quot; listings-export.txt &gt; /tmp/iwmi-gender-items.txt
 </code></pre><ul>
 <li>Then on the DSpace server I exported the metadata for each item one by one:</li>
 </ul>
-<pre><code>$ while read -r line; do dspace metadata-export -f &quot;/tmp/${line/\//-}.csv&quot; -i $line; sleep 2; done &lt; /tmp/iwmi-gender-items.txt
+<pre tabindex="0"><code>$ while read -r line; do dspace metadata-export -f &quot;/tmp/${line/\//-}.csv&quot; -i $line; sleep 2; done &lt; /tmp/iwmi-gender-items.txt
 </code></pre><ul>
 <li>But from here I realized that each of the fifty-nine items will have different columns in their CSVs, making it difficult to combine them</li>
 <li>I&rsquo;m not sure how to proceed without writing some script to parse and join the CSVs, and I don&rsquo;t think it&rsquo;s worth my time</li>

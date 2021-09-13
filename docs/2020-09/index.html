@@ -48,7 +48,7 @@ I filed a bug on OpenRXV: https://github.com/ilri/OpenRXV/issues/39
 
 I filed an issue on OpenRXV to make some minor edits to the admin UI: https://github.com/ilri/OpenRXV/issues/40
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -153,7 +153,7 @@ I filed an issue on OpenRXV to make some minor edits to the admin UI: https://gi
 <ul>
 <li>I ran the country code tagger on CGSpace:</li>
 </ul>
-<pre><code>$ time chrt -b 0 dspace curate -t countrycodetagger -i all -r - -l 500 -s object | tee /tmp/2020-09-02-countrycodetagger.log
+<pre tabindex="0"><code>$ time chrt -b 0 dspace curate -t countrycodetagger -i all -r - -l 500 -s object | tee /tmp/2020-09-02-countrycodetagger.log
 ...
 real    2m10.516s
 user    1m43.953s
@@ -169,11 +169,11 @@ $ grep -c added /tmp/2020-09-02-countrycodetagger.log
 </ul>
 </li>
 </ul>
-<pre><code>2020-09-02 12:03:10,666 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=A629116488DCC467E1EA2062A2E2EFD7:ip_addr=92.220.02.201:failed_login:no DN found for user aorth
+<pre tabindex="0"><code>2020-09-02 12:03:10,666 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=A629116488DCC467E1EA2062A2E2EFD7:ip_addr=92.220.02.201:failed_login:no DN found for user aorth
 </code></pre><ul>
 <li>I tried to query LDAP directly using the application credentials with ldapsearch and it works:</li>
 </ul>
-<pre><code>$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;applicationaccount@cgiarad.org&quot; -W &quot;(sAMAccountName=me)&quot;
+<pre tabindex="0"><code>$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;applicationaccount@cgiarad.org&quot; -W &quot;(sAMAccountName=me)&quot;
 </code></pre><ul>
 <li>According to the <a href="https://wiki.lyrasis.org/display/DSDOC6x/Authentication+Plugins#AuthenticationPlugins-LDAPAuthentication">DSpace 6 docs</a> we need to escape commas in our LDAP parameters due to the new configuration system
 <ul>
@@ -191,7 +191,7 @@ $ grep -c added /tmp/2020-09-02-countrycodetagger.log
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-09-03-fix-review-status.csv
+<pre tabindex="0"><code>$ cat 2020-09-03-fix-review-status.csv
 dc.description.version,correct
 Externally Peer Reviewed,Peer Review
 Peer Reviewed,Peer Review
@@ -225,7 +225,7 @@ $ ./fix-metadata-values.py -i 2020-09-03-fix-review-status.csv -db dspace -u dsp
 </ul>
 </li>
 </ul>
-<pre><code>Thu Sep 03 12:26:33 CEST 2020 | Query:containerItem:ea7a2648-180d-4fce-bdc5-c3aa2304fc58
+<pre tabindex="0"><code>Thu Sep 03 12:26:33 CEST 2020 | Query:containerItem:ea7a2648-180d-4fce-bdc5-c3aa2304fc58
 Error while updating
 java.lang.NullPointerException
         at com.atmire.dspace.cua.CUASolrLoggerServiceImpl$5.visit(SourceFile:1131)
@@ -259,7 +259,7 @@ java.lang.NullPointerException
 </li>
 <li>I will update our nearly 6,000 metadata values for CIFOR in the database accordingly:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^(http://)?www\.cifor\.org/(nc/)?online-library/browse/view-publication/publication/([[:digit:]]+)\.html$', 'https://www.cifor.org/knowledge/publication/\3') WHERE metadata_field_id=219 AND text_value ~ 'www\.cifor\.org/(nc/)?online-library/browse/view-publication/publication/[[:digit:]]+';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^(http://)?www\.cifor\.org/(nc/)?online-library/browse/view-publication/publication/([[:digit:]]+)\.html$', 'https://www.cifor.org/knowledge/publication/\3') WHERE metadata_field_id=219 AND text_value ~ 'www\.cifor\.org/(nc/)?online-library/browse/view-publication/publication/[[:digit:]]+';
 dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^https?://www\.cifor\.org/library/([[:digit:]]+)/?$', 'https://www.cifor.org/knowledge/publication/\1') WHERE metadata_field_id=219 AND text_value ~ 'https?://www\.cifor\.org/library/[[:digit:]]+/?';
 dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^https?://www\.cifor\.org/pid/([[:digit:]]+)/?$', 'https://www.cifor.org/knowledge/publication/\1') WHERE metadata_field_id=219 AND text_value ~ 'https?://www\.cifor\.org/pid/[[:digit:]]+';
 </code></pre><ul>
@@ -285,7 +285,7 @@ dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^http
 </ul>
 </li>
 </ul>
-<pre><code>https://cgspace.cgiar.org/bitstream/handle/10568/82745/Characteristics-Silage.JPG
+<pre tabindex="0"><code>https://cgspace.cgiar.org/bitstream/handle/10568/82745/Characteristics-Silage.JPG
 </code></pre><ul>
 <li>So they end up getting rate limited due to the XMLUI rate limits
 <ul>
@@ -308,7 +308,7 @@ dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^http
 </ul>
 </li>
 </ul>
-<pre><code>$ ~/dspace63/bin/dspace curate -t countrycodetagger -i all -s object
+<pre tabindex="0"><code>$ ~/dspace63/bin/dspace curate -t countrycodetagger -i all -s object
 </code></pre><h2 id="2020-09-10">2020-09-10</h2>
 <ul>
 <li>I checked the country code tagger on CGSpace and DSpace Test and it ran fine from the systemd timer last night&hellip; w00t</li>
@@ -318,7 +318,7 @@ dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, '^http
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-09-10-fix-cgspace-regions.csv
+<pre tabindex="0"><code>$ cat 2020-09-10-fix-cgspace-regions.csv
 cg.coverage.region,correct
 EAST AFRICA,EASTERN AFRICA
 WEST AFRICA,WESTERN AFRICA
@@ -417,15 +417,15 @@ Would fix 3 occurences of: SOUTHWEST ASIA
 </ul>
 </li>
 </ul>
-<pre><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+<pre tabindex="0"><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
 </code></pre><ul>
 <li>Then I created a SAF bundle with SAFBuilder:</li>
 </ul>
-<pre><code>$ ./safbuilder.sh -c ~/Downloads/cip-annual-reports/cip-reports.csv
+<pre tabindex="0"><code>$ ./safbuilder.sh -c ~/Downloads/cip-annual-reports/cip-reports.csv
 </code></pre><ul>
 <li>And imported them into my local test instance of CGSpace:</li>
 </ul>
-<pre><code>$ ~/dspace/bin/dspace import -a -e y.arrr@cgiar.org -m /tmp/2020-09-15-cip-annual-reports.map -s ~/Downloads/cip-annual-reports/SimpleArchiveFormat
+<pre tabindex="0"><code>$ ~/dspace/bin/dspace import -a -e y.arrr@cgiar.org -m /tmp/2020-09-15-cip-annual-reports.map -s ~/Downloads/cip-annual-reports/SimpleArchiveFormat
 </code></pre><ul>
 <li>Then I uploaded them to CGSpace</li>
 </ul>
@@ -475,7 +475,7 @@ Would fix 3 occurences of: SOUTHWEST ASIA
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-09-17-add-bioversity-orcids.csv
+<pre tabindex="0"><code>$ cat 2020-09-17-add-bioversity-orcids.csv
 dc.contributor.author,cg.creator.id
 &quot;Etten, Jacob van&quot;,&quot;Jacob van Etten: 0000-0001-7554-2558&quot;
 &quot;van Etten, Jacob&quot;,&quot;Jacob van Etten: 0000-0001-7554-2558&quot;
@@ -496,7 +496,7 @@ $ ./add-orcid-identifiers-csv.py -i 2020-09-17-add-bioversity-orcids.csv -db dsp
 </ul>
 </li>
 </ul>
-<pre><code>https://cgspace.cgiar.org/open-search/discover?query=type:&quot;Journal Article&quot; AND status:&quot;Open Access&quot; AND crpsubject:&quot;Water, Land and Ecosystems&quot; AND &quot;tradeoffs&quot;&amp;rpp=100
+<pre tabindex="0"><code>https://cgspace.cgiar.org/open-search/discover?query=type:&quot;Journal Article&quot; AND status:&quot;Open Access&quot; AND crpsubject:&quot;Water, Land and Ecosystems&quot; AND &quot;tradeoffs&quot;&amp;rpp=100
 </code></pre><ul>
 <li>I noticed that my <code>move-collections.sh</code> script didn&rsquo;t work on DSpace 6 because of the change from IDs to UUIDs, so I modified it to quote the collection <code>resource_id</code> parameters in the PostgreSQL query</li>
 </ul>
@@ -522,7 +522,7 @@ $ ./add-orcid-identifiers-csv.py -i 2020-09-17-add-bioversity-orcids.csv -db dsp
 </ul>
 </li>
 </ul>
-<pre><code>dspacestatistics=# SELECT SUM(views) FROM items;
+<pre tabindex="0"><code>dspacestatistics=# SELECT SUM(views) FROM items;
    sum
 ----------
  15714024
@@ -536,7 +536,7 @@ dspacestatistics=# SELECT SUM(downloads) FROM items;
 </code></pre><ul>
 <li>I deleted &ldquo;Report&rdquo; from twelve items that had it in their peer review field:</li>
 </ul>
-<pre><code>dspace=# BEGIN;
+<pre tabindex="0"><code>dspace=# BEGIN;
 BEGIN
 dspace=# DELETE FROM metadatavalue WHERE text_value='Report' AND resource_type_id=2 AND metadata_field_id=68;
 DELETE 12
@@ -572,7 +572,7 @@ dspace=# COMMIT;
 </ul>
 </li>
 </ul>
-<pre><code>...
+<pre tabindex="0"><code>...
 item_ids = ['0079470a-87a1-4373-beb1-b16e3f0c4d81', '007a9df1-0871-4612-8b28-5335982198cb']
 item_ids_str = ' OR '.join(item_ids).replace('-', '\-')
 ...
@@ -598,7 +598,7 @@ solr_query_params = {
 <ul>
 <li>I did some more work on the dspace-statistics-api and finalized the support for sending a POST to <code>/items</code>:</li>
 </ul>
-<pre><code>$ curl -s -d @request.json https://dspacetest.cgiar.org/rest/statistics/items | json_pp
+<pre tabindex="0"><code>$ curl -s -d @request.json https://dspacetest.cgiar.org/rest/statistics/items | json_pp
 {
    &quot;currentPage&quot; : 0,
    &quot;limit&quot; : 10,

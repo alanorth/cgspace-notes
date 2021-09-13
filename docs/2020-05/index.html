@@ -34,7 +34,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -166,7 +166,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 </ul>
 </li>
 </ul>
-<pre><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;07/May/2020:(01|03|04)&quot; | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;07/May/2020:(01|03|04)&quot; | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>The two main IPs making requests around then are 188.134.31.88 and 212.34.8.188
 <ul>
@@ -176,7 +176,7 @@ I see that CGSpace (linode18) is still using PostgreSQL JDBC driver version 42.2
 </ul>
 </li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
 Purging 171641 hits from 212.34.8.188 in statistics
 Purging 20691 hits from 188.134.31.88 in statistics
 
@@ -209,7 +209,7 @@ Total number of bot hits purged: 192332
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-05-11-add-orcids.csv
+<pre tabindex="0"><code>$ cat 2020-05-11-add-orcids.csv
 dc.contributor.author,cg.creator.id
 &quot;Lutakome, P.&quot;,&quot;Pius Lutakome: 0000-0002-0804-2649&quot;
 &quot;Lutakome, Pius&quot;,&quot;Pius Lutakome: 0000-0002-0804-2649&quot;
@@ -263,7 +263,7 @@ $ ./add-orcid-identifiers-csv.py -i 2020-05-11-add-orcids.csv -db dspace -u dspa
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-05-19-add-orcids.csv
+<pre tabindex="0"><code>$ cat 2020-05-19-add-orcids.csv
 dc.contributor.author,cg.creator.id
 &quot;Bahta, Sirak T.&quot;,&quot;Sirak Bahta: 0000-0002-5728-2489&quot;
 $ ./add-orcid-identifiers-csv.py -i 2020-05-19-add-orcids.csv -db dspace -u dspace -p 'fuuu' -d
@@ -298,7 +298,7 @@ $ ./add-orcid-identifiers-csv.py -i 2020-05-19-add-orcids.csv -db dspace -u dspa
 </ul>
 </li>
 </ul>
-<pre><code>$ cat 2020-05-25-add-orcids.csv
+<pre tabindex="0"><code>$ cat 2020-05-25-add-orcids.csv
 dc.contributor.author,cg.creator.id
 &quot;Díaz, Manuel F.&quot;,&quot;Manuel Francisco Diaz Baca: 0000-0001-8996-5092&quot;
 &quot;Díaz, Manuel Francisco&quot;,&quot;Manuel Francisco Diaz Baca: 0000-0001-8996-5092&quot;
@@ -327,7 +327,7 @@ $ ./add-orcid-identifiers-csv.py -i 2020-05-25-add-orcids.csv -db dspace -u dspa
 </ul>
 </li>
 </ul>
-<pre><code># cat /var/log/nginx/*.log.1 | grep -E &quot;29/May/2020:(02|03|04|05)&quot; | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code># cat /var/log/nginx/*.log.1 | grep -E &quot;29/May/2020:(02|03|04|05)&quot; | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>The top is 172.104.229.92, which is the AReS harvester (still not using a user agent, but it&rsquo;s tagged as a bot in the nginx mapping)</li>
 <li>Second is 188.134.31.88, which is a Russian host that we also saw in the last few weeks, using a browser user agent and hitting the XMLUI (but it is tagged as a bot in nginx as well)</li>
@@ -358,7 +358,7 @@ $ ./add-orcid-identifiers-csv.py -i 2020-05-25-add-orcids.csv -db dspace -u dspa
 </ul>
 </li>
 </ul>
-<pre><code>$ sudo su - postgres
+<pre tabindex="0"><code>$ sudo su - postgres
 $ dropdb dspacetest
 $ createdb -O dspacetest --encoding=UNICODE dspacetest
 $ psql dspacetest -c 'alter user dspacetest superuser;'
@@ -372,14 +372,14 @@ $ exit
 </code></pre><ul>
 <li>Now switch to the DSpace 6.x branch and start a build:</li>
 </ul>
-<pre><code>$ chrt -i 0 ionice -c2 -n7 nice -n19 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false package
+<pre tabindex="0"><code>$ chrt -i 0 ionice -c2 -n7 nice -n19 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false package
 ...
 [ERROR] Failed to execute goal on project additions: Could not resolve dependencies for project org.dspace.modules:additions:jar:6.3: Failed to collect dependencies at com.atmire:atmire-listings-and-reports-api:jar:6.x-2.10.8-0-SNAPSHOT: Failed to read artifact descriptor for com.atmire:atmire-listings-and-reports-api:jar:6.x-2.10.8-0-SNAPSHOT: Could not transfer artifact com.atmire:atmire-listings-and-reports-api:pom:6.x-2.10.8-0-SNAPSHOT from/to atmire.com-snapshots (https://atmire.com/artifactory/atmire.com-snapshots): Not authorized , ReasonPhrase:Unauthorized. -&gt; [Help 1]
 </code></pre><ul>
 <li>Great! I will have to send Atmire a note about this&hellip; but for now I can sync over my local <code>~/.m2</code> directory and the build completes</li>
 <li>After the Maven build completed successfully I installed the updated code with Ant (make sure to delete the old spring directory):</li>
 </ul>
-<pre><code>$ cd dspace/target/dspace-installer
+<pre tabindex="0"><code>$ cd dspace/target/dspace-installer
 $ rm -rf /blah/dspacetest/config/spring
 $ ant update
 </code></pre><ul>
@@ -391,7 +391,7 @@ $ ant update
 <li>I had a mistake in my Solr internal URL parameter so DSpace couldn&rsquo;t find it, but once I fixed that DSpace starts up OK!</li>
 <li>Once the initial Discovery reindexing was completed (after three hours or so!) I started the Solr statistics UUID migration:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
 $ dspace solr-upgrade-statistics-6x -i statistics -n 250000
 $ dspace solr-upgrade-statistics-6x -i statistics -n 1000000
 $ dspace solr-upgrade-statistics-6x -i statistics -n 1000000
@@ -400,7 +400,7 @@ $ dspace solr-upgrade-statistics-6x -i statistics -n 1000000
 <li>It&rsquo;s taking about 35 minutes for 1,000,000 records&hellip;</li>
 <li>Some issues towards the end of this core:</li>
 </ul>
-<pre><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+<pre tabindex="0"><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
 org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
         at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
@@ -425,17 +425,17 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </ul>
 </li>
 </ul>
-<pre><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o statistics-unmigrated.json -k uid -f '(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)'
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a export -o statistics-unmigrated.json -k uid -f '(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)'
 $ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)&lt;/query&gt;&lt;/delete&gt;&quot;
 </code></pre><ul>
 <li>Now the UUID conversion script says there is nothing left to convert, so I can try to run the Atmire CUA conversion utility:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
 $ dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 1
 </code></pre><ul>
 <li>The processing is very slow and there are lots of errors like this:</li>
 </ul>
-<pre><code>Record uid: 7b5b3900-28e8-417f-9c1c-e7d88a753221 couldn't be processed
+<pre tabindex="0"><code>Record uid: 7b5b3900-28e8-417f-9c1c-e7d88a753221 couldn't be processed
 com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: 7b5b3900-28e8-417f-9c1c-e7d88a753221, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(AtomicStatisticsUpdater.java:304)
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(AtomicStatisticsUpdater.java:176)

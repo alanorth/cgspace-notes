@@ -48,7 +48,7 @@ The third item now has a donut with score 1 since I tweeted it last week
 
 On the same note, the one item Abenet pointed out last week now has a donut with score of 104 after I tweeted it last week
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -171,23 +171,23 @@ On the same note, the one item Abenet pointed out last week now has a donut with
 </ul>
 </li>
 </ul>
-<pre><code>$ psql -h localhost -U postgres dspace -c &quot;DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240 AND text_value LIKE '%Ballantyne%';&quot;
+<pre tabindex="0"><code>$ psql -h localhost -U postgres dspace -c &quot;DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240 AND text_value LIKE '%Ballantyne%';&quot;
 DELETE 97
 $ ./add-orcid-identifiers-csv.py -i 2020-04-07-peter-orcids.csv -db dspace -u dspace -p 'fuuu' -d
 </code></pre><ul>
 <li>I used this CSV with the script (all records with his name have the name standardized like this):</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Ballantyne, Peter G.&quot;,&quot;Peter G. Ballantyne: 0000-0001-9346-2893&quot;
 </code></pre><ul>
 <li>Then I tried another way, to identify all duplicate ORCID identifiers for a given resource ID and group them so I can see if count is greater than 1:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT(resource_id, text_value) as distinct_orcid, COUNT(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 240 GROUP BY distinct_orcid ORDER BY count DESC) TO /tmp/2020-04-07-duplicate-orcids.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT(resource_id, text_value) as distinct_orcid, COUNT(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 240 GROUP BY distinct_orcid ORDER BY count DESC) TO /tmp/2020-04-07-duplicate-orcids.csv WITH CSV HEADER;
 COPY 15209
 </code></pre><ul>
 <li>Of those, about nine authors had duplicate ORCID identifiers over about thirty records, so I created a CSV with all their name variations and ORCID identifiers:</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Ballantyne, Peter G.&quot;,&quot;Peter G. Ballantyne: 0000-0001-9346-2893&quot;
 &quot;Ramirez-Villegas, Julian&quot;,&quot;Julian Ramirez-Villegas: 0000-0002-8044-583X&quot;
 &quot;Villegas-Ramirez, J&quot;,&quot;Julian Ramirez-Villegas: 0000-0002-8044-583X&quot;
@@ -207,12 +207,12 @@ COPY 15209
 </code></pre><ul>
 <li>Then I deleted <em>all</em> their existing ORCID identifier records:</li>
 </ul>
-<pre><code>dspace=# DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240 AND text_value SIMILAR TO '%(0000-0001-6543-0798|0000-0001-9346-2893|0000-0002-6950-4018|0000-0002-7583-3811|0000-0002-8044-583X|0000-0002-8599-7895|0000-0003-0934-1218|0000-0003-2765-7101)%';
+<pre tabindex="0"><code>dspace=# DELETE FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240 AND text_value SIMILAR TO '%(0000-0001-6543-0798|0000-0001-9346-2893|0000-0002-6950-4018|0000-0002-7583-3811|0000-0002-8044-583X|0000-0002-8599-7895|0000-0003-0934-1218|0000-0003-2765-7101)%';
 DELETE 994
 </code></pre><ul>
 <li>And then I added them again using the <code>add-orcid-identifiers</code> records:</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i 2020-04-07-fix-duplicate-orcids.csv -db dspace -u dspace -p 'fuuu' -d
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2020-04-07-fix-duplicate-orcids.csv -db dspace -u dspace -p 'fuuu' -d
 </code></pre><ul>
 <li>I ran the fixes on DSpace Test and CGSpace as well</li>
 <li>I started testing the <a href="https://github.com/ilri/DSpace/pull/445">pull request</a> sent by Atmire yesterday
@@ -230,7 +230,7 @@ DELETE 994
 </ul>
 </li>
 </ul>
-<pre><code>dspace63=# DELETE FROM schema_version WHERE version IN ('5.8.2015.12.03.3');
+<pre tabindex="0"><code>dspace63=# DELETE FROM schema_version WHERE version IN ('5.8.2015.12.03.3');
 dspace63=# CREATE EXTENSION pgcrypto;
 </code></pre><ul>
 <li>Then DSpace 6.3 started up OK and I was able to see some statistics in the Content and Usage Analysis (CUA) module, but not on community, collection, or item pages
@@ -239,11 +239,11 @@ dspace63=# CREATE EXTENSION pgcrypto;
 </ul>
 </li>
 </ul>
-<pre><code>2020-04-12 16:34:33,363 ERROR com.atmire.dspace.app.xmlui.aspect.statistics.editorparts.DataTableTransformer @ java.lang.IllegalArgumentException: Invalid UUID string: 1
+<pre tabindex="0"><code>2020-04-12 16:34:33,363 ERROR com.atmire.dspace.app.xmlui.aspect.statistics.editorparts.DataTableTransformer @ java.lang.IllegalArgumentException: Invalid UUID string: 1
 </code></pre><ul>
 <li>And I remembered I actually need to run the DSpace 6.4 Solr UUID migrations:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Xmx1024m -Dfile.encoding=UTF-8&quot;
 $ ~/dspace63/bin/dspace solr-upgrade-statistics-6x
 </code></pre><ul>
 <li>Run system updates on DSpace Test (linode26) and reboot it</li>
@@ -258,7 +258,7 @@ $ ~/dspace63/bin/dspace solr-upgrade-statistics-6x
 <li>I realized that <code>solr-upgrade-statistics-6x</code> only processes 100,000 records by default so I think we actually need to finish running it for all legacy Solr records before asking Atmire why CUA statlets and detailed statistics aren&rsquo;t working</li>
 <li>For now I am just doing 250,000 records at a time on my local environment:</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Xmx2000m -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Xmx2000m -Dfile.encoding=UTF-8&quot;
 $ ~/dspace63/bin/dspace solr-upgrade-statistics-6x -n 250000
 </code></pre><ul>
 <li>Despite running the migration for all of my local 1.5 million Solr records, I still see a few hundred thousand like <code>-1</code> and <code>0-unmigrated</code>
@@ -269,14 +269,14 @@ $ ~/dspace63/bin/dspace solr-upgrade-statistics-6x -n 250000
 </ul>
 </li>
 </ul>
-<pre><code>/** DSpace site type */
+<pre tabindex="0"><code>/** DSpace site type */
 public static final int SITE = 5;
 </code></pre><ul>
 <li>Even after deleting those documents and re-running <code>solr-upgrade-statistics-6x</code> I still get the UUID errors when using CUA and the statlets</li>
 <li>I have sent some feedback and questions to Atmire (including about the Â issue with glypicons in the header trail)</li>
 <li>In other news, my local Artifactory container stopped working for some reason so I re-created it and it seems some things have changed upstream (port 8082 for web UI?):</li>
 </ul>
-<pre><code>$ podman rm artifactory
+<pre tabindex="0"><code>$ podman rm artifactory
 $ podman pull docker.bintray.io/jfrog/artifactory-oss:latest
 $ podman create --ulimit nofile=32000:32000 --name artifactory -v artifactory_data:/var/opt/jfrog/artifactory -p 8081-8082:8081-8082 docker.bintray.io/jfrog/artifactory-oss
 $ podman start artifactory
@@ -284,7 +284,7 @@ $ podman start artifactory
 <ul>
 <li>A few days ago Peter asked me to update an author&rsquo;s name on CGSpace and in the controlled vocabularies:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_value='Knight-Jones, Theodore J.D.' WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value='Knight-Jones, T.J.D.';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value='Knight-Jones, Theodore J.D.' WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value='Knight-Jones, T.J.D.';
 </code></pre><ul>
 <li>I updated his existing records on CGSpace, changed the controlled lists, added his ORCID identifier to the controlled list, and tagged his thirty-nine items with the ORCID iD</li>
 <li>The new DSpace 6 stuff that Atmire sent modifies the Mirage 2&rsquo;s <code>pom.xml</code> to copy the each theme&rsquo;s resulting <code>node_modules</code> to each theme after building and installing with <code>ant update</code> because they moved some packages from bower to npm and now reference them in <code>page-structure.xsl</code>
@@ -315,7 +315,7 @@ $ podman start artifactory
 <ul>
 <li>Looking into a high rate of outgoing bandwidth from yesterday on CGSpace (linode18):</li>
 </ul>
-<pre><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Apr/2020:0[6789]&quot; | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;19/Apr/2020:0[6789]&quot; | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>One host in Russia (91.241.19.70) download 23GiB over those few hours in the morning
 <ul>
@@ -323,18 +323,18 @@ $ podman start artifactory
 </ul>
 </li>
 </ul>
-<pre><code># grep -c 91.241.19.70 /var/log/nginx/access.log.1
+<pre tabindex="0"><code># grep -c 91.241.19.70 /var/log/nginx/access.log.1
 8900
 # grep 91.241.19.70 /var/log/nginx/access.log.1 | grep -c '10568/35187'
 8900
 </code></pre><ul>
 <li>I thought the host might have been Yandex misbehaving, but its user agent is:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_3; nl-nl) AppleWebKit/527  (KHTML, like Gecko) Version/3.1.1 Safari/525.20
+<pre tabindex="0"><code>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_3; nl-nl) AppleWebKit/527  (KHTML, like Gecko) Version/3.1.1 Safari/525.20
 </code></pre><ul>
 <li>I will purge that IP from the Solr statistics using my <code>check-spider-ip-hits.sh</code> script:</li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -d -f /tmp/ip -p
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -d -f /tmp/ip -p
 (DEBUG) Using spider IPs file: /tmp/ip
 (DEBUG) Checking for hits from spider IP: 91.241.19.70
 Purging 8909 hits from 91.241.19.70 in statistics
@@ -343,11 +343,11 @@ Total number of bot hits purged: 8909
 </code></pre><ul>
 <li>While investigating that I noticed ORCID identifiers missing from a few authors names, so I added them with my <code>add-orcid-identifiers.py</code> script:</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i 2020-04-20-add-orcids.csv -db dspace -u dspace -p 'fuuu' -d
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2020-04-20-add-orcids.csv -db dspace -u dspace -p 'fuuu' -d
 </code></pre><ul>
 <li>The contents of <code>2020-04-20-add-orcids.csv</code> was:</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Schut, Marc&quot;,&quot;Marc Schut: 0000-0002-3361-4581&quot;
 &quot;Schut, M.&quot;,&quot;Marc Schut: 0000-0002-3361-4581&quot;
 &quot;Kamau, G.&quot;,&quot;Geoffrey Kamau: 0000-0002-6995-4801&quot;
@@ -387,17 +387,17 @@ Total number of bot hits purged: 8909
 </ul>
 </li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
 $ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 </code></pre><ul>
 <li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
 </ul>
-<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(184980) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>The solution is, as always:</li>
 </ul>
-<pre><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (183996);'
+<pre tabindex="0"><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (183996);'
 UPDATE 1
 </code></pre><ul>
 <li>I spent some time working on the XMLUI themes in DSpace 6
@@ -412,7 +412,7 @@ UPDATE 1
 </ul>
 </li>
 </ul>
-<pre><code>.breadcrumb &gt; li + li:before {
+<pre tabindex="0"><code>.breadcrumb &gt; li + li:before {
   content: &quot;/\00a0&quot;;
 }
 </code></pre><h2 id="2020-04-27">2020-04-27</h2>
@@ -421,7 +421,7 @@ UPDATE 1
 <li>My changes to DSpace XMLUI Mirage 2 build process mean that we don&rsquo;t need Ruby gems at all anymore! We can completely build without them!</li>
 <li>Trying to test the <code>com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI</code> script but there is an error:</li>
 </ul>
-<pre><code>Exception: org.apache.solr.search.SyntaxError: Cannot parse 'cua_version:${cua.version.number}': Encountered &quot; &quot;}&quot; &quot;} &quot;&quot; at line 1, column 32.
+<pre tabindex="0"><code>Exception: org.apache.solr.search.SyntaxError: Cannot parse 'cua_version:${cua.version.number}': Encountered &quot; &quot;}&quot; &quot;} &quot;&quot; at line 1, column 32.
 Was expecting one of:
     &quot;TO&quot; ...
     &lt;RANGE_QUOTED&gt; ...
@@ -429,7 +429,7 @@ Was expecting one of:
 </code></pre><ul>
 <li>Seems something is wrong with the variable interpolation, and I see two configurations in the <code>atmire-cua.cfg</code> file:</li>
 </ul>
-<pre><code>atmire-cua.cua.version.number=${cua.version.number}
+<pre tabindex="0"><code>atmire-cua.cua.version.number=${cua.version.number}
 atmire-cua.version.number=${cua.version.number}
 </code></pre><ul>
 <li>I sent a message to Atmire to check</li>
@@ -473,7 +473,7 @@ atmire-cua.version.number=${cua.version.number}
 </ul>
 </li>
 </ul>
-<pre><code>Record uid: ee085cc0-0110-42c5-80b9-0fad4015ed9f couldn't be processed
+<pre tabindex="0"><code>Record uid: ee085cc0-0110-42c5-80b9-0fad4015ed9f couldn't be processed
 com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: ee085cc0-0110-42c5-80b9-0fad4015ed9f, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(AtomicStatisticsUpdater.java:304)
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(AtomicStatisticsUpdater.java:176)
@@ -508,7 +508,7 @@ Caused by: java.lang.NullPointerException
 </ul>
 </li>
 </ul>
-<pre><code>$ grep ERROR dspace.log.2020-04-29 | cut -f 3- -d' ' | sort | uniq -c | sort -n
+<pre tabindex="0"><code>$ grep ERROR dspace.log.2020-04-29 | cut -f 3- -d' ' | sort | uniq -c | sort -n
       1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL findByUnique Error -
       1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL find Error -
       1 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL query singleTable Error -
@@ -524,20 +524,20 @@ Caused by: java.lang.NullPointerException
 <ul>
 <li>Database connections do seem high:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       5 dspaceApi
       6 dspaceCli
      88 dspaceWeb
 </code></pre><ul>
 <li>Most of those are idle in transaction:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep 'dspaceWeb' | grep -c &quot;idle in transaction&quot;
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep 'dspaceWeb' | grep -c &quot;idle in transaction&quot;
 67
 </code></pre><ul>
 <li>I don&rsquo;t see anything in the PostgreSQL or Tomcat logs suggesting anything is wrong&hellip; I think the solution to clear these idle connections is probably to just restart Tomcat</li>
 <li>I looked at the Solr stats for this month and see lots of suspicious IPs:</li>
 </ul>
-<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=*:*&amp;fq=dateYearMonth:2020-04&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip
+<pre tabindex="0"><code>$ curl -s 'http://localhost:8081/solr/statistics/select?q=*:*&amp;fq=dateYearMonth:2020-04&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip
 
         &quot;88.99.115.53&quot;,23621, # Hetzner, using XMLUI and REST API with no user agent
         &quot;104.154.216.0&quot;,11865,# Google cloud, scraping XMLUI with no user agent
@@ -555,13 +555,13 @@ Caused by: java.lang.NullPointerException
 <li>I need to start blocking requests without a user agent&hellip;</li>
 <li>I purged these user agents using my <code>check-spider-ip-hits.sh</code> script:</li>
 </ul>
-<pre><code>$ for year in {2010..2019}; do ./check-spider-ip-hits.sh -f /tmp/ips -s statistics-$year -p; done
+<pre tabindex="0"><code>$ for year in {2010..2019}; do ./check-spider-ip-hits.sh -f /tmp/ips -s statistics-$year -p; done
 $ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
 </code></pre><ul>
 <li>Then I added a few of them to the bot mapping in the nginx config because it appears they are regular harvesters since 2018</li>
 <li>Looking through the Solr stats faceted by the <code>userAgent</code> field I see some interesting ones:</li>
 </ul>
-<pre><code>$ curl 'http://localhost:8081/solr/statistics/select?q=*%3A*&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=userAgent'
+<pre tabindex="0"><code>$ curl 'http://localhost:8081/solr/statistics/select?q=*%3A*&amp;rows=0&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=userAgent'
 ...
 &quot;Delphi 2009&quot;,50725,
 &quot;OgScrper/1.0.0&quot;,12421,
@@ -580,13 +580,13 @@ $ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
 <li>I don&rsquo;t know why, but my <code>check-spider-hits.sh</code> script doesn&rsquo;t seem to be handling the user agents with spaces properly so I will delete those manually after</li>
 <li>First delete the ones without spaces, creating a temp file in <code>/tmp/agents</code> containing the patterns:</li>
 </ul>
-<pre><code>$ for year in {2010..2019}; do ./check-spider-hits.sh -f /tmp/agents -s statistics-$year -p; done
+<pre tabindex="0"><code>$ for year in {2010..2019}; do ./check-spider-hits.sh -f /tmp/agents -s statistics-$year -p; done
 $ ./check-spider-hits.sh -f /tmp/agents -s statistics -p
 </code></pre><ul>
 <li>That&rsquo;s about 300,000 hits purged&hellip;</li>
 <li>Then remove the ones with spaces manually, checking the query syntax first, then deleting in yearly cores and the statistics core:</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:/Delphi 2009/&amp;rows=0&quot;
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:/Delphi 2009/&amp;rows=0&quot;
 ...
 &lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;52&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;userAgent:/Delphi 2009/&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;38760&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
 $ for year in {2010..2019}; do curl -s &quot;http://localhost:8081/solr/statistics-$year/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;userAgent:&quot;Delphi 2009&quot;&lt;/query&gt;&lt;/delete&gt;'; done
@@ -606,7 +606,7 @@ $ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quo
 </ul>
 </li>
 </ul>
-<pre><code># mv /etc/letsencrypt /etc/letsencrypt.bak
+<pre tabindex="0"><code># mv /etc/letsencrypt /etc/letsencrypt.bak
 # /opt/certbot-auto certonly --standalone --email fu@m.com -d dspacetest.cgiar.org --standalone --pre-hook &quot;/bin/systemctl stop nginx&quot; --post-hook &quot;/bin/systemctl start nginx&quot;
 # /opt/certbot-auto revoke --cert-path /etc/letsencrypt.bak/live/dspacetest.cgiar.org/cert.pem
 # rm -rf /etc/letsencrypt.bak
@@ -618,7 +618,7 @@ $ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quo
 <ul>
 <li>But I don&rsquo;t see a lot of connections in PostgreSQL itself:</li>
 </ul>
-<pre><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
       5 dspaceApi
       6 dspaceCli
      14 dspaceWeb
@@ -636,7 +636,7 @@ $ psql -c 'select * from pg_stat_activity' | wc -l
 <ul>
 <li>The PostgreSQL log shows a lot of errors about deadlocks and queries waiting on other processes&hellip;</li>
 </ul>
-<pre><code>ERROR:  deadlock detected
+<pre tabindex="0"><code>ERROR:  deadlock detected
 </code></pre><!-- raw HTML omitted -->
 
   

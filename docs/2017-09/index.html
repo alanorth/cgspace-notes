@@ -32,7 +32,7 @@ Linode sent an alert that CGSpace (linode18) was using 261% CPU for the past two
 
 Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account is both in the approvers step as well as the group
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -130,7 +130,7 @@ Ask Sisay to clean up the WLE approvers a bit, as Marianne&rsquo;s user account 
 <ul>
 <li>Delete 58 blank metadata values from the CGSpace database:</li>
 </ul>
-<pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
 DELETE 58
 </code></pre><ul>
 <li>I also ran it on DSpace Test because we&rsquo;ll be migrating the CGIAR Library soon and it would be good to catch these before we migrate</li>
@@ -145,7 +145,7 @@ DELETE 58
 <li>There will need to be some metadata updates — though if I recall correctly it is only about seven records — for that as well, I had made some notes about it in <a href="/cgspace-notes/2017-07">2017-07</a>, but I&rsquo;ve asked for more clarification from Lili just in case</li>
 <li>Looking at the DSpace logs to see if we&rsquo;ve had a change in the &ldquo;Cannot get a connection&rdquo; errors since last month when we adjusted the <code>db.maxconnections</code> parameter on CGSpace:</li>
 </ul>
-<pre><code># grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-09-*
+<pre tabindex="0"><code># grep -c &quot;Cannot get a connection, pool error Timeout waiting for idle object&quot; dspace.log.2017-09-*
 dspace.log.2017-09-01:0
 dspace.log.2017-09-02:0
 dspace.log.2017-09-03:9
@@ -174,14 +174,14 @@ dspace.log.2017-09-10:0
 <li>The import process takes the same amount of time with and without the caching</li>
 <li>Also, I captured TCP packets destined for port 80 and both imports only captured ONE packet (an update check from some component in Java):</li>
 </ul>
-<pre><code>$ sudo tcpdump -i en0 -w without-cached-xsd.dump dst port 80 and 'tcp[32:4] = 0x47455420'
+<pre tabindex="0"><code>$ sudo tcpdump -i en0 -w without-cached-xsd.dump dst port 80 and 'tcp[32:4] = 0x47455420'
 </code></pre><ul>
 <li>Great TCP dump guide here: <a href="https://danielmiessler.com/study/tcpdump">https://danielmiessler.com/study/tcpdump</a></li>
 <li>The last part of that command filters for HTTP GET requests, of which there should have been many to fetch all the XSD files for validation</li>
 <li>I sent a message to the mailing list to see if anyone knows more about this</li>
 <li>In looking at the tcpdump results I notice that there is an update check to the ehcache server on <em>every</em> iteration of the ingest loop, for example:</li>
 </ul>
-<pre><code>09:39:36.008956 IP 192.168.8.124.50515 &gt; 157.189.192.67.http: Flags [P.], seq 1736833672:1736834103, ack 147469926, win 4120, options [nop,nop,TS val 1175113331 ecr 550028064], length 431: HTTP: GET /kit/reflector?kitID=ehcache.default&amp;pageID=update.properties&amp;id=2130706433&amp;os-name=Mac+OS+X&amp;jvm-name=Java+HotSpot%28TM%29+64-Bit+Server+VM&amp;jvm-version=1.8.0_144&amp;platform=x86_64&amp;tc-version=UNKNOWN&amp;tc-product=Ehcache+Core+1.7.2&amp;source=Ehcache+Core&amp;uptime-secs=0&amp;patch=UNKNOWN HTTP/1.1
+<pre tabindex="0"><code>09:39:36.008956 IP 192.168.8.124.50515 &gt; 157.189.192.67.http: Flags [P.], seq 1736833672:1736834103, ack 147469926, win 4120, options [nop,nop,TS val 1175113331 ecr 550028064], length 431: HTTP: GET /kit/reflector?kitID=ehcache.default&amp;pageID=update.properties&amp;id=2130706433&amp;os-name=Mac+OS+X&amp;jvm-name=Java+HotSpot%28TM%29+64-Bit+Server+VM&amp;jvm-version=1.8.0_144&amp;platform=x86_64&amp;tc-version=UNKNOWN&amp;tc-product=Ehcache+Core+1.7.2&amp;source=Ehcache+Core&amp;uptime-secs=0&amp;patch=UNKNOWN HTTP/1.1
 </code></pre><ul>
 <li>Turns out this is a known issue and Ehcache has refused to make it opt-in: <a href="https://jira.terracotta.org/jira/browse/EHC-461">https://jira.terracotta.org/jira/browse/EHC-461</a></li>
 <li>But we can disable it by adding an <code>updateCheck=&quot;false&quot;</code> attribute to the main <code>&lt;ehcache &gt;</code> tag in <code>dspace-services/src/main/resources/caching/ehcache-config.xml</code></li>
@@ -204,7 +204,7 @@ dspace.log.2017-09-10:0
 <li>I wonder what was going on, and looking into the nginx logs I think maybe it&rsquo;s OAI&hellip;</li>
 <li>Here is yesterday&rsquo;s top ten IP addresses making requests to <code>/oai</code>:</li>
 </ul>
-<pre><code># awk '{print $1}' /var/log/nginx/oai.log | sort -n | uniq -c | sort -h | tail -n 10
+<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/oai.log | sort -n | uniq -c | sort -h | tail -n 10
       1 213.136.89.78
       1 66.249.66.90
       1 66.249.66.92
@@ -217,7 +217,7 @@ dspace.log.2017-09-10:0
 </code></pre><ul>
 <li>Compared to the previous day&rsquo;s logs it looks VERY high:</li>
 </ul>
-<pre><code># awk '{print $1}' /var/log/nginx/oai.log.1 | sort -n | uniq -c | sort -h | tail -n 10
+<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/oai.log.1 | sort -n | uniq -c | sort -h | tail -n 10
       1 207.46.13.39
       1 66.249.66.93
       2 66.249.66.91
@@ -234,7 +234,7 @@ dspace.log.2017-09-10:0
 </li>
 <li>And this user agent has never been seen before today (or at least recently!):</li>
 </ul>
-<pre><code># grep -c &quot;API scraper&quot; /var/log/nginx/oai.log
+<pre tabindex="0"><code># grep -c &quot;API scraper&quot; /var/log/nginx/oai.log
 62088
 # zgrep -c &quot;API scraper&quot; /var/log/nginx/oai.log.*.gz
 /var/log/nginx/oai.log.10.gz:0
@@ -270,19 +270,19 @@ dspace.log.2017-09-10:0
 <li>Some of these heavy users are also using XMLUI, and their user agent isn&rsquo;t matched by the <a href="https://github.com/ilri/rmg-ansible-public/blob/master/roles/dspace/templates/tomcat/server-tomcat7.xml.j2#L158">Tomcat Session Crawler valve</a>, so each request uses a different session</li>
 <li>Yesterday alone the IP addresses using the <code>API scraper</code> user agent were responsible for 16,000 sessions in XMLUI:</li>
 </ul>
-<pre><code># grep -a -E &quot;(54.70.51.7|35.161.215.53|34.211.17.113|54.70.175.86)&quot; /home/cgspace.cgiar.org/log/dspace.log.2017-09-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code># grep -a -E &quot;(54.70.51.7|35.161.215.53|34.211.17.113|54.70.175.86)&quot; /home/cgspace.cgiar.org/log/dspace.log.2017-09-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
 15924
 </code></pre><ul>
 <li>If this continues I will definitely need to figure out who is responsible for this scraper and add their user agent to the session crawler valve regex</li>
 <li>A search for &ldquo;API scraper&rdquo; user agent on Google returns a <code>robots.txt</code> with a comment that this is the Yewno bot: <a href="http://www.escholarship.org/robots.txt">http://www.escholarship.org/robots.txt</a></li>
 <li>Also, in looking at the DSpace logs I noticed a warning from OAI that I should look into:</li>
 </ul>
-<pre><code>WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
+<pre tabindex="0"><code>WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
 </code></pre><ul>
 <li>Looking at the spreadsheet with deletions and corrections that CCAFS sent last week</li>
 <li>It appears they want to delete a lot of metadata, which I&rsquo;m not sure they realize the implications of:</li>
 </ul>
-<pre><code>dspace=# select text_value, count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange') group by text_value;                                                                                                                                                                                                                  
+<pre tabindex="0"><code>dspace=# select text_value, count(text_value) from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange') group by text_value;                                                                                                                                                                                                                  
         text_value        | count                              
 --------------------------+-------                             
  FP4_ClimateModels        |     6                              
@@ -309,14 +309,14 @@ dspace.log.2017-09-10:0
 <li>I sent CCAFS people an email to ask if they really want to remove these 200+ tags</li>
 <li>She responded yes, so I&rsquo;ll at least need to do these deletes in PostgreSQL:</li>
 </ul>
-<pre><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange','FP_GII');
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134, 235) and text_value in ('EA_PAR','FP1_CSAEvidence','FP2_CRMWestAfrica','FP3_Gender','FP4_Baseline','FP4_CCPAG','FP4_CCPG','FP4_CIATLAM IMPACT','FP4_ClimateData','FP4_ClimateModels','FP4_GenderPolicy','FP4_GenderToolbox','FP4_Livestock','FP4_PolicyEngagement','FP_GII','SA_Biodiversity','SA_CSV','SA_GHGMeasurement','SEA_mitigationSAMPLES','SEA_UpscalingInnovation','WA_Partnership','WA_SciencePolicyExchange','FP_GII');
 DELETE 207
 </code></pre><ul>
 <li>When we discussed this in late July there were some other renames they had requested, but I don&rsquo;t see them in the current spreadsheet so I will have to follow that up</li>
 <li>I talked to Macaroni Bros and they said to just go ahead with the other corrections as well as their spreadsheet was evolved organically rather than systematically!</li>
 <li>The final list of corrections and deletes should therefore be:</li>
 </ul>
-<pre><code>delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-FP4_CRMWestAfrica';
+<pre tabindex="0"><code>delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-FP4_CRMWestAfrica';
 update metadatavalue set text_value='FP3_VietnamLED' where resource_type_id=2 and metadata_field_id=134 and text_value='FP3_VeitnamLED';
 update metadatavalue set text_value='PII-FP1_PIRCCA' where resource_type_id=2 and metadata_field_id=235 and text_value='PII-SEA_PIRCCA';
 delete from metadatavalue where resource_type_id=2 and metadata_field_id=235 and text_value='PII-WA_IntegratedInterventions';
@@ -332,7 +332,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 <li>Testing to see how we end up with all these new authorities after we keep cleaning and merging them in the database</li>
 <li>Here are all my distinct authority combinations in the database before:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
  text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
  Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
@@ -347,7 +347,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 </code></pre><ul>
 <li>And then after adding a new item and selecting an existing &ldquo;Orth, Alan&rdquo; with an ORCID in the author lookup:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
  text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
  Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
@@ -363,7 +363,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 </code></pre><ul>
 <li>It created a new authority&hellip; let&rsquo;s try to add another item and select the same existing author and see what happens in the database:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
  text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
  Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
@@ -379,7 +379,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 </code></pre><ul>
 <li>No new one&hellip; so now let me try to add another item and select the italicized result from the ORCID lookup and see what happens in the database:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';
  text_value |              authority               | confidence 
 ------------+--------------------------------------+------------
  Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
@@ -396,7 +396,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 </code></pre><ul>
 <li>Shit, it created another authority! Let&rsquo;s try it again!</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';                                                                                             
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Orth, %';                                                                                             
  text_value |              authority               | confidence
 ------------+--------------------------------------+------------
  Orth, Alan | 7c2bffb8-58c9-4bc8-b102-ebe8aec200ad |         -1
@@ -427,7 +427,7 @@ delete from metadatavalue where resource_type_id=2 and metadata_field_id in (134
 <ul>
 <li>Apply CCAFS project tag corrections on CGSpace:</li>
 </ul>
-<pre><code>dspace=# \i /tmp/ccafs-projects.sql 
+<pre tabindex="0"><code>dspace=# \i /tmp/ccafs-projects.sql 
 DELETE 5
 UPDATE 4
 UPDATE 1
@@ -439,7 +439,7 @@ DELETE 207
 <li>We still need to do the changes to <code>config.dct</code> and regenerate the <code>sitebndl.zip</code> to send to the Handle.net admins</li>
 <li>According to this <a href="http://dspace.2283337.n4.nabble.com/Multiple-handle-prefixes-merged-DSpace-instances-td3427192.html">dspace-tech mailing list entry from 2011</a>, we need to add the extra handle prefixes to <code>config.dct</code> like this:</li>
 </ul>
-<pre><code>&quot;server_admins&quot; = (
+<pre tabindex="0"><code>&quot;server_admins&quot; = (
 &quot;300:0.NA/10568&quot;
 &quot;300:0.NA/10947&quot;
 )
@@ -458,7 +458,7 @@ DELETE 207
 <li>The problem was that we remapped the items to new collections after the initial import, so the items were using the 10947 prefix but the community and collection was using 10568</li>
 <li>I ended up having to read the <a href="https://wiki.lyrasis.org/display/DSDOC5x/AIP+Backup+and+Restore#AIPBackupandRestore-ForceReplaceMode">AIP Backup and Restore</a> closely a few times and then explicitly preserve handles and ignore parents:</li>
 </ul>
-<pre><code>$ for item in 10568-93759/ITEM@10947-46*; do ~/dspace/bin/dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/87738 $item; done
+<pre tabindex="0"><code>$ for item in 10568-93759/ITEM@10947-46*; do ~/dspace/bin/dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/87738 $item; done
 </code></pre><ul>
 <li>Also, this was in replace mode (-r) rather than submit mode (-s), because submit mode always generated a new handle even if I told it not to!</li>
 <li>I decided to start the import process in the evening rather than waiting for the morning, and right as the first community was finished importing I started seeing <code>Timeout waiting for idle object</code> errors</li>
@@ -478,7 +478,7 @@ DELETE 207
 <ul>
 <li>Nightly Solr indexing is working again, and it appears to be pretty quick actually:</li>
 </ul>
-<pre><code>2017-09-19 00:00:14,953 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (0 of 65808): 17607
+<pre tabindex="0"><code>2017-09-19 00:00:14,953 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (0 of 65808): 17607
 ...
 2017-09-19 00:04:18,017 INFO  com.atmire.dspace.discovery.AtmireSolrService @ Processing (65807 of 65808): 83753
 </code></pre><ul>
@@ -494,7 +494,7 @@ DELETE 207
 <li>Abenet and I noticed that hdl.handle.net is blocked by ETC at ILRI Addis so I asked Biruk Debebe to route it over the satellite</li>
 <li>Force thumbnail regeneration for the CGIAR System Organization&rsquo;s Historic Archive community (2000 items):</li>
 </ul>
-<pre><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 dspace filter-media -f -i 10947/1 -p &quot;ImageMagick PDF Thumbnail&quot;
+<pre tabindex="0"><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 dspace filter-media -f -i 10947/1 -p &quot;ImageMagick PDF Thumbnail&quot;
 </code></pre><ul>
 <li>I&rsquo;m still waiting (over 1 day later) to hear back from the CGIAR System Organization about updating the DNS for library.cgiar.org</li>
 </ul>
@@ -540,7 +540,7 @@ DELETE 207
 <li>Turns out he had already mapped some, but requested that I finish the rest</li>
 <li>With this GREL in OpenRefine I can find items that are mapped, ie they have <code>10568/3||</code> or <code>10568/3$</code> in their <code>collection</code> field:</li>
 </ul>
-<pre><code>isNotNull(value.match(/.+?10568\/3(\|\|.+|$)/))
+<pre tabindex="0"><code>isNotNull(value.match(/.+?10568\/3(\|\|.+|$)/))
 </code></pre><ul>
 <li>Peter also made a lot of changes to the data in the Archives collections while I was attempting to import the changes, so we were essentially competing for PostgreSQL and Solr connections</li>
 <li>I ended up having to kill the import and wait until he was done</li>
@@ -552,7 +552,7 @@ DELETE 207
 <li>Communicate (finally) with Tania and Tunji from the CGIAR System Organization office to tell them to request CGNET make the DNS updates for library.cgiar.org</li>
 <li>Peter wants me to clean up the text values for Delia Grace&rsquo;s metadata, as the authorities are all messed up again since we cleaned them up in <a href="/cgspace-notes/2016-12">2016-12</a>:</li>
 </ul>
-<pre><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';                                  
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';                                  
   text_value  |              authority               | confidence              
 --------------+--------------------------------------+------------             
  Grace, Delia |                                      |        600              
@@ -563,12 +563,12 @@ DELETE 207
 <li>Strangely, none of her authority entries have ORCIDs anymore&hellip;</li>
 <li>I&rsquo;ll just fix the text values and forget about it for now:</li>
 </ul>
-<pre><code>dspace=# update metadatavalue set text_value='Grace, Delia', authority='bfa61d7c-7583-4175-991c-2e7315000f0c', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value='Grace, Delia', authority='bfa61d7c-7583-4175-991c-2e7315000f0c', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Grace, D%';
 UPDATE 610
 </code></pre><ul>
 <li>After this we have to reindex the Discovery and Authority cores (as <code>tomcat7</code> user):</li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b
 
 real    83m56.895s
@@ -603,7 +603,7 @@ sys     0m12.113s
 <li>The <code>index-authority</code> script always seems to fail, I think it&rsquo;s the same old bug</li>
 <li>Something interesting for my notes about JNDI database pool—since I couldn&rsquo;t determine if it was working or not when I tried it locally the other day—is this error message that I just saw in the DSpace logs today:</li>
 </ul>
-<pre><code>ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspaceLocal
+<pre tabindex="0"><code>ERROR org.dspace.storage.rdbms.DatabaseManager @ Error retrieving JNDI context: jdbc/dspaceLocal
 ...
 INFO  org.dspace.storage.rdbms.DatabaseManager @ Unable to locate JNDI dataSource: jdbc/dspaceLocal
 INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Database pool
@@ -627,13 +627,13 @@ INFO  org.dspace.storage.rdbms.DatabaseManager @ Falling back to creating own Da
 <li>Now the redirects work</li>
 <li>I quickly registered a Let&rsquo;s Encrypt certificate for the domain:</li>
 </ul>
-<pre><code># systemctl stop nginx
+<pre tabindex="0"><code># systemctl stop nginx
 # /opt/certbot-auto certonly --standalone --email aorth@mjanja.ch -d library.cgiar.org
 # systemctl start nginx
 </code></pre><ul>
 <li>I modified the nginx configuration of the ansible playbooks to use this new certificate and now the certificate is enabled and OCSP stapling is working:</li>
 </ul>
-<pre><code>$ openssl s_client -connect cgspace.cgiar.org:443 -servername library.cgiar.org  -tls1_2 -tlsextdebug -status
+<pre tabindex="0"><code>$ openssl s_client -connect cgspace.cgiar.org:443 -servername library.cgiar.org  -tls1_2 -tlsextdebug -status
 ...
 OCSP Response Data:
 ...

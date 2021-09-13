@@ -58,7 +58,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 # zcat --force /var/log/nginx/rest.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E &quot;/rest/bitstreams&quot;
 106781
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -152,7 +152,7 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 </ul>
 </li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
 4671942
 # zcat --force /var/log/nginx/{rest,oai,statistics}.log.*.gz | grep -cE &quot;[0-9]{1,2}/Oct/2019&quot;
 1277694
@@ -160,14 +160,14 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 <li>So 4.6 million from XMLUI and another 1.2 million from API requests</li>
 <li>Let&rsquo;s see how many of the REST API requests were for bitstreams (because they are counted in Solr stats):</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/rest.log.*.gz | grep -c -E &quot;[0-9]{1,2}/Oct/2019&quot;
+<pre tabindex="0"><code># zcat --force /var/log/nginx/rest.log.*.gz | grep -c -E &quot;[0-9]{1,2}/Oct/2019&quot;
 1183456 
 # zcat --force /var/log/nginx/rest.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E &quot;/rest/bitstreams&quot;
 106781
 </code></pre><ul>
 <li>The types of requests in the access logs are (by lazily extracting the sixth field in the nginx log)</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | awk '{print $6}' | sed 's/&quot;//' | sort | uniq -c | sort -n
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | awk '{print $6}' | sed 's/&quot;//' | sort | uniq -c | sort -n
       1 PUT
       8 PROPFIND
     283 OPTIONS
@@ -177,16 +177,16 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 </code></pre><ul>
 <li>Two very active IPs are 34.224.4.16 and 34.234.204.152, which made over 360,000 requests in October:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E '(34\.224\.4\.16|34\.234\.204\.152)'
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep -c -E '(34\.224\.4\.16|34\.234\.204\.152)'
 365288
 </code></pre><ul>
 <li>Their user agent is one I&rsquo;ve never seen before:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot)
+<pre tabindex="0"><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot)
 </code></pre><ul>
 <li>Most of them seem to be to community or collection discover and browse results pages like <code>/handle/10568/103/discover</code>:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep Amazonbot | grep -o -E &quot;GET /(bitstream|discover|handle)&quot; | sort | uniq -c
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep Amazonbot | grep -o -E &quot;GET /(bitstream|discover|handle)&quot; | sort | uniq -c
    6566 GET /bitstream
  351928 GET /handle
 # zcat --force /var/log/nginx/*access.log.*.gz | grep -E &quot;[0-9]{1,2}/Oct/2019&quot; | grep Amazonbot | grep -E &quot;GET /(bitstream|discover|handle)&quot; | grep -c discover
@@ -196,12 +196,12 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 </code></pre><ul>
 <li>As far as I can tell, none of their requests are counted in the Solr statistics:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=(ip%3A34.224.4.16+OR+ip%3A34.234.204.152)&amp;rows=0&amp;wt=json&amp;indent=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=(ip%3A34.224.4.16+OR+ip%3A34.234.204.152)&amp;rows=0&amp;wt=json&amp;indent=true'
 </code></pre><ul>
 <li>Still, those requests are CPU intensive so I will add their user agent to the &ldquo;badbots&rdquo; rate limiting in nginx to reduce the impact on server load</li>
 <li>After deploying it I checked by setting my user agent to Amazonbot and making a few requests (which were denied with HTTP 503):</li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/1/discover' User-Agent:&quot;Amazonbot/0.1&quot;
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/1/discover' User-Agent:&quot;Amazonbot/0.1&quot;
 </code></pre><ul>
 <li>On the topic of spiders, I have been wanting to update DSpace&rsquo;s default list of spiders in <code>config/spiders/agents</code>, perhaps by dropping a new list in from <a href="https://github.com/atmire/COUNTER-Robots">Atmire&rsquo;s COUNTER-Robots</a> project
 <ul>
@@ -210,13 +210,13 @@ Let&rsquo;s see how many of the REST API requests were for bitstreams (because t
 </ul>
 </li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;iskanie&quot;
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;iskanie&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;iskanie&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y' User-Agent:&quot;iskanie&quot;
 </code></pre><ul>
 <li>A bit later I checked Solr and found three requests from my IP with that user agent this month:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics/select?q=ip:73.178.9.24+AND+userAgent:iskanie&amp;fq=dateYearMonth%3A2019-11&amp;rows=0'
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;response&gt;
 &lt;lst name=&quot;responseHeader&quot;&gt;&lt;int name=&quot;status&quot;&gt;0&lt;/int&gt;&lt;int name=&quot;QTime&quot;&gt;1&lt;/int&gt;&lt;lst name=&quot;params&quot;&gt;&lt;str name=&quot;q&quot;&gt;ip:73.178.9.24 AND userAgent:iskanie&lt;/str&gt;&lt;str name=&quot;fq&quot;&gt;dateYearMonth:2019-11&lt;/str&gt;&lt;str name=&quot;rows&quot;&gt;0&lt;/str&gt;&lt;/lst&gt;&lt;/lst&gt;&lt;result name=&quot;response&quot; numFound=&quot;3&quot; start=&quot;0&quot;&gt;&lt;/result&gt;
@@ -224,7 +224,7 @@ $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/cs
 </code></pre><ul>
 <li>Now I want to make similar requests with a user agent that is included in DSpace&rsquo;s current user agent list:</li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;celestial&quot;
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;celestial&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;celestial&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/csl_Crane_oct2019.pptx?sequence=1&amp;isAllowed=y' User-Agent:&quot;celestial&quot;
 </code></pre><ul>
@@ -234,7 +234,7 @@ $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/cs
 </ul>
 </li>
 </ul>
-<pre><code>spider.agentregex.regexfile = ${dspace.dir}/config/spiders/Bots-2013-03.txt
+<pre tabindex="0"><code>spider.agentregex.regexfile = ${dspace.dir}/config/spiders/Bots-2013-03.txt
 </code></pre><ul>
 <li>Apparently that is part of Atmire&rsquo;s CUA, despite being in a standard DSpace configuration file&hellip;</li>
 <li>I tried with some other garbage user agents like &ldquo;fuuuualan&rdquo; and they were visible in Solr
@@ -247,7 +247,7 @@ $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/cs
 </ul>
 </li>
 </ul>
-<pre><code>else if (line.hasOption('m'))
+<pre tabindex="0"><code>else if (line.hasOption('m'))
 {
     SolrLogger.markRobotsByIP();
 }
@@ -263,12 +263,12 @@ $ http --print Hh 'https://dspacetest.cgiar.org/bitstream/handle/10568/105487/cs
 <ul>
 <li>I added &ldquo;alanfuu2&rdquo; to the example spiders file, restarted Tomcat, then made two requests to DSpace Test:</li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;alanfuuu1&quot;
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;alanfuuu1&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;alanfuuu2&quot;
 </code></pre><ul>
 <li>After committing the changes in Solr I saw one request for &ldquo;alanfuu1&rdquo; and no requests for &ldquo;alanfuu2&rdquo;:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/update?commit=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics/update?commit=true'
 $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu1&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound
   &lt;result name=&quot;response&quot; numFound=&quot;1&quot; start=&quot;0&quot;&gt;
 $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:alanfuuu2&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound
@@ -281,12 +281,12 @@ $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:alanf
 </li>
 <li>I&rsquo;m curious how the special character matching is in Solr, so I will test two requests: one with &ldquo;<a href="http://www.gnip.com">www.gnip.com</a>&rdquo; which is in the spider list, and one with &ldquo;<a href="http://www.gnyp.com">www.gnyp.com</a>&rdquo; which isn&rsquo;t:</li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnip.com&quot;
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnip.com&quot;
 $ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;www.gnyp.com&quot;
 </code></pre><ul>
 <li>Then commit changes to Solr so we don&rsquo;t have to wait:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics/update?commit=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics/update?commit=true'
 $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:www.gnip.com&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound 
   &lt;result name=&quot;response&quot; numFound=&quot;0&quot; start=&quot;0&quot;/&gt;
 $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:www.gnyp.com&amp;fq=dateYearMonth%3A2019-11' | xmllint --format - | grep numFound
@@ -314,12 +314,12 @@ $ http --print b 'http://localhost:8081/solr/statistics/select?q=userAgent:www.g
 </ul>
 </li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*' | xmllint --format - | grep numFound
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:BUbiNG*' | xmllint --format - | grep numFound
   &lt;result name=&quot;response&quot; numFound=&quot;62944&quot; start=&quot;0&quot;&gt;
 </code></pre><ul>
 <li>Similar for com.plumanalytics, Grammarly, and ltx71!</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:
 *com.plumanalytics*' | xmllint --format - | grep numFound
   &lt;result name=&quot;response&quot; numFound=&quot;28256&quot; start=&quot;0&quot;&gt;
 $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*Grammarly*' | xmllint --format - | grep numFound
@@ -329,7 +329,7 @@ $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&a
 </code></pre><ul>
 <li>Deleting these seems to work, for example the 105,000 ltx71 records from 2018:</li>
 </ul>
-<pre><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/update?stream.body=&lt;delete&gt;&lt;query&gt;userAgent:*ltx71*&lt;/query&gt;&lt;query&gt;type:0&lt;/query&gt;&lt;/delete&gt;&amp;commit=true'
+<pre tabindex="0"><code>$ http --print b 'http://localhost:8081/solr/statistics-2018/update?stream.body=&lt;delete&gt;&lt;query&gt;userAgent:*ltx71*&lt;/query&gt;&lt;query&gt;type:0&lt;/query&gt;&lt;/delete&gt;&amp;commit=true'
 $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&amp;facet.field=ip&amp;facet.mincount=1&amp;type:0&amp;q=userAgent:*ltx71*' | xmllint --format - | grep numFound
   &lt;result name=&quot;response&quot; numFound=&quot;0&quot; start=&quot;0&quot;/&gt;
 </code></pre><ul>
@@ -341,7 +341,7 @@ $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&a
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=
+<pre tabindex="0"><code>$ curl -s 'http://localhost:8081/solr/statistics/select?facet=true&amp;facet.field=dateYearMonth&amp;facet.mincount=1&amp;facet.offset=0&amp;facet.limit=
 12&amp;q=userAgent:*Unpaywall*' | xmllint --format - | less
 ...
   &lt;lst name=&quot;facet_counts&quot;&gt;
@@ -394,7 +394,7 @@ $ http --print b 'http://localhost:8081/solr/statistics-2018/select?facet=true&a
 </ul>
 </li>
 </ul>
-<pre><code>$ for shard in statistics statistics-2018 statistics-2017 statistics-2016 statistics-2015 stat
+<pre tabindex="0"><code>$ for shard in statistics statistics-2018 statistics-2017 statistics-2016 statistics-2015 stat
 istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do ./check-spider-hits.sh -s $shard -p yes; done
 </code></pre><ul>
 <li>Open a <a href="https://github.com/atmire/COUNTER-Robots/pull/28">pull request</a> against COUNTER-Robots to remove unnecessary escaping of dashes</li>
@@ -423,7 +423,7 @@ istics-2014 statistics-2013 statistics-2012 statistics-2011 statistics-2010; do 
 </li>
 <li>Testing modifying some of the COUNTER-Robots patterns to use <code>[0-9]</code> instead of <code>\d</code> digit character type, as Solr&rsquo;s regex search can&rsquo;t use those</li>
 </ul>
-<pre><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;Scrapoo/1&quot;
+<pre tabindex="0"><code>$ http --print Hh 'https://dspacetest.cgiar.org/handle/10568/105487' User-Agent:&quot;Scrapoo/1&quot;
 $ http &quot;http://localhost:8081/solr/statistics/update?commit=true&quot;
 $ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:Scrapoo*&quot; | xmllint --format - | grep numFound
   &lt;result name=&quot;response&quot; numFound=&quot;1&quot; start=&quot;0&quot;&gt;
@@ -433,7 +433,7 @@ $ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo\/
 <li>Nice, so searching with regex in Solr with <code>//</code> syntax works for those digits!</li>
 <li>I realized that it&rsquo;s easier to search Solr from curl via POST using this syntax:</li>
 </ul>
-<pre><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:*Scrapoo*&amp;rows=0&quot;)
+<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:*Scrapoo*&amp;rows=0&quot;)
 </code></pre><ul>
 <li>If the parameters include something like &ldquo;[0-9]&rdquo; then curl interprets it as a range and will make ten requests
 <ul>
@@ -441,7 +441,7 @@ $ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo\/
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -s 'http://localhost:8081/solr/statistics/select' -d 'q=userAgent:/Postgenomic(\s|\+)v2/&amp;rows=2'
+<pre tabindex="0"><code>$ curl -s 'http://localhost:8081/solr/statistics/select' -d 'q=userAgent:/Postgenomic(\s|\+)v2/&amp;rows=2'
 </code></pre><ul>
 <li>I updated the <code>check-spider-hits.sh</code> script to use the POST syntax, and I&rsquo;m evaluating the feasability of including the regex search patterns from the spider agent file, as I had been filtering them out due to differences in PCRE and Solr regex syntax and issues with shell handling</li>
 </ul>
@@ -450,7 +450,7 @@ $ http &quot;http://localhost:8081/solr/statistics/select?q=userAgent:/Scrapoo\/
 <li>IWMI sent a few new ORCID identifiers for us to add to our controlled vocabulary</li>
 <li>I will merge them with our existing list and then resolve their names using my <code>resolve-orcids.py</code> script:</li>
 </ul>
-<pre><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2019-11-14-combined-orcids.txt
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2019-11-14-combined-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2019-11-14-combined-orcids.txt -o /tmp/2019-11-14-combined-names.txt -d
 # sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
@@ -513,7 +513,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </li>
 <li>Most of the curl hits were from CIAT in mid-2019, where they were using <a href="https://guzzle3.readthedocs.io/http-client/client.html">GuzzleHttp</a> from PHP, which uses something like this for its user agent:</li>
 </ul>
-<pre><code>Guzzle/&lt;Guzzle_Version&gt; curl/&lt;curl_version&gt; PHP/&lt;PHP_VERSION&gt;
+<pre tabindex="0"><code>Guzzle/&lt;Guzzle_Version&gt; curl/&lt;curl_version&gt; PHP/&lt;PHP_VERSION&gt;
 </code></pre><ul>
 <li>Run system updates on DSpace Test and reboot the server</li>
 </ul>
@@ -564,7 +564,7 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </li>
 <li>Buck is one I&rsquo;ve never heard of before, its user agent is:</li>
 </ul>
-<pre><code>Buck/2.2; (+https://app.hypefactors.com/media-monitoring/about.html)
+<pre tabindex="0"><code>Buck/2.2; (+https://app.hypefactors.com/media-monitoring/about.html)
 </code></pre><ul>
 <li>All in all that&rsquo;s about 85,000 more hits purged, in addition to the 3.4 million I purged last week</li>
 </ul>

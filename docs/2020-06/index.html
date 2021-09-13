@@ -36,7 +36,7 @@ I sent Atmire the dspace.log from today and told them to log into the server to 
 In other news, I checked the statistics API on DSpace 6 and it&rsquo;s working
 I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Test and I get an error:
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -132,7 +132,7 @@ I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Tes
 <li>In other news, I checked the statistics API on DSpace 6 and it&rsquo;s working</li>
 <li>I tried to build the OAI registry on the freshly migrated DSpace 6 on DSpace Test and I get an error:</li>
 </ul>
-<pre><code>$ dspace oai import -c
+<pre tabindex="0"><code>$ dspace oai import -c
 OAI 2.0 manager action started
 Loading @mire database changes for module MQM
 Changes have been processed
@@ -161,7 +161,7 @@ java.lang.NullPointerException
 </ul>
 </li>
 </ul>
-<pre><code>$ curl http://localhost:8080/solr/oai/update -H &quot;Content-type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl http://localhost:8080/solr/oai/update -H &quot;Content-type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;'
 $ curl http://localhost:8080/solr/oai/update -H &quot;Content-type: text/xml&quot; --data-binary '&lt;commit /&gt;'
 $ ~/dspace63/bin/dspace oai import
 OAI 2.0 manager action started
@@ -213,7 +213,7 @@ java.lang.NullPointerException
 </ul>
 </li>
 </ul>
-<pre><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    125m37.423s
 user    11m20.312s
@@ -250,7 +250,7 @@ sys     3m19.965s
 </ul>
 </li>
 </ul>
-<pre><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code>$ time chrt -i 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    101m41.195s
 user    10m9.569s
@@ -264,7 +264,7 @@ sys     3m13.929s
 <li>Peter said he was annoyed with a CSV export from CGSpace because of the different <code>text_lang</code> attributes and asked if we can fix it</li>
 <li>The last time I normalized these was in 2019-06, and currently it looks like this:</li>
 </ul>
-<pre><code>dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE resource_type_id=2 GROUP BY text_lang ORDER BY count DESC;
+<pre tabindex="0"><code>dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE resource_type_id=2 GROUP BY text_lang ORDER BY count DESC;
   text_lang  |  count
 -------------+---------
  en_US       | 2158377
@@ -279,7 +279,7 @@ sys     3m13.929s
 <li>In theory we can have different languages for metadata fields but in practice we don&rsquo;t do that, so we might as well normalize everything to &ldquo;en_US&rdquo; (and perhaps I should make a curation task to do this)</li>
 <li>For now I will do it manually on CGSpace and DSpace Test:</li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2;
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2;
 UPDATE 2414738
 </code></pre><ul>
 <li>Note: DSpace Test doesn&rsquo;t have the <code>resource_type_id</code> column because it&rsquo;s running DSpace 6 and <a href="https://wiki.lyrasis.org/display/DSPACE/DSpace+Service+based+api">the schema changed to use an object model there</a>
@@ -288,7 +288,7 @@ UPDATE 2414738
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (SELECT uuid FROM item);
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (SELECT uuid FROM item);
 </code></pre><ul>
 <li>Peter asked if it was possible to find all ILRI items that have &ldquo;zoonoses&rdquo; or &ldquo;zoonotic&rdquo; in their titles and check if they have the ILRI subject &ldquo;ZOONOTIC DISEASES&rdquo; (and add it if not)
 <ul>
@@ -319,7 +319,7 @@ UPDATE 2414738
 </ul>
 </li>
 </ul>
-<pre><code>$ dspace metadata-export -i 10568/1 -f /tmp/2020-06-08-ILRI.csv
+<pre tabindex="0"><code>$ dspace metadata-export -i 10568/1 -f /tmp/2020-06-08-ILRI.csv
 $ csvcut -c 'id,cg.subject.ilri[en_US],dc.title[en_US]' ~/Downloads/2020-06-08-ILRI.csv &gt; /tmp/ilri.csv
 </code></pre><ul>
 <li>Moayad asked why he&rsquo;s getting HTTP 500 errors on CGSpace
@@ -329,12 +329,12 @@ $ csvcut -c 'id,cg.subject.ilri[en_US],dc.title[en_US]' ~/Downloads/2020-06-08-I
 </ul>
 </li>
 </ul>
-<pre><code># journalctl --since=today -u tomcat7  | grep -c 'Internal Server Error'
+<pre tabindex="0"><code># journalctl --since=today -u tomcat7  | grep -c 'Internal Server Error'
 482
 </code></pre><ul>
 <li>They are all related to the REST API, like:</li>
 </ul>
-<pre><code>Jun 07 02:00:27 linode18 tomcat7[6286]: SEVERE: Mapped exception to response: 500 (Internal Server Error)
+<pre tabindex="0"><code>Jun 07 02:00:27 linode18 tomcat7[6286]: SEVERE: Mapped exception to response: 500 (Internal Server Error)
 Jun 07 02:00:27 linode18 tomcat7[6286]: javax.ws.rs.WebApplicationException
 Jun 07 02:00:27 linode18 tomcat7[6286]:         at org.dspace.rest.Resource.processException(Resource.java:151)
 Jun 07 02:00:27 linode18 tomcat7[6286]:         at org.dspace.rest.ItemsResource.getItems(ItemsResource.java:195)
@@ -346,7 +346,7 @@ Jun 07 02:00:27 linode18 tomcat7[6286]:         at com.sun.jersey.spi.container.
 </code></pre><ul>
 <li>And:</li>
 </ul>
-<pre><code>Jun 08 09:28:29 linode18 tomcat7[6286]: SEVERE: Mapped exception to response: 500 (Internal Server Error)
+<pre tabindex="0"><code>Jun 08 09:28:29 linode18 tomcat7[6286]: SEVERE: Mapped exception to response: 500 (Internal Server Error)
 Jun 08 09:28:29 linode18 tomcat7[6286]: javax.ws.rs.WebApplicationException
 Jun 08 09:28:29 linode18 tomcat7[6286]:         at org.dspace.rest.Resource.processFinally(Resource.java:169)
 Jun 08 09:28:29 linode18 tomcat7[6286]:         at org.dspace.rest.HandleResource.getObject(HandleResource.java:81)
@@ -356,7 +356,7 @@ Jun 08 09:28:29 linode18 tomcat7[6286]:         at java.lang.reflect.Method.invo
 </code></pre><ul>
 <li>And:</li>
 </ul>
-<pre><code>Jun 06 08:19:54 linode18 tomcat7[6286]: SEVERE: Mapped exception to response: 500 (Internal Server Error)
+<pre tabindex="0"><code>Jun 06 08:19:54 linode18 tomcat7[6286]: SEVERE: Mapped exception to response: 500 (Internal Server Error)
 Jun 06 08:19:54 linode18 tomcat7[6286]: javax.ws.rs.WebApplicationException
 Jun 06 08:19:54 linode18 tomcat7[6286]:         at org.dspace.rest.Resource.processException(Resource.java:151)
 Jun 06 08:19:54 linode18 tomcat7[6286]:         at org.dspace.rest.CollectionsResource.getCollectionItems(CollectionsResource.java:289)
@@ -366,12 +366,12 @@ Jun 06 08:19:54 linode18 tomcat7[6286]:         at java.lang.reflect.Method.invo
 </code></pre><ul>
 <li>Looking back, I see ~800 of these errors since I changed the database configuration last week:</li>
 </ul>
-<pre><code># journalctl --since=2020-06-04 --until=today -u tomcat7 | grep -c 'javax.ws.rs.WebApplicationException'
+<pre tabindex="0"><code># journalctl --since=2020-06-04 --until=today -u tomcat7 | grep -c 'javax.ws.rs.WebApplicationException'
 795
 </code></pre><ul>
 <li>And only ~280 in the entire month before that&hellip;</li>
 </ul>
-<pre><code># journalctl --since=2020-05-01 --until=2020-06-04 -u tomcat7 | grep -c 'javax.ws.rs.WebApplicationException'
+<pre tabindex="0"><code># journalctl --since=2020-05-01 --until=2020-06-04 -u tomcat7 | grep -c 'javax.ws.rs.WebApplicationException'
 286
 </code></pre><ul>
 <li>So it seems to be related to the database, perhaps that there are less connections in the pool?
@@ -390,11 +390,11 @@ Jun 06 08:19:54 linode18 tomcat7[6286]:         at java.lang.reflect.Method.invo
 </ul>
 </li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36
 </code></pre><ul>
 <li>Looking at the nginx access logs I see that, other than something that seems like Google Feedburner, all hosts using this user agent are all in Sweden!</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.*.gz | grep 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36' | grep -v '/feed' | awk '{print $1}' | sort | uniq -c | sort -n
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.*.gz | grep 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36' | grep -v '/feed' | awk '{print $1}' | sort | uniq -c | sort -n
    1624 192.36.136.246
    1627 192.36.241.95
    1629 192.165.45.204
@@ -419,7 +419,7 @@ Jun 06 08:19:54 linode18 tomcat7[6286]:         at java.lang.reflect.Method.invo
 <li>The earliest I see any of these hosts is 2020-06-05 (three days ago)</li>
 <li>I will purge them from the Solr statistics and add them to abusive IPs ipset in the Ansible deployment scripts</li>
 </ul>
-<pre><code>$ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
+<pre tabindex="0"><code>$ ./check-spider-ip-hits.sh -f /tmp/ips -s statistics -p
 Purging 1423 hits from 192.36.136.246 in statistics
 Purging 1387 hits from 192.36.241.95 in statistics
 Purging 1398 hits from 192.165.45.204 in statistics
@@ -480,7 +480,7 @@ Total number of bot hits purged: 29025
 </ul>
 </li>
 </ul>
-<pre><code>172.104.229.92 - - [13/Jun/2020:02:00:00 +0200] &quot;GET /rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=50&amp;offset=0 HTTP/1.1&quot; 403 260 &quot;-&quot; &quot;-&quot;
+<pre tabindex="0"><code>172.104.229.92 - - [13/Jun/2020:02:00:00 +0200] &quot;GET /rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=50&amp;offset=0 HTTP/1.1&quot; 403 260 &quot;-&quot; &quot;-&quot;
 </code></pre><ul>
 <li>I created an nginx map based on the host&rsquo;s IP address that sets a temporary user agent (ua) and then changed the conditional in the REST API location block so that it checks this mapped ua instead of the default one
 <ul>
@@ -497,11 +497,11 @@ Total number of bot hits purged: 29025
 </ul>
 </li>
 </ul>
-<pre><code>$ curl -s 'https://cgspace.cgiar.org/rest/handle/10568/51671?expand=collections' 'https://cgspace.cgiar.org/rest/handle/10568/89346?expand=collections' | grep -oE '10568/[0-9]+' | sort | uniq &gt; /tmp/cip-collections.txt
+<pre tabindex="0"><code>$ curl -s 'https://cgspace.cgiar.org/rest/handle/10568/51671?expand=collections' 'https://cgspace.cgiar.org/rest/handle/10568/89346?expand=collections' | grep -oE '10568/[0-9]+' | sort | uniq &gt; /tmp/cip-collections.txt
 </code></pre><ul>
 <li>Then I formatted it into a SQL query and exported a CSV:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value AS author, COUNT(*) FROM metadatavalue WHERE metadata_field_id = (SELECT metadata_field_id FROM metadatafieldregistry WHERE element = 'contributor' AND qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (SELECT item_id FROM collection2item WHERE collection_id IN (SELECT resource_id FROM hANDle WHERE hANDle IN ('10568/100533', '10568/100653', '10568/101955', '10568/106580', '10568/108469', '10568/51671', '10568/53085', '10568/53086', '10568/53087', '10568/53088', '10568/53089', '10568/53090', '10568/53091', '10568/53092', '10568/53093', '10568/53094', '10568/64874', '10568/69069', '10568/70150', '10568/88229', '10568/89346', '10568/89347', '10568/99301', '10568/99302', '10568/99303', '10568/99304', '10568/99428'))) GROUP BY text_value ORDER BY count DESC) TO /tmp/cip-authors.csv WITH CSV;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value AS author, COUNT(*) FROM metadatavalue WHERE metadata_field_id = (SELECT metadata_field_id FROM metadatafieldregistry WHERE element = 'contributor' AND qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (SELECT item_id FROM collection2item WHERE collection_id IN (SELECT resource_id FROM hANDle WHERE hANDle IN ('10568/100533', '10568/100653', '10568/101955', '10568/106580', '10568/108469', '10568/51671', '10568/53085', '10568/53086', '10568/53087', '10568/53088', '10568/53089', '10568/53090', '10568/53091', '10568/53092', '10568/53093', '10568/53094', '10568/64874', '10568/69069', '10568/70150', '10568/88229', '10568/89346', '10568/89347', '10568/99301', '10568/99302', '10568/99303', '10568/99304', '10568/99428'))) GROUP BY text_value ORDER BY count DESC) TO /tmp/cip-authors.csv WITH CSV;
 COPY 3917
 </code></pre><h2 id="2020-06-15">2020-06-15</h2>
 <ul>
@@ -632,7 +632,7 @@ COPY 3917
 </li>
 <li>I also notice that there is a <a href="https://www.crossref.org/services/funder-registry/">CrossRef funders registry</a> with 23,000+ funders that you can <a href="https://gitlab.com/crossref/open_funder_registry">download as RDF</a> or <a href="https://www.crossref.org/education/funder-registry/accessing-the-funder-registry/">access via an API</a></li>
 </ul>
-<pre><code>$ http 'https://api.crossref.org/funders?query=Bill+and+Melinda+Gates&amp;mailto=a.orth@cgiar.org'
+<pre tabindex="0"><code>$ http 'https://api.crossref.org/funders?query=Bill+and+Melinda+Gates&amp;mailto=a.orth@cgiar.org'
 </code></pre><ul>
 <li>Searching for &ldquo;Bill and Melinda Gates&rdquo; we can see the <code>name</code> literal and a list of <code>alt-names</code> literals
 <ul>
@@ -645,7 +645,7 @@ COPY 3917
 <li>I made a pull request on CG Core v2 to recommend using persistent identifiers for DOIs and ORCID iDs (<a href="https://github.com/AgriculturalSemantics/cg-core/pull/26">#26</a>)</li>
 <li>I exported sponsors/funders from CGSpace and wrote a script to query the CrossRef API for matches:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29) TO /tmp/2020-06-29-sponsors.csv;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29) TO /tmp/2020-06-29-sponsors.csv;
 COPY 682
 </code></pre><ul>
 <li>The script is <code>crossref-funders-lookup.py</code> and it is based on <code>agrovoc-lookup.py</code>
@@ -656,7 +656,7 @@ COPY 682
 </li>
 <li>I tested the script on our funders:</li>
 </ul>
-<pre><code>$ ./crossref-funders-lookup.py -i /tmp/2020-06-29-sponsors.csv -om /tmp/sponsors-matched.txt -or /tmp/sponsors-rejected.txt -d -e blah@blah.com
+<pre tabindex="0"><code>$ ./crossref-funders-lookup.py -i /tmp/2020-06-29-sponsors.csv -om /tmp/sponsors-matched.txt -or /tmp/sponsors-rejected.txt -d -e blah@blah.com
 $ wc -l /tmp/2020-06-29-sponsors.csv 
 682 /tmp/2020-06-29-sponsors.csv
 $ wc -l /tmp/sponsors-*
@@ -684,7 +684,7 @@ $ wc -l /tmp/sponsors-*
 </li>
 <li>Gabriela from CIP sent me a list of erroneously added CIP subjects to remove from CGSpace:</li>
 </ul>
-<pre><code>$ cat /tmp/2020-06-30-remove-cip-subjects.csv 
+<pre tabindex="0"><code>$ cat /tmp/2020-06-30-remove-cip-subjects.csv 
 cg.subject.cip
 INTEGRATED PEST MANAGEMENT
 ORANGE FLESH SWEET POTATOES
@@ -701,7 +701,7 @@ $ ./delete-metadata-values.py -i /tmp/2020-06-30-remove-cip-subjects.csv -db dsp
 </code></pre><ul>
 <li>She also wants to change their <code>SWEET POTATOES</code> term to <code>SWEETPOTATOES</code>, both in the CIP subject list and existing items so I updated those too:</li>
 </ul>
-<pre><code>$ cat /tmp/2020-06-30-fix-cip-subjects.csv 
+<pre tabindex="0"><code>$ cat /tmp/2020-06-30-fix-cip-subjects.csv 
 cg.subject.cip,correct
 SWEET POTATOES,SWEETPOTATOES
 $ ./fix-metadata-values.py -i /tmp/2020-06-30-fix-cip-subjects.csv -db dspace -u dspace -p 'fuuu' -f cg.subject.cip -t correct -m 127 -d
@@ -710,7 +710,7 @@ $ ./fix-metadata-values.py -i /tmp/2020-06-30-fix-cip-subjects.csv -db dspace -u
 <li>I ran the fixes and deletes on CGSpace, but not on DSpace Test yet because those scripts need updating for DSpace 6 UUIDs</li>
 <li>I spent about two hours manually checking our sponsors that were rejected from CrossRef and found about fifty-five corrections that I ran on CGSpace:</li>
 </ul>
-<pre><code>$ cat 2020-06-29-fix-sponsors.csv
+<pre tabindex="0"><code>$ cat 2020-06-29-fix-sponsors.csv
 dc.description.sponsorship,correct
 &quot;Conselho Nacional de Desenvolvimento Científico e Tecnológico, Brazil&quot;,&quot;Conselho Nacional de Desenvolvimento Científico e Tecnológico&quot;
 &quot;Claussen Simon Stiftung&quot;,&quot;Claussen-Simon-Stiftung&quot;
@@ -772,7 +772,7 @@ $ ./fix-metadata-values.py -i /tmp/2020-06-29-fix-sponsors.csv -db dspace -u dsp
 </code></pre><ul>
 <li>Then I started a full re-index at batch CPU priority:</li>
 </ul>
-<pre><code>$ time chrt --batch 0 dspace index-discovery -b
+<pre tabindex="0"><code>$ time chrt --batch 0 dspace index-discovery -b
 
 real    99m16.230s
 user    11m23.245s
@@ -784,7 +784,7 @@ sys     2m56.635s
 </ul>
 </li>
 </ul>
-<pre><code>$ export JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot;
 $ dspace metadata-export -i 10568/1 -f /tmp/ilri.cs
 $ csvcut -c 'id,cg.subject.ilri[],cg.subject.ilri[en_US],dc.subject[en_US]' /tmp/ilri.csv &gt; /tmp/ilri-covid19.csv
 </code></pre><ul>

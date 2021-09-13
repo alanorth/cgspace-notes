@@ -10,14 +10,14 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/categories/notes/" />
-<meta property="og:updated_time" content="2021-09-04T21:16:03+03:00" />
+<meta property="og:updated_time" content="2021-09-06T12:31:11+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -94,11 +94,11 @@
 <ul>
 <li>I want to upgrade DSpace Test to DSpace 5.8 so I took a backup of its current database just in case:</li>
 </ul>
-<pre><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
+<pre tabindex="0"><code>$ pg_dump -b -v -o --format=custom -U dspace -f dspace-2018-07-01.backup dspace
 </code></pre><ul>
 <li>During the <code>mvn package</code> stage on the 5.8 branch I kept getting issues with java running out of memory:</li>
 </ul>
-<pre><code>There is insufficient memory for the Java Runtime Environment to continue.
+<pre tabindex="0"><code>There is insufficient memory for the Java Runtime Environment to continue.
 </code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2018-07/'>Read more →</a>
 </article> 
@@ -127,12 +127,12 @@
 <li>I added the new CCAFS Phase II Project Tag <code>PII-FP1_PACCA2</code> and merged it into the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/379">#379</a>)</li>
 <li>I proofed and tested the ILRI author corrections that Peter sent back to me this week:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3 -n
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3 -n
 </code></pre><ul>
 <li>I think a sane proofing workflow in OpenRefine is to apply the custom text facets for check/delete/remove and illegal characters that I developed in <a href="/cgspace-notes/2018-03/">March, 2018</a></li>
 <li>Time to index ~70,000 items on CGSpace:</li>
 </ul>
-<pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
+<pre tabindex="0"><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
 
 real    74m42.646s
 user    8m5.056s
@@ -258,19 +258,19 @@ sys     2m7.289s
 <li>In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;</li>
 <li>And just before that I see this:</li>
 </ul>
-<pre><code>Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
+<pre tabindex="0"><code>Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
 </code></pre><ul>
 <li>Ah hah! So the pool was actually empty!</li>
 <li>I need to increase that, let&rsquo;s try to bump it up from 50 to 75</li>
 <li>After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw</li>
 <li>I notice this error quite a few times in dspace.log:</li>
 </ul>
-<pre><code>2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
+<pre tabindex="0"><code>2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
 org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse 'dateIssued_keyword:[1976+TO+1979]': Encountered &quot; &quot;]&quot; &quot;] &quot;&quot; at line 1, column 32.
 </code></pre><ul>
 <li>And there are many of these errors every day for the past month:</li>
 </ul>
-<pre><code>$ grep -c &quot;Error while searching for sidebar facets&quot; dspace.log.*
+<pre tabindex="0"><code>$ grep -c &quot;Error while searching for sidebar facets&quot; dspace.log.*
 dspace.log.2017-11-21:4
 dspace.log.2017-11-22:1
 dspace.log.2017-11-23:4
@@ -366,12 +366,12 @@ dspace.log.2018-01-02:34
 <ul>
 <li>Today there have been no hits by CORE and no alerts from Linode (coincidence?)</li>
 </ul>
-<pre><code># grep -c &quot;CORE&quot; /var/log/nginx/access.log
+<pre tabindex="0"><code># grep -c &quot;CORE&quot; /var/log/nginx/access.log
 0
 </code></pre><ul>
 <li>Generate list of authors on CGSpace for Peter to go through and correct:</li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
 COPY 54701
 </code></pre>
   <a href='https://alanorth.github.io/cgspace-notes/2017-11/'>Read more →</a>
@@ -395,7 +395,7 @@ COPY 54701
 <ul>
 <li>Peter emailed to point out that many items in the <a href="https://cgspace.cgiar.org/handle/10568/2703">ILRI archive collection</a> have multiple handles:</li>
 </ul>
-<pre><code>http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
+<pre tabindex="0"><code>http://hdl.handle.net/10568/78495||http://hdl.handle.net/10568/79336
 </code></pre><ul>
 <li>There appears to be a pattern but I&rsquo;ll have to look a bit closer and try to clean them up automatically, either in SQL or in OpenRefine</li>
 <li>Add Katherine Lutz to the groups for content submission and edit steps of the CGIAR System collections</li>

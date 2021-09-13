@@ -50,7 +50,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
     357 207.46.13.1
     903 54.70.40.11
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -141,7 +141,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 <li>Linode alerted that CGSpace (linode18) had a higher outbound traffic rate than normal early this morning</li>
 <li>I don&rsquo;t see anything interesting in the web server logs around that time though:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
      92 40.77.167.4
      99 210.7.29.100
     120 38.126.157.45
@@ -155,7 +155,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 </code></pre><ul>
 <li>Analyzing the types of requests made by the top few IPs during that time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | grep 54.70.40.11 | grep -o -E &quot;(bitstream|discover|handle)&quot; | sort | uniq -c
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;02/Jan/2019:0(1|2|3)&quot; | grep 54.70.40.11 | grep -o -E &quot;(bitstream|discover|handle)&quot; | sort | uniq -c
      30 bitstream
     534 discover
     352 handle
@@ -168,7 +168,7 @@ I don&rsquo;t see anything interesting in the web server logs around that time t
 <li>It&rsquo;s not clear to me what was causing the outbound traffic spike</li>
 <li>Oh nice! The once-per-year cron job for rotating the Solr statistics actually worked now (for the first time ever!):</li>
 </ul>
-<pre><code>Moving: 81742 into core statistics-2010
+<pre tabindex="0"><code>Moving: 81742 into core statistics-2010
 Moving: 1837285 into core statistics-2011
 Moving: 3764612 into core statistics-2012
 Moving: 4557946 into core statistics-2013
@@ -185,7 +185,7 @@ Moving: 18497180 into core statistics-2018
 <ul>
 <li>Update local Docker image for DSpace PostgreSQL, re-using the existing data volume:</li>
 </ul>
-<pre><code>$ sudo docker pull postgres:9.6-alpine
+<pre tabindex="0"><code>$ sudo docker pull postgres:9.6-alpine
 $ sudo docker rm dspacedb
 $ sudo docker run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 </code></pre><ul>
@@ -197,7 +197,7 @@ $ sudo docker run --name dspacedb -v /home/aorth/.local/lib/containers/volumes/d
 </li>
 <li>The JSPUI application—which Listings and Reports depends upon—also does not load, though the error is perhaps unrelated:</li>
 </ul>
-<pre><code>2019-01-03 14:45:21,727 INFO  org.dspace.browse.BrowseEngine @ anonymous:session_id=9471D72242DAA05BCC87734FE3C66EA6:ip_addr=127.0.0.1:browse_mini:
+<pre tabindex="0"><code>2019-01-03 14:45:21,727 INFO  org.dspace.browse.BrowseEngine @ anonymous:session_id=9471D72242DAA05BCC87734FE3C66EA6:ip_addr=127.0.0.1:browse_mini:
 2019-01-03 14:45:21,971 INFO  org.dspace.app.webui.discovery.DiscoverUtility @ facets for scope, null: 23
 2019-01-03 14:45:22,115 WARN  org.dspace.app.webui.servlet.InternalErrorServlet @ :session_id=9471D72242DAA05BCC87734FE3C66EA6:internal_error:-- URL Was: http://localhost:8080/jspui/internal-error
 -- Method: GET
@@ -283,7 +283,7 @@ org.apache.jasper.JasperException: /home.jsp (line: [214], column: [1]) /discove
 <ul>
 <li>Linode sent a message last night that CGSpace (linode18) had high CPU usage, but I don&rsquo;t see anything around that time in the web server logs:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Jan/2019:1(7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;03/Jan/2019:1(7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     189 207.46.13.192
     217 31.6.77.23
     340 66.249.70.29
@@ -298,7 +298,7 @@ org.apache.jasper.JasperException: /home.jsp (line: [214], column: [1]) /discove
 <li>I&rsquo;m thinking about trying to validate our <code>dc.subject</code> terms against <a href="http://aims.fao.org/agrovoc/webservices">AGROVOC webservices</a></li>
 <li>There seem to be a few APIs and the documentation is kinda confusing, but I found this REST endpoint that does work well, for example searching for <code>SOIL</code>:</li>
 </ul>
-<pre><code>$ http http://agrovoc.uniroma2.it/agrovoc/rest/v1/search?query=SOIL&amp;lang=en
+<pre tabindex="0"><code>$ http http://agrovoc.uniroma2.it/agrovoc/rest/v1/search?query=SOIL&amp;lang=en
 HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *
 Connection: Keep-Alive
@@ -345,7 +345,7 @@ X-Frame-Options: ALLOW-FROM http://aims.fao.org
 <li>The API does not appear to be case sensitive (searches for <code>SOIL</code> and <code>soil</code> return the same thing)</li>
 <li>I&rsquo;m a bit confused that there&rsquo;s no obvious return code or status when a term is not found, for example <code>SOILS</code>:</li>
 </ul>
-<pre><code>HTTP/1.1 200 OK
+<pre tabindex="0"><code>HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *
 Connection: Keep-Alive
 Content-Length: 367
@@ -381,7 +381,7 @@ X-Frame-Options: ALLOW-FROM http://aims.fao.org
 <li>I guess the <code>results</code> object will just be empty&hellip;</li>
 <li>Another way would be to try with SPARQL, perhaps using the Python 2.7 <a href="https://pypi.org/project/sparql-client/">sparql-client</a>:</li>
 </ul>
-<pre><code>$ python2.7 -m virtualenv /tmp/sparql
+<pre tabindex="0"><code>$ python2.7 -m virtualenv /tmp/sparql
 $ . /tmp/sparql/bin/activate
 $ pip install sparql-client ipython
 $ ipython
@@ -466,7 +466,7 @@ In [14]: for row in result.fetchone():
 </li>
 <li>I am testing the speed of the WorldFish DSpace repository&rsquo;s REST API and it&rsquo;s five to ten times faster than CGSpace as I tested in <a href="/cgspace-notes/2018-10/">2018-10</a>:</li>
 </ul>
-<pre><code>$ time http --print h 'https://digitalarchive.worldfishcenter.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
+<pre tabindex="0"><code>$ time http --print h 'https://digitalarchive.worldfishcenter.org/rest/items?expand=metadata,bitstreams,parentCommunityList&amp;limit=100&amp;offset=0'
 
 0.16s user 0.03s system 3% cpu 5.185 total
 0.17s user 0.02s system 2% cpu 7.123 total
@@ -474,7 +474,7 @@ In [14]: for row in result.fetchone():
 </code></pre><ul>
 <li>In other news, Linode sent a mail last night that the CPU load on CGSpace (linode18) was high, here are the top IPs in the logs around those few hours:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;14/Jan/2019:(17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;14/Jan/2019:(17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     157 31.6.77.23
     192 54.70.40.11
     202 66.249.64.157
@@ -599,11 +599,11 @@ In [14]: for row in result.fetchone():
 <ul>
 <li>In the Solr admin UI I see the following error:</li>
 </ul>
-<pre><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher
+<pre tabindex="0"><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher
 </code></pre><ul>
 <li>Looking in the Solr log I see this:</li>
 </ul>
-<pre><code>2019-01-16 13:37:55,395 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2018]: Error opening new searcher
+<pre tabindex="0"><code>2019-01-16 13:37:55,395 ERROR org.apache.solr.core.CoreContainer @ Error creating core [statistics-2018]: Error opening new searcher
 org.apache.solr.common.SolrException: Error opening new searcher
     at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:873)
     at org.apache.solr.core.SolrCore.&lt;init&gt;(SolrCore.java:646)
@@ -721,7 +721,7 @@ Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed 
 <li>For 2019-01 alone the Usage Stats are already around 1.2 million</li>
 <li>I tried to look in the nginx logs to see how many raw requests there are so far this month and it&rsquo;s about 1.4 million:</li>
 </ul>
-<pre><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Jan/2019&quot;
+<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Jan/2019&quot;
 1442874
 
 real    0m17.161s
@@ -786,7 +786,7 @@ sys     0m2.396s
 <ul>
 <li>That&rsquo;s weird, I logged into DSpace Test (linode19) and it says it has been up for 213 days:</li>
 </ul>
-<pre><code># w
+<pre tabindex="0"><code># w
  04:46:14 up 213 days,  7:25,  4 users,  load average: 1.94, 1.50, 1.35
 </code></pre><ul>
 <li>I&rsquo;ve definitely rebooted it several times in the past few months&hellip; according to <code>journalctl -b</code> it was a few weeks ago on 2019-01-02</li>
@@ -803,7 +803,7 @@ sys     0m2.396s
 <li>Investigating running Tomcat 7 on Ubuntu 18.04 with the tarball and a custom systemd package instead of waiting for our DSpace to get compatible with Ubuntu 18.04&rsquo;s Tomcat 8.5</li>
 <li>I could either run with a simple <code>tomcat7.service</code> like this:</li>
 </ul>
-<pre><code>[Unit]
+<pre tabindex="0"><code>[Unit]
 Description=Apache Tomcat 7 Web Application Container
 After=network.target
 [Service]
@@ -817,7 +817,7 @@ WantedBy=multi-user.target
 </code></pre><ul>
 <li>Or try to use adapt a real systemd service like Arch Linux&rsquo;s:</li>
 </ul>
-<pre><code>[Unit]
+<pre tabindex="0"><code>[Unit]
 Description=Tomcat 7 servlet container
 After=network.target
 
@@ -859,7 +859,7 @@ WantedBy=multi-user.target
 <li>I think I might manage this the same way I do the restic releases in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a>, where I download a specific version and symlink to some generic location without the version number</li>
 <li>I verified that there is indeed an issue with sharded Solr statistics cores on DSpace, which will cause inaccurate results in the dspace-statistics-api:</li>
 </ul>
-<pre><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view' | grep numFound
+<pre tabindex="0"><code>$ http 'http://localhost:3000/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;33&quot; start=&quot;0&quot;&gt;
 $ http 'http://localhost:3000/solr/statistics-2018/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;241&quot; start=&quot;0&quot;&gt;
@@ -868,7 +868,7 @@ $ http 'http://localhost:3000/solr/statistics-2018/select?indent=on&amp;rows=0&a
 <li>I don&rsquo;t think the <a href="https://solrclient.readthedocs.io/en/latest/">SolrClient library</a> we are currently using supports these type of queries so we might have to just do raw queries with requests</li>
 <li>The <a href="https://github.com/django-haystack/pysolr">pysolr</a> library says it supports multicore indexes, but I am not sure it does (or at least not with our setup):</li>
 </ul>
-<pre><code>import pysolr
+<pre tabindex="0"><code>import pysolr
 solr = pysolr.Solr('http://localhost:3000/solr/statistics')
 results = solr.search('type:2', **{'fq': 'isBot:false AND statistics_type:view', 'facet': 'true', 'facet.field': 'id', 'facet.mincount': 1, 'facet.limit': 10, 'facet.offset': 0, 'rows': 0})
 print(results.facets['facet_fields'])
@@ -876,7 +876,7 @@ print(results.facets['facet_fields'])
 </code></pre><ul>
 <li>If I double check one item from above, for example <code>77572</code>, it appears this is only working on the current statistics core and not the shards:</li>
 </ul>
-<pre><code>import pysolr
+<pre tabindex="0"><code>import pysolr
 solr = pysolr.Solr('http://localhost:3000/solr/statistics')
 results = solr.search('type:2 id:77572', **{'fq': 'isBot:false AND statistics_type:view'})
 print(results.hits)
@@ -889,12 +889,12 @@ print(results.hits)
 <li>So I guess I need to figure out how to use join queries and maybe even switch to using raw Python requests with JSON</li>
 <li>This enumerates the list of Solr cores and returns JSON format:</li>
 </ul>
-<pre><code>http://localhost:3000/solr/admin/cores?action=STATUS&amp;wt=json
+<pre tabindex="0"><code>http://localhost:3000/solr/admin/cores?action=STATUS&amp;wt=json
 </code></pre><ul>
 <li>I think I figured out how to search across shards, I needed to give the whole URL to each other core</li>
 <li>Now I get more results when I start adding the other statistics cores:</li>
 </ul>
-<pre><code>$ http 'http://localhost:3000/solr/statistics/select?&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound&lt;result name=&quot;response&quot; numFound=&quot;2061320&quot; start=&quot;0&quot;&gt;
+<pre tabindex="0"><code>$ http 'http://localhost:3000/solr/statistics/select?&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound&lt;result name=&quot;response&quot; numFound=&quot;2061320&quot; start=&quot;0&quot;&gt;
 $ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;16280292&quot; start=&quot;0&quot; maxScore=&quot;1.0&quot;&gt;
 $ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/solr/statistics-2018,localhost:8081/solr/statistics-2017&amp;indent=on&amp;rows=0&amp;q=*:*' | grep numFound
@@ -913,7 +913,7 @@ $ http 'http://localhost:3000/solr/statistics/select?&amp;shards=localhost:8081/
 </ul>
 </li>
 </ul>
-<pre><code>$ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics,localhost:8081/solr/statistics-2018' | grep numFound
+<pre tabindex="0"><code>$ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics,localhost:8081/solr/statistics-2018' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;275&quot; start=&quot;0&quot; maxScore=&quot;12.205825&quot;&gt;
 $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=type:2+id:11576&amp;fq=isBot:false&amp;fq=statistics_type:view&amp;shards=localhost:8081/solr/statistics-2018' | grep numFound
 &lt;result name=&quot;response&quot; numFound=&quot;241&quot; start=&quot;0&quot; maxScore=&quot;12.205825&quot;&gt;
@@ -924,7 +924,7 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 <li>I deployed it on CGSpace (linode18) and restarted the indexer as well</li>
 <li>Linode sent an alert that CGSpace (linode18) was using high CPU this afternoon, the top ten IPs during that time were:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;22/Jan/2019:1(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;22/Jan/2019:1(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     155 40.77.167.106
     176 2003:d5:fbda:1c00:1106:c7a0:4b17:3af8
     189 107.21.16.70
@@ -939,12 +939,12 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 <li>35.237.175.180 is known to us</li>
 <li>I don&rsquo;t think we&rsquo;ve seen 196.191.127.37 before. Its user agent is:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/7.0.185.1002 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/7.0.185.1002 Safari/537.36
 </code></pre><ul>
 <li>Interestingly this IP is located in Addis Ababa&hellip;</li>
 <li>Another interesting one is 154.113.73.30, which is apparently at IITA Nigeria and uses the user agent:</li>
 </ul>
-<pre><code>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
 </code></pre><h2 id="2019-01-23">2019-01-23</h2>
 <ul>
 <li>Peter noticed that some goo.gl links in our tweets from Feedburner are broken, for example this one from last week:</li>
@@ -979,13 +979,13 @@ $ http 'http://localhost:8081/solr/statistics/select?indent=on&amp;rows=0&amp;q=
 <p>I got a list of their collections from the CGSpace XMLUI and then used an SQL query to dump the unique values to CSV:</p>
 </li>
 </ul>
-<pre><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/35501', '10568/41728', '10568/49622', '10568/56589', '10568/56592', '10568/65064', '10568/65718', '10568/65719', '10568/67373', '10568/67731', '10568/68235', '10568/68546', '10568/69089', '10568/69160', '10568/69419', '10568/69556', '10568/70131', '10568/70252', '10568/70978'))) group by text_value order by count desc) to /tmp/bioversity-affiliations.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/35501', '10568/41728', '10568/49622', '10568/56589', '10568/56592', '10568/65064', '10568/65718', '10568/65719', '10568/67373', '10568/67731', '10568/68235', '10568/68546', '10568/69089', '10568/69160', '10568/69419', '10568/69556', '10568/70131', '10568/70252', '10568/70978'))) group by text_value order by count desc) to /tmp/bioversity-affiliations.csv with csv;
 COPY 1109
 </code></pre><ul>
 <li>Send a mail to the dspace-tech mailing list about the OpenSearch issue we had with the Livestock CRP</li>
 <li>Linode sent an alert that CGSpace (linode18) had a high load this morning, here are the top ten IPs during that time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     222 54.226.25.74
     241 40.77.167.13
     272 46.101.86.248
@@ -1019,7 +1019,7 @@ COPY 1109
 <p>Just to make sure these were not uploaded by the user or something, I manually forced the regeneration of these with DSpace&rsquo;s <code>filter-media</code>:</p>
 </li>
 </ul>
-<pre><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace filter-media -v -f -i 10568/98390
+<pre tabindex="0"><code>$ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace filter-media -v -f -i 10568/98390
 $ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace filter-media -v -f -i 10568/98391
 </code></pre><ul>
 <li>Both of these were successful, so there must have been an update to ImageMagick or Ghostscript in Ubuntu since early 2018-12</li>
@@ -1034,7 +1034,7 @@ $ schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace fi
 <li>I re-compiled Arch&rsquo;s ghostscript with the patch and then I was able to generate a thumbnail from one of the <a href="https://cgspace.cgiar.org/handle/10568/98390">troublesome PDFs</a></li>
 <li>Before and after:</li>
 </ul>
-<pre><code>$ identify Food\ safety\ Kenya\ fruits.pdf\[0\]
+<pre tabindex="0"><code>$ identify Food\ safety\ Kenya\ fruits.pdf\[0\]
 zsh: abort (core dumped)  identify Food\ safety\ Kenya\ fruits.pdf\[0\]
 $ identify Food\ safety\ Kenya\ fruits.pdf\[0\]
 Food safety Kenya fruits.pdf[0]=&gt;Food safety Kenya fruits.pdf PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.000u 0:00.000
@@ -1044,7 +1044,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <li>I told Atmire to go ahead with the Metadata Quality Module addition based on our <code>5_x-dev</code> branch (<a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=657">657</a>)</li>
 <li>Linode sent alerts last night to say that CGSpace (linode18) was using high CPU last night, here are the top ten IPs from the nginx logs around that time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:(18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;23/Jan/2019:(18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     305 3.81.136.184
     306 3.83.14.11
     306 52.54.252.47
@@ -1059,7 +1059,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <li>45.5.186.2 is CIAT and 66.249.64.155 is Google&hellip; hmmm.</li>
 <li>Linode sent another alert this morning, here are the top ten IPs active during that time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;24/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;24/Jan/2019:0(4|5|6)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     360 3.89.134.93
     362 34.230.15.139
     366 100.24.48.177
@@ -1073,7 +1073,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 </code></pre><ul>
 <li>Just double checking what CIAT is doing, they are mainly hitting the REST API:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;24/Jan/2019:&quot; | grep 45.5.186.2 | grep -Eo &quot;GET /(handle|bitstream|rest|oai)/&quot; | sort | uniq -c | sort -n
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;24/Jan/2019:&quot; | grep 45.5.186.2 | grep -Eo &quot;GET /(handle|bitstream|rest|oai)/&quot; | sort | uniq -c | sort -n
 </code></pre><ul>
 <li>CIAT&rsquo;s community currently has 12,000 items in it so this is normal</li>
 <li>The issue with goo.gl links that we saw yesterday appears to be resolved, as links are working again&hellip;</li>
@@ -1102,7 +1102,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <ul>
 <li>Linode sent an email that the server was using a lot of CPU this morning, and these were the top IPs in the web server logs at the time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;27/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;27/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     189 40.77.167.108
     191 157.55.39.2
     263 34.218.226.147
@@ -1132,7 +1132,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 </li>
 <li>Linode alerted that CGSpace (linode18) was using too much CPU again this morning, here are the active IPs from the web server log at the time:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:0(6|7|8)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
      67 207.46.13.50
     105 41.204.190.40
     117 34.218.226.147
@@ -1153,7 +1153,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 </li>
 <li>Last night Linode sent an alert that CGSpace (linode18) was using high CPU, here are the most active IPs in the hours just before, during, and after the alert:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:(17|18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Jan/2019:(17|18|19|20|21)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     310 45.5.184.2
     425 5.143.231.39
     526 54.70.40.11
@@ -1168,12 +1168,12 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <li>Of course there is CIAT&rsquo;s <code>45.5.186.2</code>, but also <code>45.5.184.2</code> appears to be CIAT&hellip; I wonder why they have two harvesters?</li>
 <li><code>199.47.87.140</code> and <code>199.47.87.141</code> is TurnItIn with the following user agent:</li>
 </ul>
-<pre><code>TurnitinBot (https://turnitin.com/robot/crawlerinfo.html)
+<pre tabindex="0"><code>TurnitinBot (https://turnitin.com/robot/crawlerinfo.html)
 </code></pre><h2 id="2019-01-29">2019-01-29</h2>
 <ul>
 <li>Linode sent an alert about CGSpace (linode18) CPU usage this morning, here are the top IPs in the web server logs just before, during, and after the alert:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;29/Jan/2019:0(3|4|5|6|7)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;29/Jan/2019:0(3|4|5|6|7)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     334 45.5.184.72
     429 66.249.66.223
     522 35.237.175.180
@@ -1198,7 +1198,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <ul>
 <li>Got another alert from Linode about CGSpace (linode18) this morning, here are the top IPs before, during, and after the alert:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:0(5|6|7|8|9)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     273 46.101.86.248
     301 35.237.175.180
     334 45.5.184.72
@@ -1216,7 +1216,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <ul>
 <li>Linode sent alerts about CGSpace (linode18) last night and this morning, here are the top IPs before, during, and after those times:</li>
 </ul>
-<pre><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:(16|17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;30/Jan/2019:(16|17|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
     436 18.196.196.108
     460 157.55.39.168
     460 207.46.13.96
@@ -1242,7 +1242,7 @@ identify: CorruptImageProfile `xmp' @ warning/profile.c/SetImageProfileInternal/
 <li><code>45.5.186.2</code> and <code>45.5.184.2</code> are CIAT as always</li>
 <li><code>85.25.237.71</code> is some new server in Germany that I&rsquo;ve never seen before with the user agent:</li>
 </ul>
-<pre><code>Linguee Bot (http://www.linguee.com/bot; bot@linguee.com)
+<pre tabindex="0"><code>Linguee Bot (http://www.linguee.com/bot; bot@linguee.com)
 </code></pre><!-- raw HTML omitted -->
 
   

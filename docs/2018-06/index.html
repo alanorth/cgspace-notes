@@ -58,7 +58,7 @@ real    74m42.646s
 user    8m5.056s
 sys     2m7.289s
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -154,12 +154,12 @@ sys     2m7.289s
 <li>I added the new CCAFS Phase II Project Tag <code>PII-FP1_PACCA2</code> and merged it into the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/379">#379</a>)</li>
 <li>I proofed and tested the ILRI author corrections that Peter sent back to me this week:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3 -n
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3 -n
 </code></pre><ul>
 <li>I think a sane proofing workflow in OpenRefine is to apply the custom text facets for check/delete/remove and illegal characters that I developed in <a href="/cgspace-notes/2018-03/">March, 2018</a></li>
 <li>Time to index ~70,000 items on CGSpace:</li>
 </ul>
-<pre><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
+<pre tabindex="0"><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
 
 real    74m42.646s
 user    8m5.056s
@@ -193,19 +193,19 @@ sys     2m7.289s
 <li>I uploaded fixes for all those now, but I will continue with the rest of the data later</li>
 <li>Regarding the SQL migration errors, Atmire told me I need to run some migrations manually in PostgreSQL:</li>
 </ul>
-<pre><code>delete from schema_version where version = '5.6.2015.12.03.2';
+<pre tabindex="0"><code>delete from schema_version where version = '5.6.2015.12.03.2';
 update schema_version set version = '5.6.2015.12.03.2' where version = '5.5.2015.12.03.2';
 update schema_version set version = '5.8.2015.12.03.3' where version = '5.5.2015.12.03.3';
 </code></pre><ul>
 <li>And then I need to ignore the ignored ones:</li>
 </ul>
-<pre><code>$ ~/dspace/bin/dspace database migrate ignored
+<pre tabindex="0"><code>$ ~/dspace/bin/dspace database migrate ignored
 </code></pre><ul>
 <li>Now DSpace starts up properly!</li>
 <li>Gabriela from CIP got back to me about the author names we were correcting on CGSpace</li>
 <li>I did a quick sanity check on them and then did a test import with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897"><code>fix-metadata-value.py</code></a> script:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2018-06-08-CIP-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-06-08-CIP-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3
 </code></pre><ul>
 <li>I will apply them on CGSpace tomorrow I think&hellip;</li>
 </ul>
@@ -220,7 +220,7 @@ update schema_version set version = '5.8.2015.12.03.3' where version = '5.5.2015
 <li>I spent some time removing the Atmire Metadata Quality Module (MQM) from the proposed DSpace 5.8 changes</li>
 <li>After removing all code mentioning MQM, mqm, metadata-quality, batchedit, duplicatechecker, etc, I think I got most of it removed, but there is a Spring error during Tomcat startup:</li>
 </ul>
-<pre><code> INFO [org.dspace.servicemanager.DSpaceServiceManager] Shutdown DSpace core service manager
+<pre tabindex="0"><code> INFO [org.dspace.servicemanager.DSpaceServiceManager] Shutdown DSpace core service manager
 Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'org.dspace.servicemanager.spring.DSpaceBeanPostProcessor#0' defined in class path resource [spring/spring-dspace-applicationContext.xml]: Unsatisfied dependency expressed through constructor argument with index 0 of type [org.dspace.servicemanager.config.DSpaceConfigurationService]: : Cannot find class [com.atmire.dspace.discovery.ItemCollectionPlugin] for bean with name 'itemCollectionPlugin' defined in file [/home/aorth/dspace/config/spring/api/discovery.xml];
 </code></pre><ul>
 <li>I can fix this by commenting out the <code>ItemCollectionPlugin</code> line of <code>discovery.xml</code>, but from looking at the git log I&rsquo;m not actually sure if that is related to MQM or not</li>
@@ -335,7 +335,7 @@ Failed to startup the DSpace Service Manager: failure starting up spring service
 </ul>
 </li>
 </ul>
-<pre><code>or(
+<pre tabindex="0"><code>or(
   value.contains('€'),
   value.contains('6g'),
   value.contains('6m'),
@@ -357,24 +357,24 @@ Failed to startup the DSpace Service Manager: failure starting up spring service
 <li>Elizabeth from CIAT contacted me to ask if I could add ORCID identifiers to all of Robin Buruchara&rsquo;s items</li>
 <li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-13-Robin-Buruchara.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-13-Robin-Buruchara.csv -db dspace -u dspace -p 'fuuu'
 </code></pre><ul>
 <li>The contents of <code>2018-06-13-Robin-Buruchara.csv</code> were:</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Buruchara, Robin&quot;,Robin Buruchara: 0000-0003-0934-1218
 &quot;Buruchara, Robin A.&quot;,Robin Buruchara: 0000-0003-0934-1218
 </code></pre><ul>
 <li>On a hunch I checked to see if CGSpace&rsquo;s bitstream cleanup was working properly and of course it&rsquo;s broken:</li>
 </ul>
-<pre><code>$ dspace cleanup -v
+<pre tabindex="0"><code>$ dspace cleanup -v
 ...
 Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(152402) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>As always, the solution is to delete that ID manually in PostgreSQL:</li>
 </ul>
-<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (152402);'
+<pre tabindex="0"><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (152402);'
 UPDATE 1
 </code></pre><h2 id="2018-06-14">2018-06-14</h2>
 <ul>
@@ -387,7 +387,7 @@ UPDATE 1
 <ul>
 <li>I was restoring a PostgreSQL dump on my test machine and found a way to restore the CGSpace dump as the <code>postgres</code> user, but have the owner of the schema be the <code>dspacetest</code> user:</li>
 </ul>
-<pre><code>$ dropdb -h localhost -U postgres dspacetest
+<pre tabindex="0"><code>$ dropdb -h localhost -U postgres dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
 $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
 $ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost /tmp/cgspace_2018-06-24.backup
@@ -407,12 +407,12 @@ $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser
 <li>There is already a search filter for this field defined in <code>discovery.xml</code> but we aren&rsquo;t using it, so I quickly enabled and tested it, then merged it to the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/380">#380</a>)</li>
 <li>Back to testing the DSpace 5.8 changes from Atmire, I had another issue with SQL migrations:</li>
 </ul>
-<pre><code>Caused by: org.flywaydb.core.api.FlywayException: Validate failed. Found differences between applied migrations and available migrations: Detected applied migration missing on the classpath: 5.8.2015.12.03.3
+<pre tabindex="0"><code>Caused by: org.flywaydb.core.api.FlywayException: Validate failed. Found differences between applied migrations and available migrations: Detected applied migration missing on the classpath: 5.8.2015.12.03.3
 </code></pre><ul>
 <li>It took me a while to figure out that this migration is for MQM, which I removed after Atmire&rsquo;s original advice about the migrations so we actually need to delete this migration instead up updating it</li>
 <li>So I need to make sure to run the following during the DSpace 5.8 upgrade:</li>
 </ul>
-<pre><code>-- Delete existing CUA 4 migration if it exists
+<pre tabindex="0"><code>-- Delete existing CUA 4 migration if it exists
 delete from schema_version where version = '5.6.2015.12.03.2';
 
 -- Update version of CUA 4 migration
@@ -423,18 +423,18 @@ delete from schema_version where version = '5.5.2015.12.03.3';
 </code></pre><ul>
 <li>After that you can run the migrations manually and then DSpace should work fine:</li>
 </ul>
-<pre><code>$ ~/dspace/bin/dspace database migrate ignored
+<pre tabindex="0"><code>$ ~/dspace/bin/dspace database migrate ignored
 ...
 Done.
 </code></pre><ul>
 <li>Elizabeth from CIAT contacted me to ask if I could add ORCID identifiers to all of Andy Jarvis' items on CGSpace</li>
 <li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
-<pre><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-24-andy-jarvis-orcid.csv -db dspacetest -u dspacetest -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-24-andy-jarvis-orcid.csv -db dspacetest -u dspacetest -p 'fuuu'
 </code></pre><ul>
 <li>The contents of <code>2018-06-24-andy-jarvis-orcid.csv</code> were:</li>
 </ul>
-<pre><code>dc.contributor.author,cg.creator.id
+<pre tabindex="0"><code>dc.contributor.author,cg.creator.id
 &quot;Jarvis, A.&quot;,Andy Jarvis: 0000-0001-6543-0798
 &quot;Jarvis, Andy&quot;,Andy Jarvis: 0000-0001-6543-0798
 &quot;Jarvis, Andrew&quot;,Andy Jarvis: 0000-0001-6543-0798
@@ -444,7 +444,7 @@ Done.
 <li>I removed both those beans and did some simple tests to check item submission, media-filter of PDFs, REST API, but got an error &ldquo;No matches for the query&rdquo; when listing records in OAI</li>
 <li>This warning appears in the DSpace log:</li>
 </ul>
-<pre><code>2018-06-26 16:58:12,052 WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
+<pre tabindex="0"><code>2018-06-26 16:58:12,052 WARN  org.dspace.xoai.services.impl.xoai.DSpaceRepositoryConfiguration @ { OAI 2.0 :: DSpace } Not able to retrieve the dspace.oai.url property from oai.cfg. Falling back to request address
 </code></pre><ul>
 <li>It&rsquo;s actually only a warning and it also appears in the logs on DSpace Test (which is currently running DSpace 5.5), so I need to keep troubleshooting</li>
 <li>Ah, I think I just need to run <code>dspace oai import</code></li>
@@ -455,7 +455,7 @@ Done.
 <li>I&rsquo;ll have to figure out how to separate those we&rsquo;re keeping, deleting, and mapping into CIFOR&rsquo;s archive collection</li>
 <li>First, get the 62 deletes from Vika&rsquo;s file and remove them from the collection:</li>
 </ul>
-<pre><code>$ grep delete 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-delete.txt
+<pre tabindex="0"><code>$ grep delete 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-delete.txt
 $ wc -l cifor-handle-to-delete.txt
 62 cifor-handle-to-delete.txt
 $ wc -l 10568-92904.csv
@@ -467,14 +467,14 @@ $ wc -l 10568-92904.csv
 <li>This iterates over the handles for deletion and uses <code>sed</code> with an alternative pattern delimiter of &lsquo;#&rsquo; (which must be escaped), because the pattern itself contains a &lsquo;/&rsquo;</li>
 <li>The mapped ones will be difficult because we need their internal IDs in order to map them, and there are 50 of them:</li>
 </ul>
-<pre><code>$ grep map 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-map.txt
+<pre tabindex="0"><code>$ grep map 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-map.txt
 $ wc -l cifor-handle-to-map.txt
 50 cifor-handle-to-map.txt
 </code></pre><ul>
 <li>I can either get them from the databse, or programatically export the metadata using <code>dspace metadata-export -i 10568/xxxxx</code>&hellip;</li>
 <li>Oooh, I can export the items one by one, concatenate them together, remove the headers, and extract the <code>id</code> and <code>collection</code> columns using <a href="https://csvkit.readthedocs.io/">csvkit</a>:</li>
 </ul>
-<pre><code>$ while read line; do filename=${line/\//-}.csv; dspace metadata-export -i $line -f $filename; done &lt; /tmp/cifor-handle-to-map.txt
+<pre tabindex="0"><code>$ while read line; do filename=${line/\//-}.csv; dspace metadata-export -i $line -f $filename; done &lt; /tmp/cifor-handle-to-map.txt
 $ sed '/^id/d' 10568-*.csv | csvcut -c 1,2 &gt; map-to-cifor-archive.csv
 </code></pre><ul>
 <li>Then I can use Open Refine to add the &ldquo;CIFOR Archive&rdquo; collection to the mappings</li>
@@ -487,7 +487,7 @@ $ sed '/^id/d' 10568-*.csv | csvcut -c 1,2 &gt; map-to-cifor-archive.csv
 <li>DSpace Test appears to have crashed last night</li>
 <li>There is nothing in the Tomcat or DSpace logs, but I see the following in <code>dmesg -T</code>:</li>
 </ul>
-<pre><code>[Thu Jun 28 00:00:30 2018] Out of memory: Kill process 14501 (java) score 701 or sacrifice child
+<pre tabindex="0"><code>[Thu Jun 28 00:00:30 2018] Out of memory: Kill process 14501 (java) score 701 or sacrifice child
 [Thu Jun 28 00:00:30 2018] Killed process 14501 (java) total-vm:14926704kB, anon-rss:5693608kB, file-rss:0kB, shmem-rss:0kB
 [Thu Jun 28 00:00:30 2018] oom_reaper: reaped process 14501 (java), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
 </code></pre><ul>

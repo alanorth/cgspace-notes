@@ -34,7 +34,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -163,14 +163,14 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 <ul>
 <li>I looked at the number of connections in PostgreSQL and it&rsquo;s definitely high again:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 1020
 </code></pre><ul>
 <li>I reported it to Atmire to take a look, on the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=851">same issue</a> we had been tracking this before</li>
 <li>Abenet asked me to add a new ORCID for ILRI staff member Zoe Campbell</li>
 <li>I added it to the controlled vocabulary and then tagged her existing items on CGSpace using my <code>add-orcid-identifier.py</code> script:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ cat 2021-03-04-add-zoe-campbell-orcid.csv 
+<pre tabindex="0"><code class="language-console" data-lang="console">$ cat 2021-03-04-add-zoe-campbell-orcid.csv 
 dc.contributor.author,cg.creator.identifier
 &quot;Campbell, Zoë&quot;,&quot;Zoe Campbell: 0000-0002-4759-9976&quot;
 &quot;Campbell, Zoe A.&quot;,&quot;Zoe Campbell: 0000-0002-4759-9976&quot;
@@ -183,7 +183,7 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-03-04-add-zoe-campbell-orcid.csv -
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT dspace_object_id AS id, text_value as &quot;cg.journal&quot; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT dspace_object_id AS id, text_value as &quot;cg.journal&quot; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
 COPY 32087
 </code></pre><ul>
 <li>I used OpenRefine to remove all journal values that didn&rsquo;t have one of these values: ; ( )
@@ -193,7 +193,7 @@ COPY 32087
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">value.partition(';')[0].trim() # to get journal names
+<pre tabindex="0"><code class="language-console" data-lang="console">value.partition(';')[0].trim() # to get journal names
 value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^(\d+)\(\d+\)/,&quot;$1&quot;) # to get journal volumes
 value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&quot;$1&quot;) # to get journal issues
 </code></pre><ul>
@@ -233,7 +233,7 @@ value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&quot;$1&quot;) #
 <ul>
 <li>I migrated the Docker bind mount for the AReS Elasticsearch container to a Docker volume:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ docker-compose -f docker/docker-compose.yml down
+<pre tabindex="0"><code class="language-console" data-lang="console">$ docker-compose -f docker/docker-compose.yml down
 $ docker volume create docker_esData_7
 $ docker container create --name es_dummy -v docker_esData_7:/usr/share/elasticsearch/data:rw elasticsearch:7.6.2
 $ docker cp docker/esData_7/nodes es_dummy:/usr/share/elasticsearch/data
@@ -249,12 +249,12 @@ $ docker-compose -f docker/docker-compose.yml up -d
 <li>I still need to make the changes to git master and add these notes to the pull request so Moayad and others can benefit</li>
 <li>Delete the <code>openrxv-items-temp</code> index to test a fresh harvesting:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 </code></pre><h2 id="2021-03-05-1">2021-03-05</h2>
 <ul>
 <li>Check the results of the AReS harvesting from last night:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 101761,
   &quot;_shards&quot; : {
@@ -267,18 +267,18 @@ $ docker-compose -f docker/docker-compose.yml up -d
 </code></pre><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d' {&quot;settings&quot;: {&quot;index.blocks.write&quot;:true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-03-05
 </code></pre><ul>
 <li>Delete the current items index and clone the temp one to it:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items'
 $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
 </code></pre><ul>
 <li>Then delete the temp and backup:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp'
 {&quot;acknowledged&quot;:true}%
 $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-03-05'
 </code></pre><ul>
@@ -298,7 +298,7 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-03-05'
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 ...
     &quot;openrxv-items-final&quot;: {
         &quot;aliases&quot;: {
@@ -308,7 +308,7 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-03-05'
 </code></pre><ul>
 <li>But on AReS production <code>openrxv-items</code> has somehow become a concrete index:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 ...
     &quot;openrxv-items&quot;: {
         &quot;aliases&quot;: {}
@@ -322,7 +322,7 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-03-05'
 </code></pre><ul>
 <li>I fixed the issue on production by cloning the <code>openrxv-items</code> index to <code>openrxv-items-final</code>, deleting <code>openrxv-items</code>, and then re-creating it as an alias:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-03-07
 $ curl -XDELETE 'http://localhost:9200/openrxv-items-final'
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-final
@@ -331,7 +331,7 @@ $ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application
 </code></pre><ul>
 <li>Delete backups and remove read-only mode on <code>openrxv-items</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-03-07'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-2021-03-07'
 $ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
 </code></pre><ul>
 <li>Linode sent alerts about the CPU usage on CGSpace yesterday and the day before
@@ -340,11 +340,11 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Typ
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E '0[56]/Mar/2021' | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E '0[56]/Mar/2021' | goaccess --log-format=COMBINED -
 </code></pre><ul>
 <li>I see the usual IPs for CCAFS and ILRI importer bots, but also <code>143.233.242.132</code> which appears to be for GARDIAN:</li>
 </ul>
-<pre><code class="language-console" data-lang="console"># zgrep '143.233.242.132' /var/log/nginx/access.log.1 | grep -c Delphi
+<pre tabindex="0"><code class="language-console" data-lang="console"># zgrep '143.233.242.132' /var/log/nginx/access.log.1 | grep -c Delphi
 6237
 # zgrep '143.233.242.132' /var/log/nginx/access.log.1 | grep -c -v Delphi
 6418
@@ -375,7 +375,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Typ
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
 13
 </code></pre><ul>
 <li>On 2021-03-03 the PostgreSQL transactions started rising:</li>
@@ -409,7 +409,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items/_settings&quot; -H 'Content-Typ
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-08
 # start harvesting on AReS
 </code></pre><ul>
@@ -434,7 +434,7 @@ $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.txt -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.txt -db dspace -u dspace -p 'fuuu'
 </code></pre><h2 id="2021-03-10">2021-03-10</h2>
 <ul>
 <li>Colleagues from ICARDA asked about how we should handle ISI journals in CG Core, as CGSpace uses <code>cg.isijournal</code> and MELSpace uses <code>mel.impact-factor</code>
@@ -444,7 +444,7 @@ $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items
 </li>
 <li>Peter said he doesn&rsquo;t see &ldquo;Source Code&rdquo; or &ldquo;Software&rdquo; in the <a href="https://cgspace.cgiar.org/handle/10568/1/search-filter?field=type">output type facet on the ILRI community</a>, but I see it on the home page, so I will try to do a full Discovery re-index:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<pre tabindex="0"><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    318m20.485s
 user    215m15.196s
@@ -467,7 +467,7 @@ sys     2m51.529s
 <ul>
 <li>Switch to linux-kvm kernel on linode20 and linode18:</li>
 </ul>
-<pre><code class="language-console" data-lang="console"># apt update &amp;&amp; apt full-upgrade
+<pre tabindex="0"><code class="language-console" data-lang="console"># apt update &amp;&amp; apt full-upgrade
 # apt install linux-kvm
 # apt remove linux-generic linux-image-generic linux-headers-generic linux-firmware
 # apt autoremove &amp;&amp; apt autoclean
@@ -478,13 +478,13 @@ sys     2m51.529s
 <li>Last week Peter added OpenRXV to CGSpace: <a href="https://hdl.handle.net/10568/112982">https://hdl.handle.net/10568/112982</a></li>
 <li>Back up the current <code>openrxv-items-final</code> index on AReS to start a new harvest:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-14
 $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
 </code></pre><ul>
 <li>After the harvesting finished it seems the indexes got messed up again, as <code>openrxv-items</code> is an alias of <code>openrxv-items-temp</code> instead of <code>openrxv-items-final</code>:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 ...
     &quot;openrxv-items-final&quot;: {
         &quot;aliases&quot;: {}
@@ -535,7 +535,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Conte
 </li>
 <li>Back up the current <code>openrxv-items-final</code> index to start a fresh AReS Harvest:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
 $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-21
 $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
 </code></pre><ul>
@@ -545,7 +545,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Conte
 <ul>
 <li>The harvesting on AReS yesterday completed, but somehow I have twice the number of items:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 206204,
   &quot;_shards&quot; : {
@@ -558,7 +558,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Conte
 </code></pre><ul>
 <li>Hmmm and even my backup index has a strange number of items:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final-2021-03-21/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final-2021-03-21/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 844,
   &quot;_shards&quot; : {
@@ -571,7 +571,7 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-final/_settings&quot; -H 'Conte
 </code></pre><ul>
 <li>I deleted all indexes and re-created the openrxv-items alias:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application/json' -d'{&quot;actions&quot; : [{&quot;add&quot; : { &quot;index&quot; : &quot;openrxv-items-final&quot;, &quot;alias&quot; : &quot;openrxv-items&quot;}}]}'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s -X POST 'http://localhost:9200/_aliases' -H 'Content-Type: application/json' -d'{&quot;actions&quot; : [{&quot;add&quot; : { &quot;index&quot; : &quot;openrxv-items-final&quot;, &quot;alias&quot; : &quot;openrxv-items&quot;}}]}'
 $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 ...
     &quot;openrxv-items-temp&quot;: {
@@ -591,7 +591,7 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 </li>
 <li>The AReS harvest finally finished, with 1047 pages of items, but the <code>openrxv-items-final</code> index is empty and the <code>openrxv-items-temp</code> index has a 103,000 items:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
 {
   &quot;count&quot; : 103162,
   &quot;_shards&quot; : {
@@ -604,12 +604,12 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 </code></pre><ul>
 <li>I tried to clone the temp index to the final, but got an error:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
 {&quot;error&quot;:{&quot;root_cause&quot;:[{&quot;type&quot;:&quot;resource_already_exists_exception&quot;,&quot;reason&quot;:&quot;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&quot;,&quot;index_uuid&quot;:&quot;LmxH-rQsTRmTyWex2d8jxw&quot;,&quot;index&quot;:&quot;openrxv-items-final&quot;}],&quot;type&quot;:&quot;resource_already_exists_exception&quot;,&quot;reason&quot;:&quot;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&quot;,&quot;index_uuid&quot;:&quot;LmxH-rQsTRmTyWex2d8jxw&quot;,&quot;index&quot;:&quot;openrxv-items-final&quot;},&quot;status&quot;:400}% 
 </code></pre><ul>
 <li>I looked in the Docker logs for Elasticsearch and saw a few memory errors:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code class="language-console" data-lang="console">java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>According to <code>/usr/share/elasticsearch/config/jvm.options</code> in the Elasticsearch container the default JVM heap is 1g
 <ul>
@@ -622,7 +622,7 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">    &quot;openrxv-items-final&quot;: {
+<pre tabindex="0"><code class="language-console" data-lang="console">    &quot;openrxv-items-final&quot;: {
         &quot;aliases&quot;: {}
     },
     &quot;openrxv-items-temp&quot;: {
@@ -634,7 +634,7 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 <ul>
 <li>For reference you can also get the Elasticsearch JVM stats from the API:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_nodes/jvm?human' | python -m json.tool
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/_nodes/jvm?human' | python -m json.tool
 </code></pre><ul>
 <li>I re-deployed AReS with 1.5GB of heap using the <code>ES_JAVA_OPTS</code> environment variable
 <ul>
@@ -644,7 +644,7 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 <li>Then I fixed the aliases to make sure <code>openrxv-items</code> was an alias of <code>openrxv-items-final</code>, similar to how I did a few weeks ago</li>
 <li>I re-created the temp index:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ curl -XPUT 'http://localhost:9200/openrxv-items-temp'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XPUT 'http://localhost:9200/openrxv-items-temp'
 </code></pre><h2 id="2021-03-24">2021-03-24</h2>
 <ul>
 <li>Atmire responded to the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=934">ticket about the Duplicate Checker</a>
@@ -659,18 +659,18 @@ $ curl -s 'http://localhost:9200/_alias/' | python -m json.tool | less
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console"># du -s /home/dspacetest.cgiar.org/solr/statistics
+<pre tabindex="0"><code class="language-console" data-lang="console"># du -s /home/dspacetest.cgiar.org/solr/statistics
 57861236        /home/dspacetest.cgiar.org/solr/statistics
 </code></pre><ul>
 <li>I applied their changes to <code>config/spring/api/atmire-cua-update.xml</code> and started the duplicate processor:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx4096m'
+<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx4096m'
 $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r 1000 -c statistics -t 12
 </code></pre><ul>
 <li>The default number of records per query is 10,000, which caused memory issues, so I will try with 1000 (Atmire used 100, but that seems too low!)</li>
 <li>Hah, I still got a memory error after only a few minutes:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">...
+<pre tabindex="0"><code class="language-console" data-lang="console">...
 Run 1 —  80% — 5,000/6,263 docs — 25s — 6m 31s                                      
 Exception: GC overhead limit exceeded                                                                          
 java.lang.OutOfMemoryError: GC overhead limit exceeded 
@@ -678,7 +678,7 @@ java.lang.OutOfMemoryError: GC overhead limit exceeded
 <li>I guess we really do have to use <code>-r 100</code></li>
 <li>Now the thing runs for a few minutes and &ldquo;finishes&rdquo;:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r 100 -c statistics -t 12
+<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r 100 -c statistics -t 12
 Loading @mire database changes for module MQM
 Changes have been processed
 
@@ -796,7 +796,7 @@ Run 1 took 5m 53s
 </ul>
 </li>
 </ul>
-<pre><code class="language-console" data-lang="console">2021-03-29 08:55:40,073 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=Gender+mainstreaming+in+local+potato+seed+system+in+Georgia&amp;fl=handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=-location:l5308ea39-7c65-401b-890b-c2b93dad649a&amp;wt=javabin&amp;version=2} hits=143 status=0 QTime=0
+<pre tabindex="0"><code class="language-console" data-lang="console">2021-03-29 08:55:40,073 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=Gender+mainstreaming+in+local+potato+seed+system+in+Georgia&amp;fl=handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=-location:l5308ea39-7c65-401b-890b-c2b93dad649a&amp;wt=javabin&amp;version=2} hits=143 status=0 QTime=0
 </code></pre><ul>
 <li>But the item mapper only displays ten items, with no pagination
 <ul>
@@ -845,7 +845,7 @@ r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</sp
 </code></pre></div><ul>
 <li>I exported a list of all our ISSNs from CGSpace:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=253) to /tmp/2021-03-31-issns.csv;
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=253) to /tmp/2021-03-31-issns.csv;
 COPY 3081
 </code></pre><ul>
 <li>I wrote a script to check the ISSNs against Crossref&rsquo;s API: <code>crossref-issn-lookup.py</code>

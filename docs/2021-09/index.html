@@ -26,7 +26,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-09/" />
 <meta property="article:published_time" content="2021-09-01T09:14:07+03:00" />
-<meta property="article:modified_time" content="2021-09-04T21:16:03+03:00" />
+<meta property="article:modified_time" content="2021-09-06T12:31:11+03:00" />
 
 
 
@@ -48,7 +48,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 
 
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -58,9 +58,9 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "176",
+  "wordCount": "637",
   "datePublished": "2021-09-01T09:14:07+03:00",
-  "dateModified": "2021-09-04T21:16:03+03:00",
+  "dateModified": "2021-09-06T12:31:11+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -154,12 +154,67 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <ul>
 <li>Update Docker images on AReS server (linode20) and rebuild OpenRXV:</li>
 </ul>
-<pre><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
+<pre tabindex="0"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
 $ docker-compose build
 </code></pre><ul>
 <li>Then run system updates and reboot the server
 <ul>
 <li>After the system came back up I started a fresh re-harvesting</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-09-07">2021-09-07</h2>
+<ul>
+<li>Checking last month&rsquo;s Solr statistics to see if there are any new bots that I need to purge and add to the list
+<ul>
+<li>78.203.225.68 made 50,000 requests on one day in August, and it is using this user agent: <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36</code></li>
+<li>It&rsquo;s a fixed line ISP in Montpellier according to AbuseIPDB.com, and has not been flagged as abusive, so it must be some CGIAR SMO person doing some web application harvesting from the browser</li>
+<li>130.255.162.154 is in Sweden and made 46,000 requests in August and it is using this user agent: <code>Mozilla/5.0 (Macintosh; Intel Mac OS X 11.1; rv:84.0) Gecko/20100101 Firefox/84.0</code></li>
+<li>35.174.144.154 is on Amazon and made 28,000 requests with this user agent: <code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36</code></li>
+<li>192.121.135.6 is in Sweden and made 9,000 requests with this user agent: <code>Mozilla/5.0 (Macintosh; Intel Mac OS X 11.1; rv:84.0) Gecko/20100101 Firefox/84.0</code></li>
+<li>185.38.40.66 is in Germany and made 6,000 requests with this user agent: <code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:89.0) Gecko/20100101 Firefox/89.0 BoldBrains SC/1.10.2.4</code></li>
+<li>3.225.28.105 is in Amazon and made 3,000 requests with this user agent: <code>Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36</code></li>
+<li>I also noticed that we still have tons (25,000) of requests by MSNbot using this normal-looking user agent: <code>Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko</code></li>
+<li>I can identify them by their reverse DNS: msnbot-40-77-167-105.search.msn.com.</li>
+<li>I had already purged a bunch of these by their IPs in 2021-06, so it looks like I have to do that again</li>
+<li>While looking at the MSN requests I noticed tons of requests from another strange host using reverse IP DNS: malta2095.startdedicated.com., astra5139.startdedicated.com., and many others</li>
+<li>They must be related, because I see them all using the exact same user agent: <code>Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko</code></li>
+<li>So this startdedicated.com DNS is some Bing bot also&hellip;</li>
+</ul>
+</li>
+<li>I extracted all the IPs and purged them using my <code>check-spider-ip-hits.sh</code> script
+<ul>
+<li>In total I purged 225,000 hits&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-09-12">2021-09-12</h2>
+<ul>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2021-09-13">2021-09-13</h2>
+<ul>
+<li>Mishell Portilla asked me about thumbnails on CGSpace being small
+<ul>
+<li>For example, <a href="https://cgspace.cgiar.org/handle/10568/114576">10568/114576</a> has a lot of white space on the left side</li>
+<li>I created a new thumbnail with vipsthumbnail:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ vipsthumbnail ARRTB2020ST.pdf -s x600 -o '%s.jpg[Q=85,optimize_coding,strip]'
+</code></pre><ul>
+<li>Looking at the PDF&rsquo;s metadata I see:
+<ul>
+<li>Producer: iLovePDF</li>
+<li>Creator: Adobe InDesign 15.0 (Windows)</li>
+<li>Format: PDF-1.7</li>
+</ul>
+</li>
+<li>Eventually I should do more tests on this and perhaps file a bug with DSpace&hellip;</li>
+<li>Some Alliance people contacted me about getting access to the CGSpace API to deposit with their TIP tool
+<ul>
+<li>I told them I can give them access to DSpace Test and that we should have a meeting soon</li>
+<li>We need to figure out what controlled vocabularies they should use</li>
 </ul>
 </li>
 </ul>

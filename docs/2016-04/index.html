@@ -32,7 +32,7 @@ After running DSpace for over five years I&rsquo;ve never needed to look in any 
 This will save us a few gigs of backup space we&rsquo;re paying for on S3
 Also, I noticed the checker log has some errors we should pay attention to:
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -126,7 +126,7 @@ Also, I noticed the checker log has some errors we should pay attention to:
 <li>This will save us a few gigs of backup space we&rsquo;re paying for on S3</li>
 <li>Also, I noticed the <code>checker</code> log has some errors we should pay attention to:</li>
 </ul>
-<pre><code>Run start time: 03/06/2016 04:00:22
+<pre tabindex="0"><code>Run start time: 03/06/2016 04:00:22
 Error retrieving bitstream ID 71274 from asset store.
 java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290601546459645925328536011917633626 (Too many open files)
         at java.io.FileInputStream.open(Native Method)
@@ -158,7 +158,7 @@ java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290
 <ul>
 <li>Reduce Amazon S3 storage used for logs from 46 GB to 6GB by deleting a bunch of logs we don&rsquo;t need!</li>
 </ul>
-<pre><code># s3cmd ls s3://cgspace.cgiar.org/log/ &gt; /tmp/s3-logs.txt
+<pre tabindex="0"><code># s3cmd ls s3://cgspace.cgiar.org/log/ &gt; /tmp/s3-logs.txt
 # grep checker.log /tmp/s3-logs.txt | awk '{print $4}' | xargs s3cmd del
 # grep cocoon.log /tmp/s3-logs.txt | awk '{print $4}' | xargs s3cmd del
 # grep handle-plugin.log /tmp/s3-logs.txt | awk '{print $4}' | xargs s3cmd del
@@ -171,7 +171,7 @@ java.io.FileNotFoundException: /home/cgspace.cgiar.org/assetstore/64/29/06/64290
 <ul>
 <li>A better way to move metadata on this scale is via SQL, for example <code>dc.type.output</code> → <code>dc.type</code> (their IDs in the metadatafieldregistry are 66 and 109, respectively):</li>
 </ul>
-<pre><code>dspacetest=# update metadatavalue set metadata_field_id=109 where metadata_field_id=66;
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set metadata_field_id=109 where metadata_field_id=66;
 UPDATE 40852
 </code></pre><ul>
 <li>After that an <code>index-discovery -bf</code> is required</li>
@@ -182,7 +182,7 @@ UPDATE 40852
 <li>Write shell script to do the migration of fields: <a href="https://gist.github.com/alanorth/72a70aca856d76f24c127a6e67b3342b">https://gist.github.com/alanorth/72a70aca856d76f24c127a6e67b3342b</a></li>
 <li>Testing with a few fields it seems to work well:</li>
 </ul>
-<pre><code>$ ./migrate-fields.sh
+<pre tabindex="0"><code>$ ./migrate-fields.sh
 UPDATE metadatavalue SET metadata_field_id=109 WHERE metadata_field_id=66
 UPDATE 40883
 UPDATE metadatavalue SET metadata_field_id=202 WHERE metadata_field_id=72
@@ -199,7 +199,7 @@ UPDATE 51258
 <li>Looking at the DOI issue <a href="https://www.yammer.com/dspacedevelopers/#/Threads/show?threadId=678507860">reported by Leroy from CIAT a few weeks ago</a></li>
 <li>It seems the <code>dx.doi.org</code> URLs are much more proper in our repository!</li>
 </ul>
-<pre><code>dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and text_value like 'http://dx.doi.org%';
+<pre tabindex="0"><code>dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and text_value like 'http://dx.doi.org%';
  count
 -------
   5638
@@ -221,7 +221,7 @@ dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and t
 <ul>
 <li>Looking at quality of WLE data (<code>cg.subject.iwmi</code>) in SQL:</li>
 </ul>
-<pre><code>dspacetest=# select text_value, count(*) from metadatavalue where metadata_field_id=217 group by text_value order by count(*) desc;
+<pre tabindex="0"><code>dspacetest=# select text_value, count(*) from metadatavalue where metadata_field_id=217 group by text_value order by count(*) desc;
 </code></pre><ul>
 <li>Listings and Reports is still not returning reliable data for <code>dc.type</code></li>
 <li>I think we need to ask Atmire, as their documentation isn&rsquo;t too clear on the format of the filter configs</li>
@@ -231,11 +231,11 @@ dspacetest=# select count(*) from metadatavalue where metadata_field_id=74 and t
 <li>I decided to keep the set of subjects that had <code>FMD</code> and <code>RANGELANDS</code> added, as it appears to have been requested to have been added, and might be the newer list</li>
 <li>I found 226 blank metadatavalues:</li>
 </ul>
-<pre><code>dspacetest# select * from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>dspacetest# select * from metadatavalue where resource_type_id=2 and text_value='';
 </code></pre><ul>
 <li>I think we should delete them and do a full re-index:</li>
 </ul>
-<pre><code>dspacetest=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>dspacetest=# delete from metadatavalue where resource_type_id=2 and text_value='';
 DELETE 226
 </code></pre><ul>
 <li>I deleted them on CGSpace but I&rsquo;ll wait to do the re-index as we&rsquo;re going to be doing one in a few days for the metadata changes anyways</li>
@@ -281,7 +281,7 @@ DELETE 226
 </li>
 <li>Test metadata migration on local instance again:</li>
 </ul>
-<pre><code>$ ./migrate-fields.sh
+<pre tabindex="0"><code>$ ./migrate-fields.sh
 UPDATE metadatavalue SET metadata_field_id=109 WHERE metadata_field_id=66
 UPDATE 40885
 UPDATE metadatavalue SET metadata_field_id=203 WHERE metadata_field_id=76
@@ -298,7 +298,7 @@ $ JAVA_OPTS=&quot;-Xms512m -Xmx512m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dsp
 </code></pre><ul>
 <li>CGSpace was down but I&rsquo;m not sure why, this was in <code>catalina.out</code>:</li>
 </ul>
-<pre><code>Apr 18, 2016 7:32:26 PM com.sun.jersey.spi.container.ContainerResponse logException
+<pre tabindex="0"><code>Apr 18, 2016 7:32:26 PM com.sun.jersey.spi.container.ContainerResponse logException
 SEVERE: Mapped exception to response: 500 (Internal Server Error)
 javax.ws.rs.WebApplicationException
         at org.dspace.rest.Resource.processFinally(Resource.java:163)
@@ -328,7 +328,7 @@ javax.ws.rs.WebApplicationException
 <ul>
 <li>Get handles for items that are using a given metadata field, ie <code>dc.Species.animal</code> (105):</li>
 </ul>
-<pre><code># select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=105);
+<pre tabindex="0"><code># select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select resource_id from metadatavalue where resource_type_id=2 and metadata_field_id=105);
    handle
 -------------
  10568/10298
@@ -338,26 +338,26 @@ javax.ws.rs.WebApplicationException
 </code></pre><ul>
 <li>Delete metadata values for <code>dc.GRP</code> and <code>dc.icsubject.icrafsubject</code>:</li>
 </ul>
-<pre><code># delete from metadatavalue where resource_type_id=2 and metadata_field_id=96;
+<pre tabindex="0"><code># delete from metadatavalue where resource_type_id=2 and metadata_field_id=96;
 # delete from metadatavalue where resource_type_id=2 and metadata_field_id=83;
 </code></pre><ul>
 <li>They are old ICRAF fields and we haven&rsquo;t used them since 2011 or so</li>
 <li>Also delete them from the metadata registry</li>
 <li>CGSpace went down again, <code>dspace.log</code> had this:</li>
 </ul>
-<pre><code>2016-04-19 15:02:17,025 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
+<pre tabindex="0"><code>2016-04-19 15:02:17,025 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL connection Error -
 org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object
 </code></pre><ul>
 <li>I restarted Tomcat and PostgreSQL and now it&rsquo;s back up</li>
 <li>I bet this is the same crash as yesterday, but I only saw the errors in <code>catalina.out</code></li>
 <li>Looks to be related to this, from <code>dspace.log</code>:</li>
 </ul>
-<pre><code>2016-04-19 15:16:34,670 ERROR org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
+<pre tabindex="0"><code>2016-04-19 15:16:34,670 ERROR org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
 </code></pre><ul>
 <li>We have 18,000 of these errors right now&hellip;</li>
 <li>Delete a few more old metadata values: <code>dc.Species.animal</code>, <code>dc.type.journal</code>, and <code>dc.publicationcategory</code>:</li>
 </ul>
-<pre><code># delete from metadatavalue where resource_type_id=2 and metadata_field_id=105;
+<pre tabindex="0"><code># delete from metadatavalue where resource_type_id=2 and metadata_field_id=105;
 # delete from metadatavalue where resource_type_id=2 and metadata_field_id=85;
 # delete from metadatavalue where resource_type_id=2 and metadata_field_id=95;
 </code></pre><ul>
@@ -369,7 +369,7 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>Migrate fields and re-deploy CGSpace with the new subject and type fields, run all system updates, and reboot the server</li>
 <li>Field migration went well:</li>
 </ul>
-<pre><code>$ ./migrate-fields.sh
+<pre tabindex="0"><code>$ ./migrate-fields.sh
 UPDATE metadatavalue SET metadata_field_id=109 WHERE metadata_field_id=66
 UPDATE 40909
 UPDATE metadatavalue SET metadata_field_id=203 WHERE metadata_field_id=76
@@ -387,7 +387,7 @@ UPDATE 46075
 <li>Basically, this gives us the ability to use the latest upstream stable 9.3.x release (currently 9.3.12)</li>
 <li>Looking into the REST API errors again, it looks like these started appearing a few days ago in the tens of thousands:</li>
 </ul>
-<pre><code>$ grep -c &quot;Aborting context in finally statement&quot; dspace.log.2016-04-20
+<pre tabindex="0"><code>$ grep -c &quot;Aborting context in finally statement&quot; dspace.log.2016-04-20
 21252
 </code></pre><ul>
 <li>I found a recent discussion on the DSpace mailing list and I&rsquo;ve asked for advice there</li>
@@ -423,7 +423,7 @@ UPDATE 46075
 <li>Looks like the last one was &ldquo;down&rdquo; from about four hours ago</li>
 <li>I think there must be something with this REST stuff:</li>
 </ul>
-<pre><code># grep -c &quot;Aborting context in finally statement&quot; dspace.log.2016-04-*
+<pre tabindex="0"><code># grep -c &quot;Aborting context in finally statement&quot; dspace.log.2016-04-*
 dspace.log.2016-04-01:0
 dspace.log.2016-04-02:0
 dspace.log.2016-04-03:0
@@ -468,7 +468,7 @@ dspace.log.2016-04-27:7271
 <ul>
 <li>Logs for today and yesterday have zero references to this REST error, so I&rsquo;m going to open back up the REST API but log all requests</li>
 </ul>
-<pre><code>location /rest {
+<pre tabindex="0"><code>location /rest {
 	access_log /var/log/nginx/rest.log;
 	proxy_pass http://127.0.0.1:8443;
 }

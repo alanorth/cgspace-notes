@@ -46,7 +46,7 @@ Make sure all packages are up to date and the package manager is up to date, the
 # dpkg -C
 # reboot
 "/>
-<meta name="generator" content="Hugo 0.87.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
 
     
@@ -142,14 +142,14 @@ Make sure all packages are up to date and the package manager is up to date, the
 </ul>
 </li>
 </ul>
-<pre><code># apt update &amp;&amp; apt full-upgrade
+<pre tabindex="0"><code># apt update &amp;&amp; apt full-upgrade
 # apt-get autoremove &amp;&amp; apt-get autoclean
 # dpkg -C
 # reboot
 </code></pre><ul>
 <li>Take some backups:</li>
 </ul>
-<pre><code># dpkg -l &gt; 2019-12-01-linode18-dpkg.txt
+<pre tabindex="0"><code># dpkg -l &gt; 2019-12-01-linode18-dpkg.txt
 # tar czf 2019-12-01-linode18-etc.tar.gz /etc
 </code></pre><ul>
 <li>Then check all third-party repositories in /etc/apt to see if everything using &ldquo;xenial&rdquo; has packages available for &ldquo;bionic&rdquo; and then update the sources:</li>
@@ -157,18 +157,18 @@ Make sure all packages are up to date and the package manager is up to date, the
 <li>Pause the Uptime Robot monitoring for CGSpace</li>
 <li>Make sure the update manager is installed and do the upgrade:</li>
 </ul>
-<pre><code># apt install update-manager-core
+<pre tabindex="0"><code># apt install update-manager-core
 # do-release-upgrade
 </code></pre><ul>
 <li>After the upgrade finishes, remove Java 11, force the installation of bionic nginx, and reboot the server:</li>
 </ul>
-<pre><code># apt purge openjdk-11-jre-headless
+<pre tabindex="0"><code># apt purge openjdk-11-jre-headless
 # apt install 'nginx=1.16.1-1~bionic'
 # reboot
 </code></pre><ul>
 <li>After the server comes back up, remove Python virtualenvs that were created with Python 3.5 and re-run certbot to make sure it&rsquo;s working:</li>
 </ul>
-<pre><code># rm -rf /opt/eff.org/certbot/venv/bin/letsencrypt
+<pre tabindex="0"><code># rm -rf /opt/eff.org/certbot/venv/bin/letsencrypt
 # rm -rf /opt/ilri/dspace-statistics-api/venv
 # /opt/certbot-auto
 </code></pre><ul>
@@ -195,7 +195,7 @@ Make sure all packages are up to date and the package manager is up to date, the
 </ul>
 </li>
 </ul>
-<pre><code>$ http 'https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:cgspace.cgiar.org:10568/104030' &gt; /tmp/cgspace-104030.xml
+<pre tabindex="0"><code>$ http 'https://cgspace.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:cgspace.cgiar.org:10568/104030' &gt; /tmp/cgspace-104030.xml
 $ http 'https://dspacetest.cgiar.org/oai/request?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:cgspace.cgiar.org:10568/104030' &gt; /tmp/dspacetest-104030.xml
 </code></pre><ul>
 <li>The DSpace Test ones actually now capture the DOI, where the CGSpace doesn&rsquo;t&hellip;</li>
@@ -209,7 +209,7 @@ $ http 'https://dspacetest.cgiar.org/oai/request?verb=GetRecord&amp;metadataPref
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT handle, owning_collection FROM item, handle WHERE item.discoverable='f' AND item.in_archive='t' AND handle.resource_id = item.item_id) to /tmp/2019-12-04-CGSpace-private-items.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT handle, owning_collection FROM item, handle WHERE item.discoverable='f' AND item.in_archive='t' AND handle.resource_id = item.item_id) to /tmp/2019-12-04-CGSpace-private-items.csv WITH CSV HEADER;
 COPY 48
 </code></pre><h2 id="2019-12-05">2019-12-05</h2>
 <ul>
@@ -288,13 +288,13 @@ COPY 48
 <li>I looked into creating RTF documents from HTML in Node.js and there is a library called <a href="https://www.npmjs.com/package/html-to-rtf">html-to-rtf</a> that works well, but doesn&rsquo;t support images</li>
 <li>Export a list of all investors (<code>dc.description.sponsorship</code>) for Peter to look through and correct:</li>
 </ul>
-<pre><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;dc.contributor.sponsor&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 29 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-12-17-investors.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;dc.contributor.sponsor&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 29 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-12-17-investors.csv WITH CSV HEADER;
 COPY 643
 </code></pre><h2 id="2019-12-18">2019-12-18</h2>
 <ul>
 <li>Apply the investor corrections and deletions from Peter on CGSpace:</li>
 </ul>
-<pre><code>$ ./fix-metadata-values.py -i /tmp/2019-12-17-investors-fix-112.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-12-17-investors-fix-112.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29 -t correct -d
 $ ./delete-metadata-values.py -i /tmp/2019-12-17-investors-delete-68.csv -db dspace -u dspace -p 'fuuu' -m 29 -f dc.description.sponsorship -d
 </code></pre><ul>
 <li>Peter asked about the &ldquo;Open Government Licence 3.0&rdquo; that is used by <a href="">some items</a>
@@ -304,7 +304,7 @@ $ ./delete-metadata-values.py -i /tmp/2019-12-17-investors-delete-68.csv -db dsp
 </ul>
 </li>
 </ul>
-<pre><code>dspace=# SELECT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%Open%';
+<pre tabindex="0"><code>dspace=# SELECT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=53 AND text_value LIKE '%Open%';
          text_value          
 -----------------------------
  Open Government License 3.0
@@ -321,7 +321,7 @@ UPDATE 2
 </ul>
 </li>
 </ul>
-<pre><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -c MegaIndex.ru 
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -c MegaIndex.ru 
 27320
 </code></pre><ul>
 <li>I see they <em>did</em> check <code>robots.txt</code> and their requests are only going to XMLUI item pages&hellip; so I guess I just leave them alone</li>
@@ -338,12 +338,12 @@ UPDATE 2
 <ul>
 <li>I ran the <code>dspace cleanup</code> process on CGSpace (linode18) and had an error:</li>
 </ul>
-<pre><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
   Detail: Key (bitstream_id)=(179441) is still referenced from table &quot;bundle&quot;.
 </code></pre><ul>
 <li>The solution is to delete that bitstream manually:</li>
 </ul>
-<pre><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (179441);'
+<pre tabindex="0"><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (179441);'
 UPDATE 1
 </code></pre><ul>
 <li>Adjust <a href="/cgspace-notes/cgspace-cgcorev2-migration/">CG Core v2 migrataion notes</a> to use <code>cg.review-status</code> instead of <code>cg.peer-reviewed</code>
