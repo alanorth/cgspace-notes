@@ -26,7 +26,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-09/" />
 <meta property="article:published_time" content="2021-09-01T09:14:07+03:00" />
-<meta property="article:modified_time" content="2021-09-16T06:49:05+03:00" />
+<meta property="article:modified_time" content="2021-09-16T16:35:00+03:00" />
 
 
 
@@ -58,9 +58,9 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "842",
+  "wordCount": "1097",
   "datePublished": "2021-09-01T09:14:07+03:00",
-  "dateModified": "2021-09-16T06:49:05+03:00",
+  "dateModified": "2021-09-16T16:35:00+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -257,6 +257,59 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-09-15-add-orcids.csv -db dspace -u
 <li>I filed an issue: <a href="https://github.com/DSpace/DSpace/issues/7946">https://github.com/DSpace/DSpace/issues/7946</a></li>
 </ul>
 </li>
+<li>I decided to update all the metadata field descriptions in our registry so I can use that instead of the &ldquo;hint&rdquo; for each field in the input form
+<ul>
+<li>I will include examples as well so that it becomes a better resource</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-09-17">2021-09-17</h2>
+<ul>
+<li>I filed <a href="https://github.com/AgriculturalSemantics/cg-core/issues/41">an issue about using SPDX License Identifiers in CG Core v2</a></li>
+<li>Peter Ballantyne emailed me to say that CGSpace was very slow
+<ul>
+<li>The front page was returning a blank white page</li>
+<li>I looked at the database and the connections look low:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_stat_activity' | wc -l
+63
+</code></pre><ul>
+<li>Load on the server is under 1.0, and there are only about 1,000 XMLUI sessions, which seems to be normal for this time of day according to Munin</li>
+<li>But the DSpace log file shows tons of database issues:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c &quot;Timeout waiting for idle object&quot; dspace.log.2021-09-17 
+14779
+</code></pre><ul>
+<li>The earliest one I see is around midnight (now is 2PM):</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">2021-09-17 00:01:49,572 WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ SQL Error: 0, SQLState: null
+2021-09-17 00:01:49,572 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ Cannot get a connection, pool error Timeout waiting for idle object
+</code></pre><ul>
+<li>But I was definitely logged into the site this morning so there were no issues then&hellip;</li>
+<li>It seems that a few errors are normal, but there&rsquo;s obviously something wrong today:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c &quot;Timeout waiting for idle object&quot; dspace.log.2021-09-*
+dspace.log.2021-09-01:116
+dspace.log.2021-09-02:163
+dspace.log.2021-09-03:77
+dspace.log.2021-09-04:13
+dspace.log.2021-09-05:310
+dspace.log.2021-09-06:0
+dspace.log.2021-09-07:29
+dspace.log.2021-09-08:86
+dspace.log.2021-09-09:24
+dspace.log.2021-09-10:26
+dspace.log.2021-09-11:12
+dspace.log.2021-09-12:5
+dspace.log.2021-09-13:10
+dspace.log.2021-09-14:102
+dspace.log.2021-09-15:542
+dspace.log.2021-09-16:368
+dspace.log.2021-09-17:15235
+</code></pre><ul>
+<li>I restarted the server and DSpace came up fine&hellip; so it must have been some kind of fluke</li>
 </ul>
 <!-- raw HTML omitted -->
 
