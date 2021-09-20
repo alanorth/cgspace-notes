@@ -26,7 +26,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-09/" />
 <meta property="article:published_time" content="2021-09-01T09:14:07+03:00" />
-<meta property="article:modified_time" content="2021-09-17T15:03:28+03:00" />
+<meta property="article:modified_time" content="2021-09-19T15:42:23+03:00" />
 
 
 
@@ -58,9 +58,9 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "1221",
+  "wordCount": "1532",
   "datePublished": "2021-09-01T09:14:07+03:00",
-  "dateModified": "2021-09-17T15:03:28+03:00",
+  "dateModified": "2021-09-19T15:42:23+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -340,6 +340,43 @@ dspace.log.2021-09-17:15235
 </ul>
 <pre tabindex="0"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
 $ docker-compose build
+</code></pre><h2 id="2021-09-20">2021-09-20</h2>
+<ul>
+<li>I synchronized the production CGSpace PostreSQL, Solr, and Assetstore data with DSpace Test</li>
+<li>Over the weekend a few users reported that they could not log into CGSpace
+<ul>
+<li>I checked LDAP and it seems there is something wrong:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;cgspace-ldap-account@cgiarad.org&quot; -W &quot;(sAMAccountName=someaccountnametocheck)&quot;
+Enter LDAP Password: 
+ldap_sasl_bind(SIMPLE): Can't contact LDAP server (-1)
+</code></pre><ul>
+<li>I sent a message to CGNET to ask about the server settings and see if our IP is still whitelisted
+<ul>
+<li>It turns out that CGNET created a new Active Directory server (AZCGNEROOT3.cgiarad.org) and decomissioned the old one last week</li>
+<li>I updated the configuration on CGSpace and confirmed that it is working</li>
+</ul>
+</li>
+<li>Create another test account for Rafael from Bioversity-CIAT to submit some items to DSpace Test:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ dspace user -a -m tip-submit@cgiar.org -g CIAT -s Submit -p 'fuuuuuuuu'
+</code></pre><ul>
+<li>I added the account to the Alliance Admins account, which is should allow him to submit to any Alliance collection
+<ul>
+<li>According to my notes from <a href="/cgspace-notes/2020-10/">2020-10</a> the account must be in the admin group in order to submit via the REST API</li>
+</ul>
+</li>
+<li>Run <code>dspace cleanup -v</code> process on CGSpace to clean up old bitstreams</li>
+<li>Export lists of authors, donors, and affiliations for Peter Ballantyne to clean up:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;dc.contributor.author&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 3 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-authors.csv WITH CSV HEADER;
+COPY 80901
+localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.donor&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 248 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-donors.csv WITH CSV HEADER;
+COPY 1274
+localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-affiliations.csv WITH CSV HEADER;
+COPY 8091
 </code></pre><!-- raw HTML omitted -->
 
   
