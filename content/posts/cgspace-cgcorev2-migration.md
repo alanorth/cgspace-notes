@@ -15,6 +15,7 @@ With reference to [CG Core v2 draft standard](https://agriculturalsemantics.gith
 <!--more-->
 
 - [Proposed Changes](#proposed-changes)
+  - [Out of Scope](#out-of-scope)
 - [Fields to Create](#fields-to-create)
 - [Fields to Delete](#fields-to-delete)
 - [Implementation Progress](#implementation-progress)
@@ -54,6 +55,7 @@ As of 2021-01-18 the scope of the changes includes the following fields:
 - dc.identifier.issn→cg.issn
 - cg.targetaudience→dcterms.audience
 
+### Out of Scope
 The following fields are currently out of the scope of this migration because they are used internally by DSpace 5.x/6.x and would be difficult to change without significant modifications to the core of the code:
 
 - dc.title (`IncludePageMeta.java` only considers DC when building pageMeta, which we rely on in XMLUI because of XSLT from DRI)
