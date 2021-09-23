@@ -58,7 +58,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "1532",
+  "wordCount": "1729",
   "datePublished": "2021-09-01T09:14:07+03:00",
   "dateModified": "2021-09-20T17:31:45+03:00",
   "author": {
@@ -377,7 +377,30 @@ localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contribut
 COPY 1274
 localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-affiliations.csv WITH CSV HEADER;
 COPY 8091
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-09-23">2021-09-23</h2>
+<ul>
+<li>Peter sent me back the corrections for the affiliations
+<ul>
+<li>It is about 1,280 corrections and fourteen deletions</li>
+<li>I cleaned them up in csv-metadata-quality and then extracted the deletes and fixes to separate files to run with <code>fix-metadata-values.py</code> and <code>delete-metadata-values.py</code>:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csv-metadata-quality -i ~/Downloads/2021-09-20-affiliations.csv -o /tmp/affiliations.csv -x cg.contributor.affiliation
+$ csvgrep -c 'correct' -m 'DELETE' /tmp/affiliations.csv &gt; /tmp/affiliations-delete.csv
+$ csvgrep -c 'correct' -r '^.+$' /tmp/affiliations.csv | csvgrep -i -c 'correct' -m 'DELETE' &gt; /tmp/affiliations-fix.csv
+$ ./ilri/fix-metadata-values.py -i /tmp/affiliations-fix.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t 'correct' -m 211
+$ ./ilri/delete-metadata-values.py -i /tmp/affiliations-fix.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
+</code></pre><ul>
+<li>Then I updated the controlled vocabulary for affiliations by exporting the top 1,000 used terms:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC LIMIT 1000) to /tmp/2021-09-23-affiliations.csv WITH CSV HEADER;
+$ csvcut -c 1 /tmp/2021-09-23-affiliations.csv | sed 1d &gt; /tmp/affiliations.txt
+</code></pre><ul>
+<li>Peter also sent me 310 corrections and 234 deletions for donors so I applied those and updated the controlled vocabularies too</li>
+<li>Move some One CGIAR-related collections around the CGSpace hierarchy for Peter Ballantyne</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
