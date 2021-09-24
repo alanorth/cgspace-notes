@@ -26,7 +26,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-09/" />
 <meta property="article:published_time" content="2021-09-01T09:14:07+03:00" />
-<meta property="article:modified_time" content="2021-09-23T18:19:11+03:00" />
+<meta property="article:modified_time" content="2021-09-23T18:32:47+03:00" />
 
 
 
@@ -58,9 +58,9 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "1775",
+  "wordCount": "2030",
   "datePublished": "2021-09-01T09:14:07+03:00",
-  "dateModified": "2021-09-23T18:19:11+03:00",
+  "dateModified": "2021-09-23T18:32:47+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -403,6 +403,55 @@ $ csvcut -c 1 /tmp/2021-09-23-affiliations.csv | sed 1d &gt; /tmp/affiliations.t
 </ul>
 <pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT collection_id,uuid FROM collection WHERE collection_id IS NOT NULL) TO /tmp/2021-09-23-collection-id2uuid.csv WITH CSV HEADER;
 COPY 1139
+</code></pre><h2 id="2021-09-24">2021-09-24</h2>
+<ul>
+<li>Peter and Abenet agreed that we should consider converting more of our UPPER CASE metadata values to Title Case
+<ul>
+<li>It seems that these fields are all still using UPPER CASE:
+<ul>
+<li>cg.subject.alliancebiovciat</li>
+<li>cg.species.breed</li>
+<li>cg.subject.bioversity</li>
+<li>cg.subject.ccafs</li>
+<li>cg.subject.ciat</li>
+<li>cg.subject.cip</li>
+<li>cg.identifier.iitatheme</li>
+<li>cg.subject.iita</li>
+<li>cg.subject.ilri</li>
+<li>cg.subject.pabra</li>
+<li>cg.river.basin</li>
+<li>cg.coverage.subregion (done)</li>
+<li>dcterms.audience (done)</li>
+<li>cg.subject.wle</li>
+</ul>
+</li>
+<li>We can do some of these without even asking anyone, for example <code>cg.coverage.subregion</code>, <code>cg.river.basin</code>, and <code>dcterms.audience</code></li>
+</ul>
+</li>
+<li>First, I will look at <code>cg.coverage.subregion</code>
+<ul>
+<li>These should ideally come from ISO 3166-2 subdivisions</li>
+<li>I will sentence case them and then create a controlled vocabulary from those that are matching (and worry about cleaning the rest up later)</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=INITCAP(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=231;
+UPDATE 2903
+localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.coverage.subregion&quot; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 231) to /tmp/2021-09-24-subregions.txt;
+COPY 1200
+</code></pre><ul>
+<li>Then I process the list for matches with my <code>subdivision-lookup.py</code> script, and extract only the values that matched:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/subdivision-lookup.py -i /tmp/2021-09-24-subregions.txt -o /tmp/subregions.csv
+$ csvgrep -c matched -m 'true' /tmp/subregions.csv | csvcut -c 1 | sed 1d &gt; /tmp/subregions-matched.txt
+$ wc -l /tmp/subregions-matched.txt 
+81 /tmp/subregions-matched.txt
+</code></pre><ul>
+<li>Then I updated the controlled vocabulary in the submission forms</li>
+<li>I did the same for <code>dcterms.audience</code>, taking special care to a few all-caps values:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=INITCAP(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value != 'NGOS' AND text_value != 'CGIAR';
+localhost/dspace63= &gt; UPDATE metadatavalue SET text_value='NGOs' WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value = 'NGOS';
 </code></pre><!-- raw HTML omitted -->
 
   
