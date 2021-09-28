@@ -58,7 +58,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "2227",
+  "wordCount": "2591",
   "datePublished": "2021-09-01T09:14:07+03:00",
   "dateModified": "2021-09-27T17:15:57+03:00",
   "author": {
@@ -479,6 +479,58 @@ UPDATE 49
 <h2 id="2021-09-27">2021-09-27</h2>
 <ul>
 <li>Add CGIAR Action Area (cg.subject.actionArea) to CGSpace as Peter had asked me a few days ago</li>
+</ul>
+<h2 id="2021-09-28">2021-09-28</h2>
+<ul>
+<li>Francesca from the Alliance asked for help moving a bunch of reports from one collections to another on CGSpace
+<ul>
+<li>She is having problems with the &ldquo;move&rdquo; dialog taking minutes for each item</li>
+<li>I exported the collection and sent her a copy with just the few fields she would need in order to mark the ones that need to move, then I can do the rest:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'id,collection,dc.title[en_US]' ~/Downloads/10568-106990.csv &gt; /tmp/2021-09-28-alliance-reports.csv
+</code></pre><ul>
+<li>She sent it back fairly quickly with a new column marked &ldquo;Move&rdquo; so I extracted those items that matched and set them to the new owning collection:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvgrep -c Move -m 'Yes' ~/Downloads/2021_28_09_alliance_reports_csv.csv | csvcut -c 1,2 | sed 's_10568/106990_10568/111506_' &gt; /tmp/alliance-move.csv
+</code></pre><ul>
+<li>Maria from the Alliance emailed us to say that approving submissions was slow on CGSpace
+<ul>
+<li>I looked at the PostgreSQL activity and it seems low:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c 'SELECT * FROM pg_stat_activity' | wc -l
+59
+</code></pre><ul>
+<li>Locks look high though:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | sort | uniq -c | wc -l
+1154
+</code></pre><ul>
+<li>Indeed it seems something started causing locks to increase yesterday:</li>
+</ul>
+<p><img src="/cgspace-notes/2021/09/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
+<ul>
+<li>And query length increasing since yesterday:</li>
+</ul>
+<p><img src="/cgspace-notes/2021/09/postgres_querylength_ALL-week.png" alt="PostgreSQL query length week"></p>
+<ul>
+<li>The number of DSpace sessions is normal, hovering around 1,000&hellip;</li>
+<li>Looking closer at the PostgreSQL activity log, I see the locks are all held by the <code>dspaceCli</code> user&hellip; which seem weird:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c &quot;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid WHERE application_name='dspaceCli';&quot; | wc -l
+1096
+</code></pre><ul>
+<li>Now I&rsquo;m wondering why there are no connections from <code>dspaceApi</code> or <code>dspaceWeb</code>. Could it be that our Tomcat JDBC pooling via JNDI isn&rsquo;t working?
+<ul>
+<li>I see the same thing on DSpace Test hmmmm</li>
+<li>The configuration in <code>server.xml</code> is correct, but it could be that when I changed to using the updated JDBC driver from <code>pom.xml</code> instead of dropping it in the Tomcat lib directory that something broke&hellip;</li>
+<li>I downloaded the latest JDBC jar and put it in Tomcat&rsquo;s lib directory on DSpace Test and after restarting Tomcat I can see connections from <code>dspaceWeb</code> and <code>dspaceApi</code> again</li>
+<li>I will do the same on CGSpace and then revert the JDBC change in Ansible and DSpace <code>pom.xml</code></li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
