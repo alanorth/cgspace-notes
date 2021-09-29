@@ -26,7 +26,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-09/" />
 <meta property="article:published_time" content="2021-09-01T09:14:07+03:00" />
-<meta property="article:modified_time" content="2021-09-27T17:15:57+03:00" />
+<meta property="article:modified_time" content="2021-09-28T22:00:36+03:00" />
 
 
 
@@ -58,9 +58,9 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
   "@type": "BlogPosting",
   "headline": "September, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-09/",
-  "wordCount": "2591",
+  "wordCount": "2812",
   "datePublished": "2021-09-01T09:14:07+03:00",
-  "dateModified": "2021-09-27T17:15:57+03:00",
+  "dateModified": "2021-09-28T22:00:36+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -529,6 +529,32 @@ UPDATE 49
 <li>The configuration in <code>server.xml</code> is correct, but it could be that when I changed to using the updated JDBC driver from <code>pom.xml</code> instead of dropping it in the Tomcat lib directory that something broke&hellip;</li>
 <li>I downloaded the latest JDBC jar and put it in Tomcat&rsquo;s lib directory on DSpace Test and after restarting Tomcat I can see connections from <code>dspaceWeb</code> and <code>dspaceApi</code> again</li>
 <li>I will do the same on CGSpace and then revert the JDBC change in Ansible and DSpace <code>pom.xml</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-09-29">2021-09-29</h2>
+<ul>
+<li>Export a list of ILRI subjects from CGSpace to validate against AGROVOC for Peter and Abenet:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 203) to /tmp/2021-09-29-ilri-subject.txt;
+COPY 149
+</code></pre><ul>
+<li>Then validate and format the matches:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/agrovoc-lookup.py -i /tmp/2021-09-29-ilri-subject.txt -o /tmp/2021-09-29-ilri-subjects.csv -d
+$ csvcut -c subject,'match type' /tmp/2021-09-29-ilri-subjects.csv | sed -e 's/match type/matched/' -e 's/\(alt\|pref\)Label/yes/' &gt; /tmp/2021-09-29-ilri-subjects2.csv
+</code></pre><ul>
+<li>I talked to Salem about depositing from MEL to CGSpace
+<ul>
+<li>He mentioned that the one issue is that when you deposit to a workflow you don&rsquo;t get a Handle or any kind of identifier back!</li>
+<li>We might have to come to some kind of agreement that they deposit items without going into the workflow but that we have some kind of edit role in MEL</li>
+<li>He also said that they are looking into using the Research Organization Registry (RoR) in MEL, at least adding the <code>ror_id</code> and storing it</li>
+<li>I need to propose this to Peter again and perhaps start aligning our affiliations closer (I could even do something like the country codes with a process that scans every day)</li>
+</ul>
+</li>
+<li>Talk to Moayad about OpenRXV
+<ul>
+<li>We decided that we&rsquo;d keep harvesting all the Handles from the Altmetric prefix API, but then have a plugin to retrive DOI scores that we can run manually</li>
 </ul>
 </li>
 </ul>
