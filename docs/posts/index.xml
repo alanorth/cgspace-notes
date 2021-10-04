@@ -6,7 +6,30 @@
     <description>Recent content in Posts on CGSpace Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 01 Sep 2021 09:14:07 +0300</lastBuildDate><atom:link href="https://alanorth.github.io/cgspace-notes/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Oct 2021 11:14:07 +0300</lastBuildDate><atom:link href="https://alanorth.github.io/cgspace-notes/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>October, 2021</title>
+      <link>https://alanorth.github.io/cgspace-notes/2021-10/</link>
+      <pubDate>Fri, 01 Oct 2021 11:14:07 +0300</pubDate>
+      
+      <guid>https://alanorth.github.io/cgspace-notes/2021-10/</guid>
+      <description>&lt;h2 id=&#34;2021-10-01&#34;&gt;2021-10-01&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Export all affiliations on CGSpace and run them against the latest RoR data dump:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT text_value as &amp;quot;cg.contributor.affiliation&amp;quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
+$ csvcut -c 1 /tmp/2021-10-01-affiliations.csv | sed 1d &amp;gt; /tmp/2021-10-01-affiliations.txt
+$ ./ilri/ror-lookup.py -i /tmp/2021-10-01-affiliations.txt -r 2021-09-23-ror-data.json -o /tmp/2021-10-01-affili
+ations-matching.csv
+$ csvgrep -c matched -m true /tmp/2021-10-01-affiliations-matching.csv | sed 1d | wc -l 
+1879
+$ wc -l /tmp/2021-10-01-affiliations.txt 
+7100 /tmp/2021-10-01-affiliations.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;So we have 1879/7100 (26.46%) matching already&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
     <item>
       <title>September, 2021</title>
       <link>https://alanorth.github.io/cgspace-notes/2021-09/</link>
