@@ -25,7 +25,7 @@ So we have 1879/7100 (26.46%) matching already
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-10/" />
 <meta property="article:published_time" content="2021-10-01T11:14:07+03:00" />
-<meta property="article:modified_time" content="2021-10-04T19:40:13+03:00" />
+<meta property="article:modified_time" content="2021-10-05T18:54:39+03:00" />
 
 
 
@@ -56,9 +56,9 @@ So we have 1879/7100 (26.46%) matching already
   "@type": "BlogPosting",
   "headline": "October, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-10/",
-  "wordCount": "771",
+  "wordCount": "1307",
   "datePublished": "2021-10-01T11:14:07+03:00",
-  "dateModified": "2021-10-04T19:40:13+03:00",
+  "dateModified": "2021-10-05T18:54:39+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -247,7 +247,71 @@ $ csvgrep -c 'number of matches' -m '0' /tmp/agrovoc-matches.csv | csvcut -c 1 &
 ...
 
 Total number of bot hits purged: 465119
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2021-10-06">2021-10-06</h2>
+<ul>
+<li>Thinking about how we could check for duplicates before importing
+<ul>
+<li>I found out that <a href="https://www.freecodecamp.org/news/fuzzy-string-matching-with-postgresql/">PostgreSQL has a built-in similarity function</a>:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; CREATE EXTENSION pg_trgm;
+localhost/dspace63= &gt; SELECT metadata_value_id, text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND SIMILARITY(text_value,'Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines') &gt; 0.5;
+ metadata_value_id │                                         text_value                                         │           dspace_object_id
+───────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
+           3652624 │ Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines │ b7f0bf12-b183-4b2f-bbd2-7a5697b0c467
+           3677663 │ Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines │ fb62f551-f4a5-4407-8cdc-6bff6dac399e
+(2 rows)
+</code></pre><ul>
+<li>I was able to find an exact duplicate for an IITA item by searching for its title (I already knew that these existed)</li>
+<li>I started working on a basic Python script to do this and managed to find an actual duplicate in the recent IWMI items
+<ul>
+<li>I think I will check for similar titles, and if I find them I will print out the handles for verification</li>
+<li>I could also proceed to check other metadata like type because those shouldn&rsquo;t vary too much</li>
+</ul>
+</li>
+<li>I ran my new <code>check-duplicates.py</code> script on the 292 non-IWMI publications from Udana and found twelve potential duplicates
+<ul>
+<li>Upon checking them manually, I found that 7/12 were indeed already present on CGSpace!</li>
+<li>This is with the similarity threshold at 0.5. I wonder if tweaking that higher will make the script run faster and eliminate some false positives</li>
+<li>I re-ran it with higher thresholds this eliminated all false positives, but it still took 24 minutes to run for 292 items!
+<ul>
+<li>0.6: ./ilri/check-duplicates.py -i ~/Downloads/2021-10-03-non-IWMI-publications.cs  0.09s user 0.03s system 0% cpu 24:40.42 total</li>
+<li>0.7: ./ilri/check-duplicates.py -i ~/Downloads/2021-10-03-non-IWMI-publications.cs  0.12s user 0.03s system 0% cpu 24:29.15 total</li>
+<li>0.8: ./ilri/check-duplicates.py -i ~/Downloads/2021-10-03-non-IWMI-publications.cs  0.09s user 0.03s system 0% cpu 25:44.13 total</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Some minor updates to csv-metadata-quality
+<ul>
+<li>Fix two issues with regular expressions in the duplicate items and experimental language checks</li>
+<li>Add a check for items that have a DOI listed in their citation, but are missing a standalone DOI field</li>
+</ul>
+</li>
+<li>Then I ran this new version of csv-metadata-quality on an export of IWMI&rsquo;s community, minus some fields I don&rsquo;t want to check:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -C 'dc.date.accessioned,dc.date.accessioned[],dc.date.accessioned[en_US],dc.date.available,dc.date.available[],dc.date.available[en_US],dcterms.issued[en_US],dcterms.issued[],dcterms.issued,dc.description.provenance[en],dc.description.provenance[en_US],dc.identifier.uri,dc.identifier.uri[],dc.identifier.uri[en_US],dcterms.abstract[en_US],dcterms.bibliographicCitation[en_US],collection' ~/Downloads/iwmi.csv &gt; /tmp/iwmi-to-check.csv
+$ csv-metadata-quality -i /tmp/iwmi-to-check.csv -o /tmp/iwmi.csv | tee /tmp/out.log
+$ xsv split -s 2000 /tmp /tmp/iwmi.csv
+</code></pre><ul>
+<li>I noticed each CSV only had 10 or 20 corrections, mostly that none of the duplicate metadata values were removed in the CSVs&hellip;
+<ul>
+<li>I cut a subset of the fields from the main CSV and tried again, but DSpace said &ldquo;no changes detected&rdquo;</li>
+<li>The duplicates are definitely removed from the CSV, but DSpace doesn&rsquo;t detect them</li>
+<li>I realized this is an issue I&rsquo;ve had before, but forgot because I usually use csv-metadata-quality for new items, not ones already inside DSpace!</li>
+<li>I found a comment on thread on the dspace-tech mailing list from helix84 in 2015 (&ldquo;No changes were detected&rdquo; when importing metadata via XMLUI&quot;) where he says:</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>It&rsquo;s very likely that multiple values in a single field are being compared as an unordered set rather than an ordered list.
+Try doing it in two imports. In first import, remove all authors. In second import, add them in the new order.</p>
+</blockquote>
+<ul>
+<li>Shit, so that&rsquo;s worth looking into&hellip;</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
