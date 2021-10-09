@@ -25,7 +25,7 @@ So we have 1879/7100 (26.46%) matching already
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-10/" />
 <meta property="article:published_time" content="2021-10-01T11:14:07+03:00" />
-<meta property="article:modified_time" content="2021-10-07T08:27:39+03:00" />
+<meta property="article:modified_time" content="2021-10-08T17:15:17+03:00" />
 
 
 
@@ -56,9 +56,9 @@ So we have 1879/7100 (26.46%) matching already
   "@type": "BlogPosting",
   "headline": "October, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-10/",
-  "wordCount": "1754",
+  "wordCount": "1882",
   "datePublished": "2021-10-01T11:14:07+03:00",
-  "dateModified": "2021-10-07T08:27:39+03:00",
+  "dateModified": "2021-10-08T17:15:17+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -390,6 +390,27 @@ $ csvjoin -c id /tmp/ilri-deduplicated-items.csv /tmp/ilri-deduplicated-items-cl
 <li>After these are uploaded I will normalize the <code>text_lang</code> fields in PostgreSQL again</li>
 </ul>
 </li>
+<li>I did the same for CIAT but there were over 7,000 duplicate metadata values! Hard to believe:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c 'Removing duplicate value' /tmp/out.log
+7720
+</code></pre><ul>
+<li>I applied these to the CIAT community, so in total that&rsquo;s over 8,000 duplicate metadata values removed in a handful of fields&hellip;</li>
+</ul>
+<h2 id="2021-10-09">2021-10-09</h2>
+<ul>
+<li>I did similar metadata cleanups for CCAFS and IITA too, but there were only a few hundred duplicates there</li>
+<li>Also of note, there are some other fixes too, for example in IITA&rsquo;s community:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c -E '(Fixing|Removing) (duplicate|excessive|invalid)' /tmp/out.log
+249
+</code></pre><ul>
+<li>I ran a full Discovery re-indexing on CGSpace</li>
+<li>Then I exported all of CGSpace and extracted the ISSNs and ISBNs:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'id,cg.issn[en_US],dc.identifier.issn[en_US],cg.isbn[en_US],dc.identifier.isbn[en_US]' /tmp/cgspace.csv &gt; /tmp/cgspace-issn-isbn.csv
+</code></pre><ul>
+<li>I did cleanups on about seventy items with invalid and mixed ISSNs/ISBNs</li>
 </ul>
 <!-- raw HTML omitted -->
 
