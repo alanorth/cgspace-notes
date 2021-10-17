@@ -25,7 +25,7 @@ So we have 1879/7100 (26.46%) matching already
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-10/" />
 <meta property="article:published_time" content="2021-10-01T11:14:07+03:00" />
-<meta property="article:modified_time" content="2021-10-10T16:01:27+03:00" />
+<meta property="article:modified_time" content="2021-10-11T20:06:42+03:00" />
 
 
 
@@ -56,9 +56,9 @@ So we have 1879/7100 (26.46%) matching already
   "@type": "BlogPosting",
   "headline": "October, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-10/",
-  "wordCount": "2424",
+  "wordCount": "3240",
   "datePublished": "2021-10-01T11:14:07+03:00",
-  "dateModified": "2021-10-10T16:01:27+03:00",
+  "dateModified": "2021-10-11T20:06:42+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -496,6 +496,120 @@ $ psql -c &quot;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.p
 <li>I restarted PostgreSQL (instead of restarting Tomcat), so let&rsquo;s see if that helps</li>
 <li>I filed <a href="https://github.com/DSpace/DSpace/issues/7989">a bug for the DSpace 6/7 duplicate values metadata import issue</a></li>
 <li>I tested the two patches for removing abandoned submissions from the workflow but unfortunately it seems that they are for the configurable aka XML workflow, and we are using the basic workflow</li>
+<li>I discussed PostgreSQL issues with some people on the DSpace Slack
+<ul>
+<li>Looking at postgresqltuner.pl and <a href="https://pgtune.leopard.in.ua">https://pgtune.leopard.in.ua</a> I realized that there were some settings that I hadn&rsquo;t changed in a few years that I probably need to re-evaluate</li>
+<li>For example, <code>random_page_cost</code> is recommended to be 1.1 in the PostgreSQL 10 docs (default is 4.0, but we use 1 since 2017 when it came up in Hacker News)</li>
+<li>Also, <code>effective_io_concurrency</code> is recommended to be &ldquo;hundreds&rdquo; if you are using an SSD (default is 1)</li>
+</ul>
+</li>
+<li>I also enabled the <code>pg_stat_statements</code> extension to try to understand what queries are being run the most often, and how long they take</li>
+</ul>
+<h2 id="2021-10-12">2021-10-12</h2>
+<ul>
+<li>I looked again at the duplicate items query I was doing with trigrams recently and found a few new things
+<ul>
+<li>Looking at the <code>EXPLAIN ANALYZE</code> plan for the query I noticed it wasn&rsquo;t using any indexes</li>
+<li>I <a href="https://dba.stackexchange.com/questions/103821/best-index-for-similarity-function/103823">read on StackExchange</a> that, if we want to make use of indexes, we need to use the similarity operator (<code>%</code>), not the function <code>similarity()</code> because &ldquo;index support is bound to operators in Postgres, not to functions&rdquo;</li>
+<li>A note about the query plan output is that we need to read it from the bottom up!</li>
+<li>So with the similary operator we need to set the threshold like this now:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.5;
+</code></pre><ul>
+<li>Next I experimented with using GIN or GiST indexes on <code>metadatavalue</code>, but they were slower than the existing DSpace indexes
+<ul>
+<li>I tested a few variations of the query I had been using and found it&rsquo;s <em>much</em> faster if I use the similarity operator and keep the condition that object IDs are in the item table&hellip;</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND text_value % 'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas';
+                                           text_value                                           │           dspace_object_id           
+────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
+ Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
+(1 row)
+
+Time: 739.948 ms
+</code></pre><ul>
+<li>Now this script runs in four minutes (versus twenty-four!) and it still finds the same seven duplicates! Amazing!</li>
+<li>I still don&rsquo;t understand the differences in the query plan well enough, but I see it is using the DSpace default indexes and the results are accurate</li>
+<li>So to summarize, the best to the worst query, all returning the same result:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.6;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND text_value % 'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas';
+                                           text_value                                           │           dspace_object_id           
+────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
+ Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
+(1 row)
+
+Time: 683.165 ms
+Time: 635.364 ms
+Time: 674.666 ms
+
+localhost/dspace= &gt; DISCARD ALL;
+localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.6;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE metadata_field_id=64 AND text_value % 'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas';
+                                           text_value                                           │           dspace_object_id           
+────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
+ Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
+(1 row)
+
+Time: 1584.765 ms (00:01.585)
+Time: 1665.594 ms (00:01.666)
+Time: 1623.726 ms (00:01.624)
+
+localhost/dspace= &gt; DISCARD ALL;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE metadata_field_id=64 AND SIMILARITY(text_value,'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas') &gt; 0.6;
+                                           text_value                                           │           dspace_object_id           
+────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
+ Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
+(1 row)
+
+Time: 4028.939 ms (00:04.029)
+Time: 4022.239 ms (00:04.022)
+Time: 4061.820 ms (00:04.062)
+
+localhost/dspace= &gt; DISCARD ALL;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND SIMILARITY(text_value,'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas') &gt; 0.6;
+                                           text_value                                           │           dspace_object_id           
+────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
+ Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
+(1 row)
+
+Time: 4358.713 ms (00:04.359)
+Time: 4301.248 ms (00:04.301)
+Time: 4417.909 ms (00:04.418)
+</code></pre><h2 id="2021-10-13">2021-10-13</h2>
+<ul>
+<li>I looked into the <a href="https://github.com/DSpace/DSpace/issues/7946">REST API issue where fields without qualifiers throw an HTTP 500</a>
+<ul>
+<li>The fix is to check if the qualifier is not null AND not empty in dspace-api</li>
+<li>I submitted a fix: <a href="https://github.com/DSpace/DSpace/pull/7993">https://github.com/DSpace/DSpace/pull/7993</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-10-14">2021-10-14</h2>
+<ul>
+<li>Someone in the DSpace community already posted a fix for the DSpace 6/7 duplicate items export bug!
+<ul>
+<li>I tested it and it works so I left feedback: <a href="https://github.com/DSpace/DSpace/pull/7995">https://github.com/DSpace/DSpace/pull/7995</a></li>
+</ul>
+</li>
+<li>Altmetric support got back to us about the missing DOI–Handle link and said it was due to the TLS certificate chain on CGSpace
+<ul>
+<li>I checked and everything is actually working fine, so it could be their backend servers are old and don&rsquo;t support the new Let&rsquo;s Encrypt trust path</li>
+<li>I asked them to put me in touch with their backend developers directly</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-10-17">2021-10-17</h2>
+<ul>
+<li>Revert the ssl-cert change on the Ansible infrastructure scripts so that nginx uses a manually generated &ldquo;snakeoil&rdquo; TLS certificate
+<ul>
+<li>The ssl-cert one is easier because it&rsquo;s automatic, but they include the hostname in the bogus cert so it&rsquo;s an unecessary leak of information</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
