@@ -10,7 +10,7 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/" />
-<meta property="og:updated_time" content="2021-10-28T18:08:13+03:00" />
+<meta property="og:updated_time" content="2021-11-01T10:48:13+02:00" />
 
 
 
@@ -31,7 +31,7 @@
     "@type": "Person",
     "name": "Alan Orth"
   },
-  "dateModified": "2021-09-01T09:14:07+03:00",
+  "dateModified": "2021-11-01T11:14:07+03:00",
   "keywords": "notes, migration, notes",
   "description":"Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."
 }
@@ -90,6 +90,63 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-02/">February, 2017</a></h2>
+    <p class="blog-post-meta"><time datetime="2017-02-07T07:04:52-08:00">Tue Feb 07, 2017</time> by Alan Orth in 
+
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes/" rel="tag">Notes</a>
+
+</p>
+  </header>
+  <h2 id="2017-02-07">2017-02-07</h2>
+<ul>
+<li>An item was mapped twice erroneously again, so I had to remove one of the mappings manually:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# select * from collection2item where item_id = '80278';
+  id   | collection_id | item_id
+-------+---------------+---------
+ 92551 |           313 |   80278
+ 92550 |           313 |   80278
+ 90774 |          1051 |   80278
+(3 rows)
+dspace=# delete from collection2item where id = 92551 and item_id = 80278;
+DELETE 1
+</code></pre><ul>
+<li>Create issue on GitHub to track the addition of CCAFS Phase II project tags (<a href="https://github.com/ilri/DSpace/issues/301">#301</a>)</li>
+<li>Looks like we&rsquo;ll be using <code>cg.identifier.ccafsprojectpii</code> as the field name</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2017-02/'>Read more →</a>
+</article> 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-01/">January, 2017</a></h2>
+    <p class="blog-post-meta"><time datetime="2017-01-02T10:43:00+03:00">Mon Jan 02, 2017</time> by Alan Orth in 
+
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes/" rel="tag">Notes</a>
+
+</p>
+  </header>
+  <h2 id="2017-01-02">2017-01-02</h2>
+<ul>
+<li>I checked to see if the Solr sharding task that is supposed to run on January 1st had run and saw there was an error</li>
+<li>I tested on DSpace Test as well and it doesn&rsquo;t work there either</li>
+<li>I asked on the dspace-tech mailing list because it seems to be broken, and actually now I&rsquo;m not sure if we&rsquo;ve ever had the sharding task run successfully over all these years</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2017-01/'>Read more →</a>
+</article> 
 
 
 
@@ -318,54 +375,6 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2016-04/">April, 2016</a></h2>
-    <p class="blog-post-meta"><time datetime="2016-04-04T11:06:00+03:00">Mon Apr 04, 2016</time> by Alan Orth in 
-
-<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes/" rel="tag">Notes</a>
-
-</p>
-  </header>
-  <h2 id="2016-04-04">2016-04-04</h2>
-<ul>
-<li>Looking at log file use on CGSpace and notice that we need to work on our cron setup a bit</li>
-<li>We are backing up all logs in the log folder, including useless stuff like solr, cocoon, handle-plugin, etc</li>
-<li>After running DSpace for over five years I&rsquo;ve never needed to look in any other log file than dspace.log, leave alone one from last year!</li>
-<li>This will save us a few gigs of backup space we&rsquo;re paying for on S3</li>
-<li>Also, I noticed the <code>checker</code> log has some errors we should pay attention to:</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2016-04/'>Read more →</a>
-</article> 
-
-
-
-
-
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2016-03/">March, 2016</a></h2>
-    <p class="blog-post-meta"><time datetime="2016-03-02T16:50:00+03:00">Wed Mar 02, 2016</time> by Alan Orth in 
-
-<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/tags/notes/" rel="tag">Notes</a>
-
-</p>
-  </header>
-  <h2 id="2016-03-02">2016-03-02</h2>
-<ul>
-<li>Looking at issues with author authorities on CGSpace</li>
-<li>For some reason we still have the <code>index-lucene-update</code> cron job active on CGSpace, but I&rsquo;m pretty sure we don&rsquo;t need it as of the latest few versions of Atmire&rsquo;s Listings and Reports module</li>
-<li>Reinstall my local (Mac OS X) DSpace stack with Tomcat 7, PostgreSQL 9.3, and Java JDK 1.7 to match environment on CGSpace server</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2016-03/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/page/6/" rel="prev" role="button">Previous page</a>
@@ -390,15 +399,15 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2021-11/">November, 2021</a></li>
+
+<li><a href="/cgspace-notes/2021-10/">October, 2021</a></li>
+
 <li><a href="/cgspace-notes/2021-09/">September, 2021</a></li>
 
 <li><a href="/cgspace-notes/2021-08/">August, 2021</a></li>
 
 <li><a href="/cgspace-notes/2021-07/">July, 2021</a></li>
-
-<li><a href="/cgspace-notes/2021-06/">June, 2021</a></li>
-
-<li><a href="/cgspace-notes/2021-05/">May, 2021</a></li>
 
     </ol>
   </section>
