@@ -7,17 +7,31 @@
 
 
 <meta property="og:title" content="November, 2021" />
-<meta property="og:description" content="2021-11-01" />
+<meta property="og:description" content="2021-11-02
+
+I experimented with manually sharding the Solr statistics on DSpace Test
+First I exported all the 2019 stats from CGSpace:
+
+$ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
+$ zstd statistics-2019.json
+" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-11/" />
-<meta property="article:published_time" content="2021-11-01T11:14:07+03:00" />
-<meta property="article:modified_time" content="2021-11-01T11:14:07+03:00" />
+<meta property="article:published_time" content="2021-11-02T22:27:07+02:00" />
+<meta property="article:modified_time" content="2021-11-01T10:49:21+02:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="November, 2021"/>
-<meta name="twitter:description" content="2021-11-01"/>
+<meta name="twitter:description" content="2021-11-02
+
+I experimented with manually sharding the Solr statistics on DSpace Test
+First I exported all the 2019 stats from CGSpace:
+
+$ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
+$ zstd statistics-2019.json
+"/>
 <meta name="generator" content="Hugo 0.88.1" />
 
 
@@ -28,9 +42,9 @@
   "@type": "BlogPosting",
   "headline": "November, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-11/",
-  "wordCount": "1",
-  "datePublished": "2021-11-01T11:14:07+03:00",
-  "dateModified": "2021-11-01T11:14:07+03:00",
+  "wordCount": "238",
+  "datePublished": "2021-11-02T22:27:07+02:00",
+  "dateModified": "2021-11-01T10:49:21+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -97,14 +111,44 @@
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2021-11/">November, 2021</a></h2>
     <p class="blog-post-meta">
-<time datetime="2021-11-01T11:14:07+03:00">Mon Nov 01, 2021</time>
+<time datetime="2021-11-02T22:27:07+02:00">Tue Nov 02, 2021</time>
  in 
 <span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes/" rel="category tag">Notes</a>
 
 
 </p>
   </header>
-  <h2 id="2021-11-01">2021-11-01</h2>
+  <h2 id="2021-11-02">2021-11-02</h2>
+<ul>
+<li>I experimented with manually sharding the Solr statistics on DSpace Test</li>
+<li>First I exported all the 2019 stats from CGSpace:</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ ./run.sh -s http://localhost:8081/solr/statistics -f 'time:2019-*' -a export -o statistics-2019.json -k uid
+$ zstd statistics-2019.json
+</code></pre><ul>
+<li>Then on DSpace Test I created a <code>statistics-2019</code> core with the same instance dir as the main <code>statistics</code> core (as <a href="https://wiki.lyrasis.org/display/DSDOC6x/Testing+Solr+Shards">illustrated in the DSpace docs</a>)</li>
+</ul>
+<pre tabindex="0"><code class="language-console" data-lang="console">$ mkdir -p /home/dspacetest.cgiar.org/solr/statistics-2019/data
+# create core in Solr admin
+$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;time:2019-*&lt;/query&gt;&lt;/delete&gt;&quot;
+$ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a import -o statistics-2019.json -k uid
+</code></pre><ul>
+<li>The key thing above is that you create the core in the Solr admin UI, but the data directory must already exist so you have to do that first in the file system</li>
+<li>I restarted the server after the import was done to see if the cores would come back up OK
+<ul>
+<li>I remember last time I tried this the manually created statistics cores didn&rsquo;t come back up after I rebooted, but this time they did</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-03">2021-11-03</h2>
+<ul>
+<li>While inspecting the stats for the new statistics-2019 shard on DSpace Test I noticed that I can&rsquo;t find any stats via the DSpace Statistics API for an item that <em>should</em> have some
+<ul>
+<li>I checked on CGSpace&rsquo;s and I can&rsquo;t find them there either, but I see them in Solr when I query in the admin UI</li>
+<li>I need to debug that, but it doesn&rsquo;t seem to be related to the sharding&hellip;</li>
+</ul>
+</li>
+</ul>
 <!-- raw HTML omitted -->
 
   
