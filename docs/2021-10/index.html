@@ -11,7 +11,7 @@
 
 Export all affiliations on CGSpace and run them against the latest RoR data dump:
 
-localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
+localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
 $ csvcut -c 1 /tmp/2021-10-01-affiliations.csv | sed 1d &gt; /tmp/2021-10-01-affiliations.txt
 $ ./ilri/ror-lookup.py -i /tmp/2021-10-01-affiliations.txt -r 2021-09-23-ror-data.json -o /tmp/2021-10-01-affili
 ations-matching.csv
@@ -35,7 +35,7 @@ So we have 1879/7100 (26.46%) matching already
 
 Export all affiliations on CGSpace and run them against the latest RoR data dump:
 
-localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
+localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
 $ csvcut -c 1 /tmp/2021-10-01-affiliations.csv | sed 1d &gt; /tmp/2021-10-01-affiliations.txt
 $ ./ilri/ror-lookup.py -i /tmp/2021-10-01-affiliations.txt -r 2021-09-23-ror-data.json -o /tmp/2021-10-01-affili
 ations-matching.csv
@@ -46,7 +46,7 @@ $ wc -l /tmp/2021-10-01-affiliations.txt
 
 So we have 1879/7100 (26.46%) matching already
 "/>
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.89.2" />
 
 
     
@@ -136,15 +136,15 @@ So we have 1879/7100 (26.46%) matching already
 <ul>
 <li>Export all affiliations on CGSpace and run them against the latest RoR data dump:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
-$ csvcut -c 1 /tmp/2021-10-01-affiliations.csv | sed 1d &gt; /tmp/2021-10-01-affiliations.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
+$ csvcut -c <span style="color:#ae81ff">1</span> /tmp/2021-10-01-affiliations.csv | sed 1d &gt; /tmp/2021-10-01-affiliations.txt
 $ ./ilri/ror-lookup.py -i /tmp/2021-10-01-affiliations.txt -r 2021-09-23-ror-data.json -o /tmp/2021-10-01-affili
 ations-matching.csv
 $ csvgrep -c matched -m true /tmp/2021-10-01-affiliations-matching.csv | sed 1d | wc -l 
 1879
 $ wc -l /tmp/2021-10-01-affiliations.txt 
 7100 /tmp/2021-10-01-affiliations.txt
-</code></pre><ul>
+</code></pre></div><ul>
 <li>So we have 1879/7100 (26.46%) matching already</li>
 </ul>
 <h2 id="2021-10-03">2021-10-03</h2>
@@ -185,19 +185,19 @@ $ wc -l /tmp/2021-10-01-affiliations.txt
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/*.log* | grep 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)' | awk '{print $1}' | sort | uniq &gt; /tmp/mozilla-4.0-ips.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/*.log* | grep <span style="color:#e6db74">&#39;Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort | uniq &gt; /tmp/mozilla-4.0-ips.txt
 # wc -l /tmp/mozilla-4.0-ips.txt 
 543 /tmp/mozilla-4.0-ips.txt
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then I resolved the IPs and extracted the ones belonging to Amazon:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/mozilla-4.0-ips.txt -k &quot;$ABUSEIPDB_API_KEY&quot; -o /tmp/mozilla-4.0-ips.csv
-$ csvgrep -c asn -m 14618 /tmp/mozilla-4.0-ips.csv | csvcut -c ip | sed 1d | tee /tmp/amazon-ips.txt | wc -l
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/mozilla-4.0-ips.txt -k <span style="color:#e6db74">&#34;</span>$ABUSEIPDB_API_KEY<span style="color:#e6db74">&#34;</span> -o /tmp/mozilla-4.0-ips.csv
+$ csvgrep -c asn -m <span style="color:#ae81ff">14618</span> /tmp/mozilla-4.0-ips.csv | csvcut -c ip | sed 1d | tee /tmp/amazon-ips.txt | wc -l
+</code></pre></div><ul>
 <li>I am thinking I will purge them all, as I have several indicators that they are bots: mysterious user agent, IP owned by Amazon</li>
 <li>Even more interesting, these requests are weighted VERY heavily on the CGIAR System community:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">   1592 GET /handle/10947/2526
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">   1592 GET /handle/10947/2526
    1592 GET /handle/10947/2527
    1592 GET /handle/10947/34
    1593 GET /handle/10947/6
@@ -215,7 +215,7 @@ $ csvgrep -c asn -m 14618 /tmp/mozilla-4.0-ips.csv | csvcut -c ip | sed 1d | tee
    1600 GET /handle/10947/4467
    1607 GET /handle/10568/103816
  290382 GET /handle/10568/83389
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Before I purge all those I will ask someone Samuel Stacey from the System Office to hopefully get an insight&hellip;</li>
 <li>Meeting with Michael Victor, Peter, Jane, and Abenet about the future of repositories in the One CGIAR</li>
 <li>Meeting with Michelle from Altmetric about their new CSV upload system
@@ -231,10 +231,10 @@ $ csvgrep -c asn -m 14618 /tmp/mozilla-4.0-ips.csv | csvcut -c ip | sed 1d | tee
 </code></pre><ul>
 <li>Extract the AGROVOC subjects from IWMI&rsquo;s 292 publications to validate them against AGROVOC:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'dcterms.subject[en_US]' ~/Downloads/2021-10-03-non-IWMI-publications.csv | sed -e 1d -e 's/||/\n/g' -e 's/&quot;//g' | sort -u &gt; /tmp/agrovoc.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c <span style="color:#e6db74">&#39;dcterms.subject[en_US]&#39;</span> ~/Downloads/2021-10-03-non-IWMI-publications.csv | sed -e 1d -e <span style="color:#e6db74">&#39;s/||/\n/g&#39;</span> -e <span style="color:#e6db74">&#39;s/&#34;//g&#39;</span> | sort -u &gt; /tmp/agrovoc.txt
 $ ./ilri/agrovoc-lookup.py -i /tmp/agrovoc-sorted.txt -o /tmp/agrovoc-matches.csv
-$ csvgrep -c 'number of matches' -m '0' /tmp/agrovoc-matches.csv | csvcut -c 1 &gt; /tmp/invalid-agrovoc.csv
-</code></pre><h2 id="2021-10-05">2021-10-05</h2>
+$ csvgrep -c <span style="color:#e6db74">&#39;number of matches&#39;</span> -m <span style="color:#e6db74">&#39;0&#39;</span> /tmp/agrovoc-matches.csv | csvcut -c <span style="color:#ae81ff">1</span> &gt; /tmp/invalid-agrovoc.csv
+</code></pre></div><h2 id="2021-10-05">2021-10-05</h2>
 <ul>
 <li>Sam put me in touch with Dodi from the System Office web team and he confirmed that the Amazon requests are not theirs
 <ul>
@@ -243,11 +243,11 @@ $ csvgrep -c 'number of matches' -m '0' /tmp/agrovoc-matches.csv | csvcut -c 1 &
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/robot-ips.txt -p
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/robot-ips.txt -p
 ...
-
-Total number of bot hits purged: 465119
-</code></pre><h2 id="2021-10-06">2021-10-06</h2>
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 465119
+</code></pre></div><h2 id="2021-10-06">2021-10-06</h2>
 <ul>
 <li>Thinking about how we could check for duplicates before importing
 <ul>
@@ -255,14 +255,14 @@ Total number of bot hits purged: 465119
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; CREATE EXTENSION pg_trgm;
-localhost/dspace63= &gt; SELECT metadata_value_id, text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND SIMILARITY(text_value,'Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines') &gt; 0.5;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; CREATE EXTENSION pg_trgm;
+localhost/dspace63= &gt; SELECT metadata_value_id, text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND SIMILARITY(text_value,&#39;Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines&#39;) &gt; 0.5;
  metadata_value_id │                                         text_value                                         │           dspace_object_id
 ───────────────────┼────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
            3652624 │ Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines │ b7f0bf12-b183-4b2f-bbd2-7a5697b0c467
            3677663 │ Molecular marker based genetic diversity assessment of Striga resistant maize inbred lines │ fb62f551-f4a5-4407-8cdc-6bff6dac399e
 (2 rows)
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I was able to find an exact duplicate for an IITA item by searching for its title (I already knew that these existed)</li>
 <li>I started working on a basic Python script to do this and managed to find an actual duplicate in the recent IWMI items
 <ul>
@@ -291,10 +291,10 @@ localhost/dspace63= &gt; SELECT metadata_value_id, text_value, dspace_object_id 
 </li>
 <li>Then I ran this new version of csv-metadata-quality on an export of IWMI&rsquo;s community, minus some fields I don&rsquo;t want to check:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -C 'dc.date.accessioned,dc.date.accessioned[],dc.date.accessioned[en_US],dc.date.available,dc.date.available[],dc.date.available[en_US],dcterms.issued[en_US],dcterms.issued[],dcterms.issued,dc.description.provenance[en],dc.description.provenance[en_US],dc.identifier.uri,dc.identifier.uri[],dc.identifier.uri[en_US],dcterms.abstract[en_US],dcterms.bibliographicCitation[en_US],collection' ~/Downloads/iwmi.csv &gt; /tmp/iwmi-to-check.csv
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -C <span style="color:#e6db74">&#39;dc.date.accessioned,dc.date.accessioned[],dc.date.accessioned[en_US],dc.date.available,dc.date.available[],dc.date.available[en_US],dcterms.issued[en_US],dcterms.issued[],dcterms.issued,dc.description.provenance[en],dc.description.provenance[en_US],dc.identifier.uri,dc.identifier.uri[],dc.identifier.uri[en_US],dcterms.abstract[en_US],dcterms.bibliographicCitation[en_US],collection&#39;</span> ~/Downloads/iwmi.csv &gt; /tmp/iwmi-to-check.csv
 $ csv-metadata-quality -i /tmp/iwmi-to-check.csv -o /tmp/iwmi.csv | tee /tmp/out.log
-$ xsv split -s 2000 /tmp /tmp/iwmi.csv
-</code></pre><ul>
+$ xsv split -s <span style="color:#ae81ff">2000</span> /tmp /tmp/iwmi.csv
+</code></pre></div><ul>
 <li>I noticed each CSV only had 10 or 20 corrections, mostly that none of the duplicate metadata values were removed in the CSVs&hellip;
 <ul>
 <li>I cut a subset of the fields from the main CSV and tried again, but DSpace said &ldquo;no changes detected&rdquo;</li>
@@ -319,18 +319,18 @@ Try doing it in two imports. In first import, remove all authors. In second impo
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'id,cg.contributor.affiliation[en_US],cg.coverage.country[en_US],cg.coverage.iso3166-alpha2[en_US],cg.coverage.subregion[en_US],cg.identifier.doi[en_US],cg.identifier.iwmilibrary[en_US],cg.identifier.url[en_US],cg.isijournal[en_US],cg.issn[en_US],cg.river.basin[en_US],dc.contributor.author[en_US],dcterms.subject[en_US]' ~/Downloads/iwmi.csv &gt; /tmp/iwmi-duplicate-metadata.csv
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c <span style="color:#e6db74">&#39;id,cg.contributor.affiliation[en_US],cg.coverage.country[en_US],cg.coverage.iso3166-alpha2[en_US],cg.coverage.subregion[en_US],cg.identifier.doi[en_US],cg.identifier.iwmilibrary[en_US],cg.identifier.url[en_US],cg.isijournal[en_US],cg.issn[en_US],cg.river.basin[en_US],dc.contributor.author[en_US],dcterms.subject[en_US]&#39;</span> ~/Downloads/iwmi.csv &gt; /tmp/iwmi-duplicate-metadata.csv
 # Copy and blank columns in OpenRefine
 $ csv-metadata-quality -i ~/Downloads/2021-10-07-IWMI-duplicate-metadata-csv.csv -o /tmp/iwmi-duplicates-cleaned.csv | tee /tmp/out.log
-$ xsv split -s 2000 /tmp /tmp/iwmi-duplicates-cleaned.csv
-</code></pre><ul>
+$ xsv split -s <span style="color:#ae81ff">2000</span> /tmp /tmp/iwmi-duplicates-cleaned.csv
+</code></pre></div><ul>
 <li>It takes a few hours per 2,000 items because DSpace processes them so slowly&hellip; sigh&hellip;</li>
 </ul>
 <h2 id="2021-10-08">2021-10-08</h2>
 <ul>
 <li>I decided to update these records in PostgreSQL instead of via several CSV batches, as there were several others to normalize too:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">cgspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) GROUP BY text_lang ORDER BY count DESC;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">cgspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) GROUP BY text_lang ORDER BY count DESC;
  text_lang |  count  
 -----------+---------
  en_US     | 2603711
@@ -342,31 +342,31 @@ $ xsv split -s 2000 /tmp /tmp/iwmi-duplicates-cleaned.csv
            |       0
 (7 rows)
 cgspace=# BEGIN;
-cgspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (SELECT uuid FROM item) AND text_lang IN ('en_Fu', 'en', '');
+cgspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND text_lang IN (&#39;en_Fu&#39;, &#39;en&#39;, &#39;&#39;);
 UPDATE 129673
 cgspace=# COMMIT;
-</code></pre><ul>
+</code></pre></div><ul>
 <li>So all this effort to remove ~400 duplicate metadata values in the IWMI community hmmm:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c 'Removing duplicate value' /tmp/out.log
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c <span style="color:#e6db74">&#39;Removing duplicate value&#39;</span> /tmp/out.log
 391
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I tried to export ILRI&rsquo;s community, but ran into the export bug (DS-4211)
 <ul>
 <li>After applying the patch on my local instance I was able to export, but found many duplicate items in the CSV (as I also noticed in 2021-02):</li>
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c id /tmp/ilri-duplicate-metadata.csv | sed '1d' | wc -l 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c id /tmp/ilri-duplicate-metadata.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | wc -l 
 32070
-$ csvcut -c id /tmp/ilri-duplicate-metadata.csv | sort -u | sed '1d' | wc -l
+$ csvcut -c id /tmp/ilri-duplicate-metadata.csv | sort -u | sed <span style="color:#e6db74">&#39;1d&#39;</span> | wc -l
 19315
-</code></pre><ul>
+</code></pre></div><ul>
 <li>It seems there are only about 200 duplicate values in this subset of fields in ILRI&rsquo;s community:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c 'Removing duplicate value' /tmp/out.log
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c <span style="color:#e6db74">&#39;Removing duplicate value&#39;</span> /tmp/out.log
 220
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I found a cool way to select only the items with corrections
 <ul>
 <li>First, extract a handful of fields from the CSV with csvcut</li>
@@ -376,11 +376,11 @@ $ csvcut -c id /tmp/ilri-duplicate-metadata.csv | sort -u | sed '1d' | wc -l
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'id,cg.contributor.affiliation[en_US],cg.coverage.country[en_US],cg.coverage.iso3166-alpha2[en_US],cg.coverage.subregion[en_US],cg.identifier.doi[en_US],cg.identifier.url[en_US],cg.isijournal[en_US],cg.issn[en_US],dc.contributor.author[en_US],dcterms.subject[en_US]' /tmp/ilri.csv | csvsort | uniq &gt; /tmp/ilri-deduplicated-items.csv
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c <span style="color:#e6db74">&#39;id,cg.contributor.affiliation[en_US],cg.coverage.country[en_US],cg.coverage.iso3166-alpha2[en_US],cg.coverage.subregion[en_US],cg.identifier.doi[en_US],cg.identifier.url[en_US],cg.isijournal[en_US],cg.issn[en_US],dc.contributor.author[en_US],dcterms.subject[en_US]&#39;</span> /tmp/ilri.csv | csvsort | uniq &gt; /tmp/ilri-deduplicated-items.csv
 $ csv-metadata-quality -i /tmp/ilri-deduplicated-items.csv -o /tmp/ilri-deduplicated-items-cleaned.csv | tee /tmp/out.log
-$ sed -i -e '1s/en_US/en_Fu/g' /tmp/ilri-deduplicated-items-cleaned.csv
+$ sed -i -e <span style="color:#e6db74">&#39;1s/en_US/en_Fu/g&#39;</span> /tmp/ilri-deduplicated-items-cleaned.csv
 $ csvjoin -c id /tmp/ilri-deduplicated-items.csv /tmp/ilri-deduplicated-items-cleaned.csv &gt; /tmp/ilri-deduplicated-items-cleaned-joined.csv
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then I imported the file into OpenRefine and used a custom text facet with a GREL like this to identify the rows with changes:</li>
 </ul>
 <pre tabindex="0"><code>if(cells['dcterms.subject[en_US]'].value == cells['dcterms.subject[en_Fu]'].value,&quot;same&quot;,&quot;different&quot;)
@@ -392,9 +392,9 @@ $ csvjoin -c id /tmp/ilri-deduplicated-items.csv /tmp/ilri-deduplicated-items-cl
 </li>
 <li>I did the same for CIAT but there were over 7,000 duplicate metadata values! Hard to believe:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c 'Removing duplicate value' /tmp/out.log
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c <span style="color:#e6db74">&#39;Removing duplicate value&#39;</span> /tmp/out.log
 7720
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I applied these to the CIAT community, so in total that&rsquo;s over 8,000 duplicate metadata values removed in a handful of fields&hellip;</li>
 </ul>
 <h2 id="2021-10-09">2021-10-09</h2>
@@ -402,14 +402,14 @@ $ csvjoin -c id /tmp/ilri-deduplicated-items.csv /tmp/ilri-deduplicated-items-cl
 <li>I did similar metadata cleanups for CCAFS and IITA too, but there were only a few hundred duplicates there</li>
 <li>Also of note, there are some other fixes too, for example in IITA&rsquo;s community:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ grep -c -E '(Fixing|Removing) (duplicate|excessive|invalid)' /tmp/out.log
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c -E <span style="color:#e6db74">&#39;(Fixing|Removing) (duplicate|excessive|invalid)&#39;</span> /tmp/out.log
 249
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I ran a full Discovery re-indexing on CGSpace</li>
 <li>Then I exported all of CGSpace and extracted the ISSNs and ISBNs:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ csvcut -c 'id,cg.issn[en_US],dc.identifier.issn[en_US],cg.isbn[en_US],dc.identifier.isbn[en_US]' /tmp/cgspace.csv &gt; /tmp/cgspace-issn-isbn.csv
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c <span style="color:#e6db74">&#39;id,cg.issn[en_US],dc.identifier.issn[en_US],cg.isbn[en_US],dc.identifier.isbn[en_US]&#39;</span> /tmp/cgspace.csv &gt; /tmp/cgspace-issn-isbn.csv
+</code></pre></div><ul>
 <li>I did cleanups on about seventy items with invalid and mixed ISSNs/ISBNs</li>
 </ul>
 <h2 id="2021-10-10">2021-10-10</h2>
@@ -417,42 +417,42 @@ $ csvjoin -c id /tmp/ilri-deduplicated-items.csv /tmp/ilri-deduplicated-items-cl
 <li>Start testing DSpace 7.1-SNAPSHOT to see if it has the duplicate item bug on <code>metadata-export</code> (DS-4211)</li>
 <li>First create a new PostgreSQL 13 container:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ podman run --name dspacedb13 -v dspacedb13_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres -p 5433:5432 -d postgres:13-alpine
-$ createuser -h localhost -p 5433 -U postgres --pwprompt dspacetest
-$ createdb -h localhost -p 5433 -U postgres -O dspacetest --encoding=UNICODE dspace7
-$ psql -h localhost -p 5433 -U postgres dspace7 -c 'CREATE EXTENSION pgcrypto;'
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ podman run --name dspacedb13 -v dspacedb13_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD<span style="color:#f92672">=</span>postgres -p 5433:5432 -d postgres:13-alpine
+$ createuser -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres --pwprompt dspacetest
+$ createdb -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres -O dspacetest --encoding<span style="color:#f92672">=</span>UNICODE dspace7
+$ psql -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres dspace7 -c <span style="color:#e6db74">&#39;CREATE EXTENSION pgcrypto;&#39;</span>
+</code></pre></div><ul>
 <li>Then edit setting in <code>dspace/config/local.cfg</code> and build the backend server with Java 11:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ mvn package
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ mvn package
 $ cd dspace/target/dspace-installer
 $ ant fresh_install
 # fix database not being fully ready, causing Tomcat to fail to start the server application
 $ ~/dspace7/bin/dspace database migrate
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Copy Solr configs and start Solr:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ cp -Rv ~/dspace7/solr/* ~/src/solr-8.8.2/server/solr/configsets
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cp -Rv ~/dspace7/solr/* ~/src/solr-8.8.2/server/solr/configsets
 $ ~/src/solr-8.8.2/bin/solr start
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Start my local Tomcat 9 instance:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ systemctl --user start tomcat9@dspace7
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ systemctl --user start tomcat9@dspace7
+</code></pre></div><ul>
 <li>This works, so now I will drop the default database and import a dump from CGSpace</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ systemctl --user stop tomcat9@dspace7                                
-$ dropdb -h localhost -p 5433 -U postgres dspace7
-$ createdb -h localhost -p 5433 -U postgres -O dspacetest --encoding=UNICODE dspace7
-$ psql -h localhost -p 5433 -U postgres -c 'alter user dspacetest superuser;'
-$ pg_restore -h localhost -p 5433 -U postgres -d dspace7 -O --role=dspacetest -h localhost dspace-2021-10-09.backup
-$ psql -h localhost -p 5433 -U postgres -c 'alter user dspacetest nosuperuser;'
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ systemctl --user stop tomcat9@dspace7                                
+$ dropdb -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres dspace7
+$ createdb -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres -O dspacetest --encoding<span style="color:#f92672">=</span>UNICODE dspace7
+$ psql -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres -c <span style="color:#e6db74">&#39;alter user dspacetest superuser;&#39;</span>
+$ pg_restore -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres -d dspace7 -O --role<span style="color:#f92672">=</span>dspacetest -h localhost dspace-2021-10-09.backup
+$ psql -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres -c <span style="color:#e6db74">&#39;alter user dspacetest nosuperuser;&#39;</span>
+</code></pre></div><ul>
 <li>Delete Atmire migrations and some others that were &ldquo;unresolved&rdquo;:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -h localhost -p 5433 -U postgres dspace7 -c &quot;DELETE FROM schema_version WHERE description LIKE '%Atmire%' OR description LIKE '%CUA%' OR description LIKE '%cua%';&quot;
-$ psql -h localhost -p 5433 -U postgres dspace7 -c &quot;DELETE FROM schema_version WHERE version IN ('5.0.2017.09.25', '6.0.2017.01.30', '6.0.2017.09.25');&quot;
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres dspace7 -c <span style="color:#e6db74">&#34;DELETE FROM schema_version WHERE description LIKE &#39;%Atmire%&#39; OR description LIKE &#39;%CUA%&#39; OR description LIKE &#39;%cua%&#39;;&#34;</span>
+$ psql -h localhost -p <span style="color:#ae81ff">5433</span> -U postgres dspace7 -c <span style="color:#e6db74">&#34;DELETE FROM schema_version WHERE version IN (&#39;5.0.2017.09.25&#39;, &#39;6.0.2017.01.30&#39;, &#39;6.0.2017.09.25&#39;);&#34;</span>
+</code></pre></div><ul>
 <li>Now DSpace 7 starts with my CGSpace data&hellip; nice
 <ul>
 <li>The Discovery indexing still takes seven hours&hellip; fuck</li>
@@ -469,11 +469,11 @@ $ psql -h localhost -p 5433 -U postgres dspace7 -c &quot;DELETE FROM schema_vers
 <ul>
 <li>Start a full Discovery reindex on my local DSpace 6.3 instance:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ /usr/bin/time -f %M:%e chrt -b 0 ~/dspace63/bin/dspace index-discovery -b
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ /usr/bin/time -f %M:%e chrt -b <span style="color:#ae81ff">0</span> ~/dspace63/bin/dspace index-discovery -b
 Loading @mire database changes for module MQM
 Changes have been processed
 836140:6543.6
-</code></pre><ul>
+</code></pre></div><ul>
 <li>So that&rsquo;s 1.8 hours versus 7 on DSpace 7, with the same database!</li>
 <li>Several users wrote to me that CGSpace was slow recently
 <ul>
@@ -481,13 +481,13 @@ Changes have been processed
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_stat_activity' | wc -l
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_stat_activity&#39;</span> | wc -l
 53
-$ psql -c &quot;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&quot; | wc -l
+$ psql -c <span style="color:#e6db74">&#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | wc -l
 1697
-$ psql -c &quot;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid WHERE application_name='dspaceWeb'&quot; | wc -l
+$ psql -c <span style="color:#e6db74">&#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid WHERE application_name=&#39;dspaceWeb&#39;&#34;</span> | wc -l
 1681
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Looking at Munin, I see there are indeed a higher number of locks starting on the morning of 2021-10-07:</li>
 </ul>
 <p><img src="/cgspace-notes/2021/10/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
@@ -516,71 +516,71 @@ $ psql -c &quot;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.p
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.5;
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.5;
+</code></pre></div><ul>
 <li>Next I experimented with using GIN or GiST indexes on <code>metadatavalue</code>, but they were slower than the existing DSpace indexes
 <ul>
 <li>I tested a few variations of the query I had been using and found it&rsquo;s <em>much</em> faster if I use the similarity operator and keep the condition that object IDs are in the item table&hellip;</li>
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND text_value % 'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas';
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND text_value % &#39;Traditional knowledge affects soil management ability of smallholder farmers in marginal areas&#39;;
                                            text_value                                           │           dspace_object_id           
 ────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
  Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
 (1 row)
-
-Time: 739.948 ms
-</code></pre><ul>
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Time: 739.948 ms
+</code></pre></div><ul>
 <li>Now this script runs in four minutes (versus twenty-four!) and it still finds the same seven duplicates! Amazing!</li>
 <li>I still don&rsquo;t understand the differences in the query plan well enough, but I see it is using the DSpace default indexes and the results are accurate</li>
 <li>So to summarize, the best to the worst query, all returning the same result:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.6;
-localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND text_value % 'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas';
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.6;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND text_value % &#39;Traditional knowledge affects soil management ability of smallholder farmers in marginal areas&#39;;
                                            text_value                                           │           dspace_object_id           
 ────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
  Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
 (1 row)
-
-Time: 683.165 ms
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Time: 683.165 ms
 Time: 635.364 ms
 Time: 674.666 ms
-
-localhost/dspace= &gt; DISCARD ALL;
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>localhost/dspace= &gt; DISCARD ALL;
 localhost/dspace= &gt; SET pg_trgm.similarity_threshold = 0.6;
-localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE metadata_field_id=64 AND text_value % 'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas';
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE metadata_field_id=64 AND text_value % &#39;Traditional knowledge affects soil management ability of smallholder farmers in marginal areas&#39;;
                                            text_value                                           │           dspace_object_id           
 ────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
  Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
 (1 row)
-
-Time: 1584.765 ms (00:01.585)
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Time: 1584.765 ms (00:01.585)
 Time: 1665.594 ms (00:01.666)
 Time: 1623.726 ms (00:01.624)
-
-localhost/dspace= &gt; DISCARD ALL;
-localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE metadata_field_id=64 AND SIMILARITY(text_value,'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas') &gt; 0.6;
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>localhost/dspace= &gt; DISCARD ALL;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE metadata_field_id=64 AND SIMILARITY(text_value,&#39;Traditional knowledge affects soil management ability of smallholder farmers in marginal areas&#39;) &gt; 0.6;
                                            text_value                                           │           dspace_object_id           
 ────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
  Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
 (1 row)
-
-Time: 4028.939 ms (00:04.029)
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Time: 4028.939 ms (00:04.029)
 Time: 4022.239 ms (00:04.022)
 Time: 4061.820 ms (00:04.062)
-
-localhost/dspace= &gt; DISCARD ALL;
-localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND SIMILARITY(text_value,'Traditional knowledge affects soil management ability of smallholder farmers in marginal areas') &gt; 0.6;
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>localhost/dspace= &gt; DISCARD ALL;
+localhost/dspace= &gt; SELECT text_value, dspace_object_id FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND SIMILARITY(text_value,&#39;Traditional knowledge affects soil management ability of smallholder farmers in marginal areas&#39;) &gt; 0.6;
                                            text_value                                           │           dspace_object_id           
 ────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────
  Traditional knowledge affects soil management ability of smallholder farmers in marginal areas │ 7af059af-9cd7-431b-8a79-7514896ca7dc
 (1 row)
-
-Time: 4358.713 ms (00:04.359)
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Time: 4358.713 ms (00:04.359)
 Time: 4301.248 ms (00:04.301)
 Time: 4417.909 ms (00:04.418)
-</code></pre><h2 id="2021-10-13">2021-10-13</h2>
+</code></pre></div><h2 id="2021-10-13">2021-10-13</h2>
 <ul>
 <li>I looked into the <a href="https://github.com/DSpace/DSpace/issues/7946">REST API issue where fields without qualifiers throw an HTTP 500</a>
 <ul>
@@ -640,11 +640,11 @@ Time: 4417.909 ms (00:04.418)
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ ldapsearch -x -H ldaps://AZCGNEROOT3.CGIARAD.ORG:636/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;booo&quot; -W &quot;(sAMAccountName=fuuu)&quot;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ldapsearch -x -H ldaps://AZCGNEROOT3.CGIARAD.ORG:636/ -b <span style="color:#e6db74">&#34;dc=cgiarad,dc=org&#34;</span> -D <span style="color:#e6db74">&#34;booo&#34;</span> -W <span style="color:#e6db74">&#34;(sAMAccountName=fuuu)&#34;</span>
 Enter LDAP Password:
 ldap_bind: Invalid credentials (49)
         additional info: 80090308: LdapErr: DSID-0C090447, comment: AcceptSecurityContext error, data 52e, v3839
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I sent a message to ILRI ICT to ask them to check the account
 <ul>
 <li>They reset the password so I ran all system updates and rebooted the server since users weren&rsquo;t able to log in anyways</li>
@@ -664,17 +664,17 @@ ldap_bind: Invalid credentials (49)
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ http 'localhost:8081/solr/statistics/select?q=time%3A2021-04*&amp;fl=ip&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip&amp;facet.limit=200000&amp;facet.mincount=1' &gt; /tmp/2021-04-ips.json
-# Ghetto way to extract the IPs using jq, but I can't figure out how only print them and not the facet counts, so I just use sed
-$ jq '.facet_counts.facet_fields.ip[]' /tmp/2021-04-ips.json | grep -E '^&quot;' | sed -e 's/&quot;//g' &gt; /tmp/ips.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ http <span style="color:#e6db74">&#39;localhost:8081/solr/statistics/select?q=time%3A2021-04*&amp;fl=ip&amp;wt=json&amp;indent=true&amp;facet=true&amp;facet.field=ip&amp;facet.limit=200000&amp;facet.mincount=1&#39;</span> &gt; /tmp/2021-04-ips.json
+# Ghetto way to extract the IPs using jq, but I can<span style="color:#960050;background-color:#1e0010">&#39;</span>t figure out how only print them and not the facet counts, so I just use sed
+$ jq <span style="color:#e6db74">&#39;.facet_counts.facet_fields.ip[]&#39;</span> /tmp/2021-04-ips.json | grep -E <span style="color:#e6db74">&#39;^&#34;&#39;</span> | sed -e <span style="color:#e6db74">&#39;s/&#34;//g&#39;</span> &gt; /tmp/ips.txt
 $ ./ilri/resolve-addresses-geoip2.py -i /tmp/ips.txt -o /tmp/2021-04-ips.csv
-$ csvgrep -c asn -r '^(49453|46844|206485|62282|36352|35913|35624|8100)$' /tmp/2021-04-ips.csv | csvcut -c network | sed 1d | sort -u &gt; /tmp/networks-to-block.txt
+$ csvgrep -c asn -r <span style="color:#e6db74">&#39;^(49453|46844|206485|62282|36352|35913|35624|8100)$&#39;</span> /tmp/2021-04-ips.csv | csvcut -c network | sed 1d | sort -u &gt; /tmp/networks-to-block.txt
 $ wc -l /tmp/networks-to-block.txt 
 125 /tmp/networks-to-block.txt
 $ grepcidr -f /tmp/networks-to-block.txt /tmp/ips.txt &gt; /tmp/ips-to-purge.txt
 $ wc -l /tmp/ips-to-purge.txt
 202
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Attempting to purge those only shows about 3,500 hits, but I will do it anyways
 <ul>
 <li>Adding 64.39.108.48 from Qualys I get a total of 22631 hits purged</li>
@@ -715,9 +715,9 @@ $ wc -l /tmp/ips-to-purge.txt
 </code></pre><ul>
 <li>Even more annoying, they are not re-using their session ID:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ grep 93.158.91.62 log/dspace.log.2021-10-29 | grep -oE 'session_id=[A-Z0-9]{32}:ip_addr=' | sort | uniq | wc -l
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep 93.158.91.62 log/dspace.log.2021-10-29 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
 4888
-</code></pre><ul>
+</code></pre></div><ul>
 <li>This IP has made 36,000 requests to CGSpace&hellip;</li>
 <li>The IP is owned by <a href="internetvikings.com">Internet Vikings</a> in Sweden</li>
 <li>I purged their statistics and set up a temporary HTTP 403 telling them to use a real user agent</li>
@@ -733,13 +733,13 @@ $ wc -l /tmp/ips-to-purge.txt
 </code></pre><ul>
 <li>I reported them to AbuseIPDB.com and purged their hits:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ip.txt -p
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ip.txt -p
 Purging 6364 hits from 45.9.20.71 in statistics
 Purging 8039 hits from 45.146.166.157 in statistics
 Purging 3383 hits from 45.155.204.82 in statistics
-
-Total number of bot hits purged: 17786
-</code></pre><h2 id="2021-10-31">2021-10-31</h2>
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 17786
+</code></pre></div><h2 id="2021-10-31">2021-10-31</h2>
 <ul>
 <li>Update Docker containers for AReS on linode20 and run a fresh harvest</li>
 <li>Found some strange IP (94.71.3.44) making 51,000 requests today with the user agent &ldquo;Microsoft Internet Explorer&rdquo;
@@ -757,13 +757,13 @@ Total number of bot hits purged: 17786
 <li>That&rsquo;s from ASN 12552 (IPO-EU, SE), which is operated by Internet Vikings, though AbuseIPDB.com says it&rsquo;s <a href="availo.se">Availo Networks AB</a></li>
 <li>There&rsquo;s another IP (3.225.28.105) that made a few thousand requests to the REST API from Amazon, though it&rsquo;s using a normal user agent</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console"># zgrep 3.225.28.105 /var/log/nginx/rest.log.* | wc -l
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># zgrep 3.225.28.105 /var/log/nginx/rest.log.* | wc -l
 3991
-~# zgrep 3.225.28.105 /var/log/nginx/rest.log.* | grep -oE 'GET /rest/(collections|handle|items)' | sort | uniq -c
+~# zgrep 3.225.28.105 /var/log/nginx/rest.log.* | grep -oE &#39;GET /rest/(collections|handle|items)&#39; | sort | uniq -c
    3154 GET /rest/collections
     427 GET /rest/handle
     410 GET /rest/items
-</code></pre><ul>
+</code></pre></div><ul>
 <li>It requested the <a href="https://cgspace.cgiar.org/handle/10568/75560">CIAT Story Maps</a> collection over 3,000 times last month&hellip;
 <ul>
 <li>I will purge those hits</li>

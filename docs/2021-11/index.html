@@ -18,7 +18,7 @@ $ zstd statistics-2019.json
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-11/" />
 <meta property="article:published_time" content="2021-11-02T22:27:07+02:00" />
-<meta property="article:modified_time" content="2021-11-03T15:56:15+02:00" />
+<meta property="article:modified_time" content="2021-11-07T11:26:32+02:00" />
 
 
 
@@ -32,7 +32,7 @@ First I exported all the 2019 stats from CGSpace:
 $ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
 $ zstd statistics-2019.json
 "/>
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.89.2" />
 
 
     
@@ -42,9 +42,9 @@ $ zstd statistics-2019.json
   "@type": "BlogPosting",
   "headline": "November, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-11/",
-  "wordCount": "468",
+  "wordCount": "722",
   "datePublished": "2021-11-02T22:27:07+02:00",
-  "dateModified": "2021-11-03T15:56:15+02:00",
+  "dateModified": "2021-11-07T11:26:32+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -123,16 +123,16 @@ $ zstd statistics-2019.json
 <li>I experimented with manually sharding the Solr statistics on DSpace Test</li>
 <li>First I exported all the 2019 stats from CGSpace:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ ./run.sh -s http://localhost:8081/solr/statistics -f 'time:2019-*' -a export -o statistics-2019.json -k uid
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./run.sh -s http://localhost:8081/solr/statistics -f <span style="color:#e6db74">&#39;time:2019-*&#39;</span> -a export -o statistics-2019.json -k uid
 $ zstd statistics-2019.json
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then on DSpace Test I created a <code>statistics-2019</code> core with the same instance dir as the main <code>statistics</code> core (as <a href="https://wiki.lyrasis.org/display/DSDOC6x/Testing+Solr+Shards">illustrated in the DSpace docs</a>)</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ mkdir -p /home/dspacetest.cgiar.org/solr/statistics-2019/data
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ mkdir -p /home/dspacetest.cgiar.org/solr/statistics-2019/data
 # create core in Solr admin
-$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;time:2019-*&lt;/query&gt;&lt;/delete&gt;&quot;
+$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;time:2019-*&lt;/query&gt;&lt;/delete&gt;&#34;</span>
 $ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a import -o statistics-2019.json -k uid
-</code></pre><ul>
+</code></pre></div><ul>
 <li>The key thing above is that you create the core in the Solr admin UI, but the data directory must already exist so you have to do that first in the file system</li>
 <li>I restarted the server after the import was done to see if the cores would come back up OK
 <ul>
@@ -165,13 +165,13 @@ $ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a import -o statistics
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">91.213.50.11 - - [03/Nov/2021:06:47:20 +0100] &quot;HEAD /bitstream/handle/10568/106239/U19ArtSimonikovaChromosomeInthomNodev.pdf?sequence=1%60%20WHERE%206158%3D6158%20AND%204894%3D4741--%20kIlq&amp;isAllowed=y HTTP/1.1&quot; 200 0 &quot;https://cgspace.cgiar.org:443/bitstream/handle/10568/106239/U19ArtSimonikovaChromosomeInthomNodev.pdf&quot; &quot;Mozilla/5.0 (X11; U; Linux i686; en-CA; rv:1.8.0.10) Gecko/20070223 Fedora/1.5.0.10-1.fc5 Firefox/1.5.0.10&quot;
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">91.213.50.11 - - [03/Nov/2021:06:47:20 +0100] &#34;HEAD /bitstream/handle/10568/106239/U19ArtSimonikovaChromosomeInthomNodev.pdf?sequence=1%60%20WHERE%206158%3D6158%20AND%204894%3D4741--%20kIlq&amp;isAllowed=y HTTP/1.1&#34; 200 0 &#34;https://cgspace.cgiar.org:443/bitstream/handle/10568/106239/U19ArtSimonikovaChromosomeInthomNodev.pdf&#34; &#34;Mozilla/5.0 (X11; U; Linux i686; en-CA; rv:1.8.0.10) Gecko/20070223 Fedora/1.5.0.10-1.fc5 Firefox/1.5.0.10&#34;
+</code></pre></div><ul>
 <li>Another is in China, and they grabbed 1,200 PDFs from the REST API in under an hour:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console"># zgrep 222.129.53.160 /var/log/nginx/rest.log.2.gz | wc -l
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># zgrep 222.129.53.160 /var/log/nginx/rest.log.2.gz | wc -l
 1178
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I will continue to split the Solr statistics back into year-shards on DSpace Test (linode26)
 <ul>
 <li>Today I did all 2018 stats&hellip;</li>
@@ -183,11 +183,56 @@ $ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a import -o statistics
 <ul>
 <li>Update all Docker containers on AReS and rebuild OpenRXV:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed 's/ \+/:/g' | cut -d: -f1,2 | xargs -L1 docker pull
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
 $ docker-compose build
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then restart the server and start a fresh harvest</li>
-<li>Continue splitting the Solr statistics into yearly shards on DSpace Test (doing 2017 today)</li>
+<li>Continue splitting the Solr statistics into yearly shards on DSpace Test (doing 2017, 2016, 2015, and 2014 today)</li>
+<li>Several users wrote to me last week to say that workflow emails haven&rsquo;t been working since 2021-10-21 or so
+<ul>
+<li>I did a test on CGSpace and it&rsquo;s indeed broken:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace test-email
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>About to send test email:
+ - To: fuuuu
+ - Subject: DSpace test email
+ - Server: smtp.office365.com
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Error sending email:
+ - Error: javax.mail.SendFailedException: Send failure (javax.mail.AuthenticationFailedException: 535 5.7.139 Authentication unsuccessful, the user credentials were incorrect. [AM5PR0701CA0005.eurprd07.prod.outlook.com]
+)
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Please see the DSpace documentation for assistance.
+</code></pre></div><ul>
+<li>I sent a message to ILRI ICT to ask them to check the account/password</li>
+<li>I want to do one last test of the Elasticsearch updates on OpenRXV so I got a snapshot of the latest Elasticsearch volume used on the production AReS instance:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># tar czf openrxv_esData_7.tar.xz /var/lib/docker/volumes/openrxv_esData_7
+</code></pre></div><ul>
+<li>Then on my local server:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ mv ~/.local/share/containers/storage/volumes/openrxv_esData_7/ ~/.local/share/containers/storage/volumes/openrxv_esData_7.2021-11-07.bak
+$ tar xf /tmp/openrxv_esData_7.tar.xz -C ~/.local/share/containers/storage/volumes --strip-components<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+$ find ~/.local/share/containers/storage/volumes/openrxv_esData_7 -type f -exec chmod <span style="color:#ae81ff">660</span> <span style="color:#f92672">{}</span> <span style="color:#ae81ff">\;</span>
+$ find ~/.local/share/containers/storage/volumes/openrxv_esData_7 -type d -exec chmod <span style="color:#ae81ff">770</span> <span style="color:#f92672">{}</span> <span style="color:#ae81ff">\;</span>
+# copy backend/data to /tmp <span style="color:#66d9ef">for</span> the repository setup/layout
+$ rsync -av --partial --progress --delete provisioning@ares:/tmp/data/ backend/data
+</code></pre></div><ul>
+<li>This seems to work: all items, stats, and repository setup/layout are OK</li>
+<li>I merged my <a href="https://github.com/ilri/OpenRXV/pull/126">Elasticsearch pull request</a> from last month into OpenRXV</li>
+</ul>
+<h2 id="2021-11-08">2021-11-08</h2>
+<ul>
+<li>File <a href="https://github.com/DSpace/dspace-angular/issues/1391">an issue for the Angular flash of unstyled content</a> on DSpace 7</li>
+<li>Help Udana from IWMI with a question about CGSpace statistics
+<ul>
+<li>He found conflicting numbers when using the community and collection modes in Content and Usage Analysis</li>
+<li>I sent him more numbers directly from the DSpace Statistics API</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 

@@ -36,7 +36,7 @@ I started processing those (about 411,000 records):
 
 
 "/>
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.89.2" />
 
 
     
@@ -132,8 +132,8 @@ I started processing those (about 411,000 records):
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2015
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t <span style="color:#ae81ff">12</span> -c statistics-2015
+</code></pre></div><ul>
 <li>AReS went down when the <code>renew-letsencrypt</code> service stopped the <code>angular_nginx</code> container in the pre-update hook and failed to bring it back up
 <ul>
 <li>I ran all system updates on the host and rebooted it and AReS came back up OK</li>
@@ -179,18 +179,18 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 <ul>
 <li>First the 2010 core:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o statistics-2010.json -k uid
-$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
-$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o statistics-2010.json -k uid
+$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2010/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><ul>
 <li>Judging by the DSpace logs all these cores had a problem starting up in the last month:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console"># grep -rsI &quot;Unable to create core&quot; [dspace]/log/dspace.log.2020-* | grep -o -E &quot;statistics-[0-9]+&quot; | sort | uniq -c
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># grep -rsI <span style="color:#e6db74">&#34;Unable to create core&#34;</span> <span style="color:#f92672">[</span>dspace<span style="color:#f92672">]</span>/log/dspace.log.2020-* | grep -o -E <span style="color:#e6db74">&#34;statistics-[0-9]+&#34;</span> | sort | uniq -c
      24 statistics-2010
      24 statistics-2015
      18 statistics-2016
       6 statistics-2018
-</code></pre><ul>
+</code></pre></div><ul>
 <li>The message is always this:</li>
 </ul>
 <pre tabindex="0"><code>org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error CREATEing SolrCore 'statistics-2016': Unable to create core [statistics-2016] Caused by: Lock obtain timed out: NativeFSLock@/[dspace]/solr/statistics-2016/data/index/write.lock
@@ -223,9 +223,9 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=tru
 <ul>
 <li>There are apparently 1,700 locks right now:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
 1739
-</code></pre><h2 id="2020-12-08">2020-12-08</h2>
+</code></pre></div><h2 id="2020-12-08">2020-12-08</h2>
 <ul>
 <li>Atmire sent some instructions for using the DeduplicateValuesProcessor
 <ul>
@@ -341,17 +341,17 @@ Caused by: org.apache.http.TruncatedChunkException: Truncated chunk ( expected s
 <ul>
 <li>I can see it in the <code>openrxv-items-final</code> index:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*' | json_pp
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&#39;</span> | json_pp
 {
-   &quot;_shards&quot; : {
-      &quot;failed&quot; : 0,
-      &quot;skipped&quot; : 0,
-      &quot;successful&quot; : 1,
-      &quot;total&quot; : 1
+   &#34;_shards&#34; : {
+      &#34;failed&#34; : 0,
+      &#34;skipped&#34; : 0,
+      &#34;successful&#34; : 1,
+      &#34;total&#34; : 1
    },
-   &quot;count&quot; : 299922
+   &#34;count&#34; : 299922
 }
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I filed a bug on OpenRXV: <a href="https://github.com/ilri/OpenRXV/issues/64">https://github.com/ilri/OpenRXV/issues/64</a></li>
 <li>For now I will try to delete the index and start a re-harvest in the Admin UI:</li>
 </ul>
@@ -371,8 +371,8 @@ $ curl -XDELETE http://localhost:9200/openrxv-items-temp
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">localhost/dspace63= &gt; SELECT * FROM metadatavalue WHERE metadata_field_id=28 AND text_value ~ '^.*on 2020-[0-9]{2}-*';
-</code></pre><h2 id="2020-12-14">2020-12-14</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; SELECT * FROM metadatavalue WHERE metadata_field_id=28 AND text_value ~ &#39;^.*on 2020-[0-9]{2}-*&#39;;
+</code></pre></div><h2 id="2020-12-14">2020-12-14</h2>
 <ul>
 <li>The re-harvesting finished last night on AReS but there are no records in the <code>openrxv-items-final</code> index
 <ul>
@@ -380,44 +380,44 @@ $ curl -XDELETE http://localhost:9200/openrxv-items-temp
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*' | json_pp
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&#39;</span> | json_pp
 {
-   &quot;count&quot; : 99992,
-   &quot;_shards&quot; : {
-      &quot;skipped&quot; : 0,
-      &quot;total&quot; : 1,
-      &quot;failed&quot; : 0,
-      &quot;successful&quot; : 1
+   &#34;count&#34; : 99992,
+   &#34;_shards&#34; : {
+      &#34;skipped&#34; : 0,
+      &#34;total&#34; : 1,
+      &#34;failed&#34; : 0,
+      &#34;successful&#34; : 1
    }
 }
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I&rsquo;m going to try to <a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-clone-index.html">clone</a> the temp index to the final one&hellip;
 <ul>
 <li>First, set the <code>openrxv-items-temp</code> index to block writes (read only) and then clone it to <code>openrxv-items-final</code>:</li>
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
-{&quot;acknowledged&quot;:true,&quot;shards_acknowledged&quot;:true,&quot;index&quot;:&quot;openrxv-items-final&quot;}
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-</code></pre><ul>
+{&#34;acknowledged&#34;:true,&#34;shards_acknowledged&#34;:true,&#34;index&#34;:&#34;openrxv-items-final&#34;}
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</code></pre></div><ul>
 <li>Now I see that the <code>openrxv-items-final</code> index has items, but there are still none in AReS Explorer UI!</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 99992,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 99992,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-</code></pre><ul>
+</code></pre></div><ul>
 <li>The api logs show this from last night after the harvesting:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">[Nest] 92   - 12/13/2020, 1:58:52 PM   [HarvesterService] Starting Harvest
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">[Nest] 92   - 12/13/2020, 1:58:52 PM   [HarvesterService] Starting Harvest
 [Nest] 92   - 12/13/2020, 10:50:20 PM   [FetchConsumer] OnGlobalQueueDrained
 [Nest] 92   - 12/13/2020, 11:00:20 PM   [PluginsConsumer] OnGlobalQueueDrained
 [Nest] 92   - 12/13/2020, 11:00:20 PM   [HarvesterService] reindex function is called
@@ -426,16 +426,16 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 
     at IncomingMessage.emit (events.js:326:22)
     at endReadableNT (_stream_readable.js:1223:12)
     at processTicksAndRejections (internal/process/task_queues.js:84:21)
-</code></pre><ul>
+</code></pre></div><ul>
 <li>But I&rsquo;m not sure why the frontend doesn&rsquo;t show any data despite there being documents in the index&hellip;</li>
 <li>I talked to Moayad and he reminded me that OpenRXV uses an alias to point to temp and final indexes, but the UI actually uses the <code>openrxv-items</code> index</li>
 <li>I cloned the <code>openrxv-items-final</code> index to <code>openrxv-items</code> index and now I see items in the explorer UI</li>
 <li>The PDF report was broken and I looked in the API logs and saw this:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">(node:94) UnhandledPromiseRejectionWarning: Error: Error: Could not find soffice binary
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">(node:94) UnhandledPromiseRejectionWarning: Error: Error: Could not find soffice binary
     at ExportService.downloadFile (/backend/dist/export/services/export/export.service.js:51:19)
     at processTicksAndRejections (internal/process/task_queues.js:97:5)
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I installed <code>unoconv</code> in the backend api container and now it works&hellip; but I wonder why this changed&hellip;</li>
 <li>Skype with Abenet and Peter to discuss AReS that will be shown to ILRI scientists this week
 <ul>
@@ -487,10 +487,10 @@ $ query-json '.items | length' /tmp/policy2.json
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-2020-12-14
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-</code></pre><h2 id="2020-12-15">2020-12-15</h2>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</code></pre></div><h2 id="2020-12-15">2020-12-15</h2>
 <ul>
 <li>After the re-harvest last night there were 200,000 items in the <code>openrxv-items-temp</code> index again
 <ul>
@@ -499,36 +499,36 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 
 </li>
 <li>I checked the 1,534 fixes in Open Refine (had to fix a few UTF-8 errors, as always from Peter&rsquo;s CSVs) and then applied them using the <code>fix-metadata-values.py</code> script:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ ./fix-metadata-values.py -i /tmp/2020-10-28-fix-1534-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t 'correct' -m 3
-$ ./delete-metadata-values.py -i /tmp/2020-10-28-delete-2-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./fix-metadata-values.py -i /tmp/2020-10-28-fix-1534-Authors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">3</span>
+$ ./delete-metadata-values.py -i /tmp/2020-10-28-delete-2-Authors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -m <span style="color:#ae81ff">3</span>
+</code></pre></div><ul>
 <li>Since I was re-indexing Discovery anyways I decided to check for any uppercase AGROVOC and lowercase them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# BEGIN;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# BEGIN;
 BEGIN
-dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ '[[:upper:]]';
+dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ &#39;[[:upper:]]&#39;;
 UPDATE 406
 dspace=# COMMIT;
 COMMIT
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I also updated the Font Awesome icon classes for version 5 syntax:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">dspace=# BEGIN;
-dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'fa fa-rss','fas fa-rss', 'g') WHERE text_value LIKE '%fa fa-rss%';
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# BEGIN;
+dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;fa fa-rss&#39;,&#39;fas fa-rss&#39;, &#39;g&#39;) WHERE text_value LIKE &#39;%fa fa-rss%&#39;;
 UPDATE 74
-dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, 'fa fa-at','fas fa-at', 'g') WHERE text_value LIKE '%fa fa-at%';
+dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;fa fa-at&#39;,&#39;fas fa-at&#39;, &#39;g&#39;) WHERE text_value LIKE &#39;%fa fa-at%&#39;;
 UPDATE 74
 dspace=# COMMIT;
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then I started a full Discovery re-index:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
-$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
-
-real    265m11.224s
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dfile.encoding=UTF-8 -Xmx512m&#34;</span>
+$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>real    265m11.224s
 user    171m29.141s
 sys     2m41.097s
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Udana sent a report that the WLE approver is experiencing the same issue Peter highlighted a few weeks ago: they are unable to save metadata edits in the workflow</li>
 <li>Yesterday Atmire responded about the owningComm and owningColl duplicates in Solr saying they didn&rsquo;t see any anymore&hellip;
 <ul>
@@ -544,31 +544,31 @@ sys     2m41.097s
 <ul>
 <li>After the Discovery re-indexing finished on CGSpace I prepared to start re-harvesting AReS by making sure the <code>openrxv-items-temp</code> index was empty and that the backup index I made yesterday was still there:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
 {
-  &quot;acknowledged&quot; : true
+  &#34;acknowledged&#34; : true
 }
-$ curl -s 'http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty'
+$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 0,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 0,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-$ curl -s 'http://localhost:9200/openrxv-items-2020-12-14/_count?q=*&amp;pretty'
+$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2020-12-14/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 99992,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 99992,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-</code></pre><h2 id="2020-12-16">2020-12-16</h2>
+</code></pre></div><h2 id="2020-12-16">2020-12-16</h2>
 <ul>
 <li>The harvesting on AReS finished last night so this morning I manually cloned the <code>openrxv-items-temp</code> index to <code>openrxv-items</code>
 <ul>
@@ -576,32 +576,32 @@ $ curl -s 'http://localhost:9200/openrxv-items-2020-12-14/_count?q=*&amp;pretty'
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 100046,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 100046,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
-$ curl -XDELETE 'http://localhost:9200/openrxv-items?pretty'
-$ curl -s -X POST &quot;http://localhost:9200/openrxv-items-temp/_clone/openrxv-items?pretty&quot;
-$ curl -s 'http://localhost:9200/openrxv-items/_count?q=*&amp;pretty'
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items?pretty&#39;</span>
+$ curl -s -X POST <span style="color:#e6db74">&#34;http://localhost:9200/openrxv-items-temp/_clone/openrxv-items?pretty&#34;</span>
+$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 100046,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 100046,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
-</code></pre><ul>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+</code></pre></div><ul>
 <li>Interestingly <a href="https://hdl.handle.net/10568/110447">the item</a> that we noticed was duplicated now only appears once</li>
 <li>The <a href="https://hdl.handle.net/10568/110133">missing item</a> is still missing</li>
 <li>Jane Poole noticed that the &ldquo;previous page&rdquo; and &ldquo;next page&rdquo; buttons are not working on AReS
@@ -611,16 +611,16 @@ $ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
 </li>
 <li>Generate a list of submitters and approvers active in the last months using the Provenance field on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ psql -h localhost -U postgres dspace -c &quot;SELECT text_value FROM metadatavalue WHERE metadata_field_id=28 AND text_value ~ '^.*on 2020-(06|07|08|09|10|11|12)-*'&quot; &gt; /tmp/provenance.txt
-$ grep -o -E 'by .*)' /tmp/provenance.txt | grep -v -E &quot;( on |checksum)&quot; | sed -e 's/by //' -e 's/ (/,/' -e 's/)//' | sort | uniq &gt; /tmp/recent-submitters-approvers.csv
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -h localhost -U postgres dspace -c <span style="color:#e6db74">&#34;SELECT text_value FROM metadatavalue WHERE metadata_field_id=28 AND text_value ~ &#39;^.*on 2020-(06|07|08|09|10|11|12)-*&#39;&#34;</span> &gt; /tmp/provenance.txt
+$ grep -o -E <span style="color:#e6db74">&#39;by .*)&#39;</span> /tmp/provenance.txt | grep -v -E <span style="color:#e6db74">&#34;( on |checksum)&#34;</span> | sed -e <span style="color:#e6db74">&#39;s/by //&#39;</span> -e <span style="color:#e6db74">&#39;s/ (/,/&#39;</span> -e <span style="color:#e6db74">&#39;s/)//&#39;</span> | sort | uniq &gt; /tmp/recent-submitters-approvers.csv
+</code></pre></div><ul>
 <li>Peter wanted it to send some mail to the users&hellip;</li>
 </ul>
 <h2 id="2020-12-17">2020-12-17</h2>
 <ul>
 <li>I see some errors from CUA in our Tomcat logs:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">Thu Dec 17 07:35:27 CET 2020 | Query:containerItem:b049326a-0e76-45a8-ac0c-d8ec043a50c6
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">Thu Dec 17 07:35:27 CET 2020 | Query:containerItem:b049326a-0e76-45a8-ac0c-d8ec043a50c6
 Error while updating
 java.lang.UnsupportedOperationException: Multiple update components target the same field:solr_update_time_stamp
         at com.atmire.dspace.cua.CUASolrLoggerServiceImpl$5.visit(SourceFile:1155)
@@ -628,7 +628,7 @@ java.lang.UnsupportedOperationException: Multiple update components target the s
         at com.atmire.dspace.cua.CUASolrLoggerServiceImpl.update(SourceFile:1140)
         at com.atmire.dspace.cua.CUASolrLoggerServiceImpl.update(SourceFile:1129)
 ...
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I sent the full stack to Atmire to investigate
 <ul>
 <li>I know we&rsquo;ve had this &ldquo;Multiple update components target the same field&rdquo; error in the past with DSpace 5.x and Atmire said it was harmless, but would nevertheless be fixed in a future update</li>
@@ -636,10 +636,10 @@ java.lang.UnsupportedOperationException: Multiple update components target the s
 </li>
 <li>I was trying to export the ILRI community on CGSpace so I could update one of the ILRI author&rsquo;s names, but it throws an error&hellip;</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ dspace metadata-export -i 10568/1 -f /tmp/2020-12-17-ILRI.csv
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace metadata-export -i 10568/1 -f /tmp/2020-12-17-ILRI.csv
 Loading @mire database changes for module MQM
 Changes have been processed
-Exporting community 'International Livestock Research Institute (ILRI)' (10568/1)
+Exporting community &#39;International Livestock Research Institute (ILRI)&#39; (10568/1)
            Exception: null
 java.lang.NullPointerException
         at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:212)
@@ -654,14 +654,14 @@ java.lang.NullPointerException
         at java.lang.reflect.Method.invoke(Method.java:498)
         at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
         at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I did it via CSV with <code>fix-metadata-values.py</code> instead:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ cat 2020-12-17-update-ILRI-author.csv
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2020-12-17-update-ILRI-author.csv
 dc.contributor.author,correct
-&quot;Padmakumar, V.P.&quot;,&quot;Varijakshapanicker, Padmakumar&quot;
-$ ./fix-metadata-values.py -i 2020-12-17-update-ILRI-author.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t 'correct' -m 3
-</code></pre><ul>
+&#34;Padmakumar, V.P.&#34;,&#34;Varijakshapanicker, Padmakumar&#34;
+$ ./fix-metadata-values.py -i 2020-12-17-update-ILRI-author.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">3</span>
+</code></pre></div><ul>
 <li>Abenet needed a list of all 2020 outputs from the Livestock CRP that were Limited Access
 <ul>
 <li>I exported the community from CGSpace and used <code>csvcut</code> and <code>csvgrep</code> to get a list:</li>
@@ -689,7 +689,7 @@ $ ./fix-metadata-values.py -i 2020-12-17-update-ILRI-author.csv -db dspace -u ds
 <ul>
 <li>The DeduplicateValuesProcessor has been running on DSpace Test since two days ago and it almost completed its second twelve-hour run, but crashed near the end:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">...
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">...
 Run 1 — 100% — 8,230,000/8,239,228 docs — 39s — 9h 8m 31s
 Exception: Java heap space
 java.lang.OutOfMemoryError: Java heap space
@@ -725,7 +725,7 @@ java.lang.OutOfMemoryError: Java heap space
         at java.lang.reflect.Method.invoke(Method.java:498)
         at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
         at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
-</code></pre><ul>
+</code></pre></div><ul>
 <li>That was with a JVM heap of 512m</li>
 <li>I looked in Solr and found dozens of duplicates of each field again&hellip;
 <ul>
@@ -744,30 +744,30 @@ java.lang.OutOfMemoryError: Java heap space
 <li>The AReS harvest finished this morning and I moved the Elasticsearch index manually</li>
 <li>First, check the number of records in the temp index to make sure it seems complete and not with double data:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 100135,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 100135,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then delete the old backup and clone the current items index as a backup:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items-2020-12-14?pretty'
-$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2020-12-14?pretty&#39;</span>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2020-12-21
-</code></pre><ul>
+</code></pre></div><ul>
 <li>Then delete the current items index and clone it from temp:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items?pretty'
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items?pretty&#39;</span>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-</code></pre><h2 id="2020-12-22">2020-12-22</h2>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</code></pre></div><h2 id="2020-12-22">2020-12-22</h2>
 <ul>
 <li>I finished getting the Swagger UI integrated into the dspace-statistics-api
 <ul>
@@ -810,10 +810,10 @@ $ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 
 </code></pre><ul>
 <li>I exported the 2012 stats from the year core and imported them to the main statistics core with solr-import-export-json:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2012 -a export -o statistics-2012.json -k uid
-$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
-$ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics-2012 -a export -o statistics-2012.json -k uid
+$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2012/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><ul>
 <li>I decided to do the same for the remaining 2011, 2014, 2017, and 2019 cores&hellip;</li>
 </ul>
 <h2 id="2020-12-29">2020-12-29</h2>
@@ -824,31 +824,31 @@ $ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=tru
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s 'http://localhost:9200/openrxv-items/_count?q=*&amp;pretty'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>
 {
-  &quot;count&quot; : 100135,
-  &quot;_shards&quot; : {
-    &quot;total&quot; : 1,
-    &quot;successful&quot; : 1,
-    &quot;skipped&quot; : 0,
-    &quot;failed&quot; : 0
+  &#34;count&#34; : 100135,
+  &#34;_shards&#34; : {
+    &#34;total&#34; : 1,
+    &#34;successful&#34; : 1,
+    &#34;skipped&#34; : 0,
+    &#34;failed&#34; : 0
   }
 }
-$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
-$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
 $ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2020-12-29
-$ curl -X PUT &quot;localhost:9200/openrxv-items/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-</code></pre><h2 id="2020-12-30">2020-12-30</h2>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</code></pre></div><h2 id="2020-12-30">2020-12-30</h2>
 <ul>
 <li>The indexing on AReS finished so I cloned the <code>openrxv-items-temp</code> index to <code>openrxv-items</code> and deleted the backup index:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -XDELETE 'http://localhost:9200/openrxv-items?pretty'
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: true}}'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items?pretty&#39;</span>
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
 $ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-$ curl -X PUT &quot;localhost:9200/openrxv-items-temp/_settings?pretty&quot; -H 'Content-Type: application/json' -d'{&quot;settings&quot;: {&quot;index.blocks.write&quot;: false}}'
-$ curl -XDELETE 'http://localhost:9200/openrxv-items-temp?pretty'
-$ curl -XDELETE 'http://localhost:9200/openrxv-items-2020-12-29?pretty'
-</code></pre><!-- raw HTML omitted -->
+$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2020-12-29?pretty&#39;</span>
+</code></pre></div><!-- raw HTML omitted -->
 
   
 

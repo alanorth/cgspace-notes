@@ -18,9 +18,9 @@
 &lt;li&gt;I experimented with manually sharding the Solr statistics on DSpace Test&lt;/li&gt;
 &lt;li&gt;First I exported all the 2019 stats from CGSpace:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ ./run.sh -s http://localhost:8081/solr/statistics -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;time:2019-*&amp;#39;&lt;/span&gt; -a export -o statistics-2019.json -k uid
 $ zstd statistics-2019.json
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
@@ -33,15 +33,15 @@ $ zstd statistics-2019.json
 &lt;ul&gt;
 &lt;li&gt;Export all affiliations on CGSpace and run them against the latest RoR data dump:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT text_value as &amp;quot;cg.contributor.affiliation&amp;quot;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
-$ csvcut -c 1 /tmp/2021-10-01-affiliations.csv | sed 1d &amp;gt; /tmp/2021-10-01-affiliations.txt
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT text_value as &amp;#34;cg.contributor.affiliation&amp;#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
+$ csvcut -c &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; /tmp/2021-10-01-affiliations.csv | sed 1d &amp;gt; /tmp/2021-10-01-affiliations.txt
 $ ./ilri/ror-lookup.py -i /tmp/2021-10-01-affiliations.txt -r 2021-09-23-ror-data.json -o /tmp/2021-10-01-affili
 ations-matching.csv
 $ csvgrep -c matched -m true /tmp/2021-10-01-affiliations-matching.csv | sed 1d | wc -l 
 1879
 $ wc -l /tmp/2021-10-01-affiliations.txt 
 7100 /tmp/2021-10-01-affiliations.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;So we have 1879/7100 (26.46%) matching already&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
@@ -80,8 +80,8 @@ $ wc -l /tmp/2021-10-01-affiliations.txt
 &lt;ul&gt;
 &lt;li&gt;Update Docker images on AReS server (linode20) and reboot the server:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;# docker images | grep -v ^REPO | sed &#39;s/ \+/:/g&#39; | cut -d: -f1,2 | grep -v none | xargs -L1 docker pull
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;# docker images | grep -v ^REPO | sed &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;s/ \+/:/g&amp;#39;&lt;/span&gt; | cut -d: -f1,2 | grep -v none | xargs -L1 docker pull
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;I decided to upgrade linode20 from Ubuntu 18.04 to 20.04&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
@@ -96,9 +96,9 @@ $ wc -l /tmp/2021-10-01-affiliations.txt
 &lt;ul&gt;
 &lt;li&gt;Export another list of ALL subjects on CGSpace, including AGROVOC and non-AGROVOC for Enrico:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;localhost/dspace63= &amp;gt; \COPY (SELECT DISTINCT LOWER(text_value) AS subject, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (119, 120, 127, 122, 128, 125, 135, 203, 208, 210, 215, 123, 236, 242, 187) GROUP BY subject ORDER BY count DESC) to /tmp/2021-07-01-all-subjects.csv WITH CSV HEADER;
 COPY 20994
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
@@ -203,17 +203,17 @@ COPY 20994
 &lt;li&gt;I had a call with CodeObia to discuss the work on OpenRXV&lt;/li&gt;
 &lt;li&gt;Check the results of the AReS harvesting from last night:&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;amp;pretty&#39;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ curl -s &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;amp;pretty&amp;#39;&lt;/span&gt;
 {
-  &amp;quot;count&amp;quot; : 100875,
-  &amp;quot;_shards&amp;quot; : {
-    &amp;quot;total&amp;quot; : 1,
-    &amp;quot;successful&amp;quot; : 1,
-    &amp;quot;skipped&amp;quot; : 0,
-    &amp;quot;failed&amp;quot; : 0
+  &amp;#34;count&amp;#34; : 100875,
+  &amp;#34;_shards&amp;#34; : {
+    &amp;#34;total&amp;#34; : 1,
+    &amp;#34;successful&amp;#34; : 1,
+    &amp;#34;skipped&amp;#34; : 0,
+    &amp;#34;failed&amp;#34; : 0
   }
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>

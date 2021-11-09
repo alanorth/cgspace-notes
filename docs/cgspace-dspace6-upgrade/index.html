@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGSpace DSpace 6 Upgrade"/>
 <meta name="twitter:description" content="Documenting the DSpace 6 upgrade."/>
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.89.2" />
 
 
     
@@ -129,20 +129,20 @@
 </ul>
 <h3 id="re-import-oai-with-clean-index">Re-import OAI with clean index</h3>
 <p>After the upgrade is complete, re-index all items into OAI with a clean index:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx2048m&quot;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dfile.encoding=UTF-8 -Xmx2048m&#34;</span>
 $ dspace oai -c import
-</code></pre><p>The process ran out of memory several times so I had to keep trying again with more JVM heap memory.</p>
+</code></pre></div><p>The process ran out of memory several times so I had to keep trying again with more JVM heap memory.</p>
 <h3 id="processing-solr-statistics-with-solr-upgrade-statistics-6x">Processing Solr Statistics With solr-upgrade-statistics-6x</h3>
 <p>After the main upgrade process was finished and DSpace was running I started processing the Solr statistics with <code>solr-upgrade-statistics-6x</code> to migrate all IDs to UUIDs.</p>
 <h2 id="statistics">statistics</h2>
 <p>First process the current year&rsquo;s statistics core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
-$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;</span>
+$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           3,817,407    Bistream View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           3,817,407    Bistream View
            1,693,443    Item View
              105,974    Collection View
               62,383    Community View
@@ -152,22 +152,22 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
         --------------------------------------
            6,475,268    TOTAL
 =================================================================
-</code></pre><p>After several rounds of processing it finished. Here are some statistics about unmigrated documents:</p>
+</code></pre></div><p>After several rounds of processing it finished. Here are some statistics about unmigrated documents:</p>
 <ul>
 <li>227,000: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>471,000: <code>id:/.+-unmigrated/</code></li>
 <li>698,000: <code>*:* NOT id:/.{36}/</code></li>
 <li>Majority are <code>type: 5</code> (aka SITE, according to <code>Constants.java</code>) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2019">statistics-2019</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2019">statistics-2019</h2>
 <p>Processing the statistics-2019 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           5,569,344    Bistream View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           5,569,344    Bistream View
            2,179,105    Item View
              117,194    Community View
              104,091    Collection View
@@ -177,22 +177,22 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
         --------------------------------------
           10,794,839    TOTAL
 =================================================================
-</code></pre><p>After several rounds of processing it finished. Here are some statistics about unmigrated documents:</p>
+</code></pre></div><p>After several rounds of processing it finished. Here are some statistics about unmigrated documents:</p>
 <ul>
 <li>2,690,309: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>1,494,587: <code>id:/.+-unmigrated/</code></li>
 <li>4,184,896: <code>*:* NOT id:/.{36}/</code></li>
 <li>4,172,929 are <code>type: 5</code> (aka SITE) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2019/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2018">statistics-2018</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2019/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2018">statistics-2018</h2>
 <p>Processing the statistics-2018 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2018
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           3,561,532    Bistream View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           3,561,532    Bistream View
            1,129,326    Item View
               97,401    Community View
               63,508    Collection View
@@ -202,25 +202,25 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
         --------------------------------------
            5,561,166    TOTAL
 =================================================================
-</code></pre><p>After some time I got an error about Java heap space so I increased the JVM memory and restarted processing:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx4096m'
-$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
-</code></pre><p>Eventually the processing finished. Here are some statistics about unmigrated documents:</p>
+</code></pre></div><p>After some time I got an error about Java heap space so I increased the JVM memory and restarted processing:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-Dfile.encoding=UTF-8 -Xmx4096m&#39;</span>
+$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2018
+</code></pre></div><p>Eventually the processing finished. Here are some statistics about unmigrated documents:</p>
 <ul>
 <li>365,473: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>546,955: <code>id:/.+-unmigrated/</code></li>
 <li>923,158: <code>*:* NOT id:/.{36}/</code></li>
 <li>823,293: are <code>type: 5</code> so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2017">statistics-2017</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2017">statistics-2017</h2>
 <p>Processing the statistics-2017 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2017
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2017
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           2,529,208    Bistream View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           2,529,208    Bistream View
            1,618,717    Item View
              144,945    Community View
               74,249    Collection View
@@ -230,22 +230,22 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
         --------------------------------------
            5,813,639    TOTAL
 =================================================================
-</code></pre><p>Eventually the processing finished. Here are some statistics about unmigrated documents:</p>
+</code></pre></div><p>Eventually the processing finished. Here are some statistics about unmigrated documents:</p>
 <ul>
 <li>808,309: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>893,868: <code>id:/.+-unmigrated/</code></li>
 <li>1,702,177: <code>*:* NOT id:/.{36}/</code></li>
 <li>1,660,524 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2017/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2016">statistics-2016</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2017/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2016">statistics-2016</h2>
 <p>Processing the statistics-2016 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2016
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2016
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           1,765,924    Bistream View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           1,765,924    Bistream View
            1,151,575    Item View
              187,110    Community View
               51,204    Collection View
@@ -255,21 +255,21 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
         --------------------------------------
            4,190,098    TOTAL
 =================================================================
-</code></pre><ul>
+</code></pre></div><ul>
 <li>849,408: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>627,747: <code>id:/.+-unmigrated/</code></li>
 <li>1,477,155: <code>*:* NOT id:/.{36}/</code></li>
 <li>1,469,706 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2016/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2015">statistics-2015</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2016/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2015">statistics-2015</h2>
 <p>Processing the statistics-2015 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2015
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2015
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-             990,916    Bistream View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>             990,916    Bistream View
              506,070    Item View
              116,153    Community View
               33,282    Collection View
@@ -279,22 +279,22 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
         --------------------------------------
            1,730,378    TOTAL
 =================================================================
-</code></pre><p>Summary of stats after processing:</p>
+</code></pre></div><p>Summary of stats after processing:</p>
 <ul>
 <li>195,293: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>67,146: <code>id:/.+-unmigrated/</code></li>
 <li>262,439: <code>*:* NOT id:/.{36}/</code></li>
 <li>247,400 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2015/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2014">statistics-2014</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2015/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2014">statistics-2014</h2>
 <p>Processing the statistics-2014 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2014
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2014
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           2,381,603    Item View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           2,381,603    Item View
            1,323,357    Bistream View
              501,545    Community View
              247,805    Collection View
@@ -305,22 +305,22 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
         --------------------------------------
            4,465,716    TOTAL
 =================================================================
-</code></pre><p>Summary of unmigrated documents after processing:</p>
+</code></pre></div><p>Summary of unmigrated documents after processing:</p>
 <ul>
 <li>182,131: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>39,947: <code>id:/.+-unmigrated/</code></li>
 <li>222,078: <code>*:* NOT id:/.{36}/</code></li>
 <li>188,791 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2014/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2013">statistics-2013</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2014/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2013">statistics-2013</h2>
 <p>Processing the statistics-2013 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2013
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2013
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           2,352,124    Item View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           2,352,124    Item View
            1,117,676    Bistream View
              575,711    Community View
              171,639    Collection View
@@ -331,81 +331,81 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2018
         --------------------------------------
            4,218,862    TOTAL
 =================================================================
-</code></pre><p>Summary of unmigrated docs after processing:</p>
+</code></pre></div><p>Summary of unmigrated docs after processing:</p>
 <ul>
 <li>2,548 : <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>29,772: <code>id:/.+-unmigrated/</code></li>
 <li>32,320: <code>*:* NOT id:/.{36}/</code></li>
 <li>15,691 are <code>type: 5</code> (SITE) so we can purge them:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2013/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2012">statistics-2012</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2013/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2012">statistics-2012</h2>
 <p>Processing the statistics-2012 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2012
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2012
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-           2,229,332    Item View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>           2,229,332    Item View
              913,577    Bistream View
              215,577    Collection View
              104,734    Community View
         --------------------------------------
            3,463,220    TOTAL
 =================================================================
-</code></pre><p>Summary of unmigrated docs after processing:</p>
+</code></pre></div><p>Summary of unmigrated docs after processing:</p>
 <ul>
 <li>0: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>33,161: <code>id:/.+-unmigrated/</code></li>
 <li>33,161: <code>*:* NOT id:/.{36}/</code></li>
 <li>33,161 are <code>type: 3</code> (COLLECTION), which is different than I&rsquo;ve seen previously&hellip; but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2012/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2011">statistics-2011</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2012/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2011">statistics-2011</h2>
 <p>Processing the statistics-2011 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2011
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2011
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-             904,896    Item View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>             904,896    Item View
              385,789    Bistream View
              154,356    Collection View
               62,978    Community View
         --------------------------------------
            1,508,019    TOTAL
 =================================================================
-</code></pre><p>Summary of unmigrated docs after processing:</p>
+</code></pre></div><p>Summary of unmigrated docs after processing:</p>
 <ul>
 <li>0: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>17,551: <code>id:/.+-unmigrated/</code></li>
 <li>17,551: <code>*:* NOT id:/.{36}/</code></li>
 <li>12,116 are <code>type: 3</code> (COLLECTION), which is different than I&rsquo;ve seen previously&hellip; but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2011/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h2 id="statistics-2010">statistics-2010</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2011/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h2 id="statistics-2010">statistics-2010</h2>
 <p>Processing the statistics-2010 core:</p>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics-2010
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-upgrade-statistics-6x -n <span style="color:#ae81ff">2500000</span> -i statistics-2010
 ...
 =================================================================
         *** Statistics Records with Legacy Id ***
-
-              26,067    Item View
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>              26,067    Item View
               15,615    Bistream View
                4,116    Collection View
                1,094    Community View
         --------------------------------------
               46,892    TOTAL
 =================================================================
-</code></pre><p>Summary of unmigrated docs after processing:</p>
+</code></pre></div><p>Summary of unmigrated docs after processing:</p>
 <ul>
 <li>0: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
 <li>1,012: <code>id:/.+-unmigrated/</code></li>
 <li>1,012: <code>*:* NOT id:/.{36}/</code></li>
 <li>654 are <code>type: 3</code> (COLLECTION), which is different than I&rsquo;ve seen previously&hellip; but I suppose I still have to purge them because there will be errors in the Atmire modules otherwise:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8081/solr/statistics-2010/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><h3 id="processing-solr-statistics-with-atomicstatisticsupdatecli">Processing Solr statistics with AtomicStatisticsUpdateCLI</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2010/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:* NOT id:/.{36}/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><h3 id="processing-solr-statistics-with-atomicstatisticsupdatecli">Processing Solr statistics with AtomicStatisticsUpdateCLI</h3>
 <p>On 2020-11-18 I finished processing the Solr statistics with solr-upgrade-statistics-6x and I started processing them with AtomicStatisticsUpdateCLI.</p>
 <h2 id="statistics-1">statistics</h2>
 <p>First the current year&rsquo;s statistics core, in 12-hour batches:</p>

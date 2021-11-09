@@ -44,7 +44,7 @@ During the FlywayDB migration I got an error:
 
 
 "/>
-<meta name="generator" content="Hugo 0.88.1" />
+<meta name="generator" content="Hugo 0.89.2" />
 
 
     
@@ -967,8 +967,8 @@ java.lang.OutOfMemoryError: Java heap space
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ curl -s &quot;http://localhost:8083/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary &quot;&lt;delete&gt;&lt;query&gt;id:/.+-unmigrated/&lt;/query&gt;&lt;/delete&gt;&quot;
-</code></pre><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#34;http://localhost:8083/solr/statistics-2018/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;id:/.+-unmigrated/&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</code></pre></div><ul>
 <li>I restarted the process and it crashed again a few minutes later
 <ul>
 <li>I increased the memory to 4096m and tried again</li>
@@ -1092,12 +1092,12 @@ $ ./fix-metadata-values.py -i 2020-10-28-update-regions.csv -db dspace -u dspace
 </code></pre><ul>
 <li>Then I started a full Discovery re-indexing:</li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ time chrt -b 0 ionice -c2 -n7 nice -n19 dspace index-discovery -b
-
-real    92m14.294s
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>real    92m14.294s
 user    7m59.840s
 sys     2m22.327s
-</code></pre><ul>
+</code></pre></div><ul>
 <li>I realized I had been using an incorrect Solr query to purge unmigrated items after processing with <code>solr-upgrade-statistics-6x</code>&hellip;
 <ul>
 <li>Instead of this: <code>(*:* NOT id:/.{36}/) AND (*:* NOT id:/.+-unmigrated/)</code></li>
@@ -1148,10 +1148,10 @@ $ cat /tmp/elasticsearch-mappings* | grep -v '{&quot;index&quot;:{}}' | sort | u
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code class="language-console" data-lang="console">$ cat /tmp/elasticsearch-mappings* &gt; /tmp/new-elasticsearch-mappings.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat /tmp/elasticsearch-mappings* &gt; /tmp/new-elasticsearch-mappings.txt
 $ curl -XDELETE http://localhost:9200/openrxv-values
-$ curl -XPOST http://localhost:9200/openrxv-values/_doc/_bulk -H &quot;Content-Type: application/json&quot; --data-binary @/tmp/new-elasticsearch-mappings.txt
-</code></pre><ul>
+$ curl -XPOST http://localhost:9200/openrxv-values/_doc/_bulk -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> --data-binary @/tmp/new-elasticsearch-mappings.txt
+</code></pre></div><ul>
 <li>The latest indexing (second for today!) finally finshed on AReS and the countries and affiliations/crps/journals all look MUCH better
 <ul>
 <li>There are still a few acronyms present, some of which are in the value mappings and some which aren&rsquo;t</li>
