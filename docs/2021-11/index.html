@@ -18,7 +18,7 @@ $ zstd statistics-2019.json
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-11/" />
 <meta property="article:published_time" content="2021-11-02T22:27:07+02:00" />
-<meta property="article:modified_time" content="2021-11-07T11:26:32+02:00" />
+<meta property="article:modified_time" content="2021-11-09T06:29:52+02:00" />
 
 
 
@@ -32,7 +32,7 @@ First I exported all the 2019 stats from CGSpace:
 $ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
 $ zstd statistics-2019.json
 "/>
-<meta name="generator" content="Hugo 0.89.2" />
+<meta name="generator" content="Hugo 0.89.3" />
 
 
     
@@ -42,9 +42,9 @@ $ zstd statistics-2019.json
   "@type": "BlogPosting",
   "headline": "November, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-11/",
-  "wordCount": "722",
+  "wordCount": "1153",
   "datePublished": "2021-11-02T22:27:07+02:00",
-  "dateModified": "2021-11-07T11:26:32+02:00",
+  "dateModified": "2021-11-09T06:29:52+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -233,6 +233,80 @@ $ rsync -av --partial --progress --delete provisioning@ares:/tmp/data/ backend/d
 <li>I sent him more numbers directly from the DSpace Statistics API</li>
 </ul>
 </li>
+</ul>
+<h2 id="2021-11-09">2021-11-09</h2>
+<ul>
+<li>I migrated the 2013, 2012, and 2011 statistics to yearly shards on DSpace Test&rsquo;s Solr to continute my testing of memory / latency impact</li>
+<li>I found out why the CI jobs for the DSpace Statistics API had been failing the past few weeks
+<ul>
+<li>When I reverted to using the original falcon-swagger-ui project after they apparently merged my Falcon 3 changes, it seems that they actually only merged the Swagger UI changes, not the Falcon 3 fix!</li>
+<li>I switched back to using my own fork and now it&rsquo;s working</li>
+<li>Unfortunately now I&rsquo;m getting an error installing my dependencies with Poetry:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">RuntimeError
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Unable to find installation candidates for regex (2021.11.9)
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>at /usr/lib/python3.9/site-packages/poetry/installation/chooser.py:72 in choose_for
+     68│
+     69│             links.append(link)
+     70│
+     71│         if not links:
+  →  72│             raise RuntimeError(
+     73│                 &#34;Unable to find installation candidates for {}&#34;.format(package)
+     74│             )
+     75│
+     76│         # Get the best link
+</code></pre></div><ul>
+<li>So that&rsquo;s super annoying&hellip; I&rsquo;m going to try using Pipenv again&hellip;</li>
+</ul>
+<h2 id="2021-11-10">2021-11-10</h2>
+<ul>
+<li>93.158.91.62 is scraping us again
+<ul>
+<li>That&rsquo;s an IP in Sweden that is clearly a bot, but pretending to use a normal user agent</li>
+<li>I added them to the &ldquo;bot&rdquo; list in nginx so the requests will share a common DSpace session with other bots and not create Solr hits, but still they are causing high outbound traffic</li>
+<li>I modified the nginx configuration to send them an HTTP 403 and tell them to use a bot user agent</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-14">2021-11-14</h2>
+<ul>
+<li>I decided to update AReS to the latest OpenRXV version with Elasticsearch 7.13
+<ul>
+<li>First I took backups of the Elasticsearch volume and OpenRXV backend data:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker-compose down
+$ sudo tar czf openrxv_esData_7-2021-11-14.tar.xz /var/lib/docker/volumes/openrxv_esData_7
+$ cp -a backend/data backend/data.2021-11-14
+</code></pre></div><ul>
+<li>Then I checked out the latest git commit, updated all images, rebuilt the project:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+$ docker-compose build
+$ docker-compose up -d
+</code></pre></div><ul>
+<li>Then I updated the repository configurations and started a fresh harvest</li>
+<li>Help Francesca from the Alliance with a question about embargos on CGSpace items
+<ul>
+<li>I logged in as a normal user and a CGIAR user, and I was unable to access the PDF or full text of the item</li>
+<li>I was only able to access the PDF when I was logged in as an admin</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-21">2021-11-21</h2>
+<ul>
+<li>Update all Docker images on AReS (linode20) and re-build OpenRXV
+<ul>
+<li>Run all system updates and reboot the server</li>
+<li>Start a full harvest, but I notice that the number of items being harvested is not complete, so I stopped it</li>
+</ul>
+</li>
+<li>Run all system updates on CGSpace (linode18) and DSpace Test (linode26) and reboot them</li>
 </ul>
 <!-- raw HTML omitted -->
 
