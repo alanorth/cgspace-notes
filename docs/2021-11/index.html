@@ -18,7 +18,7 @@ $ zstd statistics-2019.json
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-11/" />
 <meta property="article:published_time" content="2021-11-02T22:27:07+02:00" />
-<meta property="article:modified_time" content="2021-11-27T12:18:52+02:00" />
+<meta property="article:modified_time" content="2021-11-27T14:37:33+02:00" />
 
 
 
@@ -42,9 +42,9 @@ $ zstd statistics-2019.json
   "@type": "BlogPosting",
   "headline": "November, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-11/",
-  "wordCount": "1682",
+  "wordCount": "2080",
   "datePublished": "2021-11-02T22:27:07+02:00",
-  "dateModified": "2021-11-27T12:18:52+02:00",
+  "dateModified": "2021-11-27T14:37:33+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -389,9 +389,91 @@ Found 3 hits from 188.134.31.88 in statistics
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/fix-metadata-values.py -i /tmp/authors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">3</span>
 </code></pre></div><ul>
-<li>Then I imported to CGSpace and started a full Discovery re-index</li>
+<li>Then I imported to CGSpace and started a full Discovery re-index:</li>
 </ul>
-<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>real    272m43.818s
+user    183m4.543s
+sys     2m47.988
+</code></pre></div><h2 id="2021-11-28">2021-11-28</h2>
+<ul>
+<li>Run system updates on AReS server (linode20) and update all Docker containers and reboot
+<ul>
+<li>Then I started a fresh harvest as I always do on Sunday</li>
+</ul>
+</li>
+<li>I am experimenting with pinning npm version 7 on OpenRXV frontend because of these Angular errors:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: &#39;@angular-devkit/architect@0.901.15&#39;,
+npm WARN EBADENGINE   required: { node: &#39;&gt;= 10.13.0&#39;, npm: &#39;^6.11.0 || ^7.5.6&#39;, yarn: &#39;&gt;= 1.13.0&#39; },
+npm WARN EBADENGINE   current: { node: &#39;v12.22.7&#39;, npm: &#39;8.1.3&#39; }
+npm WARN EBADENGINE }
+</code></pre></div><h2 id="2021-11-29">2021-11-29</h2>
+<ul>
+<li>Tezira reached out to me to say that submissions on CGSpace are taking forever</li>
+<li>I see a definite increase in locks in the last few days:</li>
+</ul>
+<p><img src="/cgspace-notes/2021/11/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
+<ul>
+<li>The locks are all held by dspaceWeb (XMLUI):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
+      1 
+      1 ------------------
+      1 (1394 rows)
+      1  application_name 
+      9  psql
+   1385  dspaceWeb
+</code></pre></div><ul>
+<li>I restarted PostgreSQL and the locks dropped down:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
+      1
+      1 ------------------
+      1 (103 rows)
+      1  application_name
+      9  psql
+     94  dspaceWeb
+</code></pre></div><h2 id="2021-11-30">2021-11-30</h2>
+<ul>
+<li>IWMI sent me ORCID identifiers for some new staff
+<ul>
+<li>We currently have 1332 unique identifiers, so this adds sixteen new ones:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/iwmi-orcids.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort | uniq &gt; /tmp/2021-11-30-combined-orcids.txt
+$ wc -l /tmp/2021-11-30-combined-orcids.txt
+1348 /tmp/2021-11-30-combined-orcids.txt
+</code></pre></div><ul>
+<li>After I combined them and removed duplicates, I resolved all the names using my <code>resolve-orcids.py</code> script:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/resolve-orcids.py -i /tmp/2021-11-30-combined-orcids.txt -o /tmp/2021-11-30-combined-orcids-names.txt
+</code></pre></div><ul>
+<li>Then I updated some ORCID identifiers that had changed in the XML:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2021-11-30-fix-orcids.csv
+cg.creator.identifier,correct
+&#34;ADEBOWALE AKANDE: 0000-0002-6521-3272&#34;,&#34;ADEBOWALE AD AKANDE: 0000-0002-6521-3272&#34;
+&#34;Daniel Ortiz Gonzalo: 0000-0002-5517-1785&#34;,&#34;Daniel Ortiz-Gonzalo: 0000-0002-5517-1785&#34;
+&#34;FRIDAY ANETOR: 0000-0003-3137-1958&#34;,&#34;Friday Osemenshan Anetor: 0000-0003-3137-1958&#34;
+&#34;Sander Muilerman: 0000-0001-9103-3294&#34;,&#34;Sander Muilerman-Rodrigo: 0000-0001-9103-3294&#34;
+$ ./ilri/fix-metadata-values.py -i 2021-11-30-fix-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.creator.identifier -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">247</span>
+</code></pre></div><ul>
+<li>Tag existing items from the IWMI&rsquo;s new authors with ORCID iDs using <code>add-orcid-identifiers-csv.py</code> (7 new metadata fields added):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2021-11-30-add-orcids.csv 
+dc.contributor.author,cg.creator.identifier
+&#34;Liaqat, U.W.&#34;,&#34;Umar Waqas Liaqat: 0000-0001-9027-5232&#34;
+&#34;Liaqat, Umar Waqas&#34;,&#34;Umar Waqas Liaqat: 0000-0001-9027-5232&#34;
+&#34;Munyaradzi, M.&#34;,&#34;Munyaradzi Junia Mutenje: 0000-0002-7829-9300&#34;
+&#34;Mutenje, Munyaradzi&#34;,&#34;Munyaradzi Junia Mutenje: 0000-0002-7829-9300&#34;
+&#34;Rex, William&#34;,&#34;William Rex: 0000-0003-4979-5257&#34;
+&#34;Shrestha, Shisher&#34;,&#34;Nirman Shrestha: 0000-0002-0996-8611&#34;
+$ ./ilri/add-orcid-identifiers-csv.py -i 2021-11-30-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</code></pre></div><!-- raw HTML omitted -->
 
   
 
