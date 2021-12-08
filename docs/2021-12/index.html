@@ -22,7 +22,7 @@ Total number of bot hits purged: 3679
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-12/" />
 <meta property="article:published_time" content="2021-12-01T16:07:07+02:00" />
-<meta property="article:modified_time" content="2021-12-05T17:55:47+02:00" />
+<meta property="article:modified_time" content="2021-12-06T16:40:50+02:00" />
 
 
 
@@ -50,9 +50,9 @@ Total number of bot hits purged: 3679
   "@type": "BlogPosting",
   "headline": "December, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-12/",
-  "wordCount": "711",
+  "wordCount": "968",
   "datePublished": "2021-12-01T16:07:07+02:00",
-  "dateModified": "2021-12-05T17:55:47+02:00",
+  "dateModified": "2021-12-06T16:40:50+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -237,6 +237,36 @@ Purging 455 hits from WhatsApp in statistics
 </ul>
 </li>
 <li>I started looking at the seventy CAS records that Abenet has been working on for the past few months</li>
+</ul>
+<h2 id="2021-12-07">2021-12-07</h2>
+<ul>
+<li>I sent Vini from CGIAR CAS some questions about the seventy records I was working on yesterday
+<ul>
+<li>Also, I ran the <code>check-duplicates.py</code> script on them and found that they might ALL be duplicates!!!</li>
+<li>I tweaked the script a bit more to use the issue dates as a third criteria and now there are less duplicates, but it&rsquo;s still at least twenty or so&hellip;</li>
+<li>The script now checks if the issue date of the item in the CSV and the issue date of the item in the database are less than 365 days apart (by default)</li>
+<li>For example, many items like &ldquo;Annual Report 2020&rdquo; can have similar title and type to previous annual reports, but are not duplicates</li>
+</ul>
+</li>
+<li>I noticed a strange user agent in the XMLUI logs on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">20.84.225.129 - - [07/Dec/2021:11:51:24 +0100] &#34;GET /handle/10568/33203 HTTP/1.1&#34; 200 6328 &#34;-&#34; &#34;python-requests/2.25.1&#34;
+20.84.225.129 - - [07/Dec/2021:11:51:27 +0100] &#34;GET /handle/10568/33203 HTTP/2.0&#34; 200 6315 &#34;-&#34; &#34;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/88.0.4298.0 Safari/537.36&#34;
+</code></pre></div><ul>
+<li>I looked into it more and I see a dozen other IPs using that user agent, and they are all owned by Microsoft
+<ul>
+<li>It could be someone on Azure?</li>
+<li>I opened <a href="https://github.com/atmire/COUNTER-Robots/pull/49">a pull request to COUNTER-Robots</a> and I&rsquo;ll add this user agent to our local override until they decide to include it or not</li>
+</ul>
+</li>
+<li>I purged 34,000 hits from this user agent in our Solr statistics:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
+Purging 34458 hits from HeadlessChrome in statistics
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 34458
+</code></pre></div><ul>
+<li>Meeting with partners about repositories in the One CGIAR</li>
 </ul>
 <!-- raw HTML omitted -->
 
