@@ -22,7 +22,7 @@ Total number of bot hits purged: 3679
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-12/" />
 <meta property="article:published_time" content="2021-12-01T16:07:07+02:00" />
-<meta property="article:modified_time" content="2021-12-08T08:47:33+02:00" />
+<meta property="article:modified_time" content="2021-12-08T19:34:39+02:00" />
 
 
 
@@ -50,9 +50,9 @@ Total number of bot hits purged: 3679
   "@type": "BlogPosting",
   "headline": "December, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-12/",
-  "wordCount": "992",
+  "wordCount": "1942",
   "datePublished": "2021-12-01T16:07:07+02:00",
-  "dateModified": "2021-12-08T08:47:33+02:00",
+  "dateModified": "2021-12-08T19:34:39+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -273,6 +273,158 @@ Purging 34458 hits from HeadlessChrome in statistics
 <li>Finalize country/region changes in csv-metadata-quality checker and release v0.5.0: <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.5.0">https://github.com/ilri/csv-metadata-quality/releases/tag/v0.5.0</a>
 <ul>
 <li>This also includes the mojibake fixes and title/citation checks and some bug fixes</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-12-09">2021-12-09</h2>
+<ul>
+<li>Help Francesca upload the dataset for one CIAT publication (it has like 100 authors so we did it via CSV)</li>
+</ul>
+<h2 id="2021-12-12">2021-12-12</h2>
+<ul>
+<li>Patch OpenRXV&rsquo;s Elasticsearch for the CVE-2021-44228 log4j vulnerability and re-deploy AReS
+<ul>
+<li>I added <code>-Dlog4j2.formatMsgNoLookups=true</code> to the Elasticsearch Java environment</li>
+</ul>
+</li>
+<li>Run AReS harvesting</li>
+</ul>
+<h2 id="2021-12-13">2021-12-13</h2>
+<ul>
+<li>I ran the <code>check-duplicates.py</code> script on the 1,000 items from the CGIAR System Office TAC/ICW/Green Cover archives and found hundreds or thousands of potential duplicates
+<ul>
+<li>I sent feedback to Gaia</li>
+</ul>
+</li>
+<li>Help Jacquie from WorldFish try to find all outputs for the Fish CRP because there are a few different formats for that name</li>
+<li>Create a temporary account for Rafael Rodriguez on DSpace Test so he can investigate the submission workflow
+<ul>
+<li>I added him to the admin group on the Alliance community&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-12-14">2021-12-14</h2>
+<ul>
+<li>I finally caught some stuck locks on CGSpace after checking several times per day for the last week:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | wc -l
+1508
+</code></pre></div><ul>
+<li>Now looking at the locks query sorting by age of locks:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat locks-age.sql 
+SELECT a.datname,
+         l.relation::regclass,
+         l.transactionid,
+         l.mode,
+         l.GRANTED,
+         a.usename,
+         a.query,
+         a.query_start,
+         age(now(), a.query_start) AS &#34;age&#34;,
+         a.pid
+FROM pg_stat_activity a
+JOIN pg_locks l ON l.pid = a.pid
+ORDER BY a.query_start;
+</code></pre></div><ul>
+<li>The oldest locks are 9 hours and 26 minutes old and the time on the server is <code>Tue Dec 14 18:41:58 CET 2021</code>, so it seems something happened around 9:15 this morning
+<ul>
+<li>I looked at the maintenance tasks and there is nothing running around then (only the sitemap update that runs at 8AM, and should be quick)</li>
+<li>I looked at the DSpace log, but didn&rsquo;t see anything interesting there: only editors making edits&hellip;</li>
+<li>I looked at the nginx REST API logs and saw lots of GET action there from Drupal sites harvesting us&hellip;</li>
+<li>So I&rsquo;m not sure what it causing this&hellip; perhaps something in the XMLUI submission / task workflow</li>
+<li>For now I just ran all system updates and rebooted the server</li>
+<li>I also enabled Atmire&rsquo;s <code>log-db-activity.sh</code> script to run every four hours (in the DSpace user&rsquo;s crontab) so perhaps that will be better than me checking manually</li>
+</ul>
+</li>
+<li>Regarding Gaia&rsquo;s 1,000 items to upload to CGSpace, I checked the eighteen Green Cover records and there are no duplicates, so that&rsquo;s at least a starting point!
+<ul>
+<li>I sent her a spreadsheet with the eighteen items with a new collection column to indicate where they should go</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-12-16">2021-12-16</h2>
+<ul>
+<li>Working on the CGIAR CAS Green Cover records for Gaia
+<ul>
+<li>Add months to dcterms.issued from PDFs</li>
+<li>Add languages</li>
+<li>Format and fix several authors</li>
+</ul>
+</li>
+<li>I created a SAF archive with SAFBuilder and then imported it to DSpace Test:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34;</span> dspace import --add --eperson<span style="color:#f92672">=</span>fuuu@fuuu.com --source /tmp/SimpleArchiveFormat --mapfile<span style="color:#f92672">=</span>./2021-12-16-green-covers.map
+</code></pre></div><h2 id="2021-12-19">2021-12-19</h2>
+<ul>
+<li>I tried to update all Docker containers on AReS and then run a build, but I got an error in the backend:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">&gt; openrxv-backend@0.0.1 build
+&gt; nest build
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>node_modules/@elastic/elasticsearch/api/types.d.ts:2454:13 - error TS2456: Type alias &#39;AggregationsAggregate&#39; circularly references itself.
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>2454 export type AggregationsAggregate = AggregationsSingleBucketAggregate | AggregationsAutoDateHistogramAggregate | AggregationsFiltersAggregate | AggregationsSignificantTermsAggregate&lt;any&gt; | AggregationsTermsAggregate&lt;any&gt; | AggregationsBucketAggregate | AggregationsCompositeBucketAggregate | AggregationsMultiBucketAggregate&lt;AggregationsBucket&gt; | AggregationsMatrixStatsAggregate | AggregationsKeyedValueAggregate | AggregationsMetricAggregate
+                 ~~~~~~~~~~~~~~~~~~~~~
+node_modules/@elastic/elasticsearch/api/types.d.ts:3209:13 - error TS2456: Type alias &#39;AggregationsSingleBucketAggregate&#39; circularly references itself.
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>3209 export type AggregationsSingleBucketAggregate = AggregationsSingleBucketAggregateKeys
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Found 2 error(s).
+</code></pre></div><ul>
+<li>I&rsquo;m not sure why because I build the backend successfully on my local machine&hellip;
+<ul>
+<li>For now I just ran all the system updates and rebooted the machine (linode20)</li>
+<li>Then I started a fresh harvest</li>
+</ul>
+</li>
+<li>Now I cleared all images on my local machine and I get the same error when building the backend
+<ul>
+<li>It seems to be related to <code>@elastic/elasticsearch-js</code>](<a href="https://github.com/elastic/elasticsearch-js)">https://github.com/elastic/elasticsearch-js)</a>, which our <code>package.json</code> pins with version `^7.13.0&quot;</li>
+<li>I see that AReS is currently using 7.15.0 in its <code>package-lock.json</code>, and 7.16.0 was released four days ago so perhaps it&rsquo;s that&hellip;</li>
+<li>Pinning <code>~7.15.0</code> allows nest to build fine&hellip;</li>
+<li>I made a pull request</li>
+</ul>
+</li>
+<li>But since software sucks, now I get an error in the frontend while starting nginx:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">nginx: [emerg] host not found in upstream &#34;backend:3000&#34; in /etc/nginx/conf.d/default.conf:2
+</code></pre></div><ul>
+<li>In other news, looking at updating our Redis from version 5 to 6 (which is slightly less old, but still old!) and I&rsquo;m happy to see that the <a href="https://raw.githubusercontent.com/redis/redis/6.0/00-RELEASENOTES">release notes for version 6</a> say that it is compatible with 5 except for one minor thing that we don&rsquo;t seem to be using (SPOP?)</li>
+<li>For reference I see that our Redis 5 container is based on Debian 11, which I didn&rsquo;t expect&hellip; but I still want to try to upgrade to Redis 6 eventually:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker exec -it redis bash
+root@23692d6b51c5:/data# cat /etc/os-release 
+PRETTY_NAME=&#34;Debian GNU/Linux 11 (bullseye)&#34;
+NAME=&#34;Debian GNU/Linux&#34;
+VERSION_ID=&#34;11&#34;
+VERSION=&#34;11 (bullseye)&#34;
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL=&#34;https://www.debian.org/&#34;
+SUPPORT_URL=&#34;https://www.debian.org/support&#34;
+BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
+</code></pre></div><ul>
+<li>I bumped the version to 6 on my local test machine and the logs look good:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker logs redis
+1:C 19 Dec 2021 19:27:15.583 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 19 Dec 2021 19:27:15.583 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 19 Dec 2021 19:27:15.583 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+1:M 19 Dec 2021 19:27:15.584 * monotonic clock: POSIX clock_gettime
+1:M 19 Dec 2021 19:27:15.584 * Running mode=standalone, port=6379.
+1:M 19 Dec 2021 19:27:15.584 # Server initialized
+1:M 19 Dec 2021 19:27:15.585 * Loading RDB produced by version 5.0.14
+1:M 19 Dec 2021 19:27:15.585 * RDB age 33 seconds
+1:M 19 Dec 2021 19:27:15.585 * RDB memory usage when created 3.17 Mb
+1:M 19 Dec 2021 19:27:15.595 # Done loading RDB, keys loaded: 932, keys expired: 1.
+1:M 19 Dec 2021 19:27:15.595 * DB loaded from disk: 0.011 seconds
+1:M 19 Dec 2021 19:27:15.595 * Ready to accept connections
+</code></pre></div><ul>
+<li>The interface and harvesting all work as expected&hellip;
+<ul>
+<li>I pushed the update to OpenRXV</li>
 </ul>
 </li>
 </ul>
