@@ -22,7 +22,7 @@ Total number of bot hits purged: 3679
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-12/" />
 <meta property="article:published_time" content="2021-12-01T16:07:07+02:00" />
-<meta property="article:modified_time" content="2021-12-19T22:03:42+02:00" />
+<meta property="article:modified_time" content="2021-12-28T13:24:23+02:00" />
 
 
 
@@ -50,9 +50,9 @@ Total number of bot hits purged: 3679
   "@type": "BlogPosting",
   "headline": "December, 2021",
   "url": "https://alanorth.github.io/cgspace-notes/2021-12/",
-  "wordCount": "2055",
+  "wordCount": "2686",
   "datePublished": "2021-12-01T16:07:07+02:00",
-  "dateModified": "2021-12-19T22:03:42+02:00",
+  "dateModified": "2021-12-28T13:24:23+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -448,7 +448,115 @@ BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
 <ul>
 <li>Start a fresh harvest on AReS</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2021-12-29">2021-12-29</h2>
+<ul>
+<li>Looking at the top IPs and user agents on CGSpace&rsquo;s Solr statistics I see a strange user agent:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.{random.randint(0, 9999)} Safari/537.{random.randint(0, 99)}
+</code></pre></div><ul>
+<li>I found two IPs using user agents with the &ldquo;randint&rdquo; bug:
+<ul>
+<li>47.252.80.214 (AliCloud in the US)</li>
+<li>61.143.40.50 (ChinaNet in China)</li>
+</ul>
+</li>
+<li>I wonder what other requests have been made from those hosts where the randint spoofer was working&hellip; ugh.</li>
+<li>I found some IPs from the Russian SELECTEL network making thousands of requests with SQL injection attempts&hellip;
+<ul>
+<li>45.134.26.171</li>
+<li>45.146.166.173</li>
+</ul>
+</li>
+<li>3.225.28.105 is on Amazon and making thousands of requests for the same URL:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">/rest/collections/1118/items?expand=all&amp;limit=1
+</code></pre></div><ul>
+<li>Most of the time it has a real-looking user agent, but sometimes it uses <code>Apache-HttpClient/4.3.4 (java 1.5)</code></li>
+<li>Another 82.65.26.228 is doing SQL injection attempts from France</li>
+<li>216.213.28.138 is some scrape-as-a-service bot from Sprious</li>
+<li>I used my <code>resolve-addresses-geoip2.py</code> script to get the ASNs for all the IPs in Solr stats this month, then extracted the ASNs that were responsible for more than one IP:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/ips.txt -o /tmp/2021-12-29-ips.csv
+$ csvcut -c asn /tmp/2021-12-29-ips.csv | sed 1d | sort | uniq -c | sort -h | awk <span style="color:#e6db74">&#39;$1 &gt; 1&#39;</span>
+      2 10620
+      2 265696
+      2 6147
+      2 9299
+      3 3269
+      5 16509
+      5 49505
+      9 24757
+      9 24940
+      9 64267
+</code></pre></div><ul>
+<li>AS 64267 is Sprious, and it has used these IPs this month:
+<ul>
+<li>216.213.28.136</li>
+<li>207.182.27.191</li>
+<li>216.41.235.187</li>
+<li>216.41.232.169</li>
+<li>216.41.235.186</li>
+<li>52.124.19.190</li>
+<li>216.213.28.138</li>
+<li>216.41.234.163</li>
+</ul>
+</li>
+<li>To be honest I want to ban all their networks but I&rsquo;m afraid it&rsquo;s too many IPs&hellip; hmmm</li>
+<li>AS 24940 is Hetzner, but I don&rsquo;t feel like going through all the IPs to see&hellip; they always pretend to be normal users and make semi-sane requests so it might be a proxy or something</li>
+<li>AS 24757 is Ethiopian Telecom</li>
+<li>I&rsquo;m going to purge all these for sure, as they are a scraping-as-a-service company and don&rsquo;t use proper user agents or request robots.txt</li>
+<li>AS 49505 is the Russian Selectel, and it has used these IPs this month:
+<ul>
+<li>45.146.166.173</li>
+<li>45.134.26.171</li>
+<li>45.146.164.123</li>
+<li>45.155.205.231</li>
+<li>195.54.167.122</li>
+</ul>
+</li>
+<li>I will purge them all too because they are up to no good, as I already saw earlier today (SQL injections)</li>
+<li>AS 16509 is Amazon, and it has used these IPs this month:
+<ul>
+<li>18.135.23.223 (made requests using the <code>Mozilla/5.0 (compatible; U; Koha checkurl)</code> user agent, so I will purge it and add it to our DSpace user agent override and <a href="https://github.com/atmire/COUNTER-Robots/pull/51">submit to COUNTER-Robots</a>)</li>
+<li>54.76.137.83 (made hundreds of requests to &ldquo;/&rdquo; with a normal user agent)</li>
+<li>34.253.119.85 (made hundreds of requests to &ldquo;/&rdquo; with a normal user agent)</li>
+<li>34.216.201.131 (made hundreds of requests to &ldquo;/&rdquo; with a normal user agent)</li>
+<li>54.203.193.46 (made hundreds of requests to &ldquo;/&rdquo; with a normal user agent)</li>
+</ul>
+</li>
+<li>I ran the script to purge spider agents with the latest updates:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
+Purging 2530 hits from HeadlessChrome in statistics
+Purging 10676 hits from randint in statistics
+Purging 3579 hits from Koha in statistics
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 16785
+</code></pre></div><ul>
+<li>Then the IPs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips-to-purge.txt -p
+Purging 1190 hits from 216.213.28.136 in statistics
+Purging 1128 hits from 207.182.27.191 in statistics
+Purging 1095 hits from 216.41.235.187 in statistics
+Purging 1087 hits from 216.41.232.169 in statistics
+Purging 1011 hits from 216.41.235.186 in statistics
+Purging 945 hits from 52.124.19.190 in statistics
+Purging 933 hits from 216.213.28.138 in statistics
+Purging 930 hits from 216.41.234.163 in statistics
+Purging 4410 hits from 45.146.166.173 in statistics
+Purging 2688 hits from 45.134.26.171 in statistics
+Purging 1130 hits from 45.146.164.123 in statistics
+Purging 536 hits from 45.155.205.231 in statistics
+Purging 10676 hits from 195.54.167.122 in statistics
+Purging 1350 hits from 54.76.137.83 in statistics
+Purging 1240 hits from 34.253.119.85 in statistics
+Purging 2879 hits from 34.216.201.131 in statistics
+Purging 2909 hits from 54.203.193.46 in statistics
+Purging 1822 hits from 2605\:b100\:316\:7f74\:8d67\:5860\:a9f3\:d87c in statistics
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 37959
+</code></pre></div><!-- raw HTML omitted -->
 
   
 
