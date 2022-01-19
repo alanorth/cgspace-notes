@@ -14,7 +14,7 @@ Start a full harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-01/" />
 <meta property="article:published_time" content="2022-01-01T15:20:54+02:00" />
-<meta property="article:modified_time" content="2022-01-06T15:48:27+02:00" />
+<meta property="article:modified_time" content="2022-01-12T19:55:47+02:00" />
 
 
 
@@ -24,7 +24,7 @@ Start a full harvest on AReS
 
 Start a full harvest on AReS
 "/>
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.92.0" />
 
 
     
@@ -34,9 +34,9 @@ Start a full harvest on AReS
   "@type": "BlogPosting",
   "headline": "January, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-01/",
-  "wordCount": "263",
+  "wordCount": "366",
   "datePublished": "2022-01-01T15:20:54+02:00",
-  "dateModified": "2022-01-06T15:48:27+02:00",
+  "dateModified": "2022-01-12T19:55:47+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -171,6 +171,30 @@ node_modules/@elastic/elasticsearch/api/types.d.ts:3209:13 - error TS2456: Type 
 <h2 id="2022-01-12">2022-01-12</h2>
 <ul>
 <li>Fix some citation formatting issues in Gaia&rsquo;s <a href="https://dspacetest.cgiar.org/handle/10568/115230">eighteen CAS Green Cover publications on DSpace Test</a></li>
+</ul>
+<h2 id="2022-01-19">2022-01-19</h2>
+<ul>
+<li>Francesca was having issues with a submission on CGSpace this week
+<ul>
+<li>I checked and see a lot of locks in PostgreSQL:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
+      1 
+      1 ------------------
+      1 (3506 rows)
+      1  application_name 
+      9  psql
+     10  
+   3487  dspaceWeb
+</code></pre></div><ul>
+<li>As before, I see messages from PostgreSQL about processes waiting for locks since I enabled the <code>log_lock_waits</code> setting last month:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -E <span style="color:#e6db74">&#39;^2022-01*&#39;</span> /var/log/postgresql/postgresql-10-main.log | grep -c <span style="color:#e6db74">&#39;still waiting for&#39;</span>
+12
+</code></pre></div><ul>
+<li>I set a system alert on DSpace and then restarted the server</li>
 </ul>
 <!-- raw HTML omitted -->
 
