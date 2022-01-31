@@ -14,7 +14,7 @@ Start a full harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-01/" />
 <meta property="article:published_time" content="2022-01-01T15:20:54+02:00" />
-<meta property="article:modified_time" content="2022-01-19T18:14:26+03:00" />
+<meta property="article:modified_time" content="2022-01-28T16:59:40+03:00" />
 
 
 
@@ -34,9 +34,9 @@ Start a full harvest on AReS
   "@type": "BlogPosting",
   "headline": "January, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-01/",
-  "wordCount": "855",
+  "wordCount": "1223",
   "datePublished": "2022-01-01T15:20:54+02:00",
-  "dateModified": "2022-01-19T18:14:26+03:00",
+  "dateModified": "2022-01-28T16:59:40+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -297,7 +297,67 @@ UPDATE 9433
 $ grep -E <span style="color:#e6db74">&#39;^2022-01*&#39;</span> /var/log/postgresql/postgresql-10-main.log | grep -c <span style="color:#e6db74">&#39;still waiting for&#39;</span>
 3
 </code></pre></div><ul>
-<li>I set a system alert on CGSpace and then restarted Tomcat and PostgreSQL</li>
+<li>I set a system alert on CGSpace and then restarted Tomcat and PostgreSQL
+<ul>
+<li>The issue in Francesca&rsquo;s case was actually that someone had taken the task, not that PostgreSQL transactions were locked!</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-01-28">2022-01-28</h2>
+<ul>
+<li>Finalize the last ~100 WLE Journal Article items without licensese and DOIs
+<ul>
+<li>I did as many as I could, also updating http links to https for many journal links</li>
+</ul>
+</li>
+<li>Federica Bottamedi contacted us from the system office to say that she took over for Vini (Abhilasha Vaid)
+<ul>
+<li>She created an account on CGSpace and now we need to see which workflows she should belong to</li>
+</ul>
+</li>
+<li>Start a fresh harvesting on AReS</li>
+<li>I adjusted the <code>check-duplicates.py</code> script to write the output to a CSV file including the id, both titles, both dates, and the handle link
+<ul>
+<li>I included the id because I will need a unique field to join the resulting list of non-duplicates with the original CSV where the rest of the metadata and filenames are</li>
+<li>Since these items are not in DSpace yet, I generated simple numeric IDs in OpenRefine using this GREL transform: <code>row.index + 1</code></li>
+<li>Then I ran <code>check-duplicates.py</code> on items 1–200 and sent the resulting CSV to Gaia</li>
+</ul>
+</li>
+<li>Delete one duplicate item I saw in IITA&rsquo;s Journal Articles that was uploaded earlier in WLE
+<ul>
+<li>Also do some general cleanup on IITA&rsquo;s Journal Articles collection in OpenRefine</li>
+</ul>
+</li>
+<li>Delete one duplicate item I saw in ILRI&rsquo;s Journal Articles collection
+<ul>
+<li>Also do some general cleanup on ILRI&rsquo;s Journal Articles collection in OpenRefine and csv-metadata-quality</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-01-29">2022-01-29</h2>
+<ul>
+<li>I did some more cleanup on the ILRI Journal Articles
+<ul>
+<li>I added missing journal titles for items that had ISSNs</li>
+<li>Then I added pages for items that had them in the citation</li>
+<li>First, I faceted the citation field based on whether or not the item had something like &ldquo;: 232-234&rdquo; present:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">value.contains(/:\s?\d+(-|–)\d+/)
+</code></pre></div><ul>
+<li>Then I faceted by blank on <code>dcterms.extent</code> and did a transform to extract the page information for over 1,000 items!</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">&#39;p. &#39; +
+cells[&#39;dcterms.bibliographicCitation[en_US]&#39;].value.match(/.*:\s?(\d+)(-|–)(\d+).*/)[0] +
+&#39;-&#39; +
+cells[&#39;dcterms.bibliographicCitation[en_US]&#39;].value.match(/.*:\s?(\d+)(-|–)(\d+).*/)[2]
+</code></pre></div><ul>
+<li>Then I did similar for <code>cg.volume</code> and <code>cg.issue</code>, also based on the citation, for example to extract the &ldquo;16&rdquo; from &ldquo;Journal of Blah 16(1)&rdquo;, where &ldquo;16&rdquo; is the second capture group in a zero-based match:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">cells[&#39;dcterms.bibliographicCitation[en_US]&#39;].value.match(/.*( |;)(\d+)\((\d+)\).*/)[1]
+</code></pre></div><ul>
+<li>This was 3,000 items so I imported the changes on CGSpace 1,000 at a time&hellip;</li>
 </ul>
 <!-- raw HTML omitted -->
 
