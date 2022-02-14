@@ -21,7 +21,7 @@ We agreed to try to do more alignment of affiliations/funders with ROR
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-02/" />
 <meta property="article:published_time" content="2022-02-01T14:06:54+02:00" />
-<meta property="article:modified_time" content="2022-02-10T20:35:40+03:00" />
+<meta property="article:modified_time" content="2022-02-11T09:41:05+03:00" />
 
 
 
@@ -48,9 +48,9 @@ We agreed to try to do more alignment of affiliations/funders with ROR
   "@type": "BlogPosting",
   "headline": "February, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-02/",
-  "wordCount": "1838",
+  "wordCount": "2039",
   "datePublished": "2022-02-01T14:06:54+02:00",
-  "dateModified": "2022-02-10T20:35:40+03:00",
+  "dateModified": "2022-02-11T09:41:05+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -461,6 +461,38 @@ Purging 217 hits from 1science in statistics
 <li>I don&rsquo;t have time right now to add any of these to the COUNTER-Robots list&hellip;</li>
 <li>Peter asked me to add a new item type on CGSpace: Opinion Piece</li>
 <li>Map an item on CGSpace for Maria since she couldn&rsquo;t find it in the item mapper</li>
+</ul>
+<h2 id="2022-02-11">2022-02-11</h2>
+<ul>
+<li>CGSpace is slow and the load has been over 400% for a few hours
+<ul>
+<li>The number of DSpace sessions seems normal, even lower than a few days ago</li>
+<li>The number of PostgreSQL connections is low, but I see there are lots of &ldquo;AccessShare&rdquo; locks (green on Munin, not blue like usual)</li>
+<li>I will run all system updates, copy the latest config changes, and restart the server</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-02-12">2022-02-12</h2>
+<ul>
+<li>Install PostgreSQL 12 on my local dev environment to starting DSpace 6.x workflows with it:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD<span style="color:#f92672">=</span>postgres -p 5432:5432 -d postgres:12-alpine
+$ createuser -h localhost -p <span style="color:#ae81ff">5432</span> -U postgres --pwprompt dspacetest
+$ createdb -h localhost -p <span style="color:#ae81ff">5432</span> -U postgres -O dspacetest --encoding<span style="color:#f92672">=</span>UNICODE dspacetest
+$ psql -h localhost -U postgres -c <span style="color:#e6db74">&#39;ALTER USER dspacetest SUPERUSER;&#39;</span>
+$ pg_restore -h localhost -U postgres -d dspacetest -O --role<span style="color:#f92672">=</span>dspacetest -h localhost ~/Downloads/dspace-2022-02-12.backup
+$ psql -h localhost -U postgres -c <span style="color:#e6db74">&#39;ALTER USER dspacetest NOSUPERUSER;&#39;</span>
+</code></pre></div><ul>
+<li>Eventually I will updated DSpace Test, then CGSpace (time to start paying off some technical debt!)</li>
+<li>Start a full Discovery re-index on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>real    292m49.263s
+user    201m26.097s
+sys     3m2.459s
+</code></pre></div><ul>
+<li>Start a full harvest on AReS</li>
 </ul>
 <!-- raw HTML omitted -->
 
