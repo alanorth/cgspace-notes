@@ -21,7 +21,7 @@ We agreed to try to do more alignment of affiliations/funders with ROR
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-02/" />
 <meta property="article:published_time" content="2022-02-01T14:06:54+02:00" />
-<meta property="article:modified_time" content="2022-02-11T09:41:05+03:00" />
+<meta property="article:modified_time" content="2022-02-14T09:40:59+03:00" />
 
 
 
@@ -48,9 +48,9 @@ We agreed to try to do more alignment of affiliations/funders with ROR
   "@type": "BlogPosting",
   "headline": "February, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-02/",
-  "wordCount": "2039",
+  "wordCount": "2194",
   "datePublished": "2022-02-01T14:06:54+02:00",
-  "dateModified": "2022-02-11T09:41:05+03:00",
+  "dateModified": "2022-02-14T09:40:59+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -493,6 +493,44 @@ user    201m26.097s
 sys     3m2.459s
 </code></pre></div><ul>
 <li>Start a full harvest on AReS</li>
+</ul>
+<h2 id="2022-02-14">2022-02-14</h2>
+<ul>
+<li>Last week Gaia sent me her notes on the second batch of TAC/ICW documents (items 201–400 in the spreadsheet)
+<ul>
+<li>I created a filter in LibreOffice and selected the IDs for items with the action &ldquo;delete&rdquo;, then I created a custom text facet in OpenRefine with this GREL:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>or(
+isNotNull(value.match('201')),
+isNotNull(value.match('203')),
+isNotNull(value.match('209')),
+isNotNull(value.match('209')),
+isNotNull(value.match('215')),
+isNotNull(value.match('220')),
+isNotNull(value.match('225')),
+isNotNull(value.match('226')),
+isNotNull(value.match('227')),
+...
+isNotNull(value.match('396'))
+</code></pre><ul>
+<li>Then I flagged all matching records and exported a CSV to use with SAFBuilder
+<ul>
+<li>Then I imported the SAF bundle on DSpace Test:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34;</span> dspace import --add --eperson<span style="color:#f92672">=</span>fuuu@umm.com --source /tmp/SimpleArchiveFormat --mapfile<span style="color:#f92672">=</span>./2022-02-14-tac-batch2-201to400.map
+</code></pre></div><ul>
+<li>Export the next batch from OpenRefine (items with ID 401 to 700), check duplicates, and then join with the file names:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c id,dc.title,dcterms.issued,dcterms.type ~/Downloads/2022-01-21-CGSpace-TAC-ICW-batch3-401to700.csv &gt; /tmp/tac3.csv
+$ ./ilri/check-duplicates.py -i /tmp/tac3.csv -db dspacetest -u dspacetest -p <span style="color:#e6db74">&#39;dom@in34sniper&#39;</span> -o /tmp/2022-02-14-tac-batch3-401-700.csv
+$ csvcut -c id,filename ~/Downloads/2022-01-21-CGSpace-TAC-ICW-batch3-401to700.csv &gt; /tmp/tac3-filenames.csv
+$ csvjoin -c id /tmp/2022-02-14-tac-batch3-401-700.csv /tmp/tac3-filenames.csv &gt; /tmp/2022-02-14-tac-batch3-401-700-filenames.csv
+</code></pre></div><ul>
+<li>I sent these 300 items to Gaia&hellip;</li>
 </ul>
 <!-- raw HTML omitted -->
 
