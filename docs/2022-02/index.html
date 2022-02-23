@@ -21,7 +21,7 @@ We agreed to try to do more alignment of affiliations/funders with ROR
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-02/" />
 <meta property="article:published_time" content="2022-02-01T14:06:54+02:00" />
-<meta property="article:modified_time" content="2022-02-14T09:40:59+03:00" />
+<meta property="article:modified_time" content="2022-02-14T16:43:12+03:00" />
 
 
 
@@ -38,7 +38,7 @@ We agreed to try to do more alignment of affiliations/funders with ROR
 
 
 "/>
-<meta name="generator" content="Hugo 0.92.1" />
+<meta name="generator" content="Hugo 0.92.2" />
 
 
     
@@ -48,9 +48,9 @@ We agreed to try to do more alignment of affiliations/funders with ROR
   "@type": "BlogPosting",
   "headline": "February, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-02/",
-  "wordCount": "2194",
+  "wordCount": "2868",
   "datePublished": "2022-02-01T14:06:54+02:00",
-  "dateModified": "2022-02-14T09:40:59+03:00",
+  "dateModified": "2022-02-14T16:43:12+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -531,6 +531,139 @@ $ csvcut -c id,filename ~/Downloads/2022-01-21-CGSpace-TAC-ICW-batch3-401to700.c
 $ csvjoin -c id /tmp/2022-02-14-tac-batch3-401-700.csv /tmp/tac3-filenames.csv &gt; /tmp/2022-02-14-tac-batch3-401-700-filenames.csv
 </code></pre></div><ul>
 <li>I sent these 300 items to Gaia&hellip;</li>
+</ul>
+<h2 id="2022-02-16">2022-02-16</h2>
+<ul>
+<li>Upgrade PostgreSQL on DSpace Test from version 10 to 12
+<ul>
+<li>First, I installed the new version of PostgreSQL via the Ansible playbook scripts</li>
+<li>Then I stopped Tomcat and all PostgreSQL clusters and used <code>pg_upgrade</code> to upgrade the old version:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># systemctl stop tomcat7
+# pg_ctlcluster <span style="color:#ae81ff">10</span> main stop
+# tar -cvzpf var-lib-postgresql-10.tar.gz /var/lib/postgresql/10
+# tar -cvzpf etc-postgresql-10.tar.gz /etc/postgresql/10
+# pg_ctlcluster <span style="color:#ae81ff">12</span> main stop
+# pg_dropcluster <span style="color:#ae81ff">12</span> main
+# pg_upgradecluster <span style="color:#ae81ff">10</span> main
+# pg_ctlcluster <span style="color:#ae81ff">12</span> main start
+</code></pre></div><ul>
+<li>After that I <a href="https://adamj.eu/tech/2021/04/13/reindexing-all-tables-after-upgrading-to-postgresql-13/">re-indexed the database indexes using a query</a>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ su - postgres
+$ cat /tmp/generate-reindex.sql
+SELECT &#39;REINDEX TABLE CONCURRENTLY &#39; || quote_ident(relname) || &#39; /*&#39; || pg_size_pretty(pg_total_relation_size(C.oid)) || &#39;*/;&#39;
+FROM pg_class C
+LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+WHERE nspname = &#39;public&#39;
+  AND C.relkind = &#39;r&#39;
+  AND nspname !~ &#39;^pg_toast&#39;
+ORDER BY pg_total_relation_size(C.oid) ASC;
+$ psql dspace &lt; /tmp/generate-reindex.sql &gt; /tmp/reindex.sql
+$ &lt;trim the extra stuff from /tmp/reindex.sql&gt;
+$ psql dspace &lt; /tmp/reindex.sql
+</code></pre></div><ul>
+<li>I saw that the index on <code>metadatavalue</code> shrunk by about 200MB!</li>
+<li>After testing a few things I dropped the old cluster:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># pg_dropcluster <span style="color:#ae81ff">10</span> main
+# dpkg -l | grep postgresql-10 | awk <span style="color:#e6db74">&#39;{print $2}&#39;</span> | xargs dpkg -r
+</code></pre></div><h2 id="2022-02-17">2022-02-17</h2>
+<ul>
+<li>I updated my <code>migrate-fields.sh</code> script to use field names instead of IDs
+<ul>
+<li>The script now looks up the appropriate <code>metadata_field_id</code> values for each field in the metadata registry</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-02-18">2022-02-18</h2>
+<ul>
+<li>Normalize the <code>text_lang</code> attributes of metadata on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# SELECT DISTINCT text_lang, count(text_lang) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) GROUP BY text_lang ORDER BY count DESC;
+ text_lang |  count  
+-----------+---------
+ en_US     | 2838588
+ en        |    1082
+           |     801
+ fr        |       2
+ vn        |       2
+ en_US.    |       1
+ sp        |       1
+           |       0
+(8 rows)
+dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND text_lang IN (&#39;en&#39;, &#39;en_US.&#39;, &#39;&#39;);
+UPDATE 1884
+dspace=# UPDATE metadatavalue SET text_lang=&#39;vi&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND text_lang IN (&#39;vn&#39;);
+UPDATE 2
+dspace=# UPDATE metadatavalue SET text_lang=&#39;es&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND text_lang IN (&#39;sp&#39;);
+UPDATE 1
+</code></pre></div><ul>
+<li>I then exported the entire repository and did some cleanup on DOIs
+<ul>
+<li>I found ~1,200 items with no <code>cg.identifier.doi</code>, but which had a DOI in their citation</li>
+<li>I cleaned up and normalized a few hundred others to use <a href="https://doi.org">https://doi.org</a> format</li>
+</ul>
+</li>
+<li>I&rsquo;m debating using the Crossref API to search for our DOIs and improve our metadata
+<ul>
+<li>For example: <a href="https://api.crossref.org/works/10.1016/j.ecolecon.2008.03.011">https://api.crossref.org/works/10.1016/j.ecolecon.2008.03.011</a></li>
+<li>There is good data on publishers, issue dates, volume/issue, and sometimes even licenses</li>
+</ul>
+</li>
+<li>I cleaned up  ~1,200 URLs that were using HTTP instead of HTTPS, fixed a bunch of handles, removed some handles from DOI field, etc</li>
+</ul>
+<h2 id="2022-02-20">2022-02-20</h2>
+<ul>
+<li>Yesterday I wrote a script to check our DOIs against Crossref&rsquo;s API and the did some investigation on dates, volumes, issues, pages, and types
+<ul>
+<li>While investigating issue dates in OpenRefine I created a new column using this GREL to show the number of days between Crossref&rsquo;s date and ours:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">abs(diff(toDate(cells[&#34;issued&#34;].value),toDate(cells[&#34;dcterms.issued[en_US]&#34;].value), &#34;days&#34;))
+</code></pre></div><ul>
+<li>In <em>most</em> cases Crossref&rsquo;s dates are more correct than ours, though there are a few odd cases that I don&rsquo;t know what strategy I want to use yet</li>
+<li>Start a full harvest on AReS</li>
+</ul>
+<h2 id="2022-02-21">2022-02-21</h2>
+<ul>
+<li>I added support for checking the license of DOIs to my Crossref script
+<ul>
+<li>I exported ~2,800 DOIs and ran a check on them, then merged the CGSpace CSV with the results of the script to inspect in OpenRefine</li>
+<li>There are hundreds of DOIs missing licenses in our data, even in this small subset of ~2,800 (out of 19,000 on CGSpace)</li>
+<li>I spot checked a few dozen in Crossref&rsquo;s data and found some incorrect ones, like on Elsevier, Wiley, and Sage journals</li>
+<li>I ended up using a series of GREL expressions in OpenRefine that ended up filtering out DOIs from these prefixes:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">or(
+value.contains(&#34;10.1017&#34;),
+value.contains(&#34;10.1007&#34;),
+value.contains(&#34;10.1016&#34;),
+value.contains(&#34;10.1098&#34;),
+value.contains(&#34;10.1111&#34;),
+value.contains(&#34;10.1002&#34;),
+value.contains(&#34;10.1046&#34;),
+value.contains(&#34;10.2135&#34;),
+value.contains(&#34;10.1006&#34;),
+value.contains(&#34;10.1177&#34;),
+value.contains(&#34;10.1079&#34;),
+value.contains(&#34;10.2298&#34;),
+value.contains(&#34;10.1186&#34;),
+value.contains(&#34;10.3835&#34;),
+value.contains(&#34;10.1128&#34;),
+value.contains(&#34;10.3732&#34;),
+value.contains(&#34;10.2134&#34;)
+)
+</code></pre></div><ul>
+<li>Many many of Crossref&rsquo;s records are correct where we have no license, and in some cases more correct when we have a different license
+<ul>
+<li>I ran license updates on ~167 DOIs in the end on CGSpace</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
