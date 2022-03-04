@@ -34,7 +34,7 @@ Run system updates on CGSpace (linode18) and reboot it
 
 Skype with Marie-Angélique and Abenet about CG Core v2
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -203,7 +203,7 @@ $ csvcut -l -c 0 /tmp/countries.csv &gt; 2019-06-10-countries.csv
 </code></pre><ul>
 <li>Get a list of all the unique AGROVOC subject terms in IITA&rsquo;s data and export it to a text file so I can validate them with my <code>agrovoc-lookup.py</code> script:</li>
 </ul>
-<pre tabindex="0"><code>$ csvcut -c dc.subject ~/Downloads/2019-06-10-IITA-20194th-Round-2.csv| sed 's/||/\n/g' | grep -v dc.subject | sort -u &gt; iita-agrovoc.txt
+<pre tabindex="0"><code>$ csvcut -c dc.subject ~/Downloads/2019-06-10-IITA-20194th-Round-2.csv| sed &#39;s/||/\n/g&#39; | grep -v dc.subject | sort -u &gt; iita-agrovoc.txt
 $ ./agrovoc-lookup.py -i iita-agrovoc.txt -om iita-agrovoc-matches.txt -or iita-agrovoc-rejects.txt
 $ wc -l iita-agrovoc*
   402 iita-agrovoc-matches.txt
@@ -216,7 +216,7 @@ $ wc -l iita-agrovoc*
 </code></pre><ul>
 <li>Then make a new list to use with reconcile-csv by adding line numbers with csvcut and changing the line number header to <code>id</code>:</li>
 </ul>
-<pre tabindex="0"><code>$ csvcut -c name -l 2019-06-10-subjects-matched.txt | sed 's/line_number/id/' &gt; 2019-06-10-subjects-matched.csv
+<pre tabindex="0"><code>$ csvcut -c name -l 2019-06-10-subjects-matched.txt | sed &#39;s/line_number/id/&#39; &gt; 2019-06-10-subjects-matched.csv
 </code></pre><h2 id="2019-06-20">2019-06-20</h2>
 <ul>
 <li>Share some feedback about AReS v2 with the colleagues and encourage them to do the same</li>
@@ -238,11 +238,11 @@ $ podman run --name dspacedb -v dspacedb_data:/var/lib/postgresql/data -e POSTGR
 <ul>
 <li>Normalize <code>text_lang</code> values for metadata on DSpace Test and CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('ethnob', 'en', '*', 'E.', '');
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN (&#39;ethnob&#39;, &#39;en&#39;, &#39;*&#39;, &#39;E.&#39;, &#39;&#39;);
 UPDATE 1551
-dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IS NULL;
+dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IS NULL;
 UPDATE 2070
-dspace=# UPDATE metadatavalue SET text_lang='es_ES' WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN ('es', 'spa');
+dspace=# UPDATE metadatavalue SET text_lang=&#39;es_ES&#39; WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN (&#39;es&#39;, &#39;spa&#39;);
 UPDATE 2
 </code></pre><ul>
 <li>Upload 202 IITA records from earlier this month (20194th.xls) to CGSpace</li>

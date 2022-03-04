@@ -34,7 +34,7 @@ This is their publications set: http://ebrary.ifpri.org/oai/oai.php?verb=ListRec
 You can see the others by using the OAI ListSets verb: http://ebrary.ifpri.org/oai/oai.php?verb=ListSets
 Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in dc.identifier.fund to cg.identifier.cpwfproject and then the rest to dc.description.sponsorship
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -129,7 +129,7 @@ Working on second phase of metadata migration, looks like this will work for mov
 <li>You can see the others by using the OAI <code>ListSets</code> verb: <a href="http://ebrary.ifpri.org/oai/oai.php?verb=ListSets">http://ebrary.ifpri.org/oai/oai.php?verb=ListSets</a></li>
 <li>Working on second phase of metadata migration, looks like this will work for moving CPWF-specific data in <code>dc.identifier.fund</code> to <code>cg.identifier.cpwfproject</code> and then the rest to <code>dc.description.sponsorship</code></li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like 'PN%' or text_value like 'PHASE%' or text_value = 'CBA' or text_value = 'IA');
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set metadata_field_id=130 where metadata_field_id=75 and (text_value like &#39;PN%&#39; or text_value like &#39;PHASE%&#39; or text_value = &#39;CBA&#39; or text_value = &#39;IA&#39;);
 UPDATE 497
 dspacetest=# update metadatavalue set metadata_field_id=29 where metadata_field_id=75;
 UPDATE 14
@@ -160,7 +160,7 @@ CGIAR Research Program on Climate Change, Agriculture and Food Security::acd0076
 <li>So the only difference is the &ldquo;confidence&rdquo;</li>
 <li>Ok, well THAT is interesting:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like '%Orth, %';
+<pre tabindex="0"><code>dspacetest=# select text_value, authority, confidence from metadatavalue where metadata_field_id=3 and text_value like &#39;%Orth, %&#39;;
  text_value |              authority               | confidence
 ------------+--------------------------------------+------------
  Orth, A.   | ab606e3a-2b04-4c7d-9423-14beccf54257 |         -1
@@ -180,13 +180,13 @@ CGIAR Research Program on Climate Change, Agriculture and Food Security::acd0076
 </code></pre><ul>
 <li>And now an actually relevent example:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like 'CGIAR Research Program on Climate Change, Agriculture and Food Security' and confidence = 500;
+<pre tabindex="0"><code>dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39; and confidence = 500;
  count
 -------
    707
 (1 row)
 
-dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like 'CGIAR Research Program on Climate Change, Agriculture and Food Security' and confidence != 500;
+dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and text_value like &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39; and confidence != 500;
  count
 -------
    253
@@ -194,7 +194,7 @@ dspacetest=# select count(*) from metadatavalue where metadata_field_id=3 and te
 </code></pre><ul>
 <li>Trying something experimental:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set confidence=500 where metadata_field_id=3 and text_value like 'CGIAR Research Program on Climate Change, Agriculture and Food Security';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set confidence=500 where metadata_field_id=3 and text_value like &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39;;
 UPDATE 960
 </code></pre><ul>
 <li>And then re-indexing authority and Discovery&hellip;?</li>
@@ -244,7 +244,7 @@ UPDATE 960
 <li>Looks like this is all we need: <a href="https://wiki.lyrasis.org/display/DSDOC5x/Submission+User+Interface#SubmissionUserInterface-ConfiguringControlledVocabularies">https://wiki.lyrasis.org/display/DSDOC5x/Submission+User+Interface#SubmissionUserInterface-ConfiguringControlledVocabularies</a></li>
 <li>I wrote an XPath expression to extract the ILRI subjects from <code>input-forms.xml</code> (from the xmlstarlet package):</li>
 </ul>
-<pre tabindex="0"><code>$ xml sel -t -m '//value-pairs[@value-pairs-name=&quot;ilrisubject&quot;]/pair/displayed-value/text()' -c '.' -n dspace/config/input-forms.xml
+<pre tabindex="0"><code>$ xml sel -t -m &#39;//value-pairs[@value-pairs-name=&#34;ilrisubject&#34;]/pair/displayed-value/text()&#39; -c &#39;.&#39; -n dspace/config/input-forms.xml
 </code></pre><ul>
 <li>Write to Atmire about the use of <code>atmire.orcid.id</code> to see if we can change it</li>
 <li>Seems to be a virtual field that is queried from the authority cache&hellip; hmm</li>
@@ -263,9 +263,9 @@ UPDATE 960
 <li>It looks like the values are documented in <code>Choices.java</code></li>
 <li>Experiment with setting all 960 CCAFS author values to be 500:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# SELECT authority, confidence FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value = 'CGIAR Research Program on Climate Change, Agriculture and Food Security';
+<pre tabindex="0"><code>dspacetest=# SELECT authority, confidence FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value = &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39;;
 
-dspacetest=# UPDATE metadatavalue set confidence = 500 where resource_type_id=2 AND metadata_field_id=3 AND text_value = 'CGIAR Research Program on Climate Change, Agriculture and Food Security';
+dspacetest=# UPDATE metadatavalue set confidence = 500 where resource_type_id=2 AND metadata_field_id=3 AND text_value = &#39;CGIAR Research Program on Climate Change, Agriculture and Food Security&#39;;
 UPDATE 960
 </code></pre><ul>
 <li>After the database edit, I did a full Discovery re-index</li>
@@ -320,7 +320,7 @@ UPDATE 960
 <ul>
 <li>CGSpace&rsquo;s HTTPS certificate expired last night and I didn&rsquo;t notice, had to renew:</li>
 </ul>
-<pre tabindex="0"><code># /opt/letsencrypt/letsencrypt-auto renew --standalone --pre-hook &quot;/usr/bin/service nginx stop&quot; --post-hook &quot;/usr/bin/service nginx start&quot;
+<pre tabindex="0"><code># /opt/letsencrypt/letsencrypt-auto renew --standalone --pre-hook &#34;/usr/bin/service nginx stop&#34; --post-hook &#34;/usr/bin/service nginx start&#34;
 </code></pre><ul>
 <li>I really need to fix that cron job&hellip;</li>
 </ul>
@@ -328,8 +328,8 @@ UPDATE 960
 <ul>
 <li>Run the replacements/deletes for <code>dc.description.sponsorship</code> (investors) on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i investors-not-blank-not-delete-85.csv -f dc.description.sponsorship -t 'correct investor' -m 29 -d cgspace -p 'fuuu' -u cgspace
-$ ./delete-metadata-values.py -i investors-delete-82.csv -f dc.description.sponsorship -m 29 -d cgspace -p 'fuuu' -u cgspace
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i investors-not-blank-not-delete-85.csv -f dc.description.sponsorship -t &#39;correct investor&#39; -m 29 -d cgspace -p &#39;fuuu&#39; -u cgspace
+$ ./delete-metadata-values.py -i investors-delete-82.csv -f dc.description.sponsorship -m 29 -d cgspace -p &#39;fuuu&#39; -u cgspace
 </code></pre><ul>
 <li>The scripts for this are here:
 <ul>
@@ -367,9 +367,9 @@ $ ./delete-metadata-values.py -i investors-delete-82.csv -f dc.description.spons
 </code></pre><ul>
 <li>Run all cleanups and deletions of <code>dc.contributor.corporate</code> on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Corporate-Authors-Fix-121.csv -f dc.contributor.corporate -t 'Correct style' -m 126 -d cgspace -u cgspace -p 'fuuu'
-$ ./fix-metadata-values.py -i Corporate-Authors-Fix-PB.csv -f dc.contributor.corporate -t 'should be' -m 126 -d cgspace -u cgspace -p 'fuuu'
-$ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-Delete-13.csv -m 126 -u cgspace -d cgspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Corporate-Authors-Fix-121.csv -f dc.contributor.corporate -t &#39;Correct style&#39; -m 126 -d cgspace -u cgspace -p &#39;fuuu&#39;
+$ ./fix-metadata-values.py -i Corporate-Authors-Fix-PB.csv -f dc.contributor.corporate -t &#39;should be&#39; -m 126 -d cgspace -u cgspace -p &#39;fuuu&#39;
+$ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-Delete-13.csv -m 126 -u cgspace -d cgspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>Re-deploy CGSpace and DSpace Test with latest June changes</li>
 <li>Now the sharing and Altmetric bits are more prominent:</li>
@@ -383,11 +383,11 @@ $ ./delete-metadata-values.py -f dc.contributor.corporate -i Corporate-Authors-D
 <ul>
 <li>Wow, there are 95 authors in the database who have &lsquo;,&rsquo; at the end of their name:</li>
 </ul>
-<pre tabindex="0"><code># select text_value from  metadatavalue where metadata_field_id=3 and text_value like '%,';
+<pre tabindex="0"><code># select text_value from  metadatavalue where metadata_field_id=3 and text_value like &#39;%,&#39;;
 </code></pre><ul>
 <li>We need to use something like this to fix them, need to write a proper regex later:</li>
 </ul>
-<pre tabindex="0"><code># update metadatavalue set text_value = regexp_replace(text_value, '(Poole, J),', '\1') where metadata_field_id=3 and text_value = 'Poole, J,';
+<pre tabindex="0"><code># update metadatavalue set text_value = regexp_replace(text_value, &#39;(Poole, J),&#39;, &#39;\1&#39;) where metadata_field_id=3 and text_value = &#39;Poole, J,&#39;;
 </code></pre>
 
   

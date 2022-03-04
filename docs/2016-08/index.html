@@ -42,7 +42,7 @@ $ git checkout -b 55new 5_x-prod
 $ git reset --hard ilri/5_x-prod
 $ git rebase -i dspace-5.5
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -166,7 +166,7 @@ $ git rebase -i dspace-5.5
 <li>Fix item display incorrectly displaying Species when Breeds were present (<a href="https://github.com/ilri/DSpace/pull/260">#260</a>)</li>
 <li>Experiment with fixing more authors, like Delia Grace:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='0b4fcbc1-d930-4319-9b4d-ea1553cca70b', confidence=600 where metadata_field_id=3 and text_value='Grace, D.';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;0b4fcbc1-d930-4319-9b4d-ea1553cca70b&#39;, confidence=600 where metadata_field_id=3 and text_value=&#39;Grace, D.&#39;;
 </code></pre><h2 id="2016-08-06">2016-08-06</h2>
 <ul>
 <li>Finally figured out how to remove &ldquo;View/Open&rdquo; and &ldquo;Bitstreams&rdquo; from the item view</li>
@@ -184,8 +184,8 @@ $ git rebase -i dspace-5.5
 <li>Install latest Oracle Java 8 JDK</li>
 <li>Create <code>setenv.sh</code> in Tomcat 8 <code>libexec/bin</code> directory:</li>
 </ul>
-<pre tabindex="0"><code>CATALINA_OPTS=&quot;-Djava.awt.headless=true -Xms3072m -Xmx3072m -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -Dfile.encoding=UTF-8&quot;
-CATALINA_OPTS=&quot;$CATALINA_OPTS -Djava.library.path=/opt/brew/Cellar/tomcat-native/1.2.8/lib&quot;
+<pre tabindex="0"><code>CATALINA_OPTS=&#34;-Djava.awt.headless=true -Xms3072m -Xmx3072m -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -Dfile.encoding=UTF-8&#34;
+CATALINA_OPTS=&#34;$CATALINA_OPTS -Djava.library.path=/opt/brew/Cellar/tomcat-native/1.2.8/lib&#34;
 
 JRE_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home
 </code></pre><ul>
@@ -246,7 +246,7 @@ $ ln -sv ~/dspace/webapps/solr /opt/brew/Cellar/tomcat/8.5.4/libexec/webapps/sol
 <li>Fix &ldquo;CONGO,DR&rdquo; country name in <code>input-forms.xml</code> (<a href="https://github.com/ilri/DSpace/pull/264">#264</a>)</li>
 <li>Also need to fix existing records using the incorrect form in the database:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value='CONGO, DR' where resource_type_id=2 and metadata_field_id=228 and text_value='CONGO,DR';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value=&#39;CONGO, DR&#39; where resource_type_id=2 and metadata_field_id=228 and text_value=&#39;CONGO,DR&#39;;
 </code></pre><ul>
 <li>I asked a question on the DSpace mailing list about updating &ldquo;preferred&rdquo; forms of author names from ORCID</li>
 </ul>
@@ -300,12 +300,12 @@ Database Driver: PostgreSQL Native Driver version PostgreSQL 9.1 JDBC4 (build 90
 <li>Talk to Atmire about the DSpace 5.5 issue, and it seems to be caused by a bug in FlywayDB</li>
 <li>They said I should delete the Atmire migrations</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# delete from schema_version where description =  'Atmire CUA 4 migration' and version='5.1.2015.12.03.2';
-dspacetest=# delete from schema_version where description =  'Atmire MQM migration' and version='5.1.2015.12.03.3';
+<pre tabindex="0"><code>dspacetest=# delete from schema_version where description =  &#39;Atmire CUA 4 migration&#39; and version=&#39;5.1.2015.12.03.2&#39;;
+dspacetest=# delete from schema_version where description =  &#39;Atmire MQM migration&#39; and version=&#39;5.1.2015.12.03.3&#39;;
 </code></pre><ul>
 <li>After that DSpace starts up by XMLUI now has unrelated issues that I need to solve!</li>
 </ul>
-<pre tabindex="0"><code>org.apache.avalon.framework.configuration.ConfigurationException: Type 'ThemeResourceReader' does not exist for 'map:read' at jndi:/localhost/themes/0_CGIAR/sitemap.xmap:136:77
+<pre tabindex="0"><code>org.apache.avalon.framework.configuration.ConfigurationException: Type &#39;ThemeResourceReader&#39; does not exist for &#39;map:read&#39; at jndi:/localhost/themes/0_CGIAR/sitemap.xmap:136:77
 context:/jndi:/localhost/themes/0_CGIAR/sitemap.xmap - 136:77
 </code></pre><ul>
 <li>Looks like we&rsquo;re missing some stuff in the XMLUI module&rsquo;s <code>sitemap.xmap</code>, as well as in each of our XMLUI themes</li>
@@ -324,13 +324,13 @@ context:/jndi:/localhost/themes/0_CGIAR/sitemap.xmap - 136:77
 <li>Clean up and import 48 CCAFS records into DSpace Test</li>
 <li>SQL to get all journal titles from dc.source (55), since it&rsquo;s apparently used for internal DSpace filename shit, but we moved all our journal titles there a few months ago:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select distinct text_value from metadatavalue where metadata_field_id=55 and text_value !~ '.*(\.pdf|\.png|\.PDF|\.Pdf|\.JPEG|\.jpg|\.JPG|\.jpeg|\.xls|\.rtf|\.docx?|\.potx|\.dotx|\.eqa|\.tiff|\.mp4|\.mp3|\.gif|\.zip|\.txt|\.pptx|\.indd|\.PNG|\.bmp|\.exe|org\.dspace\.app\.mediafilter).*';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value from metadatavalue where metadata_field_id=55 and text_value !~ &#39;.*(\.pdf|\.png|\.PDF|\.Pdf|\.JPEG|\.jpg|\.JPG|\.jpeg|\.xls|\.rtf|\.docx?|\.potx|\.dotx|\.eqa|\.tiff|\.mp4|\.mp3|\.gif|\.zip|\.txt|\.pptx|\.indd|\.PNG|\.bmp|\.exe|org\.dspace\.app\.mediafilter).*&#39;;
 </code></pre><h2 id="2016-08-25">2016-08-25</h2>
 <ul>
 <li>Atmire suggested adding a missing bean to <code>dspace/config/spring/api/atmire-cua.xml</code> but it doesn&rsquo;t help:</li>
 </ul>
 <pre tabindex="0"><code>...
-Error creating bean with name 'MetadataStorageInfoService'
+Error creating bean with name &#39;MetadataStorageInfoService&#39;
 ...
 </code></pre><ul>
 <li>Atmire sent an updated version of <code>dspace/config/spring/api/atmire-cua.xml</code> and now XMLUI starts but gives a null pointer exception:</li>
@@ -351,7 +351,7 @@ Error creating bean with name 'MetadataStorageInfoService'
 <li>Import the 47 CCAFS records to CGSpace, creating the SimpleArchiveFormat bundles and importing like:</li>
 </ul>
 <pre tabindex="0"><code>$ ./safbuilder.sh -c /tmp/Thumbnails\ to\ Upload\ to\ CGSpace/3546.csv
-$ JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot; /home/cgspace.cgiar.org/bin/dspace import -a -e aorth@mjanja.ch -c 10568/3546 -s /tmp/Thumbnails\ to\ Upload\ to\ CGSpace/SimpleArchiveFormat -m 3546.map
+$ JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx512m&#34; /home/cgspace.cgiar.org/bin/dspace import -a -e aorth@mjanja.ch -c 10568/3546 -s /tmp/Thumbnails\ to\ Upload\ to\ CGSpace/SimpleArchiveFormat -m 3546.map
 </code></pre><ul>
 <li>Finally got DSpace 5.5 working with the Atmire modules after a few rounds of back and forth with Atmire devs</li>
 </ul>

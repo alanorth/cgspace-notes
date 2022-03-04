@@ -42,7 +42,7 @@ I exported a random item&rsquo;s metadata as CSV, deleted all columns except id 
 
 0000-0002-6115-0956||0000-0002-3812-8793||0000-0001-7462-405X
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -168,7 +168,7 @@ $ ./delete-metadata-values.py -i authors-delete-3.csv -f dc.contributor.author -
 <li>CGSpace crashed a few times today</li>
 <li>Generate list of unique authors in CCAFS collections:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/32729', '10568/5472', '10568/5473', '10568/10288', '10568/70974', '10568/3547', '10568/3549', '10568/3531','10568/16890','10568/5470','10568/3546', '10568/36024', '10568/66581', '10568/21789', '10568/5469', '10568/5468', '10568/3548', '10568/71053', '10568/25167'))) group by text_value order by count desc) to /tmp/ccafs-authors.csv with csv;
+<pre tabindex="0"><code>dspacetest=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in (&#39;10568/32729&#39;, &#39;10568/5472&#39;, &#39;10568/5473&#39;, &#39;10568/10288&#39;, &#39;10568/70974&#39;, &#39;10568/3547&#39;, &#39;10568/3549&#39;, &#39;10568/3531&#39;,&#39;10568/16890&#39;,&#39;10568/5470&#39;,&#39;10568/3546&#39;, &#39;10568/36024&#39;, &#39;10568/66581&#39;, &#39;10568/21789&#39;, &#39;10568/5469&#39;, &#39;10568/5468&#39;, &#39;10568/3548&#39;, &#39;10568/71053&#39;, &#39;10568/25167&#39;))) group by text_value order by count desc) to /tmp/ccafs-authors.csv with csv;
 </code></pre><h2 id="2016-10-05">2016-10-05</h2>
 <ul>
 <li>Work on more infrastructure cleanups for Ansible DSpace role</li>
@@ -190,7 +190,7 @@ $ ./delete-metadata-values.py -i authors-delete-3.csv -f dc.contributor.author -
 <li>Re-deploy CGSpace with latest changes from late September and early October</li>
 <li>Run fixes for ILRI subjects and delete blank metadata values:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
 DELETE 11
 </code></pre><ul>
 <li>Run all system updates and reboot CGSpace</li>
@@ -211,7 +211,7 @@ DELETE 11
 <ul>
 <li>A bit more cleanup on the CCAFS authors, and run the corrections on DSpace Test:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ccafs-authors-oct-16.csv -f dc.contributor.author -t 'correct name' -m 3 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ccafs-authors-oct-16.csv -f dc.contributor.author -t &#39;correct name&#39; -m 3 -d dspace -u dspace -p fuuu
 </code></pre><ul>
 <li>One observation is that there are still some old versions of names in the author lookup because authors appear in other communities (as we only corrected authors from CCAFS for this round)</li>
 </ul>
@@ -253,35 +253,35 @@ $ git rebase -i dspace-5.5
 <li>Start testing some things for DSpace 5.5, like command line metadata import, PDF media filter, and Atmire CUA</li>
 <li>Start looking at batch fixing of &ldquo;old&rdquo; ILRI website links without www or https, for example:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and text_value like 'http://ilri.org%';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and text_value like &#39;http://ilri.org%&#39;;
 </code></pre><ul>
 <li>Also CCAFS has HTTPS and their links should use it where possible:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and text_value like 'http://ccafs.cgiar.org%';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and text_value like &#39;http://ccafs.cgiar.org%&#39;;
 </code></pre><ul>
 <li>And this will find community and collection HTML text that is using the old style PNG/JPG icons for RSS and email (we should be using Font Awesome icons instead):</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select text_value from metadatavalue where resource_type_id in (3,4) and text_value like '%Iconrss2.png%';
+<pre tabindex="0"><code>dspace=# select text_value from metadatavalue where resource_type_id in (3,4) and text_value like &#39;%Iconrss2.png%&#39;;
 </code></pre><ul>
 <li>Turns out there are shit tons of varieties of this, like with http, https, www, separate <code>&lt;/img&gt;</code> tags, alignments, etc</li>
 <li>Had to find all variations and replace them individually:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;/&gt;','&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;&gt;&lt;/img&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;&gt;&lt;/img&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;&gt;&lt;/img&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;&gt;&lt;/img&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/Iconrss2.png&quot;&gt;&lt;/img&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/Iconrss2.png&quot;&gt;&lt;/img&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/email.jpg&quot;&gt;&lt;/img&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/email.jpg&quot;&gt;&lt;/img&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;&gt;&lt;/img&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;&gt;&lt;/img&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;&gt;&lt;/img&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;&gt;&lt;/img&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/Iconrss2.png&quot;/&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/Iconrss2.png&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img align=&quot;left&quot; src=&quot;https://ilri.org/images/email.jpg&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;/&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;https://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;https://www.ilri.org/images/email.jpg&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;', '&lt;span class=&quot;fa fa-rss fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/Iconrss2.png&quot;/&gt;%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, '&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;/&gt;', '&lt;span class=&quot;fa fa-at fa-2x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;') where resource_type_id in (3,4) and text_value like '%&lt;img valign=&quot;center&quot; align=&quot;left&quot; src=&quot;http://www.ilri.org/images/email.jpg&quot;/&gt;%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/Iconrss2.png&#34;/&gt;&#39;,&#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/Iconrss2.png&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/email.jpg&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/email.jpg&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/Iconrss2.png&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/Iconrss2.png&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/email.jpg&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/email.jpg&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/Iconrss2.png&#34;&gt;&lt;/img&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/Iconrss2.png&#34;&gt;&lt;/img&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/email.jpg&#34;&gt;&lt;/img&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;http://www.ilri.org/images/email.jpg&#34;&gt;&lt;/img&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/Iconrss2.png&#34;&gt;&lt;/img&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/Iconrss2.png&#34;&gt;&lt;/img&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/email.jpg&#34;&gt;&lt;/img&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/email.jpg&#34;&gt;&lt;/img&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/Iconrss2.png&#34;&gt;&lt;/img&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/Iconrss2.png&#34;&gt;&lt;/img&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/email.jpg&#34;&gt;&lt;/img&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://www.ilri.org/images/email.jpg&#34;&gt;&lt;/img&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/Iconrss2.png&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/Iconrss2.png&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/email.jpg&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img align=&#34;left&#34; src=&#34;https://ilri.org/images/email.jpg&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;https://www.ilri.org/images/Iconrss2.png&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;https://www.ilri.org/images/Iconrss2.png&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;https://www.ilri.org/images/email.jpg&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;https://www.ilri.org/images/email.jpg&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;http://www.ilri.org/images/Iconrss2.png&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-rss fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;http://www.ilri.org/images/Iconrss2.png&#34;/&gt;%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;http://www.ilri.org/images/email.jpg&#34;/&gt;&#39;, &#39;&lt;span class=&#34;fa fa-at fa-2x&#34; aria-hidden=&#34;true&#34;&gt;&lt;/span&gt;&#39;) where resource_type_id in (3,4) and text_value like &#39;%&lt;img valign=&#34;center&#34; align=&#34;left&#34; src=&#34;http://www.ilri.org/images/email.jpg&#34;/&gt;%&#39;;
 </code></pre><ul>
 <li>Getting rid of these reduces the number of network requests each client makes on community/collection pages, and makes use of Font Awesome icons (which they are already loading anyways!)</li>
 <li>And now that I start looking, I want to fix a bunch of links to popular sites that should be using HTTPS, like Twitter, Facebook, Google, Feed Burner, DOI, etc</li>
@@ -321,9 +321,9 @@ UPDATE 0
 <ul>
 <li>Fix some messed up authors on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set authority='799da1d8-22f3-43f5-8233-3d2ef5ebf8a8', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Charleston, B.%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set authority=&#39;799da1d8-22f3-43f5-8233-3d2ef5ebf8a8&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Charleston, B.%&#39;;
 UPDATE 10
-dspace=# update metadatavalue set authority='e936f5c5-343d-4c46-aa91-7a1fff6277ed', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Knight-Jones%';
+dspace=# update metadatavalue set authority=&#39;e936f5c5-343d-4c46-aa91-7a1fff6277ed&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Knight-Jones%&#39;;
 UPDATE 36
 </code></pre><ul>
 <li>I updated the authority index but nothing seemed to change, so I&rsquo;ll wait and do it again after I update Discovery below</li>
@@ -336,7 +336,7 @@ UPDATE 36
 </code></pre><ul>
 <li>Fix a bunch of countries in Open Refine and run the corrections on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i countries-fix-18.csv -f dc.coverage.country -t 'correct' -m 228 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i countries-fix-18.csv -f dc.coverage.country -t &#39;correct&#39; -m 228 -d dspace -u dspace -p fuuu
 $ ./delete-metadata-values.py -i countries-delete-2.csv -f dc.coverage.country -m 228 -d dspace -u dspace -p fuuu
 </code></pre><ul>
 <li>Run a shit ton of author fixes from Peter Ballantyne that we&rsquo;ve been cleaning up for two months:</li>
@@ -345,10 +345,10 @@ $ ./delete-metadata-values.py -i countries-delete-2.csv -f dc.coverage.country -
 </code></pre><ul>
 <li>Run a few URL corrections for ilri.org and doi.org, etc:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://www.ilri.org','https://www.ilri.org') where resource_type_id=2 and text_value like '%http://www.ilri.org%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://mahider.ilri.org', 'https://cgspace.cgiar.org') where resource_type_id=2 and text_value like '%http://mahider.%.org%' and metadata_field_id not in (28);
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://dx.doi.org', 'https://dx.doi.org') where resource_type_id=2 and text_value like '%http://dx.doi.org%' and metadata_field_id not in (18,26,28,111);
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://doi.org', 'https://dx.doi.org') where resource_type_id=2 and text_value like '%http://doi.org%' and metadata_field_id not in (18,26,28,111);
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://www.ilri.org&#39;,&#39;https://www.ilri.org&#39;) where resource_type_id=2 and text_value like &#39;%http://www.ilri.org%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://mahider.ilri.org&#39;, &#39;https://cgspace.cgiar.org&#39;) where resource_type_id=2 and text_value like &#39;%http://mahider.%.org%&#39; and metadata_field_id not in (28);
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://dx.doi.org&#39;, &#39;https://dx.doi.org&#39;) where resource_type_id=2 and text_value like &#39;%http://dx.doi.org%&#39; and metadata_field_id not in (18,26,28,111);
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://doi.org&#39;, &#39;https://dx.doi.org&#39;) where resource_type_id=2 and text_value like &#39;%http://doi.org%&#39; and metadata_field_id not in (18,26,28,111);
 </code></pre><ul>
 <li>I skipped metadata fields like citation and description</li>
 </ul>

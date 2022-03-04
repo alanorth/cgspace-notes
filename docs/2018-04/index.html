@@ -26,7 +26,7 @@ Catalina logs at least show some memory errors yesterday:
 I tried to test something on DSpace Test but noticed that it&rsquo;s down since god knows when
 Catalina logs at least show some memory errors yesterday:
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -121,7 +121,7 @@ Catalina logs at least show some memory errors yesterday:
 SEVERE: Unexpected death of background thread ContainerBackgroundProcessor[StandardEngine[Catalina]] 
 java.lang.OutOfMemoryError: Java heap space
 
-Exception in thread &quot;ContainerBackgroundProcessor[StandardEngine[Catalina]]&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;ContainerBackgroundProcessor[StandardEngine[Catalina]]&#34; java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>So this is getting super annoying</li>
 <li>I ran all system updates on DSpace Test and rebooted it</li>
@@ -134,12 +134,12 @@ Exception in thread &quot;ContainerBackgroundProcessor[StandardEngine[Catalina]]
 <li>Peter noticed that there were still some old CRP names on CGSpace, because I hadn&rsquo;t forced the Discovery index to be updated after I fixed the others last week</li>
 <li>For completeness I re-ran the CRP corrections on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/Correct-21-CRPs-2018-03-16.csv -f cg.contributor.crp -t correct -m 230 -db dspace -u dspace -p &#39;fuuu&#39;
 Fixed 1 occurences of: AGRICULTURE FOR NUTRITION AND HEALTH
 </code></pre><ul>
 <li>Then started a full Discovery index:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx1024m'
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx1024m&#39;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    76m13.841s
@@ -149,12 +149,12 @@ sys     2m2.498s
 <li>Elizabeth from CIAT emailed to ask if I could help her by adding ORCID identifiers to all of Joseph Tohme&rsquo;s items</li>
 <li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
-<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i /tmp/jtohme-2018-04-04.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i /tmp/jtohme-2018-04-04.csv -db dspace -u dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>The CSV format of <code>jtohme-2018-04-04.csv</code> was:</li>
 </ul>
 <pre tabindex="0"><code class="language-csv" data-lang="csv">dc.contributor.author,cg.creator.id
-&quot;Tohme, Joseph M.&quot;,Joe Tohme: 0000-0003-2765-7101
+&#34;Tohme, Joseph M.&#34;,Joe Tohme: 0000-0003-2765-7101
 </code></pre><ul>
 <li>There was a quoting error in my CRP CSV and the replacements for <code>Forests, Trees and Agroforestry</code> got messed up</li>
 <li>So I fixed them and had to re-index again!</li>
@@ -193,7 +193,7 @@ sys     2m52.585s
 <li>Help Peter with the GDPR compliance / reporting form for CGSpace</li>
 <li>DSpace Test crashed due to memory issues again:</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
+<pre tabindex="0"><code># grep -c &#39;java.lang.OutOfMemoryError: Java heap space&#39; /var/log/tomcat7/catalina.out
 16
 </code></pre><ul>
 <li>I ran all system updates on DSpace Test and rebooted it</li>
@@ -205,7 +205,7 @@ sys     2m52.585s
 <li>I got a notice that CGSpace CPU usage was very high this morning</li>
 <li>Looking at the nginx logs, here are the top users today so far:</li>
 </ul>
-<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;10/Apr/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10                                                                                                   
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;10/Apr/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10                                                                                                   
     282 207.46.13.112
     286 54.175.208.220
     287 207.46.13.113
@@ -220,24 +220,24 @@ sys     2m52.585s
 <li>45.5.186.2 is of course CIAT</li>
 <li>95.108.181.88 appears to be Yandex:</li>
 </ul>
-<pre tabindex="0"><code>95.108.181.88 - - [09/Apr/2018:06:34:16 +0000] &quot;GET /bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg HTTP/1.1&quot; 200 2638 &quot;-&quot; &quot;Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&quot;
+<pre tabindex="0"><code>95.108.181.88 - - [09/Apr/2018:06:34:16 +0000] &#34;GET /bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg HTTP/1.1&#34; 200 2638 &#34;-&#34; &#34;Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&#34;
 </code></pre><ul>
 <li>And for some reason Yandex created a lot of Tomcat sessions today:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88' dspace.log.2018-04-10
+<pre tabindex="0"><code>$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=95.108.181.88&#39; dspace.log.2018-04-10
 4363
 </code></pre><ul>
 <li>70.32.83.92 appears to be some harvester we&rsquo;ve seen before, but on a new IP</li>
 <li>They are not creating new Tomcat sessions so there is no problem there</li>
 <li>178.154.200.38 also appears to be Yandex, and is also creating many Tomcat sessions:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=178.154.200.38' dspace.log.2018-04-10
+<pre tabindex="0"><code>$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=178.154.200.38&#39; dspace.log.2018-04-10
 3982
 </code></pre><ul>
 <li>I&rsquo;m not sure why Yandex creates so many Tomcat sessions, as its user agent should match the Crawler Session Manager valve</li>
 <li>Let&rsquo;s try a manual request with and without their user agent:</li>
 </ul>
-<pre tabindex="0"><code>$ http --print Hh https://cgspace.cgiar.org/bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg 'User-Agent:Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'
+<pre tabindex="0"><code>$ http --print Hh https://cgspace.cgiar.org/bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg &#39;User-Agent:Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)&#39;
 GET /bitstream/handle/10568/21794/ILRI_logo_usage.jpg.jpg HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate
@@ -294,7 +294,7 @@ X-XSS-Protection: 1; mode=block
 <ul>
 <li>In other news, it looks like the number of total requests processed by nginx in March went down from the previous months:</li>
 </ul>
-<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Mar/2018&quot;
+<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &#34;[0-9]{1,2}/Mar/2018&#34;
 2266594
 
 real    0m13.658s
@@ -305,23 +305,23 @@ sys     0m1.087s
 </ul>
 <pre tabindex="0"><code>$ dspace cleanup -v
 ...
-Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(151626) is still referenced from table &quot;bundle&quot;.
+Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(151626) is still referenced from table &#34;bundle&#34;.
 </code></pre><ul>
 <li>The solution is, as always:</li>
 </ul>
-<pre tabindex="0"><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (151626);'
+<pre tabindex="0"><code>$ psql dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (151626);&#39;
 UPDATE 1
 </code></pre><ul>
 <li>Looking at abandoned connections in Tomcat:</li>
 </ul>
-<pre tabindex="0"><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon'
+<pre tabindex="0"><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39;
 2115
 </code></pre><ul>
 <li>Apparently from these stacktraces we should be able to see which code is not closing connections properly</li>
 <li>Here&rsquo;s a pretty good overview of days where we had database issues recently:</li>
 </ul>
-<pre tabindex="0"><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' | awk '{print $1,$2, $3}' | sort | uniq -c | sort -n
+<pre tabindex="0"><code># zcat /var/log/tomcat7/catalina.out.[1-9].gz | grep &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; | awk &#39;{print $1,$2, $3}&#39; | sort | uniq -c | sort -n
       1 Feb 18, 2018
       1 Feb 19, 2018
       1 Feb 20, 2018
@@ -356,7 +356,7 @@ UPDATE 1
 <ul>
 <li>DSpace Test (linode19) crashed again some time since yesterday:</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
+<pre tabindex="0"><code># grep -c &#39;java.lang.OutOfMemoryError: Java heap space&#39; /var/log/tomcat7/catalina.out
 168
 </code></pre><ul>
 <li>I ran all system updates and rebooted the server</li>
@@ -374,7 +374,7 @@ UPDATE 1
 <ul>
 <li>While testing an XMLUI patch for <a href="https://jira.duraspace.org/browse/DS-3883">DS-3883</a> I noticed that there is still some remaining Authority / Solr configuration left that we need to remove:</li>
 </ul>
-<pre tabindex="0"><code>2018-04-14 18:55:25,841 ERROR org.dspace.authority.AuthoritySolrServiceImpl @ Authority solr is not correctly configured, check &quot;solr.authority.server&quot; property in the dspace.cfg
+<pre tabindex="0"><code>2018-04-14 18:55:25,841 ERROR org.dspace.authority.AuthoritySolrServiceImpl @ Authority solr is not correctly configured, check &#34;solr.authority.server&#34; property in the dspace.cfg
 java.lang.NullPointerException
 </code></pre><ul>
 <li>I assume we need to remove <code>authority</code> from the consumers in <code>dspace/config/dspace.cfg</code>:</li>
@@ -422,14 +422,14 @@ webui.itemlist.sort-option.4 = type:dc.type:text
 <li>They are missing the <code>order</code> parameter (ASC vs DESC)</li>
 <li>I notice that DSpace Test has crashed again, due to memory:</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'java.lang.OutOfMemoryError: Java heap space' /var/log/tomcat7/catalina.out
+<pre tabindex="0"><code># grep -c &#39;java.lang.OutOfMemoryError: Java heap space&#39; /var/log/tomcat7/catalina.out
 178
 </code></pre><ul>
 <li>I will increase the JVM heap size from 5120M to 6144M, though we don&rsquo;t have much room left to grow as DSpace Test (linode19) is using a smaller instance size than CGSpace</li>
 <li>Gabriela from CIP asked if I could send her a list of all CIP authors so she can do some replacements on the name formats</li>
 <li>I got a list of all the CIP collections manually and use the same query that I used in <a href="/cgspace-notes/2017-08">August, 2017</a>:</li>
 </ul>
-<pre tabindex="0"><code>dspace#= \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/89347', '10568/88229', '10568/53086', '10568/53085', '10568/69069', '10568/53087', '10568/53088', '10568/53089', '10568/53090', '10568/53091', '10568/53092', '10568/70150', '10568/53093', '10568/64874', '10568/53094'))) group by text_value order by count desc) to /tmp/cip-authors.csv with csv;
+<pre tabindex="0"><code>dspace#= \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in (&#39;10568/89347&#39;, &#39;10568/88229&#39;, &#39;10568/53086&#39;, &#39;10568/53085&#39;, &#39;10568/69069&#39;, &#39;10568/53087&#39;, &#39;10568/53088&#39;, &#39;10568/53089&#39;, &#39;10568/53090&#39;, &#39;10568/53091&#39;, &#39;10568/53092&#39;, &#39;10568/70150&#39;, &#39;10568/53093&#39;, &#39;10568/64874&#39;, &#39;10568/53094&#39;))) group by text_value order by count desc) to /tmp/cip-authors.csv with csv;
 </code></pre><h2 id="2018-04-19">2018-04-19</h2>
 <ul>
 <li>Run updates on DSpace Test (linode19) and reboot the server</li>
@@ -460,17 +460,17 @@ sys     2m2.687s
 </code></pre><ul>
 <li>And there have been shit tons of errors in the last (starting only 20 minutes ago luckily):</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'org.apache.tomcat.jdbc.pool.PoolExhaustedException' /home/cgspace.cgiar.org/log/dspace.log.2018-04-20
+<pre tabindex="0"><code># grep -c &#39;org.apache.tomcat.jdbc.pool.PoolExhaustedException&#39; /home/cgspace.cgiar.org/log/dspace.log.2018-04-20
 32147
 </code></pre><ul>
 <li>I can&rsquo;t even log into PostgreSQL as the <code>postgres</code> user, WTF?</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c 
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c 
 ^C
 </code></pre><ul>
 <li>Here are the most active IPs today:</li>
 </ul>
-<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Apr/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;20/Apr/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
     917 207.46.13.182
     935 213.55.99.121
     970 40.77.167.134
@@ -484,11 +484,11 @@ sys     2m2.687s
 </code></pre><ul>
 <li>It doesn&rsquo;t even seem like there is a lot of traffic compared to the previous days:</li>
 </ul>
-<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;20/Apr/2018&quot; | wc -l
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;20/Apr/2018&#34; | wc -l
 74931
-# zcat --force /var/log/nginx/*.log.1 /var/log/nginx/*.log.2.gz| grep -E &quot;19/Apr/2018&quot; | wc -l
+# zcat --force /var/log/nginx/*.log.1 /var/log/nginx/*.log.2.gz| grep -E &#34;19/Apr/2018&#34; | wc -l
 91073
-# zcat --force /var/log/nginx/*.log.2.gz /var/log/nginx/*.log.3.gz| grep -E &quot;18/Apr/2018&quot; | wc -l
+# zcat --force /var/log/nginx/*.log.2.gz /var/log/nginx/*.log.3.gz| grep -E &#34;18/Apr/2018&#34; | wc -l
 93459
 </code></pre><ul>
 <li>I tried to restart Tomcat but <code>systemctl</code> hangs</li>
@@ -543,7 +543,7 @@ org.apache.tomcat.jdbc.pool.PoolExhaustedException: [localhost-startStop-2] Time
 <li>One other new thing I notice is that PostgreSQL 9.6 no longer uses <code>createuser</code> and <code>nocreateuser</code>, as those have actually meant <code>superuser</code> and <code>nosuperuser</code> and have been deprecated for <em>ten years</em></li>
 <li>So for my notes, when I&rsquo;m importing a CGSpace database dump I need to amend my notes to give super user permission to a user, rather than create user:</li>
 </ul>
-<pre tabindex="0"><code>$ psql dspacetest -c 'alter user dspacetest superuser;'
+<pre tabindex="0"><code>$ psql dspacetest -c &#39;alter user dspacetest superuser;&#39;
 $ pg_restore -O -U dspacetest -d dspacetest -W -h localhost /tmp/dspace_2018-04-18.backup
 </code></pre><ul>
 <li>There&rsquo;s another issue with Tomcat in Ubuntu 18.04:</li>

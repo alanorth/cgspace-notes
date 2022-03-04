@@ -50,7 +50,7 @@ DELETE 1
 Create issue on GitHub to track the addition of CCAFS Phase II project tags (#301)
 Looks like we&rsquo;ll be using cg.identifier.ccafsprojectpii as the field name
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -140,7 +140,7 @@ Looks like we&rsquo;ll be using cg.identifier.ccafsprojectpii as the field name
 <ul>
 <li>An item was mapped twice erroneously again, so I had to remove one of the mappings manually:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from collection2item where item_id = '80278';
+<pre tabindex="0"><code>dspace=# select * from collection2item where item_id = &#39;80278&#39;;
   id   | collection_id | item_id
 -------+---------------+---------
  92551 |           313 |   80278
@@ -166,7 +166,7 @@ DELETE 1
 <li>The climate risk management one doesn&rsquo;t exist, so I will have to ask Magdalena if they want me to add it to the input forms</li>
 <li>Start testing some nearly 500 author corrections that CCAFS sent me:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/CCAFS-Authors-Feb-7.csv -f dc.contributor.author -t 'correct name' -m 3 -d dspace -u dspace -p fuuu
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/CCAFS-Authors-Feb-7.csv -f dc.contributor.author -t &#39;correct name&#39; -m 3 -d dspace -u dspace -p fuuu
 </code></pre><h2 id="2017-02-09">2017-02-09</h2>
 <ul>
 <li>More work on CCAFS Phase II stuff</li>
@@ -219,51 +219,50 @@ DELETE 1
 </code></pre><ul>
 <li>And then a SQL command to update existing records:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://hdl.handle.net', 'https://hdl.handle.net') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'uri');
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://hdl.handle.net&#39;, &#39;https://hdl.handle.net&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;uri&#39;);
 UPDATE 58193
 </code></pre><ul>
 <li>Seems to work fine!</li>
 <li>I noticed a few items that have incorrect DOI links (<code>dc.identifier.doi</code>), and after looking in the database I see there are over 100 that are missing the scheme or are just plain wrong:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value not like 'http%://%';
+<pre tabindex="0"><code>dspace=# select distinct text_value from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value not like &#39;http%://%&#39;;
 </code></pre><ul>
 <li>This will replace any that begin with <code>10.</code> and change them to <code>https://dx.doi.org/10.</code>:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '(^10\..+$)', 'https://dx.doi.org/\1') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like '10.%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^10\..+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;10.%&#39;;
 </code></pre><ul>
 <li>This will get any that begin with <code>doi:10.</code> and change them to <code>https://dx.doi.org/10.x</code>:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '^doi:(10\..+$)', 'https://dx.doi.org/\1') where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like 'doi:10%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;^doi:(10\..+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;doi:10%&#39;;
 </code></pre><ul>
 <li>Fix DOIs like <code>dx.doi.org/10.</code> to be <code>https://dx.doi.org/10.</code>:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '(^dx.doi.org/.+$)', 'https://dx.doi.org/\1') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like 'dx.doi.org/%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^dx.doi.org/.+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;dx.doi.org/%&#39;;
 </code></pre><ul>
 <li>Fix DOIs like <code>http//</code>:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '^http//(dx.doi.org/.+$)', 'https://dx.doi.org/\1') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like 'http//%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;^http//(dx.doi.org/.+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;http//%&#39;;
 </code></pre><ul>
 <li>Fix DOIs like <code>dx.doi.org./</code>:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, '(^dx.doi.org\./.+$)', 'https://dx.doi.org/\1') where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like 'dx.doi.org./%'
-
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^dx.doi.org\./.+$)&#39;, &#39;https://dx.doi.org/\1&#39;) where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;dx.doi.org./%&#39;
 </code></pre><ul>
 <li>Delete some invalid DOIs:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value in ('DOI','CPWF Mekong','Bulawayo, Zimbabwe','bb');
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value in (&#39;DOI&#39;,&#39;CPWF Mekong&#39;,&#39;Bulawayo, Zimbabwe&#39;,&#39;bb&#39;);
 </code></pre><ul>
 <li>Fix some other random outliers:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = 'https://dx.doi.org/10.1016/j.aquaculture.2015.09.003' where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value = 'http:/dx.doi.org/10.1016/j.aquaculture.2015.09.003';
-dspace=# update metadatavalue set text_value = 'https://dx.doi.org/10.5337/2016.200' where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value = 'doi: https://dx.doi.org/10.5337/2016.200';
-dspace=# update metadatavalue set text_value = 'https://dx.doi.org/doi:10.1371/journal.pone.0062898' where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value = 'Http://dx.doi.org/doi:10.1371/journal.pone.0062898';
-dspace=# update metadatavalue set text_value = 'https://dx.doi.10.1016/j.cosust.2013.11.012' where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value = 'http:dx.doi.10.1016/j.cosust.2013.11.012';
-dspace=# update metadatavalue set text_value = 'https://dx.doi.org/10.1080/03632415.2014.883570' where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value = 'org/10.1080/03632415.2014.883570';
-dspace=# update metadatavalue set text_value = 'https://dx.doi.org/10.15446/agron.colomb.v32n3.46052' where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value = 'Doi: 10.15446/agron.colomb.v32n3.46052';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.1016/j.aquaculture.2015.09.003&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;http:/dx.doi.org/10.1016/j.aquaculture.2015.09.003&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.5337/2016.200&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;doi: https://dx.doi.org/10.5337/2016.200&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/doi:10.1371/journal.pone.0062898&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;Http://dx.doi.org/doi:10.1371/journal.pone.0062898&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.10.1016/j.cosust.2013.11.012&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;http:dx.doi.10.1016/j.cosust.2013.11.012&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.1080/03632415.2014.883570&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;org/10.1080/03632415.2014.883570&#39;;
+dspace=# update metadatavalue set text_value = &#39;https://dx.doi.org/10.15446/agron.colomb.v32n3.46052&#39; where metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value = &#39;Doi: 10.15446/agron.colomb.v32n3.46052&#39;;
 </code></pre><ul>
 <li>And do another round of <code>http://</code> → <code>https://</code> cleanups:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://dx.doi.org', 'https://dx.doi.org') where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = 'identifier' and qualifier = 'doi') and text_value like 'http://dx.doi.org%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://dx.doi.org&#39;, &#39;https://dx.doi.org&#39;) where resource_type_id=2 and metadata_field_id IN (select metadata_field_id from metadatafieldregistry where element = &#39;identifier&#39; and qualifier = &#39;doi&#39;) and text_value like &#39;http://dx.doi.org%&#39;;
 </code></pre><ul>
 <li>Run all DOI corrections on CGSpace</li>
 <li>Something to think about here is to write a <a href="https://wiki.lyrasis.org/display/DSDOC5x/Curation+System#CurationSystem-ScriptedTasks">Curation Task</a> in Java to do these sanity checks / corrections every night</li>
@@ -282,10 +281,10 @@ dspace=# update metadatavalue set text_value = 'https://dx.doi.org/10.15446/agro
 </ul>
 <pre tabindex="0"><code>$ python
 Python 3.6.0 (default, Dec 25 2016, 17:30:53)
-&gt;&gt;&gt; print('Entwicklung &amp; Ländlicher Raum')
+&gt;&gt;&gt; print(&#39;Entwicklung &amp; Ländlicher Raum&#39;)
 Entwicklung &amp; Ländlicher Raum
-&gt;&gt;&gt; print('Entwicklung &amp; Ländlicher Raum'.encode())
-b'Entwicklung &amp; L\xc3\xa4ndlicher Raum'
+&gt;&gt;&gt; print(&#39;Entwicklung &amp; Ländlicher Raum&#39;.encode())
+b&#39;Entwicklung &amp; L\xc3\xa4ndlicher Raum&#39;
 </code></pre><ul>
 <li>So for now I will remove the encode call from the script (though it was never used on the versions on the Linux hosts), leading me to believe it really <em>was</em> a temporary problem, perhaps due to macOS or the Python build I was using.</li>
 </ul>
@@ -294,11 +293,11 @@ b'Entwicklung &amp; L\xc3\xa4ndlicher Raum'
 <li>Testing regenerating PDF thumbnails, like I started in 2016-11</li>
 <li>It seems there is a bug in <code>filter-media</code> that causes it to process formats that aren&rsquo;t part of its configuration:</li>
 </ul>
-<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16856 -p &quot;ImageMagick PDF Thumbnail&quot;
+<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16856 -p &#34;ImageMagick PDF Thumbnail&#34;
 File: earlywinproposal_esa_postharvest.pdf.jpg
-FILTERED: bitstream 13787 (item: 10568/16881) and created 'earlywinproposal_esa_postharvest.pdf.jpg'
+FILTERED: bitstream 13787 (item: 10568/16881) and created &#39;earlywinproposal_esa_postharvest.pdf.jpg&#39;
 File: postHarvest.jpg.jpg
-FILTERED: bitstream 16524 (item: 10568/24655) and created 'postHarvest.jpg.jpg'
+FILTERED: bitstream 16524 (item: 10568/24655) and created &#39;postHarvest.jpg.jpg&#39;
 </code></pre><ul>
 <li>According to <code>dspace.cfg</code> the ImageMagick PDF Thumbnail plugin should only process PDFs:</li>
 </ul>
@@ -317,8 +316,8 @@ filter.org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.inputFormats = A
 <ul>
 <li>Find all fields with &ldquo;<a href="http://hdl.handle.net">http://hdl.handle.net</a>&rdquo; values (most are in <code>dc.identifier.uri</code>, but some are in other URL-related fields like <code>cg.link.reference</code>, <code>cg.identifier.dataurl</code>, and <code>cg.identifier.url</code>):</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select distinct metadata_field_id from metadatavalue where resource_type_id=2 and text_value like 'http://hdl.handle.net%';
-dspace=# update metadatavalue set text_value = regexp_replace(text_value, 'http://hdl.handle.net', 'https://hdl.handle.net') where resource_type_id=2 and metadata_field_id IN (25, 113, 179, 219, 220, 223) and text_value like 'http://hdl.handle.net%';
+<pre tabindex="0"><code>dspace=# select distinct metadata_field_id from metadatavalue where resource_type_id=2 and text_value like &#39;http://hdl.handle.net%&#39;;
+dspace=# update metadatavalue set text_value = regexp_replace(text_value, &#39;http://hdl.handle.net&#39;, &#39;https://hdl.handle.net&#39;) where resource_type_id=2 and metadata_field_id IN (25, 113, 179, 219, 220, 223) and text_value like &#39;http://hdl.handle.net%&#39;;
 UPDATE 58633
 </code></pre><ul>
 <li>This works but I&rsquo;m thinking I&rsquo;ll wait on the replacement as there are perhaps some other places that rely on <code>http://hdl.handle.net</code> (grep the code, it&rsquo;s scary how many things are hard coded)</li>
@@ -345,7 +344,7 @@ Certificate chain
 <li>For some reason it is now signed by a private certificate authority</li>
 <li>This error seems to have started on 2017-02-25:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -c &quot;unable to find valid certification path&quot; [dspace]/log/dspace.log.2017-02-*
+<pre tabindex="0"><code>$ grep -c &#34;unable to find valid certification path&#34; [dspace]/log/dspace.log.2017-02-*
 [dspace]/log/dspace.log.2017-02-01:0
 [dspace]/log/dspace.log.2017-02-02:0
 [dspace]/log/dspace.log.2017-02-03:0
@@ -381,7 +380,7 @@ Certificate chain
 <li>The problem likely lies in the logic of <code>ImageMagickThumbnailFilter.java</code>, as <code>ImageMagickPdfThumbnailFilter.java</code> extends it</li>
 <li>Run CIAT corrections on CGSpace</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set authority='3026b1de-9302-4f3e-85ab-ef48da024eb2', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value = 'International Center for Tropical Agriculture';
+<pre tabindex="0"><code>dspace=# update metadatavalue set authority=&#39;3026b1de-9302-4f3e-85ab-ef48da024eb2&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value = &#39;International Center for Tropical Agriculture&#39;;
 </code></pre><ul>
 <li>CGNET has fixed the certificate chain on their LDAP server</li>
 <li>Redeploy CGSpace and DSpace Test to on latest <code>5_x-prod</code> branch with fixes for LDAP bind user</li>
@@ -393,12 +392,12 @@ Certificate chain
 <li>Ah, this is probably because some items have the <code>International Center for Tropical Agriculture</code> author twice, which I first noticed in 2016-12 but couldn&rsquo;t figure out how to fix</li>
 <li>I think I can do it by first exporting all metadatavalues that have the author <code>International Center for Tropical Agriculture</code></li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (select resource_id, metadata_value_id from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value='International Center for Tropical Agriculture') to /tmp/ciat.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select resource_id, metadata_value_id from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value=&#39;International Center for Tropical Agriculture&#39;) to /tmp/ciat.csv with csv;
 COPY 1968
 </code></pre><ul>
 <li>And then use awk to print the duplicate lines to a separate file:</li>
 </ul>
-<pre tabindex="0"><code>$ awk -F',' 'seen[$1]++' /tmp/ciat.csv &gt; /tmp/ciat-dupes.csv
+<pre tabindex="0"><code>$ awk -F&#39;,&#39; &#39;seen[$1]++&#39; /tmp/ciat.csv &gt; /tmp/ciat-dupes.csv
 </code></pre><ul>
 <li>From that file I can create a list of 279 deletes and put them in a batch script like:</li>
 </ul>

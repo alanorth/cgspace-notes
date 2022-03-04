@@ -14,7 +14,7 @@ Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure 
 We had been using DC=ILRI to determine whether a user was ILRI or not
 It looks like we might be able to use OUs now, instead of DCs:
 
-$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
+$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &#34;dc=cgiarad,dc=org&#34; -D &#34;admigration1@cgiarad.org&#34; -W &#34;(sAMAccountName=admigration1)&#34;
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2016-09/" />
@@ -32,9 +32,9 @@ Discuss how the migration of CGIAR&rsquo;s Active Directory to a flat structure 
 We had been using DC=ILRI to determine whether a user was ILRI or not
 It looks like we might be able to use OUs now, instead of DCs:
 
-$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
+$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &#34;dc=cgiarad,dc=org&#34; -D &#34;admigration1@cgiarad.org&#34; -W &#34;(sAMAccountName=admigration1)&#34;
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -127,7 +127,7 @@ $ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=or
 <li>We had been using <code>DC=ILRI</code> to determine whether a user was ILRI or not</li>
 <li>It looks like we might be able to use OUs now, instead of DCs:</li>
 </ul>
-<pre tabindex="0"><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &quot;dc=cgiarad,dc=org&quot; -D &quot;admigration1@cgiarad.org&quot; -W &quot;(sAMAccountName=admigration1)&quot;
+<pre tabindex="0"><code>$ ldapsearch -x -H ldaps://svcgroot2.cgiarad.org:3269/ -b &#34;dc=cgiarad,dc=org&#34; -D &#34;admigration1@cgiarad.org&#34; -W &#34;(sAMAccountName=admigration1)&#34;
 </code></pre><ul>
 <li>User who has been migrated to the root vs user still in the hierarchical structure:</li>
 </ul>
@@ -142,15 +142,15 @@ distinguishedName: CN=Last\, First (ILRI),OU=ILRI Ethiopia Employees,OU=ILRI Eth
 </ul>
 <pre tabindex="0"><code>$ dropdb dspacetest
 $ createdb -O dspacetest --encoding=UNICODE dspacetest
-$ psql dspacetest -c 'alter user dspacetest createuser;'
+$ psql dspacetest -c &#39;alter user dspacetest createuser;&#39;
 $ pg_restore -O -U dspacetest -d dspacetest ~/Downloads/cgspace_2016-09-01.backup
-$ psql dspacetest -c 'alter user dspacetest nocreateuser;'
+$ psql dspacetest -c &#39;alter user dspacetest nocreateuser;&#39;
 $ psql -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest -h localhost
 $ vacuumdb dspacetest
 </code></pre><ul>
 <li>Some names that I thought I fixed in July seem not to be:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Poole, %&#39;;
       text_value       |              authority               | confidence
 -----------------------+--------------------------------------+------------
  Poole, Elizabeth Jane | b6efa27f-8829-4b92-80fe-bc63e03e3ccb |        600
@@ -163,12 +163,12 @@ $ vacuumdb dspacetest
 </code></pre><ul>
 <li>At least a few of these actually have the correct ORCID, but I will unify the authority to be c3a22456-8d6a-41f9-bba0-de51ef564d45</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='c3a22456-8d6a-41f9-bba0-de51ef564d45', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Poole, %';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;c3a22456-8d6a-41f9-bba0-de51ef564d45&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Poole, %&#39;;
 UPDATE 69
 </code></pre><ul>
 <li>And for Peter Ballantyne:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Ballantyne, %';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Ballantyne, %&#39;;
     text_value     |              authority               | confidence
 -------------------+--------------------------------------+------------
  Ballantyne, Peter | 2dcbcc7b-47b0-4fd7-bef9-39d554494081 |        600
@@ -180,26 +180,26 @@ UPDATE 69
 </code></pre><ul>
 <li>Again, a few have the correct ORCID, but there should only be one authority&hellip;</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='4f04ca06-9a76-4206-bd9c-917ca75d278e', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Ballantyne, %';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;4f04ca06-9a76-4206-bd9c-917ca75d278e&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Ballantyne, %&#39;;
 UPDATE 58
 </code></pre><ul>
 <li>And for me:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Orth, A%';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Orth, A%&#39;;
  text_value |              authority               | confidence
 ------------+--------------------------------------+------------
  Orth, Alan | 4884def0-4d7e-4256-9dd4-018cd60a5871 |        600
  Orth, A.   | 4884def0-4d7e-4256-9dd4-018cd60a5871 |        600
  Orth, A.   | 1a1943a0-3f87-402f-9afe-e52fb46a513e |        600
 (3 rows)
-dspacetest=# update metadatavalue set authority='1a1943a0-3f87-402f-9afe-e52fb46a513e', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Orth, %';
+dspacetest=# update metadatavalue set authority=&#39;1a1943a0-3f87-402f-9afe-e52fb46a513e&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Orth, %&#39;;
 UPDATE 11
 </code></pre><ul>
 <li>And for CCAFS author Bruce Campbell that I had discussed with CCAFS earlier this week:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='0e414b4c-4671-4a23-b570-6077aca647d8', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Campbell, B%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;0e414b4c-4671-4a23-b570-6077aca647d8&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Campbell, B%&#39;;
 UPDATE 166
-dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Campbell, B%';
+dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Campbell, B%&#39;;
        text_value       |              authority               | confidence
 ------------------------+--------------------------------------+------------
  Campbell, Bruce        | 0e414b4c-4671-4a23-b570-6077aca647d8 |        600
@@ -215,18 +215,18 @@ dspacetest=# select distinct text_value, authority, confidence from metadatavalu
 <ul>
 <li>After one week of logging TLS connections on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code># zgrep &quot;DES-CBC3&quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
+<pre tabindex="0"><code># zgrep &#34;DES-CBC3&#34; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
 217
 # zcat -f -- /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | wc -l
 1164376
-# zgrep &quot;DES-CBC3&quot; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | awk '{print $6}' | sort | uniq
+# zgrep &#34;DES-CBC3&#34; /var/log/nginx/cgspace.cgiar.org-access-ssl.log* | awk &#39;{print $6}&#39; | sort | uniq
 TLSv1/DES-CBC3-SHA
 TLSv1/EDH-RSA-DES-CBC3-SHA
 </code></pre><ul>
 <li>So this represents <code>0.02%</code> of 1.16M connections over a one-week period</li>
 <li>Transforming some filenames in OpenRefine so they can have a useful description for SAFBuilder:</li>
 </ul>
-<pre tabindex="0"><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+<pre tabindex="0"><code>value + &#34;__description:&#34; + cells[&#34;dc.type&#34;].value
 </code></pre><ul>
 <li>This gives you, for example: <code>Mainstreaming gender in agricultural R&amp;D.pdf__description:Brief</code></li>
 </ul>
@@ -251,7 +251,7 @@ TLSv1/EDH-RSA-DES-CBC3-SHA
 <li>If I unzip the original zip from CIAT on Windows, re-zip it with 7zip on Windows, and then unzip it on Linux directly, the file names seem to be proper UTF-8</li>
 <li>We should definitely clean filenames so they don&rsquo;t use characters that are tricky to process in CSV and shell scripts, like: <code>,</code>, <code>'</code>, and <code>&quot;</code></li>
 </ul>
-<pre tabindex="0"><code>value.replace(&quot;'&quot;,&quot;&quot;).replace(&quot;,&quot;,&quot;&quot;).replace('&quot;','')
+<pre tabindex="0"><code>value.replace(&#34;&#39;&#34;,&#34;&#34;).replace(&#34;,&#34;,&#34;&#34;).replace(&#39;&#34;&#39;,&#39;&#39;)
 </code></pre><ul>
 <li>I need to write a Python script to match that for renaming files in the file system</li>
 <li>When importing SAF bundles it seems you can specify the target collection on the command line using <code>-c 10568/4003</code> or in the <code>collections</code> file inside each item in the bundle</li>
@@ -264,7 +264,7 @@ TLSv1/EDH-RSA-DES-CBC3-SHA
 <li>Import CIAT Gender Network records to CGSpace, first creating the SAF bundles as my user, then importing as the <code>tomcat7</code> user, and deleting the bundle, for each collection&rsquo;s items:</li>
 </ul>
 <pre tabindex="0"><code>$ ./safbuilder.sh -c /home/aorth/ciat-gender-2016-09-06/66601.csv
-$ JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot; /home/cgspace.cgiar.org/bin/dspace import -a -e aorth@mjanja.ch -c 10568/66601 -s /home/aorth/ciat-gender-2016-09-06/SimpleArchiveFormat -m 66601.map
+$ JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx512m&#34; /home/cgspace.cgiar.org/bin/dspace import -a -e aorth@mjanja.ch -c 10568/66601 -s /home/aorth/ciat-gender-2016-09-06/SimpleArchiveFormat -m 66601.map
 $ rm -rf ~/ciat-gender-2016-09-06/SimpleArchiveFormat/
 </code></pre><h2 id="2016-09-07">2016-09-07</h2>
 <ul>
@@ -299,13 +299,13 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>I restarted Tomcat and it was ok again</li>
 <li>CGSpace crashed a few hours later, errors from <code>catalina.out</code>:</li>
 </ul>
-<pre tabindex="0"><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>Exception in thread &#34;http-bio-127.0.0.1-8081-exec-25&#34; java.lang.OutOfMemoryError: Java heap space
         at java.lang.StringCoding.decode(StringCoding.java:215)
 </code></pre><ul>
 <li>We haven&rsquo;t seen that in quite a while&hellip;</li>
 <li>Indeed, in a month of logs it only occurs 15 times:</li>
 </ul>
-<pre tabindex="0"><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
+<pre tabindex="0"><code># grep -rsI &#34;OutOfMemoryError&#34; /var/log/tomcat7/catalina.* | wc -l
 15
 </code></pre><ul>
 <li>I also see a bunch of errors from dspace.log:</li>
@@ -315,11 +315,11 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 </code></pre><ul>
 <li>Looking at REST requests, it seems there is one IP hitting us nonstop:</li>
 </ul>
-<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+<pre tabindex="0"><code># awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
     820 50.87.54.15
   12872 70.32.99.142
   25744 70.32.83.92
-# awk '{print $1}' /var/log/nginx/rest.log.1  | sort -n | uniq -c | sort -h | tail -n 3
+# awk &#39;{print $1}&#39; /var/log/nginx/rest.log.1  | sort -n | uniq -c | sort -h | tail -n 3
    7966 181.118.144.29
   54706 70.32.99.142
  109412 70.32.83.92
@@ -333,7 +333,7 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 </code></pre><ul>
 <li>And more heap space errors:</li>
 </ul>
-<pre tabindex="0"><code># grep -rsI &quot;OutOfMemoryError&quot; /var/log/tomcat7/catalina.* | wc -l
+<pre tabindex="0"><code># grep -rsI &#34;OutOfMemoryError&#34; /var/log/tomcat7/catalina.* | wc -l
 19
 </code></pre><ul>
 <li>There are no more rest requests since the last crash, so maybe there are other things causing this.</li>
@@ -349,7 +349,7 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 <li>From the activity control panel I can see 58 unique IPs hitting the site <em>concurrently</em>, which has GOT to hurt our stability</li>
 <li>A list of all 2000 unique IPs from CGSpace logs today:</li>
 </ul>
-<pre tabindex="0"><code># grep ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-11 | awk -F: '{print $5}' | sort -n | uniq -c | sort -h | tail -n 100
+<pre tabindex="0"><code># grep ip_addr= /home/cgspace.cgiar.org/log/dspace.log.2016-09-11 | awk -F: &#39;{print $5}&#39; | sort -n | uniq -c | sort -h | tail -n 100
 </code></pre><ul>
 <li>Looking at the top 20 IPs or so, most are Yahoo, MSN, Google, Baidu, TurnitIn (iParadigm), etc&hellip; do we have any real users?</li>
 <li>Generate a list of all author affiliations for Peter Ballantyne to go through, make corrections, and create a lookup list from:</li>
@@ -363,7 +363,7 @@ Wed Sep 14 09:47:28 UTC 2016 | Updating : 6/6 docs.
 Commit
 Commit done
 dn:CN=Haman\, Magdalena  (CIAT-CCAFS),OU=Standard,OU=Users,OU=HQ,OU=CIATHUB,dc=cgiarad,dc=org
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-193&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-193&#34; java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>And after that I see a bunch of &ldquo;pool error Timeout waiting for idle object&rdquo;</li>
 <li>Later, near the time of the next crash I see:</li>
@@ -376,7 +376,7 @@ Commit done
 Sep 14, 2016 11:32:22 AM com.sun.jersey.server.wadl.generators.WadlGeneratorJAXBGrammarGenerator buildModelAndSchemas
 SEVERE: Failed to generate the schema for the JAX-B elements
 com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 2 counts of IllegalAnnotationExceptions
-java.util.Map is an interface, and JAXB can't handle interfaces.
+java.util.Map is an interface, and JAXB can&#39;t handle interfaces.
         this problem is related to the following location:
                 at java.util.Map
                 at public java.util.Map com.atmire.dspace.rest.common.Statlet.getRender()
@@ -389,7 +389,7 @@ java.util.Map does not have a no-arg default constructor.
 </code></pre><ul>
 <li>Then 20 minutes later another outOfMemoryError:</li>
 </ul>
-<pre tabindex="0"><code>Exception in thread &quot;http-bio-127.0.0.1-8081-exec-25&quot; java.lang.OutOfMemoryError: Java heap space
+<pre tabindex="0"><code>Exception in thread &#34;http-bio-127.0.0.1-8081-exec-25&#34; java.lang.OutOfMemoryError: Java heap space
         at java.lang.StringCoding.decode(StringCoding.java:215)
 </code></pre><ul>
 <li>Perhaps these particular issues <em>are</em> memory issues, the munin graphs definitely show some weird purging/allocating behavior starting this week</li>
@@ -402,7 +402,7 @@ java.util.Map does not have a no-arg default constructor.
 <li>Oh great, the configuration on the actual server is different than in configuration management!</li>
 <li>Seems we added a bunch of settings to the <code>/etc/default/tomcat7</code> in December, 2015 and never updated our ansible repository:</li>
 </ul>
-<pre tabindex="0"><code>JAVA_OPTS=&quot;-Djava.awt.headless=true -Xms3584m -Xmx3584m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -XX:-UseGCOverheadLimit -XX:MaxGCPauseMillis=250 -XX:GCTimeRatio=9 -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:InitiatingHeapOccupancyPercent=75 -XX:+UseLargePages -XX:+AggressiveOpts&quot;
+<pre tabindex="0"><code>JAVA_OPTS=&#34;-Djava.awt.headless=true -Xms3584m -Xmx3584m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -XX:-UseGCOverheadLimit -XX:MaxGCPauseMillis=250 -XX:GCTimeRatio=9 -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:InitiatingHeapOccupancyPercent=75 -XX:+UseLargePages -XX:+AggressiveOpts&#34;
 </code></pre><ul>
 <li>So I&rsquo;m going to bump the heap +512m and remove all the other experimental shit (and update ansible!)</li>
 <li>Increased JVM heap to 4096m on CGSpace (linode01)</li>
@@ -423,14 +423,14 @@ Thu Sep 15 18:45:26 UTC 2016 | Updating : 200/218 docs.
 Thu Sep 15 18:45:27 UTC 2016 | Updating : 218/218 docs.
 Commit
 Commit done
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-247&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-241&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-243&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-258&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-268&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-263&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-280&quot; java.lang.OutOfMemoryError: Java heap space
-Exception in thread &quot;Thread-54216&quot; org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Exception writing document id 7feaa95d-8e1f-4f45-80bb
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-247&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-241&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-243&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-258&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-268&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-263&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-280&#34; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;Thread-54216&#34; org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Exception writing document id 7feaa95d-8e1f-4f45-80bb
 -e14ef82ee224 to the index; possible analysis error.
         at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
@@ -443,7 +443,7 @@ Exception in thread &quot;Thread-54216&quot; org.apache.solr.client.solrj.impl.H
 <li>I bumped the heap space from 4096m to 5120m to see if this is <em>really</em> about heap speace or not.</li>
 <li>Looking into some of these errors that I&rsquo;ve seen this week but haven&rsquo;t noticed before:</li>
 </ul>
-<pre tabindex="0"><code># zcat -f -- /var/log/tomcat7/catalina.* | grep -c 'Failed to generate the schema for the JAX-B elements'
+<pre tabindex="0"><code># zcat -f -- /var/log/tomcat7/catalina.* | grep -c &#39;Failed to generate the schema for the JAX-B elements&#39;
 113
 </code></pre><ul>
 <li>I&rsquo;ve sent a message to Atmire about the Solr error to see if it&rsquo;s related to their batch update module</li>
@@ -474,7 +474,7 @@ $ ./delete-metadata-values.py -f cg.contributor.affiliation -i affiliations_pb-2
 <li>Turns out the Solr search logic switched from OR to AND in DSpace 6.0 and the change is easy to backport: <a href="https://jira.duraspace.org/browse/DS-2809">https://jira.duraspace.org/browse/DS-2809</a></li>
 <li>We just need to set this in <code>dspace/solr/search/conf/schema.xml</code>:</li>
 </ul>
-<pre tabindex="0"><code>&lt;solrQueryParser defaultOperator=&quot;AND&quot;/&gt;
+<pre tabindex="0"><code>&lt;solrQueryParser defaultOperator=&#34;AND&#34;/&gt;
 </code></pre><ul>
 <li>It actually works really well, and search results return much less hits now (before, after):</li>
 </ul>
@@ -533,12 +533,12 @@ OCSP Response Data:
 <li>Discuss fixing some ORCIDs for CCAFS author Sonja Vermeulen with Magdalena Haman</li>
 <li>This author has a few variations:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeu
-len, S%';
+<pre tabindex="0"><code>dspacetest=# select distinct text_value, authority, confidence from metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeu
+len, S%&#39;;
 </code></pre><ul>
 <li>And it looks like <code>fe4b719f-6cc4-4d65-8504-7a83130b9f83</code> is the authority with the correct ORCID linked</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='fe4b719f-6cc4-4d65-8504-7a83130b9f83w', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;fe4b719f-6cc4-4d65-8504-7a83130b9f83w&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeulen, S%&#39;;
 UPDATE 101
 </code></pre><ul>
 <li>Hmm, now her name is missing from the authors facet and only shows the authority ID</li>
@@ -547,7 +547,7 @@ UPDATE 101
 <li>On a clean snapshot of the database I see the correct authority should be <code>f01f7b7b-be3f-4df7-a61d-b73c067de88d</code>, not <code>fe4b719f-6cc4-4d65-8504-7a83130b9f83</code></li>
 <li>Updating her authorities again and reindexing:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='f01f7b7b-be3f-4df7-a61d-b73c067de88d', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;f01f7b7b-be3f-4df7-a61d-b73c067de88d&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeulen, S%&#39;;
 UPDATE 101
 </code></pre><ul>
 <li>Use GitHub icon from Font Awesome instead of a PNG to save one extra network request</li>
@@ -564,8 +564,8 @@ UPDATE 101
 <li>Minor fix to a string in Atmire&rsquo;s CUA module (<a href="https://github.com/ilri/DSpace/pull/280">#280</a>)</li>
 <li>This seems to be what I&rsquo;ll need to do for Sonja Vermeulen (but with <code>2b4166b7-6e4d-4f66-9d8b-ddfbec9a6ae0</code> instead on the live site):</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority='09e4da69-33a3-45ca-b110-7d3f82d2d6d2', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen, S%';
-dspacetest=# update metadatavalue set authority='09e4da69-33a3-45ca-b110-7d3f82d2d6d2', confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like 'Vermeulen SJ%';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set authority=&#39;09e4da69-33a3-45ca-b110-7d3f82d2d6d2&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeulen, S%&#39;;
+dspacetest=# update metadatavalue set authority=&#39;09e4da69-33a3-45ca-b110-7d3f82d2d6d2&#39;, confidence=600 where metadata_field_id=3 and resource_type_id=2 and text_value like &#39;Vermeulen SJ%&#39;;
 </code></pre><ul>
 <li>And then update Discovery and Authority indexes</li>
 <li>Minor fix for &ldquo;Subject&rdquo; string in Discovery search and Atmire modules (<a href="https://github.com/ilri/DSpace/pull/281">#281</a>)</li>
@@ -580,7 +580,7 @@ $ ./delete-metadata-values.py -i ilrisubjects-delete-13.csv -f cg.subject.ilri -
 <li>DSpace Test (linode02) became unresponsive for some reason, I had to hard reboot it from the Linode console</li>
 <li>People on DSpace mailing list gave me a query to get authors from certain collections:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# select distinct text_value from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/5472', '10568/5473')));
+<pre tabindex="0"><code>dspacetest=# select distinct text_value from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in (&#39;10568/5472&#39;, &#39;10568/5473&#39;)));
 </code></pre><h2 id="2016-09-30">2016-09-30</h2>
 <ul>
 <li>Deny access to REST API&rsquo;s <code>find-by-metadata-field</code> endpoint to protect against an upstream security issue (DS-3250)</li>

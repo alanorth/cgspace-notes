@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGIAR Library Migration"/>
 <meta name="twitter:description" content="Notes on the migration of the CGIAR Library to CGSpace"/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -163,7 +163,7 @@ mets.dspaceAIP.ingest.crosswalk.DSPACE-ROLES = NIL
 </code></pre><ul>
 <li><input checked="" disabled="" type="checkbox"> Import communities and collections, paying attention to options to skip missing parents and ignore handles:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit -XX:+TieredCompilation -XX:TieredStopAtLevel=1&#34;
 $ export PATH=$PATH:/home/cgspace.cgiar.org/bin
 $ dspace packager -r -u -a -t AIP -o skipIfParentMissing=true -e aorth@mjanja.ch -p 10568/83389 10947-2515/10947-2515.zip
 $ dspace packager -r -u -a -t AIP -o skipIfParentMissing=true -e aorth@mjanja.ch -p 10568/83389 10947-2516/10947-2516.zip
@@ -201,7 +201,7 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 </ul>
 <pre tabindex="0"><code>$ for item in 10568-93759/ITEM@10947-46*; do dspace packager -r -t AIP -o ignoreHandle=false -o ignoreParent=true -e aorth@mjanja.ch -p 10568/83538 $item; done
 </code></pre><p><strong>Get the handles for the last few items from CGIAR Library that were created since we did the migration to DSpace Test in May:</strong></p>
-<pre tabindex="0"><code>dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) &gt; '2017-05-01T00:00:00Z');
+<pre tabindex="0"><code>dspace=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id in (select item_id from metadatavalue where metadata_field_id=11 and date(text_value) &gt; &#39;2017-05-01T00:00:00Z&#39;);
 </code></pre><ul>
 <li>Export them from the CGIAR Library:</li>
 </ul>
@@ -218,19 +218,19 @@ $ for item in 10568-93760/ITEM@10947-465*; do dspace packager -r -f -u -t AIP -e
 <li><input checked="" disabled="" type="checkbox"> Enable nightly <code>index-discovery</code> cron job</li>
 <li><input checked="" disabled="" type="checkbox"> Adjust CGSpace&rsquo;s <code>handle-server/config.dct</code> to add the new prefix alongside our existing 10568, ie:</li>
 </ul>
-<pre tabindex="0"><code>&quot;server_admins&quot; = (
-&quot;300:0.NA/10568&quot;
-&quot;300:0.NA/10947&quot;
+<pre tabindex="0"><code>&#34;server_admins&#34; = (
+&#34;300:0.NA/10568&#34;
+&#34;300:0.NA/10947&#34;
 )
 
-&quot;replication_admins&quot; = (
-&quot;300:0.NA/10568&quot;
-&quot;300:0.NA/10947&quot;
+&#34;replication_admins&#34; = (
+&#34;300:0.NA/10568&#34;
+&#34;300:0.NA/10947&#34;
 )
 
-&quot;backup_admins&quot; = (
-&quot;300:0.NA/10568&quot;
-&quot;300:0.NA/10947&quot;
+&#34;backup_admins&#34; = (
+&#34;300:0.NA/10568&#34;
+&#34;300:0.NA/10947&#34;
 )
 </code></pre><p>I had been regenerated the <code>sitebndl.zip</code> file on the CGIAR Library server and sent it to the Handle.net admins but they said that there were mismatches between the public and private keys, which I suspect is due to <code>make-handle-config</code> not being very flexible. After discussing our scenario with the Handle.net admins they said we actually don&rsquo;t need to send an updated <code>sitebndl.zip</code> for this type of change, and the above <code>config.dct</code> edits are all that is required. I guess they just did something on their end by setting the authoritative IP address for the 10947 prefix to be the same as ours&hellip;</p>
 <ul>
@@ -250,17 +250,17 @@ $ sudo systemctl start nginx
 </code></pre><h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="foreign-key-error-in-dspace-cleanup">Foreign Key Error in <code>dspace cleanup</code></h3>
 <p>The cleanup script is sometimes used during import processes to clean the database and assetstore after failed AIP imports. If you see the following error with <code>dspace cleanup -v</code>:</p>
-<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;                                                                                                                       
-  Detail: Key (bitstream_id)=(119841) is still referenced from table &quot;bundle&quot;.
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;                                                                                                                       
+  Detail: Key (bitstream_id)=(119841) is still referenced from table &#34;bundle&#34;.
 </code></pre><p>The solution is to set the <code>primary_bitstream_id</code> to NULL in PostgreSQL:</p>
 <pre tabindex="0"><code>dspace=# update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (119841);
 </code></pre><h3 id="psqlexception-during-aip-ingest">PSQLException During AIP Ingest</h3>
 <p>After a few rounds of ingesting—possibly with failures—you might end up with inconsistent IDs in the database. In this case, during AIP ingest of a single collection in submit mode (-s):</p>
-<pre tabindex="0"><code>org.dspace.content.packager.PackageValidationException: Exception while ingesting 10947-2527/10947-2527.zip, Reason: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &quot;handle_pkey&quot;                                    
+<pre tabindex="0"><code>org.dspace.content.packager.PackageValidationException: Exception while ingesting 10947-2527/10947-2527.zip, Reason: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &#34;handle_pkey&#34;                                    
   Detail: Key (handle_id)=(86227) already exists.
 </code></pre><p>The normal solution is to run the <code>update-sequences.sql</code> script (with Tomcat shut down) but it doesn&rsquo;t seem to work in this case. Finding the maximum <code>handle_id</code> and manually updating the sequence seems to work:</p>
 <pre tabindex="0"><code>dspace=# select * from handle where handle_id=(select max(handle_id) from handle);
-dspace=# select setval('handle_seq',86873);
+dspace=# select setval(&#39;handle_seq&#39;,86873);
 </code></pre>
 
   

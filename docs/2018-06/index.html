@@ -58,7 +58,7 @@ real    74m42.646s
 user    8m5.056s
 sys     2m7.289s
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -154,7 +154,7 @@ sys     2m7.289s
 <li>I added the new CCAFS Phase II Project Tag <code>PII-FP1_PACCA2</code> and merged it into the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/379">#379</a>)</li>
 <li>I proofed and tested the ILRI author corrections that Peter sent back to me this week:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3 -n
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correct -m 3 -n
 </code></pre><ul>
 <li>I think a sane proofing workflow in OpenRefine is to apply the custom text facets for check/delete/remove and illegal characters that I developed in <a href="/cgspace-notes/2018-03/">March, 2018</a></li>
 <li>Time to index ~70,000 items on CGSpace:</li>
@@ -181,7 +181,7 @@ sys     2m7.289s
 <li>Institut National des Recherches Agricoles du B nin</li>
 <li>Centre de Coop ration Internationale en Recherche Agronomique pour le D veloppement</li>
 <li>Institut des Recherches Agricoles du B nin</li>
-<li>Institut des Savannes, C te d' Ivoire</li>
+<li>Institut des Savannes, C te d&rsquo; Ivoire</li>
 <li>Institut f r Pflanzenpathologie und Pflanzenschutz der Universit t, Germany</li>
 <li>Projet de Gestion des Ressources Naturelles, B nin</li>
 <li>Universit t Hannover</li>
@@ -193,9 +193,9 @@ sys     2m7.289s
 <li>I uploaded fixes for all those now, but I will continue with the rest of the data later</li>
 <li>Regarding the SQL migration errors, Atmire told me I need to run some migrations manually in PostgreSQL:</li>
 </ul>
-<pre tabindex="0"><code>delete from schema_version where version = '5.6.2015.12.03.2';
-update schema_version set version = '5.6.2015.12.03.2' where version = '5.5.2015.12.03.2';
-update schema_version set version = '5.8.2015.12.03.3' where version = '5.5.2015.12.03.3';
+<pre tabindex="0"><code>delete from schema_version where version = &#39;5.6.2015.12.03.2&#39;;
+update schema_version set version = &#39;5.6.2015.12.03.2&#39; where version = &#39;5.5.2015.12.03.2&#39;;
+update schema_version set version = &#39;5.8.2015.12.03.3&#39; where version = &#39;5.5.2015.12.03.3&#39;;
 </code></pre><ul>
 <li>And then I need to ignore the ignored ones:</li>
 </ul>
@@ -205,7 +205,7 @@ update schema_version set version = '5.8.2015.12.03.3' where version = '5.5.2015
 <li>Gabriela from CIP got back to me about the author names we were correcting on CGSpace</li>
 <li>I did a quick sanity check on them and then did a test import with my <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897"><code>fix-metadata-value.py</code></a> script:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-06-08-CIP-Authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correct -m 3
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-06-08-CIP-Authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correct -m 3
 </code></pre><ul>
 <li>I will apply them on CGSpace tomorrow I think&hellip;</li>
 </ul>
@@ -221,7 +221,7 @@ update schema_version set version = '5.8.2015.12.03.3' where version = '5.5.2015
 <li>After removing all code mentioning MQM, mqm, metadata-quality, batchedit, duplicatechecker, etc, I think I got most of it removed, but there is a Spring error during Tomcat startup:</li>
 </ul>
 <pre tabindex="0"><code> INFO [org.dspace.servicemanager.DSpaceServiceManager] Shutdown DSpace core service manager
-Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'org.dspace.servicemanager.spring.DSpaceBeanPostProcessor#0' defined in class path resource [spring/spring-dspace-applicationContext.xml]: Unsatisfied dependency expressed through constructor argument with index 0 of type [org.dspace.servicemanager.config.DSpaceConfigurationService]: : Cannot find class [com.atmire.dspace.discovery.ItemCollectionPlugin] for bean with name 'itemCollectionPlugin' defined in file [/home/aorth/dspace/config/spring/api/discovery.xml];
+Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name &#39;org.dspace.servicemanager.spring.DSpaceBeanPostProcessor#0&#39; defined in class path resource [spring/spring-dspace-applicationContext.xml]: Unsatisfied dependency expressed through constructor argument with index 0 of type [org.dspace.servicemanager.config.DSpaceConfigurationService]: : Cannot find class [com.atmire.dspace.discovery.ItemCollectionPlugin] for bean with name &#39;itemCollectionPlugin&#39; defined in file [/home/aorth/dspace/config/spring/api/discovery.xml];
 </code></pre><ul>
 <li>I can fix this by commenting out the <code>ItemCollectionPlugin</code> line of <code>discovery.xml</code>, but from looking at the git log I&rsquo;m not actually sure if that is related to MQM or not</li>
 <li>I will have to ask Atmire</li>
@@ -336,11 +336,11 @@ Failed to startup the DSpace Service Manager: failure starting up spring service
 </li>
 </ul>
 <pre tabindex="0"><code>or(
-  value.contains('€'),
-  value.contains('6g'),
-  value.contains('6m'),
-  value.contains('6d'),
-  value.contains('6e')
+  value.contains(&#39;€&#39;),
+  value.contains(&#39;6g&#39;),
+  value.contains(&#39;6m&#39;),
+  value.contains(&#39;6d&#39;),
+  value.contains(&#39;6e&#39;)
 )
 </code></pre><ul>
 <li>So IITA should double check the abstracts for these:
@@ -357,24 +357,24 @@ Failed to startup the DSpace Service Manager: failure starting up spring service
 <li>Elizabeth from CIAT contacted me to ask if I could add ORCID identifiers to all of Robin Buruchara&rsquo;s items</li>
 <li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
-<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-13-Robin-Buruchara.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-13-Robin-Buruchara.csv -db dspace -u dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>The contents of <code>2018-06-13-Robin-Buruchara.csv</code> were:</li>
 </ul>
 <pre tabindex="0"><code>dc.contributor.author,cg.creator.id
-&quot;Buruchara, Robin&quot;,Robin Buruchara: 0000-0003-0934-1218
-&quot;Buruchara, Robin A.&quot;,Robin Buruchara: 0000-0003-0934-1218
+&#34;Buruchara, Robin&#34;,Robin Buruchara: 0000-0003-0934-1218
+&#34;Buruchara, Robin A.&#34;,Robin Buruchara: 0000-0003-0934-1218
 </code></pre><ul>
 <li>On a hunch I checked to see if CGSpace&rsquo;s bitstream cleanup was working properly and of course it&rsquo;s broken:</li>
 </ul>
 <pre tabindex="0"><code>$ dspace cleanup -v
 ...
-Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(152402) is still referenced from table &quot;bundle&quot;.
+Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(152402) is still referenced from table &#34;bundle&#34;.
 </code></pre><ul>
 <li>As always, the solution is to delete that ID manually in PostgreSQL:</li>
 </ul>
-<pre tabindex="0"><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (152402);'
+<pre tabindex="0"><code>$ psql dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (152402);&#39;
 UPDATE 1
 </code></pre><h2 id="2018-06-14">2018-06-14</h2>
 <ul>
@@ -389,9 +389,9 @@ UPDATE 1
 </ul>
 <pre tabindex="0"><code>$ dropdb -h localhost -U postgres dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
-$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
+$ psql -h localhost -U postgres dspacetest -c &#39;alter user dspacetest superuser;&#39;
 $ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest -h localhost /tmp/cgspace_2018-06-24.backup
-$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+$ psql -h localhost -U postgres dspacetest -c &#39;alter user dspacetest nosuperuser;&#39;
 </code></pre><ul>
 <li>The <code>-O</code> option to <code>pg_restore</code> makes the import process ignore ownership specified in the dump itself, and instead makes the schema owned by the user doing the restore</li>
 <li>I always prefer to use the <code>postgres</code> user locally because it&rsquo;s just easier than remembering the <code>dspacetest</code> user&rsquo;s password, but then I couldn&rsquo;t figure out why the resulting schema was owned by <code>postgres</code></li>
@@ -413,13 +413,13 @@ $ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser
 <li>So I need to make sure to run the following during the DSpace 5.8 upgrade:</li>
 </ul>
 <pre tabindex="0"><code>-- Delete existing CUA 4 migration if it exists
-delete from schema_version where version = '5.6.2015.12.03.2';
+delete from schema_version where version = &#39;5.6.2015.12.03.2&#39;;
 
 -- Update version of CUA 4 migration
-update schema_version set version = '5.6.2015.12.03.2' where version = '5.5.2015.12.03.2';
+update schema_version set version = &#39;5.6.2015.12.03.2&#39; where version = &#39;5.5.2015.12.03.2&#39;;
 
--- Delete MQM migration since we're no longer using it
-delete from schema_version where version = '5.5.2015.12.03.3';
+-- Delete MQM migration since we&#39;re no longer using it
+delete from schema_version where version = &#39;5.5.2015.12.03.3&#39;;
 </code></pre><ul>
 <li>After that you can run the migrations manually and then DSpace should work fine:</li>
 </ul>
@@ -427,17 +427,17 @@ delete from schema_version where version = '5.5.2015.12.03.3';
 ...
 Done.
 </code></pre><ul>
-<li>Elizabeth from CIAT contacted me to ask if I could add ORCID identifiers to all of Andy Jarvis' items on CGSpace</li>
+<li>Elizabeth from CIAT contacted me to ask if I could add ORCID identifiers to all of Andy Jarvis&rsquo; items on CGSpace</li>
 <li>I used my <a href="https://gist.githubusercontent.com/alanorth/a49d85cd9c5dea89cddbe809813a7050/raw/f67b6e45a9a940732882ae4bb26897a9b245ef31/add-orcid-identifiers-csv.py">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
-<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-24-andy-jarvis-orcid.csv -db dspacetest -u dspacetest -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-06-24-andy-jarvis-orcid.csv -db dspacetest -u dspacetest -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>The contents of <code>2018-06-24-andy-jarvis-orcid.csv</code> were:</li>
 </ul>
 <pre tabindex="0"><code>dc.contributor.author,cg.creator.id
-&quot;Jarvis, A.&quot;,Andy Jarvis: 0000-0001-6543-0798
-&quot;Jarvis, Andy&quot;,Andy Jarvis: 0000-0001-6543-0798
-&quot;Jarvis, Andrew&quot;,Andy Jarvis: 0000-0001-6543-0798
+&#34;Jarvis, A.&#34;,Andy Jarvis: 0000-0001-6543-0798
+&#34;Jarvis, Andy&#34;,Andy Jarvis: 0000-0001-6543-0798
+&#34;Jarvis, Andrew&#34;,Andy Jarvis: 0000-0001-6543-0798
 </code></pre><h2 id="2018-06-26">2018-06-26</h2>
 <ul>
 <li>Atmire got back to me to say that we can remove the <code>itemCollectionPlugin</code> and <code>HasBitstreamsSSIPlugin</code> beans from DSpace&rsquo;s <code>discovery.xml</code> file, as they are used by the Metadata Quality Module (MQM) that we are not using anymore</li>
@@ -455,19 +455,19 @@ Done.
 <li>I&rsquo;ll have to figure out how to separate those we&rsquo;re keeping, deleting, and mapping into CIFOR&rsquo;s archive collection</li>
 <li>First, get the 62 deletes from Vika&rsquo;s file and remove them from the collection:</li>
 </ul>
-<pre tabindex="0"><code>$ grep delete 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-delete.txt
+<pre tabindex="0"><code>$ grep delete 2018-06-22-cifor-duplicates.txt | grep -o -E &#39;[0-9]{5}\/[0-9]{5}&#39; &gt; cifor-handle-to-delete.txt
 $ wc -l cifor-handle-to-delete.txt
 62 cifor-handle-to-delete.txt
 $ wc -l 10568-92904.csv
 2461 10568-92904.csv
-$ while read line; do sed -i &quot;\#$line#d&quot; 10568-92904.csv; done &lt; cifor-handle-to-delete.txt
+$ while read line; do sed -i &#34;\#$line#d&#34; 10568-92904.csv; done &lt; cifor-handle-to-delete.txt
 $ wc -l 10568-92904.csv
 2399 10568-92904.csv
 </code></pre><ul>
 <li>This iterates over the handles for deletion and uses <code>sed</code> with an alternative pattern delimiter of &lsquo;#&rsquo; (which must be escaped), because the pattern itself contains a &lsquo;/&rsquo;</li>
 <li>The mapped ones will be difficult because we need their internal IDs in order to map them, and there are 50 of them:</li>
 </ul>
-<pre tabindex="0"><code>$ grep map 2018-06-22-cifor-duplicates.txt | grep -o -E '[0-9]{5}\/[0-9]{5}' &gt; cifor-handle-to-map.txt
+<pre tabindex="0"><code>$ grep map 2018-06-22-cifor-duplicates.txt | grep -o -E &#39;[0-9]{5}\/[0-9]{5}&#39; &gt; cifor-handle-to-map.txt
 $ wc -l cifor-handle-to-map.txt
 50 cifor-handle-to-map.txt
 </code></pre><ul>
@@ -475,7 +475,7 @@ $ wc -l cifor-handle-to-map.txt
 <li>Oooh, I can export the items one by one, concatenate them together, remove the headers, and extract the <code>id</code> and <code>collection</code> columns using <a href="https://csvkit.readthedocs.io/">csvkit</a>:</li>
 </ul>
 <pre tabindex="0"><code>$ while read line; do filename=${line/\//-}.csv; dspace metadata-export -i $line -f $filename; done &lt; /tmp/cifor-handle-to-map.txt
-$ sed '/^id/d' 10568-*.csv | csvcut -c 1,2 &gt; map-to-cifor-archive.csv
+$ sed &#39;/^id/d&#39; 10568-*.csv | csvcut -c 1,2 &gt; map-to-cifor-archive.csv
 </code></pre><ul>
 <li>Then I can use Open Refine to add the &ldquo;CIFOR Archive&rdquo; collection to the mappings</li>
 <li>Importing the 2398 items via <code>dspace metadata-import</code> ends up with a Java garbage collection error, so I think I need to do it in batches of 1,000</li>

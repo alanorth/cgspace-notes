@@ -32,7 +32,7 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 
 
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -150,8 +150,8 @@ So far we&rsquo;ve spent at least fifty hours to process the statistics and stat
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2020-11-05-fix-862-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t 'correct' -m 211
-$ ./delete-metadata-values.py -i 2020-11-05-delete-29-affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2020-11-05-fix-862-affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.contributor.affiliation -t &#39;correct&#39; -m 211
+$ ./delete-metadata-values.py -i 2020-11-05-delete-29-affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.contributor.affiliation -m 211
 </code></pre><ul>
 <li>Then I started a Discovery re-index on CGSpace:</li>
 </ul>
@@ -191,7 +191,7 @@ sys     2m26.931s
 <li>Since I was going to restart CGSpace and update the Discovery indexes anyways I decided to check for any straggling upper case AGROVOC entries and lower case them:</li>
 </ul>
 <pre tabindex="0"><code>dspace=# BEGIN;
-dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ '[[:upper:]]';
+dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ &#39;[[:upper:]]&#39;;
 UPDATE 164
 dspace=# COMMIT;
 </code></pre><ul>
@@ -314,8 +314,8 @@ $ git checkout origin/6_x-dev-atmire-modules
 $ npm install -g yarn
 $ chrt -b 0 mvn -U -Dmirage2.on=true -Dmirage2.deps.included=false -P \!dspace-lni,\!dspace-rdf,\!dspace-sword,\!dspace-swordv2,\!dspace-jspui clean package
 $ sudo su - postgres
-$ psql dspace -c 'CREATE EXTENSION pgcrypto;'
-$ psql dspace -c &quot;DELETE FROM schema_version WHERE version IN ('5.8.2015.12.03.3');&quot;
+$ psql dspace -c &#39;CREATE EXTENSION pgcrypto;&#39;
+$ psql dspace -c &#34;DELETE FROM schema_version WHERE version IN (&#39;5.8.2015.12.03.3&#39;);&#34;
 $ exit
 $ rm -rf /home/cgspace/config/spring
 $ ant update
@@ -338,7 +338,7 @@ $ sudo systemctl start tomcat7
 # pg_upgradecluster 9.6 main
 # pg_dropcluster 9.6 main
 # systemctl start postgresql
-# dpkg -l | grep postgresql | grep 9.6 | awk '{print $2}' | xargs dpkg -r
+# dpkg -l | grep postgresql | grep 9.6 | awk &#39;{print $2}&#39; | xargs dpkg -r
 </code></pre><ul>
 <li>Then I ran all system updates and rebooted the server&hellip;</li>
 <li>After the server came back up I re-ran the Ansible playbook to make sure all configs and services were updated</li>
@@ -372,13 +372,13 @@ Error sending email:
 <li>I copied the <code>mail.extraproperties = mail.smtp.starttls.enable=true</code> setting from the old DSpace 5 <code>dspace.cfg</code> and now the emails are working</li>
 <li>After the Discovery indexing finished I started processing the Solr stats one core and 2.5 million records at a time:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
 $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 2500000 -i statistics
 </code></pre><ul>
 <li>After about 6,000,000 records I got the same error that I&rsquo;ve gotten every time I test this migration process:</li>
 </ul>
-<pre tabindex="0"><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
-org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+<pre tabindex="0"><code>Exception: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
         at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
@@ -407,7 +407,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <ul>
 <li>There are almost 1,500 locks:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code>$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | wc -l
 1494
 </code></pre><ul>
 <li>I sent a mail to the dspace-tech mailing list to ask for help&hellip;
@@ -454,8 +454,8 @@ java.lang.OutOfMemoryError: Java heap space
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
-org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+<pre tabindex="0"><code>Exception: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
         at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
         at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
@@ -486,7 +486,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 <ul>
 <li>There are over 2,000 locks:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;' | wc -l
+<pre tabindex="0"><code>$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | wc -l
 2071
 </code></pre><h2 id="2020-11-18">2020-11-18</h2>
 <ul>
@@ -603,7 +603,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error whil
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>dspace=# \COPY (SELECT item_id,uuid FROM item WHERE in_archive='t' AND withdrawn='f' AND item_id IS NOT NULL) TO /tmp/2020-11-22-item-id2uuid.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT item_id,uuid FROM item WHERE in_archive=&#39;t&#39; AND withdrawn=&#39;f&#39; AND item_id IS NOT NULL) TO /tmp/2020-11-22-item-id2uuid.csv WITH CSV HEADER;
 COPY 87411
 </code></pre><ul>
 <li>Saving some notes I wrote down about faceting by community and collection in Solr, for potential use in the future in the DSpace Statistics API</li>
@@ -688,11 +688,11 @@ COPY 87411
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ xml sel -t -m '//value-pairs[@value-pairs-name=&quot;ilrisubject&quot;]/pair/displayed-value/text()' -c '.' -n dspace/config/input-forms.xml
+<pre tabindex="0"><code>$ xml sel -t -m &#39;//value-pairs[@value-pairs-name=&#34;ilrisubject&#34;]/pair/displayed-value/text()&#39; -c &#39;.&#39; -n dspace/config/input-forms.xml
 </code></pre><ul>
 <li>IWMI sent me a few new ORCID identifiers so I combined them with our existing ones as well as another ILRI one that Tezira asked me to update, filtered the unique ones, and then resolved their names using my <code>resolve-orcids.py</code> script:</li>
 </ul>
-<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt /tmp/hung.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2020-11-30-combined-orcids.txt
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/iwmi-orcids.txt /tmp/hung.txt | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq &gt; /tmp/2020-11-30-combined-orcids.txt
 $ ./resolve-orcids.py -i /tmp/2020-11-30-combined-orcids.txt -o /tmp/2020-11-30-combined-orcids-names.txt -d
 # sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
@@ -701,15 +701,15 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 </ul>
 <pre tabindex="0"><code>$ cat 2020-11-30-fix-hung-orcid.csv
 cg.creator.id,correct
-&quot;Hung Nguyen-Viet: 0000-0001-9877-0596&quot;,&quot;Hung Nguyen-Viet: 0000-0003-1549-2733&quot;
-&quot;Adriana Tofiño: 0000-0001-7115-7169&quot;,&quot;Adriana Tofiño Rivera: 0000-0001-7115-7169&quot;
-&quot;Cristhian Puerta Rodriguez: 0000-0001-5992-1697&quot;,&quot;David Puerta: 0000-0001-5992-1697&quot;
-&quot;Ermias Betemariam: 0000-0002-1955-6995&quot;,&quot;Ermias Aynekulu: 0000-0002-1955-6995&quot;
-&quot;Hirut Betaw: 0000-0002-1205-3711&quot;,&quot;Betaw Hirut: 0000-0002-1205-3711&quot;
-&quot;Megan Zandstra: 0000-0002-3326-6492&quot;,&quot;Megan McNeil Zandstra: 0000-0002-3326-6492&quot;
-&quot;Tolu Eyinla: 0000-0003-1442-4392&quot;,&quot;Toluwalope Emmanuel: 0000-0003-1442-4392&quot;
-&quot;VInay Nangia: 0000-0001-5148-8614&quot;,&quot;Vinay Nangia: 0000-0001-5148-8614&quot;
-$ ./fix-metadata-values.py -i 2020-11-30-fix-hung-orcid.csv -db dspace63 -u dspacetest -p 'dom@in34sniper' -f cg.creator.id -t 'correct' -m 240
+&#34;Hung Nguyen-Viet: 0000-0001-9877-0596&#34;,&#34;Hung Nguyen-Viet: 0000-0003-1549-2733&#34;
+&#34;Adriana Tofiño: 0000-0001-7115-7169&#34;,&#34;Adriana Tofiño Rivera: 0000-0001-7115-7169&#34;
+&#34;Cristhian Puerta Rodriguez: 0000-0001-5992-1697&#34;,&#34;David Puerta: 0000-0001-5992-1697&#34;
+&#34;Ermias Betemariam: 0000-0002-1955-6995&#34;,&#34;Ermias Aynekulu: 0000-0002-1955-6995&#34;
+&#34;Hirut Betaw: 0000-0002-1205-3711&#34;,&#34;Betaw Hirut: 0000-0002-1205-3711&#34;
+&#34;Megan Zandstra: 0000-0002-3326-6492&#34;,&#34;Megan McNeil Zandstra: 0000-0002-3326-6492&#34;
+&#34;Tolu Eyinla: 0000-0003-1442-4392&#34;,&#34;Toluwalope Emmanuel: 0000-0003-1442-4392&#34;
+&#34;VInay Nangia: 0000-0001-5148-8614&#34;,&#34;Vinay Nangia: 0000-0001-5148-8614&#34;
+$ ./fix-metadata-values.py -i 2020-11-30-fix-hung-orcid.csv -db dspace63 -u dspacetest -p &#39;dom@in34sniper&#39; -f cg.creator.id -t &#39;correct&#39; -m 240
 </code></pre><!-- raw HTML omitted -->
 
   

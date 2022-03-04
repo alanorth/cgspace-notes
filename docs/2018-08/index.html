@@ -46,7 +46,7 @@ Anyways, perhaps I should increase the JVM heap from 5120m to 6144m like we did 
 The server only has 8GB of RAM so we&rsquo;ll eventually need to upgrade to a larger one because we&rsquo;ll start starving the OS, PostgreSQL, and command line batch processes
 I ran all system updates on DSpace Test and rebooted it
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -179,13 +179,13 @@ I ran all system updates on DSpace Test and rebooted it
 <li>I did some quick sanity checks and small cleanups in Open Refine, checking for spaces, weird accents, and encoding errors</li>
 <li>Finally I did a test run with the <a href="https://gist.github.com/alanorth/df92cbfb54d762ba21b28f7cd83b6897"><code>fix-metadata-value.py</code></a> script:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
-$ ./delete-metadata-values.py -i 2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i 2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.contributor.affiliation -t correct -m 211
+$ ./delete-metadata-values.py -i 2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.contributor.affiliation -m 211
 </code></pre><h2 id="2018-08-16">2018-08-16</h2>
 <ul>
 <li>Generate a list of the top 1,500 authors on CGSpace for Sisay so he can create the controlled vocabulary:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc limit 1500) to /tmp/2018-08-16-top-1500-authors.csv with csv; 
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc limit 1500) to /tmp/2018-08-16-top-1500-authors.csv with csv; 
 </code></pre><ul>
 <li>Start working on adding the ORCID metadata to a handful of CIAT authors as requested by Elizabeth earlier this month</li>
 <li>I might need to overhaul the <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers-csv.py</a> script to be a little more robust about author order and ORCID metadata that might have been altered manually by editors after submission, as this script was written without that consideration</li>
@@ -198,14 +198,14 @@ $ ./delete-metadata-values.py -i 2018-08-15-Remove-11-Affiliations.csv -db dspac
 <pre tabindex="0"><code>$ sudo docker run --name dspacedb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6-alpine
 $ createuser -h localhost -U postgres --pwprompt dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
-$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
+$ psql -h localhost -U postgres dspacetest -c &#39;alter user dspacetest superuser;&#39;
 $ pg_restore -h localhost -U postgres -d dspacetest -O --role=dspacetest ~/Downloads/cgspace_2018-08-16.backup
-$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+$ psql -h localhost -U postgres dspacetest -c &#39;alter user dspacetest nosuperuser;&#39;
 $ psql -h localhost -U postgres -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
 </code></pre><h2 id="2018-08-19">2018-08-19</h2>
 <ul>
 <li>Keep working on the CIAT ORCID identifiers from Elizabeth</li>
-<li>In the spreadsheet she sent me there are some names with other versions in the database, so when it is obviously the same one (ie &ldquo;Schultze-Kraft, Rainer&rdquo; and &ldquo;Schultze-Kraft, R.&quot;) I will just tag them with ORCID identifiers too</li>
+<li>In the spreadsheet she sent me there are some names with other versions in the database, so when it is obviously the same one (ie &ldquo;Schultze-Kraft, Rainer&rdquo; and &ldquo;Schultze-Kraft, R.&rdquo;) I will just tag them with ORCID identifiers too</li>
 <li>This is less obvious and more error prone with names like &ldquo;Peters&rdquo; where there are many more authors</li>
 <li>I see some errors in the variations of names as well, for example:</li>
 </ul>
@@ -221,37 +221,37 @@ Verchot, Louis V.
 <li>In the end, I&rsquo;ll run the following CSV with my <a href="https://gist.github.com/alanorth/a49d85cd9c5dea89cddbe809813a7050">add-orcid-identifiers-csv.py</a> script:</li>
 </ul>
 <pre tabindex="0"><code>dc.contributor.author,cg.creator.id
-&quot;Campbell, Bruce&quot;,Bruce M Campbell: 0000-0002-0123-4859
-&quot;Campbell, Bruce M.&quot;,Bruce M Campbell: 0000-0002-0123-4859
-&quot;Campbell, B.M&quot;,Bruce M Campbell: 0000-0002-0123-4859
-&quot;Peters, Michael&quot;,Michael Peters: 0000-0003-4237-3916
-&quot;Peters, M.&quot;,Michael Peters: 0000-0003-4237-3916
-&quot;Peters, M.K.&quot;,Michael Peters: 0000-0003-4237-3916
-&quot;Tamene, Lulseged&quot;,Lulseged Tamene: 0000-0002-3806-8890
-&quot;Desta, Lulseged Tamene&quot;,Lulseged Tamene: 0000-0002-3806-8890
-&quot;Läderach, Peter&quot;,Peter Läderach: 0000-0001-8708-6318
-&quot;Lundy, Mark&quot;,Mark Lundy: 0000-0002-5241-3777
-&quot;Schultze-Kraft, Rainer&quot;,Rainer Schultze-Kraft: 0000-0002-4563-0044
-&quot;Schultze-Kraft, R.&quot;,Rainer Schultze-Kraft: 0000-0002-4563-0044
-&quot;Verchot, Louis&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Verchot, L&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Verchot, L. V.&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Verchot, L.V&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Verchot, L.V.&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Verchot, LV&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Verchot, Louis V.&quot;,Louis Verchot: 0000-0001-8309-6754
-&quot;Mukankusi, Clare&quot;,Clare Mukankusi: 0000-0001-7837-4545
-&quot;Mukankusi, Clare M.&quot;,Clare Mukankusi: 0000-0001-7837-4545
-&quot;Wyckhuys, Kris&quot;,Kris Wyckhuys: 0000-0003-0922-488X
-&quot;Wyckhuys, Kris A. G.&quot;,Kris Wyckhuys: 0000-0003-0922-488X
-&quot;Wyckhuys, Kris A.G.&quot;,Kris Wyckhuys: 0000-0003-0922-488X
-&quot;Chirinda, Ngonidzashe&quot;,Ngonidzashe Chirinda: 0000-0002-4213-6294
-&quot;Chirinda, Ngoni&quot;,Ngonidzashe Chirinda: 0000-0002-4213-6294
-&quot;Ngonidzashe, Chirinda&quot;,Ngonidzashe Chirinda: 0000-0002-4213-6294
+&#34;Campbell, Bruce&#34;,Bruce M Campbell: 0000-0002-0123-4859
+&#34;Campbell, Bruce M.&#34;,Bruce M Campbell: 0000-0002-0123-4859
+&#34;Campbell, B.M&#34;,Bruce M Campbell: 0000-0002-0123-4859
+&#34;Peters, Michael&#34;,Michael Peters: 0000-0003-4237-3916
+&#34;Peters, M.&#34;,Michael Peters: 0000-0003-4237-3916
+&#34;Peters, M.K.&#34;,Michael Peters: 0000-0003-4237-3916
+&#34;Tamene, Lulseged&#34;,Lulseged Tamene: 0000-0002-3806-8890
+&#34;Desta, Lulseged Tamene&#34;,Lulseged Tamene: 0000-0002-3806-8890
+&#34;Läderach, Peter&#34;,Peter Läderach: 0000-0001-8708-6318
+&#34;Lundy, Mark&#34;,Mark Lundy: 0000-0002-5241-3777
+&#34;Schultze-Kraft, Rainer&#34;,Rainer Schultze-Kraft: 0000-0002-4563-0044
+&#34;Schultze-Kraft, R.&#34;,Rainer Schultze-Kraft: 0000-0002-4563-0044
+&#34;Verchot, Louis&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Verchot, L&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Verchot, L. V.&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Verchot, L.V&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Verchot, L.V.&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Verchot, LV&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Verchot, Louis V.&#34;,Louis Verchot: 0000-0001-8309-6754
+&#34;Mukankusi, Clare&#34;,Clare Mukankusi: 0000-0001-7837-4545
+&#34;Mukankusi, Clare M.&#34;,Clare Mukankusi: 0000-0001-7837-4545
+&#34;Wyckhuys, Kris&#34;,Kris Wyckhuys: 0000-0003-0922-488X
+&#34;Wyckhuys, Kris A. G.&#34;,Kris Wyckhuys: 0000-0003-0922-488X
+&#34;Wyckhuys, Kris A.G.&#34;,Kris Wyckhuys: 0000-0003-0922-488X
+&#34;Chirinda, Ngonidzashe&#34;,Ngonidzashe Chirinda: 0000-0002-4213-6294
+&#34;Chirinda, Ngoni&#34;,Ngonidzashe Chirinda: 0000-0002-4213-6294
+&#34;Ngonidzashe, Chirinda&#34;,Ngonidzashe Chirinda: 0000-0002-4213-6294
 </code></pre><ul>
 <li>The invocation would be:</li>
 </ul>
-<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-08-16-ciat-orcid.csv -db dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./add-orcid-identifiers-csv.py -i 2018-08-16-ciat-orcid.csv -db dspace -u dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>I ran the script on DSpace Test and CGSpace and tagged a total of 986 ORCID identifiers</li>
 <li>Looking at the list of author affialitions from Peter one last time</li>
@@ -268,12 +268,12 @@ Verchot, Louis V.
 <li>This character all by itself is indicative of encoding issues in French, Italian, and Spanish names, for example: De´veloppement and Investigacio´n</li>
 <li>I will run the following on DSpace Test and CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -t correct -m 211
-$ ./delete-metadata-values.py -i /tmp/2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p 'fuuu' -f cg.contributor.affiliation -m 211
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-08-15-Correct-1083-Affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.contributor.affiliation -t correct -m 211
+$ ./delete-metadata-values.py -i /tmp/2018-08-15-Remove-11-Affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.contributor.affiliation -m 211
 </code></pre><ul>
 <li>Then force an update of the Discovery index on DSpace Test:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx512m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx512m&#34;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    72m12.570s
@@ -282,7 +282,7 @@ sys     2m2.461s
 </code></pre><ul>
 <li>And then on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 
 real    79m44.392s
@@ -292,9 +292,9 @@ sys     2m20.248s
 <li>Run system updates on DSpace Test and reboot the server</li>
 <li>In unrelated news, I see some newish Russian bot making a few thousand requests per day and not re-using its XMLUI session:</li>
 </ul>
-<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep '19/Aug/2018' | grep -c 5.9.6.51
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &#39;19/Aug/2018&#39; | grep -c 5.9.6.51
 1553
-# grep -c -E 'session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51' dspace.log.2018-08-19
+# grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=5.9.6.51&#39; dspace.log.2018-08-19
 1724
 </code></pre><ul>
 <li>I don&rsquo;t even know how its possible for the bot to use MORE sessions than total requests&hellip;</li>
@@ -391,11 +391,11 @@ $ dspace database migrate ignored
 <li>I exported a list of items from Listings and Reports with the following criteria: from year 2013 until now, have WLE subject <code>GENDER</code> or <code>GENDER POVERTY AND INSTITUTIONS</code>, and CRP <code>Water, Land and Ecosystems</code></li>
 <li>Then I extracted the Handle links from the report so I could export each item&rsquo;s metadata as CSV</li>
 </ul>
-<pre tabindex="0"><code>$ grep -o -E &quot;[0-9]{5}/[0-9]{0,5}&quot; listings-export.txt &gt; /tmp/iwmi-gender-items.txt
+<pre tabindex="0"><code>$ grep -o -E &#34;[0-9]{5}/[0-9]{0,5}&#34; listings-export.txt &gt; /tmp/iwmi-gender-items.txt
 </code></pre><ul>
 <li>Then on the DSpace server I exported the metadata for each item one by one:</li>
 </ul>
-<pre tabindex="0"><code>$ while read -r line; do dspace metadata-export -f &quot;/tmp/${line/\//-}.csv&quot; -i $line; sleep 2; done &lt; /tmp/iwmi-gender-items.txt
+<pre tabindex="0"><code>$ while read -r line; do dspace metadata-export -f &#34;/tmp/${line/\//-}.csv&#34; -i $line; sleep 2; done &lt; /tmp/iwmi-gender-items.txt
 </code></pre><ul>
 <li>But from here I realized that each of the fifty-nine items will have different columns in their CSVs, making it difficult to combine them</li>
 <li>I&rsquo;m not sure how to proceed without writing some script to parse and join the CSVs, and I don&rsquo;t think it&rsquo;s worth my time</li>

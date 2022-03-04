@@ -38,7 +38,7 @@ http://localhost:3000/solr/statistics/update?stream.body=%3Ccommit/%3E
 Then I reduced the JVM heap size from 6144 back to 5120m
 Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked the Ansible infrastructure scripts to support hosts choosing which distribution they want to use
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -218,7 +218,7 @@ Also, I switched it to use OpenJDK instead of Oracle Java, as well as re-worked 
 <li>I found some more IITA records that Sisay imported on 2018-03-23 that have invalid CRP names, so now I kinda want to check those ones!</li>
 <li>Combine the ORCID identifiers Abenet sent with our existing list and resolve their names using the <a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b">resolve-orcids.py</a> script:</li>
 </ul>
-<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/ilri-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; /tmp/2018-05-06-combined.txt
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/ilri-orcids.txt | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq &gt; /tmp/2018-05-06-combined.txt
 $ ./resolve-orcids.py -i /tmp/2018-05-06-combined.txt -o /tmp/2018-05-06-combined-names.txt -d
 # sort names, copy to cg-creator-id.xml, add XML formatting, and then format with tidy (preserving accents)
 $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
@@ -242,12 +242,12 @@ $ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-i
 <li>I could use it with <a href="https://github.com/okfn/reconcile-csv">reconcile-csv</a> or to populate a Solr instance for reconciliation</li>
 <li>This XPath expression gets close, but outputs all items on one line:</li>
 </ul>
-<pre tabindex="0"><code>$ xmllint --xpath '//value-pairs[@value-pairs-name=&quot;crpsubject&quot;]/pair/stored-value/node()' dspace/config/input-forms.xml        
+<pre tabindex="0"><code>$ xmllint --xpath &#39;//value-pairs[@value-pairs-name=&#34;crpsubject&#34;]/pair/stored-value/node()&#39; dspace/config/input-forms.xml        
 Agriculture for Nutrition and HealthBig DataClimate Change, Agriculture and Food SecurityExcellence in BreedingFishForests, Trees and AgroforestryGenebanksGrain Legumes and Dryland CerealsLivestockMaizePolicies, Institutions and MarketsRiceRoots, Tubers and BananasWater, Land and EcosystemsWheatAquatic Agricultural SystemsDryland CerealsDryland SystemsGrain LegumesIntegrated Systems for the Humid TropicsLivestock and Fish
 </code></pre><ul>
 <li>Maybe <code>xmlstarlet</code> is better:</li>
 </ul>
-<pre tabindex="0"><code>$ xmlstarlet sel -t -v '//value-pairs[@value-pairs-name=&quot;crpsubject&quot;]/pair/stored-value/text()' dspace/config/input-forms.xml
+<pre tabindex="0"><code>$ xmlstarlet sel -t -v &#39;//value-pairs[@value-pairs-name=&#34;crpsubject&#34;]/pair/stored-value/text()&#39; dspace/config/input-forms.xml
 Agriculture for Nutrition and Health
 Big Data
 Climate Change, Agriculture and Food Security
@@ -313,12 +313,12 @@ Livestock and Fish
 <pre tabindex="0"><code>import urllib2
 import re
 
-pattern = re.compile('.*10.1016.*')
+pattern = re.compile(&#39;.*10.1016.*&#39;)
 if pattern.match(value):
   get = urllib2.urlopen(value)
   return get.getcode()
 
-return &quot;blank&quot;
+return &#34;blank&#34;
 </code></pre><ul>
 <li>I used a regex to limit it to just some of the DOIs in this case because there were thousands of URLs</li>
 <li>Here the response code would be 200, 404, etc, or &ldquo;blank&rdquo; if there is no URL for that item</li>
@@ -348,7 +348,7 @@ return &quot;blank&quot;
 </ul>
 <pre tabindex="0"><code>$ ./bin/solr start
 $ ./bin/solr create_core -c countries
-$ curl -X POST -H 'Content-type:application/json' --data-binary '{&quot;add-field&quot;: {&quot;name&quot;:&quot;country&quot;, &quot;type&quot;:&quot;text_en&quot;, &quot;multiValued&quot;:false, &quot;stored&quot;:true}}' http://localhost:8983/solr/countries/schema
+$ curl -X POST -H &#39;Content-type:application/json&#39; --data-binary &#39;{&#34;add-field&#34;: {&#34;name&#34;:&#34;country&#34;, &#34;type&#34;:&#34;text_en&#34;, &#34;multiValued&#34;:false, &#34;stored&#34;:true}}&#39; http://localhost:8983/solr/countries/schema
 $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 </code></pre><ul>
 <li>It still doesn&rsquo;t catch simple mistakes like &ldquo;ALBANI&rdquo; or &ldquo;AL BANIA&rdquo; for &ldquo;ALBANIA&rdquo;, and it doesn&rsquo;t return scores, so I have to select matches manually:</li>
@@ -359,7 +359,7 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 </ul>
 <pre tabindex="0"><code>&lt;defaultSearchField&gt;search_text&lt;/defaultSearchField&gt;
 ...
-&lt;copyField source=&quot;*&quot; dest=&quot;search_text&quot;/&gt;
+&lt;copyField source=&#34;*&#34; dest=&#34;search_text&#34;/&gt;
 </code></pre><ul>
 <li>Actually, I wonder how much of their schema I could just copy&hellip;</li>
 <li>Apparently the default search field is the <code>df</code> parameter and you could technically just add it to the query string, so no need to bother with that in the schema now</li>
@@ -370,7 +370,7 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <ul>
 <li>Discuss GDPR with James Stapleton
 <ul>
-<li>As far as I see it, we are &ldquo;Data Controllers&rdquo; on CGSpace because we store peoples' names, emails, and phone numbers if they register</li>
+<li>As far as I see it, we are &ldquo;Data Controllers&rdquo; on CGSpace because we store peoples&rsquo; names, emails, and phone numbers if they register</li>
 <li>We set cookies on the user&rsquo;s computer, but these do not contain personally identifiable information (PII) and they are &ldquo;session&rdquo; cookies which are deleted when the user closes their browser</li>
 <li>We use Google Analytics to track website usage, which makes Google the &ldquo;Data Processor&rdquo; and in this case we merely need to <em>limit</em> or <em>obfuscate</em> the information we send to them</li>
 <li>As the only personally identifiable information we send is the user&rsquo;s IP address, I think we only need to enable <a href="https://support.google.com/analytics/answer/2763052">IP Address Anonymization</a> in our <code>analytics.js</code> code snippets</li>
@@ -381,8 +381,8 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <li>I created and merged a pull request to fix the sorting issue in Listings and Reports (<a href="https://github.com/ilri/DSpace/pull/374">#374</a>)</li>
 <li>Regarding the IP Address Anonymization for GDPR, I ammended the Google Analytics snippet in <code>page-structure-alterations.xsl</code> to:</li>
 </ul>
-<pre tabindex="0"><code>ga('send', 'pageview', {
-  'anonymizeIp': true
+<pre tabindex="0"><code>ga(&#39;send&#39;, &#39;pageview&#39;, {
+  &#39;anonymizeIp&#39;: true
 });
 </code></pre><ul>
 <li>I tested loading a certain page before and after adding this and afterwards I saw that the parameter <code>aip=1</code> was being sent with the analytics response to Google</li>
@@ -439,7 +439,7 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <ul>
 <li>I&rsquo;m investigating how many non-CGIAR users we have registered on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select email, netid from eperson where email not like '%cgiar.org%' and email like '%@%';
+<pre tabindex="0"><code>dspace=# select email, netid from eperson where email not like &#39;%cgiar.org%&#39; and email like &#39;%@%&#39;;
 </code></pre><ul>
 <li>We might need to do something regarding these users for GDPR compliance because we have their names, emails, and potentially phone numbers</li>
 <li>I decided that I will just use the cookieconsent script as is, since it looks good and technically does set the cookie with &ldquo;allow&rdquo; or &ldquo;dismiss&rdquo;</li>
@@ -471,8 +471,8 @@ $ ./bin/post -c countries ~/src/git/DSpace/2018-05-10-countries.csv
 <li>I generated a list of CIFOR duplicates from the <code>CIFOR_May_9</code> collection using the Atmire MQM module and then dumped the HTML source so I could process it for sending to Vika</li>
 <li>I used grep to filter all relevant handle lines from the HTML source then used sed to insert a newline before each &ldquo;Item1&rdquo; line (as the duplicates are grouped like Item1, Item2, Item3 for each set of duplicates):</li>
 </ul>
-<pre tabindex="0"><code>$ grep -E 'aspect.duplicatechecker.DuplicateResults.field.del_handle_[0-9]{1,3}_Item' ~/Desktop/https\ _dspacetest.cgiar.org_atmire_metadata-quality_duplicate-checker.html &gt; ~/cifor-duplicates.txt
-$ sed 's/.*Item1.*/\n&amp;/g' ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cleaned.txt
+<pre tabindex="0"><code>$ grep -E &#39;aspect.duplicatechecker.DuplicateResults.field.del_handle_[0-9]{1,3}_Item&#39; ~/Desktop/https\ _dspacetest.cgiar.org_atmire_metadata-quality_duplicate-checker.html &gt; ~/cifor-duplicates.txt
+$ sed &#39;s/.*Item1.*/\n&amp;/g&#39; ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cleaned.txt
 </code></pre><ul>
 <li>I told Vika to look through the list manually and indicate which ones are indeed duplicates that we should delete, and which ones to map to CIFOR&rsquo;s collection</li>
 <li>A few weeks ago Peter wanted a list of authors from the ILRI collections, so I need to find a way to get the handles of all those collections</li>
@@ -486,7 +486,7 @@ $ sed 's/.*Item1.*/\n&amp;/g' ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cle
 </code></pre><ul>
 <li>Then I format the list of handles and put it into this SQL query to export authors from items ONLY in those collections (too many to list here):</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in ('10568/67236','10568/67274',...))) group by text_value order by count desc) to /tmp/ilri-authors.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 AND resource_id IN (select item_id from collection2item where collection_id IN (select resource_id from handle where handle in (&#39;10568/67236&#39;,&#39;10568/67274&#39;,...))) group by text_value order by count desc) to /tmp/ilri-authors.csv with csv;
 </code></pre><h2 id="2018-05-31">2018-05-31</h2>
 <ul>
 <li>Clarify CGSpace&rsquo;s usage of Google Analytics and personally identifiable information during user registration for Bioversity team who had been asking about GDPR compliance</li>
@@ -497,9 +497,9 @@ $ sed 's/.*Item1.*/\n&amp;/g' ~/cifor-duplicates.txt &gt; ~/cifor-duplicates-cle
 $ docker run --name dspacedb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.5-alpine
 $ createuser -h localhost -U postgres --pwprompt dspacetest
 $ createdb -h localhost -U postgres -O dspacetest --encoding=UNICODE dspacetest
-$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest superuser;'
+$ psql -h localhost -U postgres dspacetest -c &#39;alter user dspacetest superuser;&#39;
 $ pg_restore -h localhost -O -U dspacetest -d dspacetest -W -h localhost ~/Downloads/cgspace_2018-05-30.backup
-$ psql -h localhost -U postgres dspacetest -c 'alter user dspacetest nosuperuser;'
+$ psql -h localhost -U postgres dspacetest -c &#39;alter user dspacetest nosuperuser;&#39;
 $ psql -h localhost -U dspacetest -f ~/src/git/DSpace/dspace/etc/postgres/update-sequences.sql dspacetest
 $ psql -h localhost -U postgres dspacetest
 </code></pre>

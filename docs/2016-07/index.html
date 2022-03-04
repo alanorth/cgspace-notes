@@ -44,7 +44,7 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 
 In this case the select query was showing 95 results before the update
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -135,9 +135,9 @@ In this case the select query was showing 95 results before the update
 <li>Add <code>dc.description.sponsorship</code> to Discovery sidebar facets and make investors clickable in item view (<a href="https://github.com/ilri/DSpace/issues/232">#232</a>)</li>
 <li>I think this query should find and replace all authors that have &ldquo;,&rdquo; at the end of their names:</li>
 </ul>
-<pre tabindex="0"><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, '(^.+?),$', '\1') where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
+<pre tabindex="0"><code>dspacetest=# update metadatavalue set text_value = regexp_replace(text_value, &#39;(^.+?),$&#39;, &#39;\1&#39;) where metadata_field_id=3 and resource_type_id=2 and text_value ~ &#39;^.+?,$&#39;;
 UPDATE 95
-dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ '^.+?,$';
+dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and resource_type_id=2 and text_value ~ &#39;^.+?,$&#39;;
  text_value
 ------------
 (0 rows)
@@ -158,7 +158,7 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <li>We <em>really</em> only need <code>statistics</code> and <code>authority</code> but meh</li>
 <li>Fix metadata for species on DSpace Test:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 94 -d dspacetest -u dspacetest -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 94 -d dspacetest -u dspacetest -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>Will run later on CGSpace</li>
 <li>A user is still having problems with Sherpa/Romeo causing crashes during the submission process when the journal is &ldquo;ungraded&rdquo;</li>
@@ -169,7 +169,7 @@ dspacetest=# select text_value from  metadatavalue where metadata_field_id=3 and
 <ul>
 <li>Delete 23 blank metadata values from CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>cgspace=# delete from metadatavalue where resource_type_id=2 and text_value='';
+<pre tabindex="0"><code>cgspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
 DELETE 23
 </code></pre><ul>
 <li>Complete phase three of metadata migration, for the following fields:
@@ -188,9 +188,9 @@ DELETE 23
 </li>
 <li>Also, run fixes and deletes for species and author affiliations (over 1000 corrections!)</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 212 -d dspace -u dspace -p 'fuuu'
-$ ./fix-metadata-values.py -i Affiliations-Fix-1045-Peter-Abenet.csv -f dc.contributor.affiliation -t Correct -m 211 -d dspace -u dspace -p 'fuuu'
-$ ./delete-metadata-values.py -f dc.contributor.affiliation -i Affiliations-Delete-Peter-Abenet.csv -m 211 -u dspace -d dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Species-Peter-Fix.csv -f dc.Species -t CORRECT -m 212 -d dspace -u dspace -p &#39;fuuu&#39;
+$ ./fix-metadata-values.py -i Affiliations-Fix-1045-Peter-Abenet.csv -f dc.contributor.affiliation -t Correct -m 211 -d dspace -u dspace -p &#39;fuuu&#39;
+$ ./delete-metadata-values.py -f dc.contributor.affiliation -i Affiliations-Delete-Peter-Abenet.csv -m 211 -u dspace -d dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>I then ran all server updates and rebooted the server</li>
 </ul>
@@ -221,7 +221,7 @@ org.apache.commons.dbcp.SQLNestedException: Cannot get a connection, pool error 
 </code></pre><ul>
 <li>I suspect it&rsquo;s someone hitting REST too much:</li>
 </ul>
-<pre tabindex="0"><code># awk '{print $1}' /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
+<pre tabindex="0"><code># awk &#39;{print $1}&#39; /var/log/nginx/rest.log  | sort -n | uniq -c | sort -h | tail -n 3
     710 66.249.78.38
    1781 181.118.144.29
   24904 70.32.99.142

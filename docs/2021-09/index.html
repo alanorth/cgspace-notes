@@ -48,7 +48,7 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 
 
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -154,9 +154,9 @@ The syntax Moayad showed me last month doesn&rsquo;t seem to honor the search qu
 <ul>
 <li>Update Docker images on AReS server (linode20) and rebuild OpenRXV:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
-$ docker-compose build
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+</span></span><span style="display:flex;"><span>$ docker-compose build
+</span></span></code></pre></div><ul>
 <li>Then run system updates and reboot the server
 <ul>
 <li>After the system came back up I started a fresh re-harvesting</li>
@@ -201,8 +201,8 @@ $ docker-compose build
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ vipsthumbnail ARRTB2020ST.pdf -s x600 -o <span style="color:#e6db74">&#39;%s.jpg[Q=85,optimize_coding,strip]&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ vipsthumbnail ARRTB2020ST.pdf -s x600 -o <span style="color:#e6db74">&#39;%s.jpg[Q=85,optimize_coding,strip]&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Looking at the PDF&rsquo;s metadata I see:
 <ul>
 <li>Producer: iLovePDF</li>
@@ -236,11 +236,11 @@ $ docker-compose build
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2021-09-15-add-orcids.csv                                                                                  
-dc.contributor.author,cg.creator.identifier
-&#34;Kotchofa, Pacem&#34;,&#34;Pacem Kotchofa: 0000-0002-1640-8807&#34;
-$ ./ilri/add-orcid-identifiers-csv.py -i 2021-09-15-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuuu&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2021-09-15-add-orcids.csv                                                                                  
+</span></span><span style="display:flex;"><span>dc.contributor.author,cg.creator.identifier
+</span></span><span style="display:flex;"><span>&#34;Kotchofa, Pacem&#34;,&#34;Pacem Kotchofa: 0000-0002-1640-8807&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i 2021-09-15-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuuu&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Meeting with Leroy Mwanzia and some other Alliance people about depositing to CGSpace via API
 <ul>
 <li>I gave them some technical information about the CGSpace API and links to the controlled vocabularies and metadata registries we are using</li>
@@ -273,42 +273,42 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-09-15-add-orcids.csv -db dspace -u
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_stat_activity&#39;</span> | wc -l
-63
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_stat_activity&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>63
+</span></span></code></pre></div><ul>
 <li>Load on the server is under 1.0, and there are only about 1,000 XMLUI sessions, which seems to be normal for this time of day according to Munin</li>
 <li>But the DSpace log file shows tons of database issues:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c <span style="color:#e6db74">&#34;Timeout waiting for idle object&#34;</span> dspace.log.2021-09-17 
-14779
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep -c <span style="color:#e6db74">&#34;Timeout waiting for idle object&#34;</span> dspace.log.2021-09-17 
+</span></span><span style="display:flex;"><span>14779
+</span></span></code></pre></div><ul>
 <li>The earliest one I see is around midnight (now is 2PM):</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">2021-09-17 00:01:49,572 WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ SQL Error: 0, SQLState: null
-2021-09-17 00:01:49,572 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ Cannot get a connection, pool error Timeout waiting for idle object
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2021-09-17 00:01:49,572 WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ SQL Error: 0, SQLState: null
+</span></span><span style="display:flex;"><span>2021-09-17 00:01:49,572 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper @ Cannot get a connection, pool error Timeout waiting for idle object
+</span></span></code></pre></div><ul>
 <li>But I was definitely logged into the site this morning so there were no issues then&hellip;</li>
 <li>It seems that a few errors are normal, but there&rsquo;s obviously something wrong today:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c <span style="color:#e6db74">&#34;Timeout waiting for idle object&#34;</span> dspace.log.2021-09-*
-dspace.log.2021-09-01:116
-dspace.log.2021-09-02:163
-dspace.log.2021-09-03:77
-dspace.log.2021-09-04:13
-dspace.log.2021-09-05:310
-dspace.log.2021-09-06:0
-dspace.log.2021-09-07:29
-dspace.log.2021-09-08:86
-dspace.log.2021-09-09:24
-dspace.log.2021-09-10:26
-dspace.log.2021-09-11:12
-dspace.log.2021-09-12:5
-dspace.log.2021-09-13:10
-dspace.log.2021-09-14:102
-dspace.log.2021-09-15:542
-dspace.log.2021-09-16:368
-dspace.log.2021-09-17:15235
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep -c <span style="color:#e6db74">&#34;Timeout waiting for idle object&#34;</span> dspace.log.2021-09-*
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-01:116
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-02:163
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-03:77
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-04:13
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-05:310
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-06:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-07:29
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-08:86
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-09:24
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-10:26
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-11:12
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-12:5
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-13:10
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-14:102
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-15:542
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-16:368
+</span></span><span style="display:flex;"><span>dspace.log.2021-09-17:15235
+</span></span></code></pre></div><ul>
 <li>I restarted the server and DSpace came up fine&hellip; so it must have been some kind of fluke</li>
 <li>Continue working on cleaning up and annotating the metadata registry on CGSpace
 <ul>
@@ -338,9 +338,9 @@ dspace.log.2021-09-17:15235
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
-$ docker-compose build
-</code></pre></div><h2 id="2021-09-20">2021-09-20</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+</span></span><span style="display:flex;"><span>$ docker-compose build
+</span></span></code></pre></div><h2 id="2021-09-20">2021-09-20</h2>
 <ul>
 <li>I synchronized the production CGSpace PostreSQL, Solr, and Assetstore data with DSpace Test</li>
 <li>Over the weekend a few users reported that they could not log into CGSpace
@@ -349,10 +349,10 @@ $ docker-compose build
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b <span style="color:#e6db74">&#34;dc=cgiarad,dc=org&#34;</span> -D <span style="color:#e6db74">&#34;cgspace-ldap-account@cgiarad.org&#34;</span> -W <span style="color:#e6db74">&#34;(sAMAccountName=someaccountnametocheck)&#34;</span>
-Enter LDAP Password: 
-ldap_sasl_bind(SIMPLE): Can&#39;t contact LDAP server (-1)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b <span style="color:#e6db74">&#34;dc=cgiarad,dc=org&#34;</span> -D <span style="color:#e6db74">&#34;cgspace-ldap-account@cgiarad.org&#34;</span> -W <span style="color:#e6db74">&#34;(sAMAccountName=someaccountnametocheck)&#34;</span>
+</span></span><span style="display:flex;"><span>Enter LDAP Password: 
+</span></span><span style="display:flex;"><span>ldap_sasl_bind(SIMPLE): Can&#39;t contact LDAP server (-1)
+</span></span></code></pre></div><ul>
 <li>I sent a message to CGNET to ask about the server settings and see if our IP is still whitelisted
 <ul>
 <li>It turns out that CGNET created a new Active Directory server (AZCGNEROOT3.cgiarad.org) and decomissioned the old one last week</li>
@@ -361,8 +361,8 @@ ldap_sasl_bind(SIMPLE): Can&#39;t contact LDAP server (-1)
 </li>
 <li>Create another test account for Rafael from Bioversity-CIAT to submit some items to DSpace Test:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace user -a -m tip-submit@cgiar.org -g CIAT -s Submit -p <span style="color:#e6db74">&#39;fuuuuuuuu&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace user -a -m tip-submit@cgiar.org -g CIAT -s Submit -p <span style="color:#e6db74">&#39;fuuuuuuuu&#39;</span>
+</span></span></code></pre></div><ul>
 <li>I added the account to the Alliance Admins account, which is should allow him to submit to any Alliance collection
 <ul>
 <li>According to my notes from <a href="/cgspace-notes/2020-10/">2020-10</a> the account must be in the admin group in order to submit via the REST API</li>
@@ -371,13 +371,13 @@ ldap_sasl_bind(SIMPLE): Can&#39;t contact LDAP server (-1)
 <li>Run <code>dspace cleanup -v</code> process on CGSpace to clean up old bitstreams</li>
 <li>Export lists of authors, donors, and affiliations for Peter Ballantyne to clean up:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;dc.contributor.author&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 3 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-authors.csv WITH CSV HEADER;
-COPY 80901
-localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.donor&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 248 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-donors.csv WITH CSV HEADER;
-COPY 1274
-localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-affiliations.csv WITH CSV HEADER;
-COPY 8091
-</code></pre></div><h2 id="2021-09-23">2021-09-23</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;dc.contributor.author&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 3 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-authors.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 80901
+</span></span><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.donor&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 248 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-donors.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 1274
+</span></span><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-09-20-affiliations.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 8091
+</span></span></code></pre></div><h2 id="2021-09-23">2021-09-23</h2>
 <ul>
 <li>Peter sent me back the corrections for the affiliations
 <ul>
@@ -386,24 +386,24 @@ COPY 8091
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csv-metadata-quality -i ~/Downloads/2021-09-20-affiliations.csv -o /tmp/affiliations.csv -x cg.contributor.affiliation
-$ csvgrep -c <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#e6db74">&#39;DELETE&#39;</span> /tmp/affiliations.csv &gt; /tmp/affiliations-delete.csv
-$ csvgrep -c <span style="color:#e6db74">&#39;correct&#39;</span> -r <span style="color:#e6db74">&#39;^.+$&#39;</span> /tmp/affiliations.csv | csvgrep -i -c <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#e6db74">&#39;DELETE&#39;</span> &gt; /tmp/affiliations-fix.csv
-$ ./ilri/fix-metadata-values.py -i /tmp/affiliations-fix.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.contributor.affiliation -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">211</span>
-$ ./ilri/delete-metadata-values.py -i /tmp/affiliations-fix.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.contributor.affiliation -m <span style="color:#ae81ff">211</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csv-metadata-quality -i ~/Downloads/2021-09-20-affiliations.csv -o /tmp/affiliations.csv -x cg.contributor.affiliation
+</span></span><span style="display:flex;"><span>$ csvgrep -c <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#e6db74">&#39;DELETE&#39;</span> /tmp/affiliations.csv &gt; /tmp/affiliations-delete.csv
+</span></span><span style="display:flex;"><span>$ csvgrep -c <span style="color:#e6db74">&#39;correct&#39;</span> -r <span style="color:#e6db74">&#39;^.+$&#39;</span> /tmp/affiliations.csv | csvgrep -i -c <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#e6db74">&#39;DELETE&#39;</span> &gt; /tmp/affiliations-fix.csv
+</span></span><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i /tmp/affiliations-fix.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.contributor.affiliation -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">211</span>
+</span></span><span style="display:flex;"><span>$ ./ilri/delete-metadata-values.py -i /tmp/affiliations-fix.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.contributor.affiliation -m <span style="color:#ae81ff">211</span>
+</span></span></code></pre></div><ul>
 <li>Then I updated the controlled vocabulary for affiliations by exporting the top 1,000 used terms:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC LIMIT 1000) to /tmp/2021-09-23-affiliations.csv WITH CSV HEADER;
-$ csvcut -c <span style="color:#ae81ff">1</span> /tmp/2021-09-23-affiliations.csv | sed 1d &gt; /tmp/affiliations.txt
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC LIMIT 1000) to /tmp/2021-09-23-affiliations.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#ae81ff">1</span> /tmp/2021-09-23-affiliations.csv | sed 1d &gt; /tmp/affiliations.txt
+</span></span></code></pre></div><ul>
 <li>Peter also sent me 310 corrections and 234 deletions for donors so I applied those and updated the controlled vocabularies too</li>
 <li>Move some One CGIAR-related collections around the CGSpace hierarchy for Peter Ballantyne</li>
 <li>Mohammed Salem asked me for an ID to UUID mapping for CGSpace collections, so I generated one similar to the ID one I sent him in 2020-11:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT collection_id,uuid FROM collection WHERE collection_id IS NOT NULL) TO /tmp/2021-09-23-collection-id2uuid.csv WITH CSV HEADER;
-COPY 1139
-</code></pre></div><h2 id="2021-09-24">2021-09-24</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT collection_id,uuid FROM collection WHERE collection_id IS NOT NULL) TO /tmp/2021-09-23-collection-id2uuid.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 1139
+</span></span></code></pre></div><h2 id="2021-09-24">2021-09-24</h2>
 <ul>
 <li>Peter and Abenet agreed that we should consider converting more of our UPPER CASE metadata values to Title Case
 <ul>
@@ -435,33 +435,33 @@ COPY 1139
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=INITCAP(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=231;
-UPDATE 2903
-localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.coverage.subregion&#34; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 231) to /tmp/2021-09-24-subregions.txt;
-COPY 1200
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=INITCAP(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=231;
+</span></span><span style="display:flex;"><span>UPDATE 2903
+</span></span><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.coverage.subregion&#34; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 231) to /tmp/2021-09-24-subregions.txt;
+</span></span><span style="display:flex;"><span>COPY 1200
+</span></span></code></pre></div><ul>
 <li>Then I process the list for matches with my <code>subdivision-lookup.py</code> script, and extract only the values that matched:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/subdivision-lookup.py -i /tmp/2021-09-24-subregions.txt -o /tmp/subregions.csv
-$ csvgrep -c matched -m <span style="color:#e6db74">&#39;true&#39;</span> /tmp/subregions.csv | csvcut -c <span style="color:#ae81ff">1</span> | sed 1d &gt; /tmp/subregions-matched.txt
-$ wc -l /tmp/subregions-matched.txt 
-81 /tmp/subregions-matched.txt
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/subdivision-lookup.py -i /tmp/2021-09-24-subregions.txt -o /tmp/subregions.csv
+</span></span><span style="display:flex;"><span>$ csvgrep -c matched -m <span style="color:#e6db74">&#39;true&#39;</span> /tmp/subregions.csv | csvcut -c <span style="color:#ae81ff">1</span> | sed 1d &gt; /tmp/subregions-matched.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/subregions-matched.txt 
+</span></span><span style="display:flex;"><span>81 /tmp/subregions-matched.txt
+</span></span></code></pre></div><ul>
 <li>Then I updated the controlled vocabulary in the submission forms</li>
 <li>I did the same for <code>dcterms.audience</code>, taking special care to a few all-caps values:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=INITCAP(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value != &#39;NGOS&#39; AND text_value != &#39;CGIAR&#39;;
-localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=&#39;NGOs&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value = &#39;NGOS&#39;;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=INITCAP(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value != &#39;NGOS&#39; AND text_value != &#39;CGIAR&#39;;
+</span></span><span style="display:flex;"><span>localhost/dspace63= &gt; UPDATE metadatavalue SET text_value=&#39;NGOs&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value = &#39;NGOS&#39;;
+</span></span></code></pre></div><ul>
 <li>Update submission form comment for DOIs because it was still recommending people use the &ldquo;dx.doi.org&rdquo; format even though I batch updated all DOIs to the &ldquo;doi.org&rdquo; format a few times in the last year
 <ul>
 <li>Then I updated all existing metadata to the new format again:</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, &#39;https://dx.doi.org&#39;, &#39;https://doi.org&#39;) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 220 AND text_value LIKE &#39;https://dx.doi.org%&#39;;
-UPDATE 49
-</code></pre></div><h2 id="2021-09-26">2021-09-26</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value = regexp_replace(text_value, &#39;https://dx.doi.org&#39;, &#39;https://doi.org&#39;) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 220 AND text_value LIKE &#39;https://dx.doi.org%&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 49
+</span></span></code></pre></div><h2 id="2021-09-26">2021-09-26</h2>
 <ul>
 <li>Mohammed Salem told me last week that MELSpace and WorldFish have been upgraded to DSpace 6 so I updated the repository setup in AReS to use the UUID field instead of IDs
 <ul>
@@ -489,26 +489,26 @@ UPDATE 49
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c <span style="color:#e6db74">&#39;id,collection,dc.title[en_US]&#39;</span> ~/Downloads/10568-106990.csv &gt; /tmp/2021-09-28-alliance-reports.csv
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,collection,dc.title[en_US]&#39;</span> ~/Downloads/10568-106990.csv &gt; /tmp/2021-09-28-alliance-reports.csv
+</span></span></code></pre></div><ul>
 <li>She sent it back fairly quickly with a new column marked &ldquo;Move&rdquo; so I extracted those items that matched and set them to the new owning collection:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvgrep -c Move -m <span style="color:#e6db74">&#39;Yes&#39;</span> ~/Downloads/2021_28_09_alliance_reports_csv.csv | csvcut -c 1,2 | sed <span style="color:#e6db74">&#39;s_10568/106990_10568/111506_&#39;</span> &gt; /tmp/alliance-move.csv
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvgrep -c Move -m <span style="color:#e6db74">&#39;Yes&#39;</span> ~/Downloads/2021_28_09_alliance_reports_csv.csv | csvcut -c 1,2 | sed <span style="color:#e6db74">&#39;s_10568/106990_10568/111506_&#39;</span> &gt; /tmp/alliance-move.csv
+</span></span></code></pre></div><ul>
 <li>Maria from the Alliance emailed us to say that approving submissions was slow on CGSpace
 <ul>
 <li>I looked at the PostgreSQL activity and it seems low:</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c &#39;SELECT * FROM pg_stat_activity&#39; | wc -l
-59
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>postgres@linode18:~$ psql -c &#39;SELECT * FROM pg_stat_activity&#39; | wc -l
+</span></span><span style="display:flex;"><span>59
+</span></span></code></pre></div><ul>
 <li>Locks look high though:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | sort | uniq -c | wc -l
-1154
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>postgres@linode18:~$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | sort | uniq -c | wc -l
+</span></span><span style="display:flex;"><span>1154
+</span></span></code></pre></div><ul>
 <li>Indeed it seems something started causing locks to increase yesterday:</li>
 </ul>
 <p><img src="/cgspace-notes/2021/09/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
@@ -520,9 +520,9 @@ UPDATE 49
 <li>The number of DSpace sessions is normal, hovering around 1,000&hellip;</li>
 <li>Looking closer at the PostgreSQL activity log, I see the locks are all held by the <code>dspaceCli</code> user&hellip; which seem weird:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">postgres@linode18:~$ psql -c &#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid WHERE application_name=&#39;dspaceCli&#39;;&#34; | wc -l
-1096
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>postgres@linode18:~$ psql -c &#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid WHERE application_name=&#39;dspaceCli&#39;;&#34; | wc -l
+</span></span><span style="display:flex;"><span>1096
+</span></span></code></pre></div><ul>
 <li>Now I&rsquo;m wondering why there are no connections from <code>dspaceApi</code> or <code>dspaceWeb</code>. Could it be that our Tomcat JDBC pooling via JNDI isn&rsquo;t working?
 <ul>
 <li>I see the same thing on DSpace Test hmmmm</li>
@@ -536,14 +536,14 @@ UPDATE 49
 <ul>
 <li>Export a list of ILRI subjects from CGSpace to validate against AGROVOC for Peter and Abenet:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 203) to /tmp/2021-09-29-ilri-subject.txt;
-COPY 149
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 203) to /tmp/2021-09-29-ilri-subject.txt;
+</span></span><span style="display:flex;"><span>COPY 149
+</span></span></code></pre></div><ul>
 <li>Then validate and format the matches:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/agrovoc-lookup.py -i /tmp/2021-09-29-ilri-subject.txt -o /tmp/2021-09-29-ilri-subjects.csv -d
-$ csvcut -c subject,<span style="color:#e6db74">&#39;match type&#39;</span> /tmp/2021-09-29-ilri-subjects.csv | sed -e <span style="color:#e6db74">&#39;s/match type/matched/&#39;</span> -e <span style="color:#e6db74">&#39;s/\(alt\|pref\)Label/yes/&#39;</span> &gt; /tmp/2021-09-29-ilri-subjects2.csv
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/agrovoc-lookup.py -i /tmp/2021-09-29-ilri-subject.txt -o /tmp/2021-09-29-ilri-subjects.csv -d
+</span></span><span style="display:flex;"><span>$ csvcut -c subject,<span style="color:#e6db74">&#39;match type&#39;</span> /tmp/2021-09-29-ilri-subjects.csv | sed -e <span style="color:#e6db74">&#39;s/match type/matched/&#39;</span> -e <span style="color:#e6db74">&#39;s/\(alt\|pref\)Label/yes/&#39;</span> &gt; /tmp/2021-09-29-ilri-subjects2.csv
+</span></span></code></pre></div><ul>
 <li>I talked to Salem about depositing from MEL to CGSpace
 <ul>
 <li>He mentioned that the one issue is that when you deposit to a workflow you don&rsquo;t get a Handle or any kind of identifier back!</li>

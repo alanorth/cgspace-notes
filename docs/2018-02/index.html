@@ -30,7 +30,7 @@ We don&rsquo;t need to distinguish between internal and external works, so that 
 Yesterday I figured out how to monitor DSpace sessions using JMX
 I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-plugins-java package and used the stuff I discovered about JMX in 2018-01
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -139,8 +139,8 @@ v_oai.value 0
 <li>I finally took a look at the second round of cleanups Peter had sent me for author affiliations in mid January</li>
 <li>After trimming whitespace and quickly scanning for encoding errors I applied them on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./delete-metadata-values.py -i /tmp/2018-02-03-Affiliations-12-deletions.csv -f cg.contributor.affiliation -m 211 -d dspace -u dspace -p 'fuuu'
-$ ./fix-metadata-values.py -i /tmp/2018-02-03-Affiliations-1116-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./delete-metadata-values.py -i /tmp/2018-02-03-Affiliations-12-deletions.csv -f cg.contributor.affiliation -m 211 -d dspace -u dspace -p &#39;fuuu&#39;
+$ ./fix-metadata-values.py -i /tmp/2018-02-03-Affiliations-1116-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>Then I started a full Discovery reindex:</li>
 </ul>
@@ -152,12 +152,12 @@ sys     2m29.088s
 </code></pre><ul>
 <li>Generate a new list of affiliations for Peter to sort through:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'affiliation') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;affiliation&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
 COPY 3723
 </code></pre><ul>
 <li>Oh, and it looks like we processed over 3.1 million requests in January, up from 2.9 million in <a href="/cgspace-notes/2017-12/">December</a>:</li>
 </ul>
-<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &quot;[0-9]{1,2}/Jan/2018&quot;
+<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &#34;[0-9]{1,2}/Jan/2018&#34;
 3126109
 
 real    0m23.839s
@@ -167,14 +167,14 @@ sys     0m1.905s
 <ul>
 <li>Toying with correcting authors with trailing spaces via PostgreSQL:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value=REGEXP_REPLACE(text_value, '\s+$' , '') where resource_type_id=2 and metadata_field_id=3 and text_value ~ '^.*?\s+$';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value=REGEXP_REPLACE(text_value, &#39;\s+$&#39; , &#39;&#39;) where resource_type_id=2 and metadata_field_id=3 and text_value ~ &#39;^.*?\s+$&#39;;
 UPDATE 20
 </code></pre><ul>
 <li>I tried the <code>TRIM(TRAILING from text_value)</code> function and it said it changed 20 items but the spaces didn&rsquo;t go away</li>
 <li>This is on a fresh import of the CGSpace database, but when I tried to apply it on CGSpace there were no changes detected. Weird.</li>
 <li>Anyways, Peter wants a new list of authors to clean up, so I exported another CSV:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors-2018-02-05.csv with csv;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors-2018-02-05.csv with csv;
 COPY 55630
 </code></pre><h2 id="2018-02-06">2018-02-06</h2>
 <ul>
@@ -184,7 +184,7 @@ COPY 55630
 </ul>
 <pre tabindex="0"><code># date
 Tue Feb  6 09:30:32 UTC 2018
-# cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &quot;6/Feb/2018:(08|09)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+# cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &#34;6/Feb/2018:(08|09)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
       2 223.185.41.40
       2 66.249.64.14
       2 77.246.52.40
@@ -195,7 +195,7 @@ Tue Feb  6 09:30:32 UTC 2018
       6 154.68.16.34
       7 207.46.13.66
    1548 50.116.102.77
-# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &quot;6/Feb/2018:(08|09)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &#34;6/Feb/2018:(08|09)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
      77 213.55.99.121
      86 66.249.64.14
     101 104.196.152.243
@@ -232,8 +232,8 @@ Tue Feb  6 09:30:32 UTC 2018
 <li>CGSpace crashed again, this time around <code>Wed Feb  7 11:20:28 UTC 2018</code></li>
 <li>I took a few snapshots of the PostgreSQL activity at the time and as the minutes went on and the connections were very high at first but reduced on their own:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' &gt; /tmp/pg_stat_activity.txt
-$ grep -c 'PostgreSQL JDBC' /tmp/pg_stat_activity*
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; &gt; /tmp/pg_stat_activity.txt
+$ grep -c &#39;PostgreSQL JDBC&#39; /tmp/pg_stat_activity*
 /tmp/pg_stat_activity1.txt:300
 /tmp/pg_stat_activity2.txt:272
 /tmp/pg_stat_activity3.txt:168
@@ -242,7 +242,7 @@ $ grep -c 'PostgreSQL JDBC' /tmp/pg_stat_activity*
 </code></pre><ul>
 <li>Interestingly, all of those 751 connections were idle!</li>
 </ul>
-<pre tabindex="0"><code>$ grep &quot;PostgreSQL JDBC&quot; /tmp/pg_stat_activity* | grep -c idle
+<pre tabindex="0"><code>$ grep &#34;PostgreSQL JDBC&#34; /tmp/pg_stat_activity* | grep -c idle
 751
 </code></pre><ul>
 <li>Since I was restarting Tomcat anyways, I decided to deploy the changes to create two different pools for web and API apps</li>
@@ -252,7 +252,7 @@ $ grep -c 'PostgreSQL JDBC' /tmp/pg_stat_activity*
 <ul>
 <li>Indeed it seems like there were over 1800 sessions today around the hours of 10 and 11 AM:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -E '^2018-02-07 (10|11)' dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ grep -E &#39;^2018-02-07 (10|11)&#39; dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 1828
 </code></pre><ul>
 <li>CGSpace went down again a few hours later, and now the connections to the dspaceWeb pool are maxed at 250 (the new limit I imposed with the new separate pool scheme)</li>
@@ -262,11 +262,11 @@ $ grep -c 'PostgreSQL JDBC' /tmp/pg_stat_activity*
 </code></pre><ul>
 <li>&hellip; but in PostgreSQL I see them <code>idle</code> or <code>idle in transaction</code>:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -c dspaceWeb
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -c dspaceWeb
 250
-$ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c idle
+$ psql -c &#39;select * from pg_stat_activity&#39; | grep dspaceWeb | grep -c idle
 250
-$ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c &quot;idle in transaction&quot;
+$ psql -c &#39;select * from pg_stat_activity&#39; | grep dspaceWeb | grep -c &#34;idle in transaction&#34;
 187
 </code></pre><ul>
 <li>What the fuck, does DSpace think all connections are busy?</li>
@@ -275,12 +275,12 @@ $ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c &quot;idle
 <li>Also, WTF, there was a heap space error randomly in catalina.out:</li>
 </ul>
 <pre tabindex="0"><code>Wed Feb 07 15:01:54 UTC 2018 | Query:containerItem:91917 AND type:2
-Exception in thread &quot;http-bio-127.0.0.1-8081-exec-58&quot; java.lang.OutOfMemoryError: Java heap space
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-58&#34; java.lang.OutOfMemoryError: Java heap space
 </code></pre><ul>
 <li>I&rsquo;m trying to find a way to determine what was using all those Tomcat sessions, but parsing the DSpace log is hard because some IPs are IPv6, which contain colons!</li>
 <li>Looking at the first crash this morning around 11, I see these IPv4 addresses making requests around 10 and 11AM:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -E '^2018-02-07 (10|11)' dspace.log.2018-02-07 | grep -o -E 'ip_addr=[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | sort -n | uniq -c | sort -n | tail -n 20
+<pre tabindex="0"><code>$ grep -E &#39;^2018-02-07 (10|11)&#39; dspace.log.2018-02-07 | grep -o -E &#39;ip_addr=[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}&#39; | sort -n | uniq -c | sort -n | tail -n 20
      34 ip_addr=46.229.168.67
      34 ip_addr=46.229.168.73
      37 ip_addr=46.229.168.76
@@ -304,27 +304,26 @@ Exception in thread &quot;http-bio-127.0.0.1-8081-exec-58&quot; java.lang.OutOfM
 </code></pre><ul>
 <li>These IPs made thousands of sessions today:</li>
 </ul>
-<pre tabindex="0"><code>$ grep 104.196.152.243 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+<pre tabindex="0"><code>$ grep 104.196.152.243 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 530
-$ grep 207.46.13.71 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 207.46.13.71 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 859
-$ grep 40.77.167.62 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 40.77.167.62 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 610
-$ grep 54.83.138.123 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 54.83.138.123 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 8
-$ grep 207.46.13.135 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 207.46.13.135 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 826
-$ grep 68.180.228.157 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 68.180.228.157 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 727
-$ grep 40.77.167.36 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 40.77.167.36 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 181
-$ grep 130.82.1.40 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 130.82.1.40 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 24
-$ grep 207.46.13.54 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 207.46.13.54 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 166
-$ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq | wc -l
+$ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
 992
-
 </code></pre><ul>
 <li>Let&rsquo;s investigate who these IPs belong to:
 <ul>
@@ -355,13 +354,13 @@ $ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' |
 <li>Helix84 recommends restarting PostgreSQL instead of Tomcat because it restarts quicker</li>
 <li>This is how the connections looked when it crashed this afternoon:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c
       5 dspaceApi
     290 dspaceWeb
 </code></pre><ul>
 <li>This is how it is right now:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c
       5 dspaceApi
       5 dspaceWeb
 </code></pre><ul>
@@ -378,7 +377,7 @@ $ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E 'session_id=[A-Z0-9]{32}' |
 <li>Switch authority.controlled off and change authorLookup to lookup, and the ORCID badge doesn&rsquo;t show up on the item</li>
 <li>Leave all settings but change choices.presentation to lookup and ORCID badge is there and item submission uses LC Name Authority and it breaks with this error:</li>
 </ul>
-<pre tabindex="0"><code>Field dc_contributor_author has choice presentation of type &quot;select&quot;, it may NOT be authority-controlled.
+<pre tabindex="0"><code>Field dc_contributor_author has choice presentation of type &#34;select&#34;, it may NOT be authority-controlled.
 </code></pre><ul>
 <li>If I change choices.presentation to suggest it give this error:</li>
 </ul>
@@ -409,18 +408,18 @@ authors-2018-02-05.csv: line 100, char 18, byte 4179: After a first byte between
 <li>I updated my <code>fix-metadata-values.py</code> and <code>delete-metadata-values.py</code> scripts on the scripts page: <a href="https://github.com/ilri/DSpace/wiki/Scripts">https://github.com/ilri/DSpace/wiki/Scripts</a></li>
 <li>I ran the 342 author corrections (after trimming whitespace and excluding those with <code>||</code> and other syntax errors) on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Correct-342-Authors-2018-02-11.csv -f dc.contributor.author -t correct -m 3 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Correct-342-Authors-2018-02-11.csv -f dc.contributor.author -t correct -m 3 -d dspace -u dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>Then I ran a full Discovery re-indexing:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 </code></pre><ul>
 <li>That reminds me that Bizu had asked me to fix some of Alan Duncan&rsquo;s names in December</li>
-<li>I see he actually has some variations with &ldquo;Duncan, Alan J.&quot;: <a href="https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=">https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=</a></li>
+<li>I see he actually has some variations with &ldquo;Duncan, Alan J.&rdquo;: <a href="https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=">https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=</a></li>
 <li>I will just update those for her too and then restart the indexing:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Duncan, Alan%';
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;%Duncan, Alan%&#39;;
    text_value    |              authority               | confidence 
 -----------------+--------------------------------------+------------
  Duncan, Alan J. | 5ff35043-942e-4d0a-b377-4daed6e3c1a3 |        600
@@ -434,9 +433,9 @@ $ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
 (8 rows)
 
 dspace=# begin;
-dspace=# update metadatavalue set text_value='Duncan, Alan', authority='a6486522-b08a-4f7a-84f9-3a73ce56034d', confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like 'Duncan, Alan%';
+dspace=# update metadatavalue set text_value=&#39;Duncan, Alan&#39;, authority=&#39;a6486522-b08a-4f7a-84f9-3a73ce56034d&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Duncan, Alan%&#39;;
 UPDATE 216
-dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like '%Duncan, Alan%';
+dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;%Duncan, Alan%&#39;;
   text_value  |              authority               | confidence 
 --------------+--------------------------------------+------------
  Duncan, Alan | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
@@ -464,7 +463,7 @@ dspace=# commit;
 <li>I see that in <a href="/cgspace-notes/2017-04/">April, 2017</a> I just used a SQL query to get a user&rsquo;s submissions by checking the <code>dc.description.provenance</code> field</li>
 <li>So for Abenet, I can check her submissions in December, 2017 with:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^Submitted.*yabowork.*2017-12.*';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^Submitted.*yabowork.*2017-12.*&#39;;
 </code></pre><ul>
 <li>I emailed Peter to ask whether we can move DSpace Test to a new Linode server and attach 300 GB of disk space to it</li>
 <li>This would be using <a href="https://www.linode.com/blockstorage">Linode&rsquo;s new block storage volumes</a></li>
@@ -484,7 +483,7 @@ Caused by: java.net.SocketException: Socket closed
 </code></pre><ul>
 <li>Could be because of the <code>removeAbandoned=&quot;true&quot;</code> that I enabled in the JDBC connection pool last week?</li>
 </ul>
-<pre tabindex="0"><code>$ grep -c &quot;java.net.SocketException: Socket closed&quot; dspace.log.2018-02-*
+<pre tabindex="0"><code>$ grep -c &#34;java.net.SocketException: Socket closed&#34; dspace.log.2018-02-*
 dspace.log.2018-02-01:0
 dspace.log.2018-02-02:0
 dspace.log.2018-02-03:0
@@ -535,27 +534,27 @@ $ tidy -xml -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
 <li>Sisay exported all ILRI, CIAT, etc authors from ORCID and sent a list of 600+</li>
 <li>Peter combined it with mine and we have 1204 unique ORCIDs!</li>
 </ul>
-<pre tabindex="0"><code>$ grep -coE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' CGcenter_ORCID_ID_combined.csv
+<pre tabindex="0"><code>$ grep -coE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; CGcenter_ORCID_ID_combined.csv
 1204
-$ grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' CGcenter_ORCID_ID_combined.csv | sort | uniq | wc -l
+$ grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; CGcenter_ORCID_ID_combined.csv | sort | uniq | wc -l
 1204
 </code></pre><ul>
 <li>Also, save that regex for the future because it will be very useful!</li>
-<li>CIAT sent a list of their authors' ORCIDs and combined with ours there are now 1227:</li>
+<li>CIAT sent a list of their authors&rsquo; ORCIDs and combined with ours there are now 1227:</li>
 </ul>
-<pre tabindex="0"><code>$ cat CGcenter_ORCID_ID_combined.csv ciat-orcids.txt | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat CGcenter_ORCID_ID_combined.csv ciat-orcids.txt | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l
 1227
 </code></pre><ul>
 <li>There are some formatting issues with names in Peter&rsquo;s list, so I should remember to re-generate the list of names from ORCID&rsquo;s API once we&rsquo;re done</li>
 <li>The <code>dspace cleanup -v</code> currently fails on CGSpace with the following:</li>
 </ul>
 <pre tabindex="0"><code> - Deleting bitstream record from database (ID: 149473)
-Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(149473) is still referenced from table &quot;bundle&quot;.
+Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(149473) is still referenced from table &#34;bundle&#34;.
 </code></pre><ul>
 <li>The solution is to update the bitstream table, as I&rsquo;ve discovered several other times in 2016 and 2017:</li>
 </ul>
-<pre tabindex="0"><code>$ psql dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (149473);'
+<pre tabindex="0"><code>$ psql dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (149473);&#39;
 UPDATE 1
 </code></pre><ul>
 <li>Then the cleanup process will continue for awhile and hit another foreign key conflict, and eventually it will complete after you manually resolve them all</li>
@@ -575,25 +574,25 @@ UPDATE 1
 <li>I only looked quickly in the logs but saw a bunch of database errors</li>
 <li>PostgreSQL connections are currently:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | uniq -c
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | uniq -c
       2 dspaceApi
       1 dspaceWeb
       3 dspaceApi
 </code></pre><ul>
 <li>I see shitloads of memory errors in Tomcat&rsquo;s logs:</li>
 </ul>
-<pre tabindex="0"><code># grep -c &quot;Java heap space&quot; /var/log/tomcat7/catalina.out
+<pre tabindex="0"><code># grep -c &#34;Java heap space&#34; /var/log/tomcat7/catalina.out
 56
 </code></pre><ul>
 <li>And shit tons of database connections abandoned:</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' /var/log/tomcat7/catalina.out
+<pre tabindex="0"><code># grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; /var/log/tomcat7/catalina.out
 612
 </code></pre><ul>
 <li>I have no fucking idea why it crashed</li>
 <li>The XMLUI activity looks like:</li>
 </ul>
-<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &quot;15/Feb/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &#34;15/Feb/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
     715 63.143.42.244
     746 213.55.99.121
     886 68.180.228.157
@@ -610,7 +609,7 @@ UPDATE 1
 <li>I made a pull request to fix it ((#354)[https://github.com/ilri/DSpace/pull/354])</li>
 <li>I should remember to update existing values in PostgreSQL too:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# update metadatavalue set text_value='United States Agency for International Development' where resource_type_id=2 and metadata_field_id=29 and text_value like '%U.S. Agency for International Development%';
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value=&#39;United States Agency for International Development&#39; where resource_type_id=2 and metadata_field_id=29 and text_value like &#39;%U.S. Agency for International Development%&#39;;
 UPDATE 2
 </code></pre><h2 id="2018-02-18">2018-02-18</h2>
 <ul>
@@ -646,13 +645,13 @@ org.springframework.web.util.NestedServletException: Handler processing failed; 
 </ul>
 <pre tabindex="0"><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | wc -l
 168571
-# zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &quot;15/Feb/2018:(16|18|19|20)&quot; | wc -l
+# zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &#34;15/Feb/2018:(16|18|19|20)&#34; | wc -l
 8188
 </code></pre><ul>
 <li>Only 8,000 requests during those four hours, out of 170,000 the whole day!</li>
 <li>And the usage of XMLUI, REST, and OAI looks SUPER boring:</li>
 </ul>
-<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &quot;15/Feb/2018:(16|18|19|20)&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &#34;15/Feb/2018:(16|18|19|20)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
     111 95.108.181.88
     158 45.5.184.221
     201 104.196.152.243
@@ -677,7 +676,7 @@ org.springframework.web.util.NestedServletException: Handler processing failed; 
 <ul>
 <li>Combined list of CGIAR author ORCID iDs is up to 1,500:</li>
 </ul>
-<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml ORCID_ID_CIAT_IITA_IWMI-csv.csv CGcenter_ORCID_ID_combined.csv | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l  
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml ORCID_ID_CIAT_IITA_IWMI-csv.csv CGcenter_ORCID_ID_combined.csv | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l  
 1571
 </code></pre><ul>
 <li>I updated my <code>resolve-orcids-from-solr.py</code> script to be able to resolve ORCID identifiers from a text file so I renamed it to <code>resolve-orcids.py</code></li>
@@ -692,13 +691,13 @@ Ahmad Maryudi: 0000-0001-5051-7217
 </ul>
 <pre tabindex="0"><code>Looking up the name associated with ORCID iD: 0000-0001-9634-1958
 Traceback (most recent call last):
-  File &quot;./resolve-orcids.py&quot;, line 111, in &lt;module&gt;
+  File &#34;./resolve-orcids.py&#34;, line 111, in &lt;module&gt;
     read_identifiers_from_file()
-  File &quot;./resolve-orcids.py&quot;, line 37, in read_identifiers_from_file
+  File &#34;./resolve-orcids.py&#34;, line 37, in read_identifiers_from_file
     resolve_orcid_identifiers(orcids)
-  File &quot;./resolve-orcids.py&quot;, line 65, in resolve_orcid_identifiers
-    family_name = data['name']['family-name']['value']
-TypeError: 'NoneType' object is not subscriptable
+  File &#34;./resolve-orcids.py&#34;, line 65, in resolve_orcid_identifiers
+    family_name = data[&#39;name&#39;][&#39;family-name&#39;][&#39;value&#39;]
+TypeError: &#39;NoneType&#39; object is not subscriptable
 </code></pre><ul>
 <li>According to ORCID that identifier&rsquo;s family-name is null so that sucks</li>
 <li>I fixed the script so that it checks if the family name is null</li>
@@ -706,13 +705,13 @@ TypeError: 'NoneType' object is not subscriptable
 </ul>
 <pre tabindex="0"><code>Looking up the name associated with ORCID iD: 0000-0002-1300-3636
 Traceback (most recent call last):
-  File &quot;./resolve-orcids.py&quot;, line 117, in &lt;module&gt;
+  File &#34;./resolve-orcids.py&#34;, line 117, in &lt;module&gt;
     read_identifiers_from_file()
-  File &quot;./resolve-orcids.py&quot;, line 37, in read_identifiers_from_file
+  File &#34;./resolve-orcids.py&#34;, line 37, in read_identifiers_from_file
     resolve_orcid_identifiers(orcids)
-  File &quot;./resolve-orcids.py&quot;, line 65, in resolve_orcid_identifiers
-    if data['name']['given-names']:
-TypeError: 'NoneType' object is not subscriptable
+  File &#34;./resolve-orcids.py&#34;, line 65, in resolve_orcid_identifiers
+    if data[&#39;name&#39;][&#39;given-names&#39;]:
+TypeError: &#39;NoneType&#39; object is not subscriptable
 </code></pre><ul>
 <li>According to ORCID that identifier&rsquo;s entire name block is null!</li>
 </ul>
@@ -722,14 +721,14 @@ TypeError: 'NoneType' object is not subscriptable
 <li>Discuss some of the issues with null values and poor-quality names in some ORCID identifiers with Abenet and I think we&rsquo;ll now only use ORCID iDs that have been sent to use from partners, not those extracted via keyword searches on orcid.org</li>
 <li>This should be the version we use (the existing controlled vocabulary generated from CGSpace&rsquo;s Solr authority core plus the IDs sent to us so far by partners):</li>
 </ul>
-<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml ORCID_ID_CIAT_IITA_IWMI.csv | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq &gt; 2018-02-20-combined.txt
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml ORCID_ID_CIAT_IITA_IWMI.csv | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq &gt; 2018-02-20-combined.txt
 </code></pre><ul>
 <li>I updated the <code>resolve-orcids.py</code> to use the &ldquo;credit-name&rdquo; if it exists in a profile, falling back to &ldquo;given-names&rdquo; + &ldquo;family-name&rdquo;</li>
 <li>Also, I added color coded output to the debug messages and added a &ldquo;quiet&rdquo; mode that supresses the normal behavior of printing results to the screen</li>
 <li>I&rsquo;m using this as the test input for <code>resolve-orcids.py</code>:</li>
 </ul>
 <pre tabindex="0"><code>$ cat orcid-test-values.txt 
-# valid identifier with 'given-names' and 'family-name'
+# valid identifier with &#39;given-names&#39; and &#39;family-name&#39;
 0000-0001-5019-1368
 
 # duplicate identifier
@@ -738,16 +737,16 @@ TypeError: 'NoneType' object is not subscriptable
 # invalid identifier
 0000-0001-9634-19580
 
-# has a 'credit-name' value we should prefer
+# has a &#39;credit-name&#39; value we should prefer
 0000-0002-1735-7458
 
-# has a blank 'credit-name' value
+# has a blank &#39;credit-name&#39; value
 0000-0001-5199-5528
 
-# has a null 'name' object
+# has a null &#39;name&#39; object
 0000-0002-1300-3636
 
-# has a null 'family-name' value
+# has a null &#39;family-name&#39; value
 0000-0001-9634-1958
 
 # missing ORCID identifier
@@ -770,7 +769,7 @@ TypeError: 'NoneType' object is not subscriptable
 <li>It looks like Sisay restarted Tomcat because I was offline</li>
 <li>There was absolutely nothing interesting going on at 13:00 on the server, WTF?</li>
 </ul>
-<pre tabindex="0"><code># cat /var/log/nginx/*.log | grep -E &quot;22/Feb/2018:13&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># cat /var/log/nginx/*.log | grep -E &#34;22/Feb/2018:13&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
      55 192.99.39.235
      60 207.46.13.26
      62 40.77.167.38
@@ -784,7 +783,7 @@ TypeError: 'NoneType' object is not subscriptable
 </code></pre><ul>
 <li>Otherwise there was pretty normal traffic the rest of the day:</li>
 </ul>
-<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;22/Feb/2018&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;22/Feb/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
     839 216.244.66.245
    1074 68.180.228.117
    1114 157.55.39.100
@@ -798,9 +797,9 @@ TypeError: 'NoneType' object is not subscriptable
 </code></pre><ul>
 <li>So I don&rsquo;t see any definite cause for this crash, I see a shit ton of abandoned PostgreSQL connections today around 1PM!</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' /var/log/tomcat7/catalina.out
+<pre tabindex="0"><code># grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; /var/log/tomcat7/catalina.out
 729
-# grep 'Feb 22, 2018 1' /var/log/tomcat7/catalina.out | grep -c 'org.apache.tomcat.jdbc.pool.ConnectionPool abandon' 
+# grep &#39;Feb 22, 2018 1&#39; /var/log/tomcat7/catalina.out | grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; 
 519
 </code></pre><ul>
 <li>I think the <code>removeAbandonedTimeout</code> might still be too low (I increased it from 60 to 90 seconds last week)</li>
@@ -820,12 +819,12 @@ TypeError: 'NoneType' object is not subscriptable
 <li>A few days ago Abenet sent me the list of ORCID iDs from CCAFS</li>
 <li>We currently have 988 unique identifiers:</li>
 </ul>
-<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l          
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l          
 988
 </code></pre><ul>
 <li>After adding the ones from CCAFS we now have 1004:</li>
 </ul>
-<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/ccafs | grep -oE '[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}' | sort | uniq | wc -l
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/ccafs | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l
 1004
 </code></pre><ul>
 <li>I will add them to DSpace Test but Abenet says she&rsquo;s still waiting to set us ILRI&rsquo;s list</li>
@@ -853,7 +852,7 @@ Given Names Deactivated Family Name Deactivated: 0000-0002-2614-426X
 <li>The query in Solr would simply be <code>orcid_id:*</code></li>
 <li>Assuming I know that authority record with <code>id:d7ef744b-bbd4-4171-b449-00e37e1b776f</code>, then I could query PostgreSQL for all metadata records using that authority:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and authority='d7ef744b-bbd4-4171-b449-00e37e1b776f';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and authority=&#39;d7ef744b-bbd4-4171-b449-00e37e1b776f&#39;;
  metadata_value_id | resource_id | metadata_field_id |        text_value         | text_lang | place |              authority               | confidence | resource_type_id 
 -------------------+-------------+-------------------+---------------------------+-----------+-------+--------------------------------------+------------+------------------
            2726830 |       77710 |                 3 | Rodríguez Chalarca, Jairo |           |     2 | d7ef744b-bbd4-4171-b449-00e37e1b776f |        600 |                2
@@ -896,18 +895,18 @@ Nor Azwadi: 0000-0001-9634-1958
 <li>I need to see which SQL queries are run during that time</li>
 <li>And only a few hours after I disabled the <code>removeAbandoned</code> thing CGSpace went down and lo and behold, there were 264 connections, most of which were idle:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -c 'select * from pg_stat_activity' | grep -o -E '(dspaceWeb|dspaceApi|dspaceCli)' | sort | uniq -c
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c
       5 dspaceApi
     279 dspaceWeb
-$ psql -c 'select * from pg_stat_activity' | grep dspaceWeb | grep -c &quot;idle in transaction&quot;
+$ psql -c &#39;select * from pg_stat_activity&#39; | grep dspaceWeb | grep -c &#34;idle in transaction&#34;
 218
 </code></pre><ul>
 <li>So I&rsquo;m re-enabling the <code>removeAbandoned</code> setting</li>
 <li>I grabbed a snapshot of the active connections in <code>pg_stat_activity</code> for all queries running longer than 2 minutes:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (SELECT now() - query_start as &quot;runtime&quot;, application_name, usename, datname, waiting, state, query
+<pre tabindex="0"><code>dspace=# \copy (SELECT now() - query_start as &#34;runtime&#34;, application_name, usename, datname, waiting, state, query
   FROM  pg_stat_activity
-  WHERE now() - query_start &gt; '2 minutes'::interval
+  WHERE now() - query_start &gt; &#39;2 minutes&#39;::interval
  ORDER BY runtime DESC) to /tmp/2018-02-27-postgresql.txt
 COPY 263
 </code></pre><ul>
@@ -936,7 +935,7 @@ COPY 263
 <li>CGSpace crashed today, the first HTTP 499 in nginx&rsquo;s access.log was around 09:12</li>
 <li>There&rsquo;s nothing interesting going on in nginx&rsquo;s logs around that time:</li>
 </ul>
-<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &quot;28/Feb/2018:09:&quot; | awk '{print $1}' | sort | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;28/Feb/2018:09:&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
      65 197.210.168.174
      74 213.55.99.121
      74 66.249.66.90
@@ -955,7 +954,7 @@ org.springframework.web.util.NestedServletException: Handler processing failed; 
 </code></pre><ul>
 <li>Memory issues seem to be common this month:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -c 'nested exception is java.lang.OutOfMemoryError: Java heap space' dspace.log.2018-02-* 
+<pre tabindex="0"><code>$ grep -c &#39;nested exception is java.lang.OutOfMemoryError: Java heap space&#39; dspace.log.2018-02-* 
 dspace.log.2018-02-01:0
 dspace.log.2018-02-02:0
 dspace.log.2018-02-03:0
@@ -987,7 +986,7 @@ dspace.log.2018-02-28:1
 </code></pre><ul>
 <li>Top ten users by session during the first twenty minutes of 9AM:</li>
 </ul>
-<pre tabindex="0"><code>$ grep -E '2018-02-28 09:(0|1)' dspace.log.2018-02-28 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort -n | uniq -c | sort -n | tail -n 10
+<pre tabindex="0"><code>$ grep -E &#39;2018-02-28 09:(0|1)&#39; dspace.log.2018-02-28 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq -c | sort -n | tail -n 10
      18 session_id=F2DFF64D3D707CD66AE3A873CEC80C49
      19 session_id=92E61C64A79F0812BE62A3882DA8F4BA
      21 session_id=57417F5CB2F9E3871E609CEEBF4E001F
@@ -1006,7 +1005,7 @@ dspace.log.2018-02-28:1
 <li>I think I&rsquo;ll increase the JVM heap size on CGSpace from 6144m to 8192m because I&rsquo;m sick of this random crashing shit and the server has memory and I&rsquo;d rather eliminate this so I can get back to solving PostgreSQL issues and doing other real work</li>
 <li>Run the few corrections from earlier this month for sponsor on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>cgspace=# update metadatavalue set text_value='United States Agency for International Development' where resource_type_id=2 and metadata_field_id=29 and text_value like '%U.S. Agency for International Development%';
+<pre tabindex="0"><code>cgspace=# update metadatavalue set text_value=&#39;United States Agency for International Development&#39; where resource_type_id=2 and metadata_field_id=29 and text_value like &#39;%U.S. Agency for International Development%&#39;;
 UPDATE 3
 </code></pre><ul>
 <li>I finally got a CGIAR account so I logged into CGSpace with it and tried to delete my old unfinished submissions (22 of them)</li>

@@ -38,7 +38,7 @@ I restarted Tomcat and PostgreSQL and the issue was gone
 
 Since I was restarting Tomcat anyways I decided to redeploy the latest changes from the 5_x-prod branch and I added a note about COVID-19 items to the CGSpace frontpage at Peter&rsquo;s request
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -139,7 +139,7 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <li>Also, Linode is alerting that we had high outbound traffic rate early this morning around midnight AND high CPU load later in the morning</li>
 <li>First looking at the traffic in the morning:</li>
 </ul>
-<pre tabindex="0"><code># cat /var/log/nginx/*.log.1 /var/log/nginx/*.log | grep -E &quot;01/Jul/2020:(00|01|02|03|04)&quot; | goaccess --log-format=COMBINED -
+<pre tabindex="0"><code># cat /var/log/nginx/*.log.1 /var/log/nginx/*.log | grep -E &#34;01/Jul/2020:(00|01|02|03|04)&#34; | goaccess --log-format=COMBINED -
 ...
 9659 33.56%    1  0.08% 340.94 MiB 64.39.99.13
 3317 11.53%    1  0.08% 871.71 MiB 199.47.87.140
@@ -153,8 +153,8 @@ Since I was restarting Tomcat anyways I decided to redeploy the latest changes f
 <li>I will purge hits from that IP from Solr</li>
 <li>The 199.47.87.x IPs belong to Turnitin, and apparently they are NOT marked as bots and we have 40,000 hits from them in 2020 statistics alone:</li>
 </ul>
-<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics/select&quot; -d &quot;q=userAgent:/Turnitin.*/&amp;rows=0&quot; | grep -oE 'numFound=&quot;[0-9]+&quot;'
-numFound=&quot;41694&quot;
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics/select&#34; -d &#34;q=userAgent:/Turnitin.*/&amp;rows=0&#34; | grep -oE &#39;numFound=&#34;[0-9]+&#34;&#39;
+numFound=&#34;41694&#34;
 </code></pre><ul>
 <li>They used to be &ldquo;TurnitinBot&rdquo;&hellip; hhmmmm, seems they use both: <a href="https://turnitin.com/robot/crawlerinfo.html">https://turnitin.com/robot/crawlerinfo.html</a></li>
 <li>I will add Turnitin to the DSpace bot user agent list, but I see they are reqesting <code>robots.txt</code> and only requesting item pages, so that&rsquo;s impressive! I don&rsquo;t need to add them to the &ldquo;bad bot&rdquo; rate limit list in nginx</li>
@@ -164,9 +164,9 @@ numFound=&quot;41694&quot;
 </code></pre><ul>
 <li>The IPs all belong to HostRoyale:</li>
 </ul>
-<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep '01/Jul/2020' | awk '{print $1}' | grep 185.152.250. | sort | uniq | wc -l
+<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep &#39;01/Jul/2020&#39; | awk &#39;{print $1}&#39; | grep 185.152.250. | sort | uniq | wc -l
 81
-# cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep '01/Jul/2020' | awk '{print $1}' | grep 185.152.250. | sort | uniq | sort -h
+# cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep &#39;01/Jul/2020&#39; | awk &#39;{print $1}&#39; | grep 185.152.250. | sort | uniq | sort -h
 185.152.250.1
 185.152.250.101
 185.152.250.103
@@ -269,7 +269,7 @@ numFound=&quot;41694&quot;
 <li>I purged 20,000 hits from IPs and 45,000 hits from user agents</li>
 <li>I will revert the default &ldquo;example&rdquo; agents file back to the upstream master branch of COUNTER-Robots, and then add all my custom ones that are pending in pull requests they haven&rsquo;t merged yet:</li>
 </ul>
-<pre tabindex="0"><code>$ diff --unchanged-line-format= --old-line-format= --new-line-format='%L' dspace/config/spiders/agents/example ~/src/git/COUNTER-Robots/COUNTER_Robots_list.txt
+<pre tabindex="0"><code>$ diff --unchanged-line-format= --old-line-format= --new-line-format=&#39;%L&#39; dspace/config/spiders/agents/example ~/src/git/COUNTER-Robots/COUNTER_Robots_list.txt
 Citoid
 ecointernet
 GigablastOpenSource
@@ -285,7 +285,7 @@ Typhoeus
 </code></pre><ul>
 <li>Just a note that I <em>still</em> can&rsquo;t deploy the <code>6_x-dev-atmire-modules</code> branch as it fails at ant update:</li>
 </ul>
-<pre tabindex="0"><code>     [java] java.lang.RuntimeException: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name 'DefaultStorageUpdateConfig': Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire method: public void com.atmire.statistics.util.StorageReportsUpdater.setStorageReportServices(java.util.List); nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'cuaEPersonStorageReportService': Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.dspace.cua.dao.storage.CUAEPersonStorageReportDAO com.atmire.dspace.cua.CUAStorageReportServiceImpl$CUAEPersonStorageReportServiceImpl.CUAEPersonStorageReportDAO; nested exception is org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type [com.atmire.dspace.cua.dao.storage.CUAEPersonStorageReportDAO] is defined: expected single matching bean but found 2: com.atmire.dspace.cua.dao.impl.CUAStorageReportDAOImpl$CUAEPersonStorageReportDAOImpl#0,com.atmire.dspace.cua.dao.impl.CUAStorageReportDAOImpl$CUAEPersonStorageReportDAOImpl#1
+<pre tabindex="0"><code>     [java] java.lang.RuntimeException: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name &#39;DefaultStorageUpdateConfig&#39;: Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire method: public void com.atmire.statistics.util.StorageReportsUpdater.setStorageReportServices(java.util.List); nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;cuaEPersonStorageReportService&#39;: Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.dspace.cua.dao.storage.CUAEPersonStorageReportDAO com.atmire.dspace.cua.CUAStorageReportServiceImpl$CUAEPersonStorageReportServiceImpl.CUAEPersonStorageReportDAO; nested exception is org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type [com.atmire.dspace.cua.dao.storage.CUAEPersonStorageReportDAO] is defined: expected single matching bean but found 2: com.atmire.dspace.cua.dao.impl.CUAStorageReportDAOImpl$CUAEPersonStorageReportDAOImpl#0,com.atmire.dspace.cua.dao.impl.CUAStorageReportDAOImpl$CUAEPersonStorageReportDAOImpl#1
 </code></pre><ul>
 <li>I had told Atmire about this several weeks ago&hellip; but I reminded them again in the ticket
 <ul>
@@ -308,23 +308,23 @@ Typhoeus
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ curl -g -s 'http://localhost:8081/solr/statistics-2019/select?q=*:*&amp;fq=time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z%5D&amp;rows=0&amp;wt=json&amp;indent=true'
+<pre tabindex="0"><code>$ curl -g -s &#39;http://localhost:8081/solr/statistics-2019/select?q=*:*&amp;fq=time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z%5D&amp;rows=0&amp;wt=json&amp;indent=true&#39;
 {
-  &quot;responseHeader&quot;:{
-    &quot;status&quot;:0,
-    &quot;QTime&quot;:0,
-    &quot;params&quot;:{
-      &quot;q&quot;:&quot;*:*&quot;,
-      &quot;indent&quot;:&quot;true&quot;,
-      &quot;fq&quot;:&quot;time:[2019-01-01T00:00:00Z TO 2019-06-30T23:59:59Z]&quot;,
-      &quot;rows&quot;:&quot;0&quot;,
-      &quot;wt&quot;:&quot;json&quot;}},
-  &quot;response&quot;:{&quot;numFound&quot;:7784285,&quot;start&quot;:0,&quot;docs&quot;:[]
+  &#34;responseHeader&#34;:{
+    &#34;status&#34;:0,
+    &#34;QTime&#34;:0,
+    &#34;params&#34;:{
+      &#34;q&#34;:&#34;*:*&#34;,
+      &#34;indent&#34;:&#34;true&#34;,
+      &#34;fq&#34;:&#34;time:[2019-01-01T00:00:00Z TO 2019-06-30T23:59:59Z]&#34;,
+      &#34;rows&#34;:&#34;0&#34;,
+      &#34;wt&#34;:&#34;json&#34;}},
+  &#34;response&#34;:{&#34;numFound&#34;:7784285,&#34;start&#34;:0,&#34;docs&#34;:[]
   }}
 </code></pre><ul>
 <li>But not in solr-import-export-json&hellip; hmmm&hellip; seems we need to URL encode <em>only</em> the date range itself, but not the brackets:</li>
 </ul>
-<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f 'time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z]' -k uid
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f &#39;time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z]&#39; -k uid
 $ zstd /tmp/statistics-2019-1.json
 </code></pre><ul>
 <li>Then import it on my local dev environment:</li>
@@ -358,11 +358,11 @@ $ ./run.sh -s http://localhost:8080/solr/statistics -a import -o ~/Downloads/sta
 </li>
 <li>I noticed that we have 20,000 distinct values for <code>dc.subject</code>, but there are at least 500 that are lower or mixed case that we should simply uppercase without further thought:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value=UPPER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ '[[:lower:]]';
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value=UPPER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ &#39;[[:lower:]]&#39;;
 </code></pre><ul>
 <li>DSpace Test needs a different query because it is running DSpace 6 with UUIDs for everything:</li>
 </ul>
-<pre tabindex="0"><code>dspace63=# UPDATE metadatavalue SET text_value=UPPER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ '[[:lower:]]';
+<pre tabindex="0"><code>dspace63=# UPDATE metadatavalue SET text_value=UPPER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ &#39;[[:lower:]]&#39;;
 </code></pre><ul>
 <li>Note the use of the POSIX character class :)</li>
 <li>I suggest that we generate a list of the top 5,000 values that don&rsquo;t match AGROVOC so that Sisay can correct them
@@ -399,16 +399,16 @@ $ csvcut -c1 /tmp/2020-07-05-subjects-upper.csv | head -n 6500 &gt; 2020-07-05-c
 <ul>
 <li>Peter asked me to send him a list of sponsors on CGSpace</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;dc.description.sponsorship&quot;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &quot;dc.description.sponsorship&quot; ORDER BY count DESC) TO /tmp/2020-07-07-sponsors.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &#34;dc.description.sponsorship&#34;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &#34;dc.description.sponsorship&#34; ORDER BY count DESC) TO /tmp/2020-07-07-sponsors.csv WITH CSV HEADER;
 COPY 707
 </code></pre><ul>
 <li>I ran it quickly through my <code>csv-metadata-quality</code> tool and found two issues that I will correct with <code>fix-metadata-values.py</code> on CGSpace immediately:</li>
 </ul>
 <pre tabindex="0"><code>$ cat 2020-07-07-fix-sponsors.csv
 dc.description.sponsorship,correct
-&quot;Ministe`re des Affaires Etrange`res et Européennes, France&quot;,&quot;Ministère des Affaires Étrangères et Européennes, France&quot;
-&quot;Global Food Security Programme,  United Kingdom&quot;,&quot;Global Food Security Programme, United Kingdom&quot;
-$ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -t correct -m 29
+&#34;Ministe`re des Affaires Etrange`res et Européennes, France&#34;,&#34;Ministère des Affaires Étrangères et Européennes, France&#34;
+&#34;Global Food Security Programme,  United Kingdom&#34;,&#34;Global Food Security Programme, United Kingdom&#34;
+$ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -t correct -m 29
 </code></pre><ul>
 <li>Upload the Capacity Development July newsletter to CGSpace for Ben Hack because Abenet and Bizu usually do it, but they are currently offline due to the Internet being turned off in Ethiopia
 <ul>
@@ -432,9 +432,9 @@ $ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -
 <ul>
 <li>Generate a CSV of all the AGROVOC subjects that didn&rsquo;t match from the top 6500 I exported earlier this week:</li>
 </ul>
-<pre tabindex="0"><code>$ csvgrep -c 'number of matches' -r &quot;^0$&quot; 2020-07-05-cgspace-subjects.csv | csvcut -c 1 &gt; 2020-07-05-cgspace-invalid-subjects.csv
+<pre tabindex="0"><code>$ csvgrep -c &#39;number of matches&#39; -r &#34;^0$&#34; 2020-07-05-cgspace-subjects.csv | csvcut -c 1 &gt; 2020-07-05-cgspace-invalid-subjects.csv
 </code></pre><ul>
-<li>Yesterday Gabriela from CIP emailed to say that she was removing the accents from her authors' names because of &ldquo;funny character&rdquo; issues with reports generated from CGSpace
+<li>Yesterday Gabriela from CIP emailed to say that she was removing the accents from her authors&rsquo; names because of &ldquo;funny character&rdquo; issues with reports generated from CGSpace
 <ul>
 <li>I told her that it&rsquo;s probably her Windows / Excel that is messing up the data, and she figured out how to open them correctly!</li>
 <li>Now she says she doesn&rsquo;t want to remove the accents after all and she sent me a new list of corrections</li>
@@ -442,13 +442,13 @@ $ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ csvgrep -c 2 -r &quot;^.+$&quot; ~/Downloads/cip-authors-GH-20200706.csv | csvgrep -c 1 -r &quot;^.*[À-ú].*$&quot; | csvgrep -c 2 -r &quot;^.*[À-ú].*$&quot; -i | csvcut -c 1,2
+<pre tabindex="0"><code>$ csvgrep -c 2 -r &#34;^.+$&#34; ~/Downloads/cip-authors-GH-20200706.csv | csvgrep -c 1 -r &#34;^.*[À-ú].*$&#34; | csvgrep -c 2 -r &#34;^.*[À-ú].*$&#34; -i | csvcut -c 1,2
 dc.contributor.author,correction
-&quot;López, G.&quot;,&quot;Lopez, G.&quot;
-&quot;Gómez, R.&quot;,&quot;Gomez, R.&quot;
-&quot;García, M.&quot;,&quot;Garcia, M.&quot;
-&quot;Mejía, A.&quot;,&quot;Mejia, A.&quot;
-&quot;Quiróz, Roberto A.&quot;,&quot;Quiroz, R.&quot;
+&#34;López, G.&#34;,&#34;Lopez, G.&#34;
+&#34;Gómez, R.&#34;,&#34;Gomez, R.&#34;
+&#34;García, M.&#34;,&#34;Garcia, M.&#34;
+&#34;Mejía, A.&#34;,&#34;Mejia, A.&#34;
+&#34;Quiróz, Roberto A.&#34;,&#34;Quiroz, R.&#34;
 </code></pre><ul>
 <li>
 <p>csvgrep from the csvkit suite is <em>so cool</em>:</p>
@@ -475,7 +475,7 @@ dc.contributor.author,correction
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;cg.contributor.affiliation&quot;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-07-08-affiliations.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-07-08-affiliations.csv WITH CSV HEADER;
 </code></pre><ul>
 <li>Then I stripped the CSV header and quotes to make it a plain text file and ran <code>ror-lookup.py</code>:</li>
 </ul>
@@ -510,12 +510,12 @@ $ csvgrep -c matched -m false 2020-07-08-affiliations-ror.csv | wc -l
 <li>So now our matching improves to 1515 out of 5866 (25.8%)</li>
 <li>Gabriela from CIP said that I should run the author corrections minus those that remove accent characters so I will run it on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-09-fix-90-cip-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -t correction -m 3
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-09-fix-90-cip-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correction -m 3
 </code></pre><ul>
 <li>Apply 110 fixes and 90 deletions to sponsorships that Peter sent me a few days ago:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-07-fix-110-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -t 'correct/action' -m 29
-$ ./delete-metadata-values.py -i /tmp/2020-07-07-delete-90-sponsors.csv -db dspace -u dspace -p 'fuuu' -f dc.description.sponsorship -m 29
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-07-fix-110-sponsors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -t &#39;correct/action&#39; -m 29
+$ ./delete-metadata-values.py -i /tmp/2020-07-07-delete-90-sponsors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -m 29
 </code></pre><ul>
 <li>Start a full Discovery re-index on CGSpace:</li>
 </ul>
@@ -552,7 +552,7 @@ $ csvgrep -c matched -m true 2020-07-09-cgspace-sponsors-crossref.csv | wc -l
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code># grep 199.47.87 dspace.log.2020-07-12 | grep -o -E 'session_id=[A-Z0-9]{32}' | sort | uniq | wc -l
+<pre tabindex="0"><code># grep 199.47.87 dspace.log.2020-07-12 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
 2815
 </code></pre><ul>
 <li>So I need to add this alternative user-agent to the Tomcat Crawler Session Manager valve to force it to re-use a common bot session</li>
@@ -567,7 +567,7 @@ $ csvgrep -c matched -m true 2020-07-09-cgspace-sponsors-crossref.csv | wc -l
 </code></pre><ul>
 <li>Generate a list of sponsors to update our controlled vocabulary:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &quot;dc.description.sponsorship&quot;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &quot;dc.description.sponsorship&quot; ORDER BY count DESC LIMIT 125) TO /tmp/2020-07-12-sponsors.csv;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &#34;dc.description.sponsorship&#34;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &#34;dc.description.sponsorship&#34; ORDER BY count DESC LIMIT 125) TO /tmp/2020-07-12-sponsors.csv;
 COPY 125
 dspace=# \q
 $ csvcut -c 1 --tabs /tmp/2020-07-12-sponsors.csv &gt; dspace/config/controlled-vocabularies/dc-description-sponsorship.xml
@@ -590,12 +590,12 @@ $ tidy -xml -utf8 -m -iq -w 0 dspace/config/controlled-vocabularies/dc-descripti
 <ul>
 <li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
 </ul>
-<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(189618) is still referenced from table &quot;bundle&quot;.
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(189618) is still referenced from table &#34;bundle&#34;.
 </code></pre><ul>
 <li>The solution is, as always:</li>
 </ul>
-<pre tabindex="0"><code>$ psql -d dspace -U dspace -c 'update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (189618, 188837);'
+<pre tabindex="0"><code>$ psql -d dspace -U dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (189618, 188837);&#39;
 UPDATE 1
 </code></pre><ul>
 <li>Udana from WLE asked me about some items that didn&rsquo;t show Altmetric donuts
@@ -625,13 +625,13 @@ COPY 194
 $ csvgrep -c matched -m false /tmp/2020-07-15-countries-resolved.csv       
 country,match type,matched
 CAPE VERDE,,false
-&quot;KOREA, REPUBLIC&quot;,,false
+&#34;KOREA, REPUBLIC&#34;,,false
 PALESTINE,,false
-&quot;CONGO, DR&quot;,,false
-COTE D'IVOIRE,,false
+&#34;CONGO, DR&#34;,,false
+COTE D&#39;IVOIRE,,false
 RUSSIA,,false
 SYRIA,,false
-&quot;KOREA, DPR&quot;,,false
+&#34;KOREA, DPR&#34;,,false
 SWAZILAND,,false
 MICRONESIA,,false
 TIBET,,false
@@ -642,16 +642,16 @@ IRAN,,false
 </code></pre><ul>
 <li>Check the database for DOIs that are not in the preferred &ldquo;<a href="https://doi.org/%22">https://doi.org/&quot;</a> format:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# \COPY (SELECT text_value as &quot;cg.identifier.doi&quot; FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=220 AND text_value NOT LIKE 'https://doi.org/%') TO /tmp/2020-07-15-doi.csv WITH CSV HEADER;
+<pre tabindex="0"><code>dspace=# \COPY (SELECT text_value as &#34;cg.identifier.doi&#34; FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=220 AND text_value NOT LIKE &#39;https://doi.org/%&#39;) TO /tmp/2020-07-15-doi.csv WITH CSV HEADER;
 COPY 186
 </code></pre><ul>
 <li>Then I imported them into OpenRefine and replaced them in a new &ldquo;correct&rdquo; column using this GREL transform:</li>
 </ul>
-<pre tabindex="0"><code>value.replace(&quot;dx.doi.org&quot;, &quot;doi.org&quot;).replace(&quot;http://&quot;, &quot;https://&quot;).replace(&quot;https://dx,doi,org&quot;, &quot;https://doi.org&quot;).replace(&quot;https://doi.dx.org&quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx.doi:&quot;, &quot;https://doi.org&quot;).replace(&quot;DOI: &quot;, &quot;https://doi.org/&quot;).replace(&quot;doi: &quot;, &quot;https://doi.org/&quot;).replace(&quot;http:/​/​dx.​doi.​org&quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx. doi.org. &quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx.doi&quot;, &quot;https://doi.org&quot;).replace(&quot;https://dx.doi:&quot;, &quot;https://doi.org/&quot;).replace(&quot;hdl.handle.net&quot;, &quot;doi.org&quot;)
+<pre tabindex="0"><code>value.replace(&#34;dx.doi.org&#34;, &#34;doi.org&#34;).replace(&#34;http://&#34;, &#34;https://&#34;).replace(&#34;https://dx,doi,org&#34;, &#34;https://doi.org&#34;).replace(&#34;https://doi.dx.org&#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx.doi:&#34;, &#34;https://doi.org&#34;).replace(&#34;DOI: &#34;, &#34;https://doi.org/&#34;).replace(&#34;doi: &#34;, &#34;https://doi.org/&#34;).replace(&#34;http:/​/​dx.​doi.​org&#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx. doi.org. &#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx.doi&#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx.doi:&#34;, &#34;https://doi.org/&#34;).replace(&#34;hdl.handle.net&#34;, &#34;doi.org&#34;)
 </code></pre><ul>
 <li>Then I fixed the DOIs on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-15-fix-164-DOIs.csv -db dspace -u dspace -p 'fuuu' -f cg.identifier.doi -t 'correct' -m 220
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-15-fix-164-DOIs.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.identifier.doi -t &#39;correct&#39; -m 220
 </code></pre><ul>
 <li>I filed <a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/issues/10">an issue on Debian&rsquo;s iso-codes</a> project to ask why &ldquo;Swaziland&rdquo; does not appear in the ISO 3166-3 list of historical country names despite it being changed to &ldquo;Eswatini&rdquo; in 2018.</li>
 <li>Atmire responded about the Solr issue
@@ -666,7 +666,7 @@ COPY 186
 <ul>
 <li>Looking at the nginx logs on CGSpace (linode18) last night I see that the Macaroni Bros have started using a unique identifier for at least one of their harvesters:</li>
 </ul>
-<pre tabindex="0"><code>217.64.192.138 - - [20/Jul/2020:01:01:39 +0200] &quot;GET /rest/rest/bitstreams/114779/retrieve HTTP/1.0&quot; 302 138 &quot;-&quot; &quot;ILRI Livestock Website Publications importer BOT&quot;
+<pre tabindex="0"><code>217.64.192.138 - - [20/Jul/2020:01:01:39 +0200] &#34;GET /rest/rest/bitstreams/114779/retrieve HTTP/1.0&#34; 302 138 &#34;-&#34; &#34;ILRI Livestock Website Publications importer BOT&#34;
 </code></pre><ul>
 <li>I still see 12,000 records in Solr from this user agent, though.
 <ul>
@@ -683,7 +683,7 @@ COPY 186
 <li>I re-ran the <code>check-spider-hits.sh</code> script with the new lists and purged another 14,000 more stats hits for several years each (2020, 2019, 2018, 2017, 2016), around 70,000 total</li>
 <li>I looked at the <a href="https://clarisa.cgiar.org/">CLARISA</a> institutions list again, since I hadn&rsquo;t looked at it in over six months:</li>
 </ul>
-<pre tabindex="0"><code>$ cat ~/Downloads/response_1595270924560.json | jq '.[] | {name: .name}' | grep name | awk -F: '{print $2}' | sed -e 's/&quot;//g' -e 's/^ //' -e '1iname' | csvcut -l | sed '1s/line_number/id/' &gt; /tmp/clarisa-institutions.csv
+<pre tabindex="0"><code>$ cat ~/Downloads/response_1595270924560.json | jq &#39;.[] | {name: .name}&#39; | grep name | awk -F: &#39;{print $2}&#39; | sed -e &#39;s/&#34;//g&#39; -e &#39;s/^ //&#39; -e &#39;1iname&#39; | csvcut -l | sed &#39;1s/line_number/id/&#39; &gt; /tmp/clarisa-institutions.csv
 </code></pre><ul>
 <li>The API still needs a key unless you query from Swagger web interface
 <ul>
@@ -732,7 +732,7 @@ Removing unnecessary Unicode (U+200B): Agencia de Servicios a la Comercializaci�
 </li>
 <li>I started processing the 2019 stats in a batch of 1 million on DSpace Test:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
 $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2019
 ...
         *** Statistics Records with Legacy Id ***
@@ -749,7 +749,7 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2019
 </code></pre><ul>
 <li>The statistics-2019 finished processing after about 9 hours so I started the 2018 ones:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
 $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2018
         *** Statistics Records with Legacy Id ***
 
@@ -793,12 +793,12 @@ $ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2018
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>Exception: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
-org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field 'p_group_id{type=uuid,properties=indexed,stored,multiValued}' from value '10'
+<pre tabindex="0"><code>Exception: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
 </code></pre><ul>
 <li>There were four records so I deleted them:</li>
 </ul>
-<pre tabindex="0"><code>$ curl -s &quot;http://localhost:8081/solr/statistics-2018/update?softCommit=true&quot; -H &quot;Content-Type: text/xml&quot; --data-binary '&lt;delete&gt;&lt;query&gt;id:10&lt;/query&gt;&lt;/delete&gt;'
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:10&lt;/query&gt;&lt;/delete&gt;&#39;
 </code></pre><ul>
 <li>Meeting with Moayad and Peter and Abenet to discuss the latest AReS changes</li>
 </ul>
@@ -932,7 +932,7 @@ mailto\:team@impactstory\.org
 </li>
 <li>Export some of the CGSpace Solr stats minus the Atmire CUA schema additions for Salem to play with:</li>
 </ul>
-<pre tabindex="0"><code>$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f 'time:[2019-01-01T00\:00\:00Z TO 2019-06-30T23\:59\:59Z]' -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
+<pre tabindex="0"><code>$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f &#39;time:[2019-01-01T00\:00\:00Z TO 2019-06-30T23\:59\:59Z]&#39; -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
 </code></pre><ul>
 <li>
 <p>Run system updates on DSpace Test (linode26) and reboot it</p>
@@ -1040,7 +1040,7 @@ mailto\:team@impactstory\.org
 </code></pre><ul>
 <li>This one failed after a few hours:</li>
 </ul>
-<pre tabindex="0"><code>Record uid: c4b5974a-025d-4adc-b6c3-c8846048b62b couldn't be processed
+<pre tabindex="0"><code>Record uid: c4b5974a-025d-4adc-b6c3-c8846048b62b couldn&#39;t be processed
 com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: c4b5974a-025d-4adc-b6c3-c8846048b62b, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
         at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
@@ -1063,7 +1063,7 @@ If run the update again with the resume option (-r) they will be reattempted
 <li>I started the same script for the statistics-2019 core (12 million records&hellip;)</li>
 <li>Update an ILRI author&rsquo;s name on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-27-fix-ILRI-author.csv -db dspace -u cgspace -p 'fuuu' -f dc.contributor.author -t 'correct' -m 3
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-27-fix-ILRI-author.csv -db dspace -u cgspace -p &#39;fuuu&#39; -f dc.contributor.author -t &#39;correct&#39; -m 3
 Fixed 13 occurences of: Muloi, D.
 Fixed 4 occurences of: Muloi, D.M.
 </code></pre><h2 id="2020-07-28">2020-07-28</h2>
@@ -1112,11 +1112,11 @@ Fixed 4 occurences of: Muloi, D.M.
 </ul>
 <pre tabindex="0"><code># grep -c numeric /usr/share/iso-codes/json/iso_3166-1.json
 249
-# grep -c -E '&quot;name&quot;:' /usr/share/iso-codes/json/iso_3166-1.json
+# grep -c -E &#39;&#34;name&#34;:&#39; /usr/share/iso-codes/json/iso_3166-1.json
 249
-# grep -c -E '&quot;official_name&quot;:' /usr/share/iso-codes/json/iso_3166-1.json
+# grep -c -E &#39;&#34;official_name&#34;:&#39; /usr/share/iso-codes/json/iso_3166-1.json
 173
-# grep -c -E '&quot;common_name&quot;:' /usr/share/iso-codes/json/iso_3166-1.json
+# grep -c -E &#39;&#34;common_name&#34;:&#39; /usr/share/iso-codes/json/iso_3166-1.json
 6
 </code></pre><ul>
 <li>Wow, the <code>CC-BY-NC-ND-3.0-IGO</code> license that I had <a href="https://github.com/spdx/license-list-XML/issues/767">requested in 2019-02</a> was finally merged into SPDX&hellip;</li>

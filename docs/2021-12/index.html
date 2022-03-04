@@ -40,7 +40,7 @@ Purging 455 hits from WhatsApp in statistics
 
 Total number of bot hits purged: 3679
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -131,13 +131,13 @@ Total number of bot hits purged: 3679
 <li>Atmire merged some changes I had submitted to the COUNTER-Robots project</li>
 <li>I updated our local spider user agents and then re-ran the list with my <code>check-spider-hits.sh</code> script on CGSpace:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f /tmp/agents -p  
-Purging 1989 hits from The Knowledge AI in statistics
-Purging 1235 hits from MaCoCu in statistics
-Purging 455 hits from WhatsApp in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 3679
-</code></pre></div><h2 id="2021-12-02">2021-12-02</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-hits.sh -f /tmp/agents -p  
+</span></span><span style="display:flex;"><span>Purging 1989 hits from The Knowledge AI in statistics
+</span></span><span style="display:flex;"><span>Purging 1235 hits from MaCoCu in statistics
+</span></span><span style="display:flex;"><span>Purging 455 hits from WhatsApp in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 3679
+</span></span></code></pre></div><h2 id="2021-12-02">2021-12-02</h2>
 <ul>
 <li>Francesca from Alliance asked me for help with approving a submission that gets stuck
 <ul>
@@ -145,23 +145,23 @@ Purging 455 hits from WhatsApp in statistics
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
-      1 
-      1 ------------------
-      1 (1437 rows)
-      1  application_name 
-      9  psql
-   1428  dspaceWeb
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
+</span></span><span style="display:flex;"><span>      1 
+</span></span><span style="display:flex;"><span>      1 ------------------
+</span></span><span style="display:flex;"><span>      1 (1437 rows)
+</span></span><span style="display:flex;"><span>      1  application_name 
+</span></span><span style="display:flex;"><span>      9  psql
+</span></span><span style="display:flex;"><span>   1428  dspaceWeb
+</span></span></code></pre></div><ul>
 <li>Munin shows the same:</li>
 </ul>
 <p><img src="/cgspace-notes/2021/12/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
 <ul>
 <li>Last month I enabled the <code>log_lock_waits</code> in PostgreSQL so I checked the log and was surprised to find only a few since I restarted PostgreSQL three days ago:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># grep -E <span style="color:#e6db74">&#39;^2021-(11-29|11-30|12-01|12-02)&#39;</span> /var/log/postgresql/postgresql-10-main.log | grep -c <span style="color:#e6db74">&#39;still waiting for&#39;</span>
-15
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep -E <span style="color:#e6db74">&#39;^2021-(11-29|11-30|12-01|12-02)&#39;</span> /var/log/postgresql/postgresql-10-main.log | grep -c <span style="color:#e6db74">&#39;still waiting for&#39;</span>
+</span></span><span style="display:flex;"><span>15
+</span></span></code></pre></div><ul>
 <li>I think you could analyze the locks for the <code>dspaceWeb</code> user (XMLUI) and find out what queries were locking&hellip; but it&rsquo;s so much information and I don&rsquo;t know where to start
 <ul>
 <li>For now I just restarted PostgreSQL&hellip;</li>
@@ -250,9 +250,9 @@ Purging 455 hits from WhatsApp in statistics
 </li>
 <li>I noticed a strange user agent in the XMLUI logs on CGSpace:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">20.84.225.129 - - [07/Dec/2021:11:51:24 +0100] &#34;GET /handle/10568/33203 HTTP/1.1&#34; 200 6328 &#34;-&#34; &#34;python-requests/2.25.1&#34;
-20.84.225.129 - - [07/Dec/2021:11:51:27 +0100] &#34;GET /handle/10568/33203 HTTP/2.0&#34; 200 6315 &#34;-&#34; &#34;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/88.0.4298.0 Safari/537.36&#34;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>20.84.225.129 - - [07/Dec/2021:11:51:24 +0100] &#34;GET /handle/10568/33203 HTTP/1.1&#34; 200 6328 &#34;-&#34; &#34;python-requests/2.25.1&#34;
+</span></span><span style="display:flex;"><span>20.84.225.129 - - [07/Dec/2021:11:51:27 +0100] &#34;GET /handle/10568/33203 HTTP/2.0&#34; 200 6315 &#34;-&#34; &#34;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/88.0.4298.0 Safari/537.36&#34;
+</span></span></code></pre></div><ul>
 <li>I looked into it more and I see a dozen other IPs using that user agent, and they are all owned by Microsoft
 <ul>
 <li>It could be someone on Azure?</li>
@@ -261,11 +261,11 @@ Purging 455 hits from WhatsApp in statistics
 </li>
 <li>I purged 34,000 hits from this user agent in our Solr statistics:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
-Purging 34458 hits from HeadlessChrome in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 34458
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
+</span></span><span style="display:flex;"><span>Purging 34458 hits from HeadlessChrome in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 34458
+</span></span></code></pre></div><ul>
 <li>Meeting with partners about repositories in the One CGIAR</li>
 </ul>
 <h2 id="2021-12-08">2021-12-08</h2>
@@ -307,26 +307,26 @@ Purging 34458 hits from HeadlessChrome in statistics
 <ul>
 <li>I finally caught some stuck locks on CGSpace after checking several times per day for the last week:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | wc -l
-1508
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | wc -l
+</span></span><span style="display:flex;"><span>1508
+</span></span></code></pre></div><ul>
 <li>Now looking at the locks query sorting by age of locks:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat locks-age.sql 
-SELECT a.datname,
-         l.relation::regclass,
-         l.transactionid,
-         l.mode,
-         l.GRANTED,
-         a.usename,
-         a.query,
-         a.query_start,
-         age(now(), a.query_start) AS &#34;age&#34;,
-         a.pid
-FROM pg_stat_activity a
-JOIN pg_locks l ON l.pid = a.pid
-ORDER BY a.query_start;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat locks-age.sql 
+</span></span><span style="display:flex;"><span>SELECT a.datname,
+</span></span><span style="display:flex;"><span>         l.relation::regclass,
+</span></span><span style="display:flex;"><span>         l.transactionid,
+</span></span><span style="display:flex;"><span>         l.mode,
+</span></span><span style="display:flex;"><span>         l.GRANTED,
+</span></span><span style="display:flex;"><span>         a.usename,
+</span></span><span style="display:flex;"><span>         a.query,
+</span></span><span style="display:flex;"><span>         a.query_start,
+</span></span><span style="display:flex;"><span>         age(now(), a.query_start) AS &#34;age&#34;,
+</span></span><span style="display:flex;"><span>         a.pid
+</span></span><span style="display:flex;"><span>FROM pg_stat_activity a
+</span></span><span style="display:flex;"><span>JOIN pg_locks l ON l.pid = a.pid
+</span></span><span style="display:flex;"><span>ORDER BY a.query_start;
+</span></span></code></pre></div><ul>
 <li>The oldest locks are 9 hours and 26 minutes old and the time on the server is <code>Tue Dec 14 18:41:58 CET 2021</code>, so it seems something happened around 9:15 this morning
 <ul>
 <li>I looked at the maintenance tasks and there is nothing running around then (only the sitemap update that runs at 8AM, and should be quick)</li>
@@ -354,25 +354,25 @@ ORDER BY a.query_start;
 </li>
 <li>I created a SAF archive with SAFBuilder and then imported it to DSpace Test:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34;</span> dspace import --add --eperson<span style="color:#f92672">=</span>fuuu@fuuu.com --source /tmp/SimpleArchiveFormat --mapfile<span style="color:#f92672">=</span>./2021-12-16-green-covers.map
-</code></pre></div><h2 id="2021-12-19">2021-12-19</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34;</span> dspace import --add --eperson<span style="color:#f92672">=</span>fuuu@fuuu.com --source /tmp/SimpleArchiveFormat --mapfile<span style="color:#f92672">=</span>./2021-12-16-green-covers.map
+</span></span></code></pre></div><h2 id="2021-12-19">2021-12-19</h2>
 <ul>
 <li>I tried to update all Docker containers on AReS and then run a build, but I got an error in the backend:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">&gt; openrxv-backend@0.0.1 build
-&gt; nest build
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>node_modules/@elastic/elasticsearch/api/types.d.ts:2454:13 - error TS2456: Type alias &#39;AggregationsAggregate&#39; circularly references itself.
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>2454 export type AggregationsAggregate = AggregationsSingleBucketAggregate | AggregationsAutoDateHistogramAggregate | AggregationsFiltersAggregate | AggregationsSignificantTermsAggregate&lt;any&gt; | AggregationsTermsAggregate&lt;any&gt; | AggregationsBucketAggregate | AggregationsCompositeBucketAggregate | AggregationsMultiBucketAggregate&lt;AggregationsBucket&gt; | AggregationsMatrixStatsAggregate | AggregationsKeyedValueAggregate | AggregationsMetricAggregate
-                 ~~~~~~~~~~~~~~~~~~~~~
-node_modules/@elastic/elasticsearch/api/types.d.ts:3209:13 - error TS2456: Type alias &#39;AggregationsSingleBucketAggregate&#39; circularly references itself.
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>3209 export type AggregationsSingleBucketAggregate = AggregationsSingleBucketAggregateKeys
-                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Found 2 error(s).
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>&gt; openrxv-backend@0.0.1 build
+</span></span><span style="display:flex;"><span>&gt; nest build
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>node_modules/@elastic/elasticsearch/api/types.d.ts:2454:13 - error TS2456: Type alias &#39;AggregationsAggregate&#39; circularly references itself.
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>2454 export type AggregationsAggregate = AggregationsSingleBucketAggregate | AggregationsAutoDateHistogramAggregate | AggregationsFiltersAggregate | AggregationsSignificantTermsAggregate&lt;any&gt; | AggregationsTermsAggregate&lt;any&gt; | AggregationsBucketAggregate | AggregationsCompositeBucketAggregate | AggregationsMultiBucketAggregate&lt;AggregationsBucket&gt; | AggregationsMatrixStatsAggregate | AggregationsKeyedValueAggregate | AggregationsMetricAggregate
+</span></span><span style="display:flex;"><span>                 ~~~~~~~~~~~~~~~~~~~~~
+</span></span><span style="display:flex;"><span>node_modules/@elastic/elasticsearch/api/types.d.ts:3209:13 - error TS2456: Type alias &#39;AggregationsSingleBucketAggregate&#39; circularly references itself.
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>3209 export type AggregationsSingleBucketAggregate = AggregationsSingleBucketAggregateKeys
+</span></span><span style="display:flex;"><span>                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Found 2 error(s).
+</span></span></code></pre></div><ul>
 <li>I&rsquo;m not sure why because I build the backend successfully on my local machine&hellip;
 <ul>
 <li>For now I just ran all the system updates and rebooted the machine (linode20)</li>
@@ -389,39 +389,39 @@ node_modules/@elastic/elasticsearch/api/types.d.ts:3209:13 - error TS2456: Type 
 </li>
 <li>But since software sucks, now I get an error in the frontend while starting nginx:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">nginx: [emerg] host not found in upstream &#34;backend:3000&#34; in /etc/nginx/conf.d/default.conf:2
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>nginx: [emerg] host not found in upstream &#34;backend:3000&#34; in /etc/nginx/conf.d/default.conf:2
+</span></span></code></pre></div><ul>
 <li>In other news, looking at updating our Redis from version 5 to 6 (which is slightly less old, but still old!) and I&rsquo;m happy to see that the <a href="https://raw.githubusercontent.com/redis/redis/6.0/00-RELEASENOTES">release notes for version 6</a> say that it is compatible with 5 except for one minor thing that we don&rsquo;t seem to be using (SPOP?)</li>
 <li>For reference I see that our Redis 5 container is based on Debian 11, which I didn&rsquo;t expect&hellip; but I still want to try to upgrade to Redis 6 eventually:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker exec -it redis bash
-root@23692d6b51c5:/data# cat /etc/os-release 
-PRETTY_NAME=&#34;Debian GNU/Linux 11 (bullseye)&#34;
-NAME=&#34;Debian GNU/Linux&#34;
-VERSION_ID=&#34;11&#34;
-VERSION=&#34;11 (bullseye)&#34;
-VERSION_CODENAME=bullseye
-ID=debian
-HOME_URL=&#34;https://www.debian.org/&#34;
-SUPPORT_URL=&#34;https://www.debian.org/support&#34;
-BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker exec -it redis bash
+</span></span><span style="display:flex;"><span>root@23692d6b51c5:/data# cat /etc/os-release 
+</span></span><span style="display:flex;"><span>PRETTY_NAME=&#34;Debian GNU/Linux 11 (bullseye)&#34;
+</span></span><span style="display:flex;"><span>NAME=&#34;Debian GNU/Linux&#34;
+</span></span><span style="display:flex;"><span>VERSION_ID=&#34;11&#34;
+</span></span><span style="display:flex;"><span>VERSION=&#34;11 (bullseye)&#34;
+</span></span><span style="display:flex;"><span>VERSION_CODENAME=bullseye
+</span></span><span style="display:flex;"><span>ID=debian
+</span></span><span style="display:flex;"><span>HOME_URL=&#34;https://www.debian.org/&#34;
+</span></span><span style="display:flex;"><span>SUPPORT_URL=&#34;https://www.debian.org/support&#34;
+</span></span><span style="display:flex;"><span>BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
+</span></span></code></pre></div><ul>
 <li>I bumped the version to 6 on my local test machine and the logs look good:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker logs redis
-1:C 19 Dec 2021 19:27:15.583 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
-1:C 19 Dec 2021 19:27:15.583 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=1, just started
-1:C 19 Dec 2021 19:27:15.583 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
-1:M 19 Dec 2021 19:27:15.584 * monotonic clock: POSIX clock_gettime
-1:M 19 Dec 2021 19:27:15.584 * Running mode=standalone, port=6379.
-1:M 19 Dec 2021 19:27:15.584 # Server initialized
-1:M 19 Dec 2021 19:27:15.585 * Loading RDB produced by version 5.0.14
-1:M 19 Dec 2021 19:27:15.585 * RDB age 33 seconds
-1:M 19 Dec 2021 19:27:15.585 * RDB memory usage when created 3.17 Mb
-1:M 19 Dec 2021 19:27:15.595 # Done loading RDB, keys loaded: 932, keys expired: 1.
-1:M 19 Dec 2021 19:27:15.595 * DB loaded from disk: 0.011 seconds
-1:M 19 Dec 2021 19:27:15.595 * Ready to accept connections
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker logs redis
+</span></span><span style="display:flex;"><span>1:C 19 Dec 2021 19:27:15.583 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+</span></span><span style="display:flex;"><span>1:C 19 Dec 2021 19:27:15.583 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=1, just started
+</span></span><span style="display:flex;"><span>1:C 19 Dec 2021 19:27:15.583 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.584 * monotonic clock: POSIX clock_gettime
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.584 * Running mode=standalone, port=6379.
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.584 # Server initialized
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.585 * Loading RDB produced by version 5.0.14
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.585 * RDB age 33 seconds
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.585 * RDB memory usage when created 3.17 Mb
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.595 # Done loading RDB, keys loaded: 932, keys expired: 1.
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.595 * DB loaded from disk: 0.011 seconds
+</span></span><span style="display:flex;"><span>1:M 19 Dec 2021 19:27:15.595 * Ready to accept connections
+</span></span></code></pre></div><ul>
 <li>The interface and harvesting all work as expected&hellip;
 <ul>
 <li>I pushed the update to OpenRXV</li>
@@ -443,8 +443,8 @@ BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
 <li>Move invalid AGROVOC subjects in Gaia&rsquo;s eighteen green cover items on DSpace Test to <code>cg.subject.system</code></li>
 <li>I created an &ldquo;approve&rdquo; user for Rafael from CIAT to do tests on DSpace Test:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace user -a -m rafael-approve@cgiar.org -g Rafael -s Rodriguez -p <span style="color:#e6db74">&#39;fuuuuuu&#39;</span>
-</code></pre></div><h2 id="2021-12-27">2021-12-27</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace user -a -m rafael-approve@cgiar.org -g Rafael -s Rodriguez -p <span style="color:#e6db74">&#39;fuuuuuu&#39;</span>
+</span></span></code></pre></div><h2 id="2021-12-27">2021-12-27</h2>
 <ul>
 <li>Start a fresh harvest on AReS</li>
 </ul>
@@ -452,8 +452,8 @@ BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
 <ul>
 <li>Looking at the top IPs and user agents on CGSpace&rsquo;s Solr statistics I see a strange user agent:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.{random.randint(0, 9999)} Safari/537.{random.randint(0, 99)}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.{random.randint(0, 9999)} Safari/537.{random.randint(0, 99)}
+</span></span></code></pre></div><ul>
 <li>I found two IPs using user agents with the &ldquo;randint&rdquo; bug:
 <ul>
 <li>47.252.80.214 (AliCloud in the US)</li>
@@ -469,26 +469,26 @@ BUG_REPORT_URL=&#34;https://bugs.debian.org/&#34;
 </li>
 <li>3.225.28.105 is on Amazon and making thousands of requests for the same URL:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">/rest/collections/1118/items?expand=all&amp;limit=1
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>/rest/collections/1118/items?expand=all&amp;limit=1
+</span></span></code></pre></div><ul>
 <li>Most of the time it has a real-looking user agent, but sometimes it uses <code>Apache-HttpClient/4.3.4 (java 1.5)</code></li>
 <li>Another 82.65.26.228 is doing SQL injection attempts from France</li>
 <li>216.213.28.138 is some scrape-as-a-service bot from Sprious</li>
 <li>I used my <code>resolve-addresses-geoip2.py</code> script to get the ASNs for all the IPs in Solr stats this month, then extracted the ASNs that were responsible for more than one IP:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/resolve-addresses-geoip2.py -i /tmp/ips.txt -o /tmp/2021-12-29-ips.csv
-$ csvcut -c asn /tmp/2021-12-29-ips.csv | sed 1d | sort | uniq -c | sort -h | awk <span style="color:#e6db74">&#39;$1 &gt; 1&#39;</span>
-      2 10620
-      2 265696
-      2 6147
-      2 9299
-      3 3269
-      5 16509
-      5 49505
-      9 24757
-      9 24940
-      9 64267
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/resolve-addresses-geoip2.py -i /tmp/ips.txt -o /tmp/2021-12-29-ips.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c asn /tmp/2021-12-29-ips.csv | sed 1d | sort | uniq -c | sort -h | awk <span style="color:#e6db74">&#39;$1 &gt; 1&#39;</span>
+</span></span><span style="display:flex;"><span>      2 10620
+</span></span><span style="display:flex;"><span>      2 265696
+</span></span><span style="display:flex;"><span>      2 6147
+</span></span><span style="display:flex;"><span>      2 9299
+</span></span><span style="display:flex;"><span>      3 3269
+</span></span><span style="display:flex;"><span>      5 16509
+</span></span><span style="display:flex;"><span>      5 49505
+</span></span><span style="display:flex;"><span>      9 24757
+</span></span><span style="display:flex;"><span>      9 24940
+</span></span><span style="display:flex;"><span>      9 64267
+</span></span></code></pre></div><ul>
 <li>AS 64267 is Sprious, and it has used these IPs this month:
 <ul>
 <li>216.213.28.136</li>
@@ -526,37 +526,37 @@ $ csvcut -c asn /tmp/2021-12-29-ips.csv | sed 1d | sort | uniq -c | sort -h | aw
 </li>
 <li>I ran the script to purge spider agents with the latest updates:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
-Purging 2530 hits from HeadlessChrome in statistics
-Purging 10676 hits from randint in statistics
-Purging 3579 hits from Koha in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 16785
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
+</span></span><span style="display:flex;"><span>Purging 2530 hits from HeadlessChrome in statistics
+</span></span><span style="display:flex;"><span>Purging 10676 hits from randint in statistics
+</span></span><span style="display:flex;"><span>Purging 3579 hits from Koha in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 16785
+</span></span></code></pre></div><ul>
 <li>Then the IPs:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips-to-purge.txt -p
-Purging 1190 hits from 216.213.28.136 in statistics
-Purging 1128 hits from 207.182.27.191 in statistics
-Purging 1095 hits from 216.41.235.187 in statistics
-Purging 1087 hits from 216.41.232.169 in statistics
-Purging 1011 hits from 216.41.235.186 in statistics
-Purging 945 hits from 52.124.19.190 in statistics
-Purging 933 hits from 216.213.28.138 in statistics
-Purging 930 hits from 216.41.234.163 in statistics
-Purging 4410 hits from 45.146.166.173 in statistics
-Purging 2688 hits from 45.134.26.171 in statistics
-Purging 1130 hits from 45.146.164.123 in statistics
-Purging 536 hits from 45.155.205.231 in statistics
-Purging 10676 hits from 195.54.167.122 in statistics
-Purging 1350 hits from 54.76.137.83 in statistics
-Purging 1240 hits from 34.253.119.85 in statistics
-Purging 2879 hits from 34.216.201.131 in statistics
-Purging 2909 hits from 54.203.193.46 in statistics
-Purging 1822 hits from 2605\:b100\:316\:7f74\:8d67\:5860\:a9f3\:d87c in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 37959
-</code></pre></div><!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips-to-purge.txt -p
+</span></span><span style="display:flex;"><span>Purging 1190 hits from 216.213.28.136 in statistics
+</span></span><span style="display:flex;"><span>Purging 1128 hits from 207.182.27.191 in statistics
+</span></span><span style="display:flex;"><span>Purging 1095 hits from 216.41.235.187 in statistics
+</span></span><span style="display:flex;"><span>Purging 1087 hits from 216.41.232.169 in statistics
+</span></span><span style="display:flex;"><span>Purging 1011 hits from 216.41.235.186 in statistics
+</span></span><span style="display:flex;"><span>Purging 945 hits from 52.124.19.190 in statistics
+</span></span><span style="display:flex;"><span>Purging 933 hits from 216.213.28.138 in statistics
+</span></span><span style="display:flex;"><span>Purging 930 hits from 216.41.234.163 in statistics
+</span></span><span style="display:flex;"><span>Purging 4410 hits from 45.146.166.173 in statistics
+</span></span><span style="display:flex;"><span>Purging 2688 hits from 45.134.26.171 in statistics
+</span></span><span style="display:flex;"><span>Purging 1130 hits from 45.146.164.123 in statistics
+</span></span><span style="display:flex;"><span>Purging 536 hits from 45.155.205.231 in statistics
+</span></span><span style="display:flex;"><span>Purging 10676 hits from 195.54.167.122 in statistics
+</span></span><span style="display:flex;"><span>Purging 1350 hits from 54.76.137.83 in statistics
+</span></span><span style="display:flex;"><span>Purging 1240 hits from 34.253.119.85 in statistics
+</span></span><span style="display:flex;"><span>Purging 2879 hits from 34.216.201.131 in statistics
+</span></span><span style="display:flex;"><span>Purging 2909 hits from 54.203.193.46 in statistics
+</span></span><span style="display:flex;"><span>Purging 1822 hits from 2605\:b100\:316\:7f74\:8d67\:5860\:a9f3\:d87c in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 37959
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 

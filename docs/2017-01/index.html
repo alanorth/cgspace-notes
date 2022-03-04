@@ -28,7 +28,7 @@ I checked to see if the Solr sharding task that is supposed to run on January 1s
 I tested on DSpace Test as well and it doesn&rsquo;t work there either
 I asked on the dspace-tech mailing list because it seems to be broken, and actually now I&rsquo;m not sure if we&rsquo;ve ever had the sharding task run successfully over all these years
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -124,7 +124,7 @@ I asked on the dspace-tech mailing list because it seems to be broken, and actua
 <ul>
 <li>I tried to shard my local dev instance and it fails the same way:</li>
 </ul>
-<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&quot; ~/dspace/bin/dspace stats-util -s
+<pre tabindex="0"><code>$ JAVA_OPTS=&#34;-Xms768m -Xmx768m -Dfile.encoding=UTF-8&#34; ~/dspace/bin/dspace stats-util -s
 Moving: 9318 into core statistics-2016
 Exception: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
 org.apache.solr.client.solrj.SolrServerException: IOException occured when talking to server at: http://localhost:8081/solr//statistics-2016
@@ -179,15 +179,15 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>Despite failing instantly, a <code>statistics-2016</code> directory was created, but it only has a data dir (no conf)</li>
 <li>The Tomcat access logs show more:</li>
 </ul>
-<pre tabindex="0"><code>127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 107
-127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/statistics/select?q=*%3A*&amp;rows=0&amp;facet=true&amp;facet.range=time&amp;facet.range.start=NOW%2FYEAR-17YEARS&amp;facet.range.end=NOW%2FYEAR%2B0YEARS&amp;facet.range.gap=%2B1YEAR&amp;facet.mincount=1&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 423
-127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/admin/cores?action=STATUS&amp;core=statistics-2016&amp;indexInfo=true&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 77
-127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &quot;GET /solr/admin/cores?action=CREATE&amp;name=statistics-2016&amp;instanceDir=statistics&amp;dataDir=%2FUsers%2Faorth%2Fdspace%2Fsolr%2Fstatistics-2016%2Fdata&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 63
-127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &quot;GET /solr/statistics/select?csv.mv.separator=%7C&amp;q=*%3A*&amp;fq=time%3A%28%5B2016%5C-01%5C-01T00%5C%3A00%5C%3A00Z+TO+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%5D+NOT+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%29&amp;rows=10000&amp;wt=csv HTTP/1.1&quot; 200 4359517
-127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &quot;GET /solr/statistics/admin/luke?show=schema&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 200 16248
-127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &quot;POST /solr//statistics-2016/update/csv?commit=true&amp;softCommit=false&amp;waitSearcher=true&amp;f.previousWorkflowStep.split=true&amp;f.previousWorkflowStep.separator=%7C&amp;f.previousWorkflowStep.encapsulator=%22&amp;f.actingGroupId.split=true&amp;f.actingGroupId.separator=%7C&amp;f.actingGroupId.encapsulator=%22&amp;f.containerCommunity.split=true&amp;f.containerCommunity.separator=%7C&amp;f.containerCommunity.encapsulator=%22&amp;f.range.split=true&amp;f.range.separator=%7C&amp;f.range.encapsulator=%22&amp;f.containerItem.split=true&amp;f.containerItem.separator=%7C&amp;f.containerItem.encapsulator=%22&amp;f.p_communities_map.split=true&amp;f.p_communities_map.separator=%7C&amp;f.p_communities_map.encapsulator=%22&amp;f.ngram_query_search.split=true&amp;f.ngram_query_search.separator=%7C&amp;f.ngram_query_search.encapsulator=%22&amp;f.containerBitstream.split=true&amp;f.containerBitstream.separator=%7C&amp;f.containerBitstream.encapsulator=%22&amp;f.owningItem.split=true&amp;f.owningItem.separator=%7C&amp;f.owningItem.encapsulator=%22&amp;f.actingGroupParentId.split=true&amp;f.actingGroupParentId.separator=%7C&amp;f.actingGroupParentId.encapsulator=%22&amp;f.text.split=true&amp;f.text.separator=%7C&amp;f.text.encapsulator=%22&amp;f.simple_query_search.split=true&amp;f.simple_query_search.separator=%7C&amp;f.simple_query_search.encapsulator=%22&amp;f.owningComm.split=true&amp;f.owningComm.separator=%7C&amp;f.owningComm.encapsulator=%22&amp;f.owner.split=true&amp;f.owner.separator=%7C&amp;f.owner.encapsulator=%22&amp;f.filterquery.split=true&amp;f.filterquery.separator=%7C&amp;f.filterquery.encapsulator=%22&amp;f.p_group_map.split=true&amp;f.p_group_map.separator=%7C&amp;f.p_group_map.encapsulator=%22&amp;f.actorMemberGroupId.split=true&amp;f.actorMemberGroupId.separator=%7C&amp;f.actorMemberGroupId.encapsulator=%22&amp;f.bitstreamId.split=true&amp;f.bitstreamId.separator=%7C&amp;f.bitstreamId.encapsulator=%22&amp;f.group_name.split=true&amp;f.group_name.separator=%7C&amp;f.group_name.encapsulator=%22&amp;f.p_communities_name.split=true&amp;f.p_communities_name.separator=%7C&amp;f.p_communities_name.encapsulator=%22&amp;f.query.split=true&amp;f.query.separator=%7C&amp;f.query.encapsulator=%22&amp;f.workflowStep.split=true&amp;f.workflowStep.separator=%7C&amp;f.workflowStep.encapsulator=%22&amp;f.containerCollection.split=true&amp;f.containerCollection.separator=%7C&amp;f.containerCollection.encapsulator=%22&amp;f.complete_query_search.split=true&amp;f.complete_query_search.separator=%7C&amp;f.complete_query_search.encapsulator=%22&amp;f.p_communities_id.split=true&amp;f.p_communities_id.separator=%7C&amp;f.p_communities_id.encapsulator=%22&amp;f.rangeDescription.split=true&amp;f.rangeDescription.separator=%7C&amp;f.rangeDescription.encapsulator=%22&amp;f.group_id.split=true&amp;f.group_id.separator=%7C&amp;f.group_id.encapsulator=%22&amp;f.bundleName.split=true&amp;f.bundleName.separator=%7C&amp;f.bundleName.encapsulator=%22&amp;f.ngram_simplequery_search.split=true&amp;f.ngram_simplequery_search.separator=%7C&amp;f.ngram_simplequery_search.encapsulator=%22&amp;f.group_map.split=true&amp;f.group_map.separator=%7C&amp;f.group_map.encapsulator=%22&amp;f.owningColl.split=true&amp;f.owningColl.separator=%7C&amp;f.owningColl.encapsulator=%22&amp;f.p_group_id.split=true&amp;f.p_group_id.separator=%7C&amp;f.p_group_id.encapsulator=%22&amp;f.p_group_name.split=true&amp;f.p_group_name.separator=%7C&amp;f.p_group_name.encapsulator=%22&amp;wt=javabin&amp;version=2 HTTP/1.1&quot; 409 156
-127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &quot;POST /solr/datatables/update?wt=javabin&amp;version=2 HTTP/1.1&quot; 200 41
-127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &quot;POST /solr/datatables/update HTTP/1.1&quot; 200 40
+<pre tabindex="0"><code>127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &#34;GET /solr/statistics/select?q=type%3A2+AND+id%3A1&amp;wt=javabin&amp;version=2 HTTP/1.1&#34; 200 107
+127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &#34;GET /solr/statistics/select?q=*%3A*&amp;rows=0&amp;facet=true&amp;facet.range=time&amp;facet.range.start=NOW%2FYEAR-17YEARS&amp;facet.range.end=NOW%2FYEAR%2B0YEARS&amp;facet.range.gap=%2B1YEAR&amp;facet.mincount=1&amp;wt=javabin&amp;version=2 HTTP/1.1&#34; 200 423
+127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &#34;GET /solr/admin/cores?action=STATUS&amp;core=statistics-2016&amp;indexInfo=true&amp;wt=javabin&amp;version=2 HTTP/1.1&#34; 200 77
+127.0.0.1 - - [04/Jan/2017:22:39:05 +0200] &#34;GET /solr/admin/cores?action=CREATE&amp;name=statistics-2016&amp;instanceDir=statistics&amp;dataDir=%2FUsers%2Faorth%2Fdspace%2Fsolr%2Fstatistics-2016%2Fdata&amp;wt=javabin&amp;version=2 HTTP/1.1&#34; 200 63
+127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &#34;GET /solr/statistics/select?csv.mv.separator=%7C&amp;q=*%3A*&amp;fq=time%3A%28%5B2016%5C-01%5C-01T00%5C%3A00%5C%3A00Z+TO+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%5D+NOT+2017%5C-01%5C-01T00%5C%3A00%5C%3A00Z%29&amp;rows=10000&amp;wt=csv HTTP/1.1&#34; 200 4359517
+127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &#34;GET /solr/statistics/admin/luke?show=schema&amp;wt=javabin&amp;version=2 HTTP/1.1&#34; 200 16248
+127.0.0.1 - - [04/Jan/2017:22:39:07 +0200] &#34;POST /solr//statistics-2016/update/csv?commit=true&amp;softCommit=false&amp;waitSearcher=true&amp;f.previousWorkflowStep.split=true&amp;f.previousWorkflowStep.separator=%7C&amp;f.previousWorkflowStep.encapsulator=%22&amp;f.actingGroupId.split=true&amp;f.actingGroupId.separator=%7C&amp;f.actingGroupId.encapsulator=%22&amp;f.containerCommunity.split=true&amp;f.containerCommunity.separator=%7C&amp;f.containerCommunity.encapsulator=%22&amp;f.range.split=true&amp;f.range.separator=%7C&amp;f.range.encapsulator=%22&amp;f.containerItem.split=true&amp;f.containerItem.separator=%7C&amp;f.containerItem.encapsulator=%22&amp;f.p_communities_map.split=true&amp;f.p_communities_map.separator=%7C&amp;f.p_communities_map.encapsulator=%22&amp;f.ngram_query_search.split=true&amp;f.ngram_query_search.separator=%7C&amp;f.ngram_query_search.encapsulator=%22&amp;f.containerBitstream.split=true&amp;f.containerBitstream.separator=%7C&amp;f.containerBitstream.encapsulator=%22&amp;f.owningItem.split=true&amp;f.owningItem.separator=%7C&amp;f.owningItem.encapsulator=%22&amp;f.actingGroupParentId.split=true&amp;f.actingGroupParentId.separator=%7C&amp;f.actingGroupParentId.encapsulator=%22&amp;f.text.split=true&amp;f.text.separator=%7C&amp;f.text.encapsulator=%22&amp;f.simple_query_search.split=true&amp;f.simple_query_search.separator=%7C&amp;f.simple_query_search.encapsulator=%22&amp;f.owningComm.split=true&amp;f.owningComm.separator=%7C&amp;f.owningComm.encapsulator=%22&amp;f.owner.split=true&amp;f.owner.separator=%7C&amp;f.owner.encapsulator=%22&amp;f.filterquery.split=true&amp;f.filterquery.separator=%7C&amp;f.filterquery.encapsulator=%22&amp;f.p_group_map.split=true&amp;f.p_group_map.separator=%7C&amp;f.p_group_map.encapsulator=%22&amp;f.actorMemberGroupId.split=true&amp;f.actorMemberGroupId.separator=%7C&amp;f.actorMemberGroupId.encapsulator=%22&amp;f.bitstreamId.split=true&amp;f.bitstreamId.separator=%7C&amp;f.bitstreamId.encapsulator=%22&amp;f.group_name.split=true&amp;f.group_name.separator=%7C&amp;f.group_name.encapsulator=%22&amp;f.p_communities_name.split=true&amp;f.p_communities_name.separator=%7C&amp;f.p_communities_name.encapsulator=%22&amp;f.query.split=true&amp;f.query.separator=%7C&amp;f.query.encapsulator=%22&amp;f.workflowStep.split=true&amp;f.workflowStep.separator=%7C&amp;f.workflowStep.encapsulator=%22&amp;f.containerCollection.split=true&amp;f.containerCollection.separator=%7C&amp;f.containerCollection.encapsulator=%22&amp;f.complete_query_search.split=true&amp;f.complete_query_search.separator=%7C&amp;f.complete_query_search.encapsulator=%22&amp;f.p_communities_id.split=true&amp;f.p_communities_id.separator=%7C&amp;f.p_communities_id.encapsulator=%22&amp;f.rangeDescription.split=true&amp;f.rangeDescription.separator=%7C&amp;f.rangeDescription.encapsulator=%22&amp;f.group_id.split=true&amp;f.group_id.separator=%7C&amp;f.group_id.encapsulator=%22&amp;f.bundleName.split=true&amp;f.bundleName.separator=%7C&amp;f.bundleName.encapsulator=%22&amp;f.ngram_simplequery_search.split=true&amp;f.ngram_simplequery_search.separator=%7C&amp;f.ngram_simplequery_search.encapsulator=%22&amp;f.group_map.split=true&amp;f.group_map.separator=%7C&amp;f.group_map.encapsulator=%22&amp;f.owningColl.split=true&amp;f.owningColl.separator=%7C&amp;f.owningColl.encapsulator=%22&amp;f.p_group_id.split=true&amp;f.p_group_id.separator=%7C&amp;f.p_group_id.encapsulator=%22&amp;f.p_group_name.split=true&amp;f.p_group_name.separator=%7C&amp;f.p_group_name.encapsulator=%22&amp;wt=javabin&amp;version=2 HTTP/1.1&#34; 409 156
+127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &#34;POST /solr/datatables/update?wt=javabin&amp;version=2 HTTP/1.1&#34; 200 41
+127.0.0.1 - - [04/Jan/2017:22:44:00 +0200] &#34;POST /solr/datatables/update HTTP/1.1&#34; 200 40
 </code></pre><ul>
 <li>Very interesting&hellip; it creates the core and then fails somehow</li>
 </ul>
@@ -208,11 +208,11 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>I found an old post on the mailing list discussing a similar issue, and listing some SQL commands that might help</li>
 <li>For example, this shows 186 mappings for the item, the first three of which are real:</li>
 </ul>
-<pre tabindex="0"><code>dspace=#  select * from collection2item where item_id = '80596';
+<pre tabindex="0"><code>dspace=#  select * from collection2item where item_id = &#39;80596&#39;;
 </code></pre><ul>
 <li>Then I deleted the others:</li>
 </ul>
-<pre tabindex="0"><code>dspace=# delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
+<pre tabindex="0"><code>dspace=# delete from collection2item where item_id = &#39;80596&#39; and id not in (90792, 90806, 90807);
 </code></pre><ul>
 <li>And in the item view it now shows the correct mappings</li>
 <li>I will have to ask the DSpace people if this is a valid approach</li>
@@ -224,19 +224,19 @@ Caused by: java.net.SocketException: Broken pipe (Write failed)
 <li>Error in <code>fix-metadata-values.py</code> when it tries to print the value for Entwicklung &amp; Ländlicher Raum:</li>
 </ul>
 <pre tabindex="0"><code>Traceback (most recent call last):
-  File &quot;./fix-metadata-values.py&quot;, line 80, in &lt;module&gt;
-    print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0]))
-UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15: ordinal not in range(128)
+  File &#34;./fix-metadata-values.py&#34;, line 80, in &lt;module&gt;
+    print(&#34;Fixing {} occurences of: {}&#34;.format(records_to_fix, record[0]))
+UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode character u&#39;\xe4&#39; in position 15: ordinal not in range(128)
 </code></pre><ul>
 <li>Seems we need to encode as UTF-8 before printing to screen, ie:</li>
 </ul>
-<pre tabindex="0"><code>print(&quot;Fixing {} occurences of: {}&quot;.format(records_to_fix, record[0].encode('utf-8')))
+<pre tabindex="0"><code>print(&#34;Fixing {} occurences of: {}&#34;.format(records_to_fix, record[0].encode(&#39;utf-8&#39;)))
 </code></pre><ul>
 <li>See: <a href="http://stackoverflow.com/a/36427358/487333">http://stackoverflow.com/a/36427358/487333</a></li>
 <li>I&rsquo;m actually not sure if we need to encode() the strings to UTF-8 before writing them to the database&hellip; I&rsquo;ve never had this issue before</li>
 <li>Now back to cleaning up some journal titles so we can make the controlled vocabulary:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'fuuu'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/fix-27-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p &#39;fuuu&#39;
 </code></pre><ul>
 <li>Now get the top 500 journal titles:</li>
 </ul>
@@ -255,9 +255,9 @@ UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 15:
 <li>Fix the two items Maria found with duplicate mappings with this script:</li>
 </ul>
 <pre tabindex="0"><code>/* 184 in correct mappings: https://cgspace.cgiar.org/handle/10568/78596 */
-delete from collection2item where item_id = '80596' and id not in (90792, 90806, 90807);
+delete from collection2item where item_id = &#39;80596&#39; and id not in (90792, 90806, 90807);
 /* 1 incorrect mapping: https://cgspace.cgiar.org/handle/10568/78658 */
-delete from collection2item where id = '91082';
+delete from collection2item where id = &#39;91082&#39;;
 </code></pre><h2 id="2017-01-17">2017-01-17</h2>
 <ul>
 <li>Helping clean up some file names in the 232 CIAT records that Sisay worked on last week</li>
@@ -266,15 +266,15 @@ delete from collection2item where id = '91082';
 <li>And the file names don&rsquo;t really matter either, as long as the SAF Builder tool can read them—after that DSpace renames them with a hash in the assetstore</li>
 <li>Seems like the only ones I should replace are the <code>'</code> apostrophe characters, as <code>%27</code>:</li>
 </ul>
-<pre tabindex="0"><code>value.replace(&quot;'&quot;,'%27')
+<pre tabindex="0"><code>value.replace(&#34;&#39;&#34;,&#39;%27&#39;)
 </code></pre><ul>
 <li>Add the item&rsquo;s Type to the filename column as a hint to SAF Builder so it can set a more useful description field:</li>
 </ul>
-<pre tabindex="0"><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+<pre tabindex="0"><code>value + &#34;__description:&#34; + cells[&#34;dc.type&#34;].value
 </code></pre><ul>
 <li>Test importing of the new CIAT records (actually there are 232, not 234):</li>
 </ul>
-<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
+<pre tabindex="0"><code>$ JAVA_OPTS=&#34;-Xmx512m -Dfile.encoding=UTF-8&#34; /home/dspacetest.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/79042 --source /home/aorth/CIAT_234/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
 </code></pre><ul>
 <li>Many of the PDFs are 20, 30, 40, 50+ MB, which makes a total of 4GB</li>
 <li>These are scanned from paper and likely have no compression, so we should try to test if these compression techniques help without comprimising the quality too much:</li>
@@ -289,7 +289,7 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 <li>In testing a random sample of CIAT&rsquo;s PDFs for compressability, it looks like all of these methods generally increase the file size so we will just import them as they are</li>
 <li>Import 232 CIAT records into CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ JAVA_OPTS=&quot;-Xmx512m -Dfile.encoding=UTF-8&quot; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/68704 --source /home/aorth/CIAT_232/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
+<pre tabindex="0"><code>$ JAVA_OPTS=&#34;-Xmx512m -Dfile.encoding=UTF-8&#34; /home/cgspace.cgiar.org/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/68704 --source /home/aorth/CIAT_232/SimpleArchiveFormat/ --mapfile=/tmp/ciat.map &amp;&gt; /tmp/ciat.log
 </code></pre><h2 id="2017-01-22">2017-01-22</h2>
 <ul>
 <li>Looking at some records that Sisay is having problems importing into DSpace Test (seems to be because of copious whitespace return characters from Excel&rsquo;s CSV exporter)</li>
@@ -300,7 +300,7 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 <li>I merged Atmire&rsquo;s pull request into the development branch so they can deploy it on DSpace Test</li>
 <li>Move some old ILRI Program communities to a new subcommunity for former programs (10568/79164):</li>
 </ul>
-<pre tabindex="0"><code>$ for community in 10568/171 10568/27868 10568/231 10568/27869 10568/150 10568/230 10568/32724 10568/172; do /home/cgspace.cgiar.org/bin/dspace community-filiator --remove --parent=10568/27866 --child=&quot;$community&quot; &amp;&amp; /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/79164 --child=&quot;$community&quot;; done
+<pre tabindex="0"><code>$ for community in 10568/171 10568/27868 10568/231 10568/27869 10568/150 10568/230 10568/32724 10568/172; do /home/cgspace.cgiar.org/bin/dspace community-filiator --remove --parent=10568/27866 --child=&#34;$community&#34; &amp;&amp; /home/cgspace.cgiar.org/bin/dspace community-filiator --set --parent=10568/79164 --child=&#34;$community&#34;; done
 </code></pre><ul>
 <li>Move some collections with <a href="https://gist.github.com/alanorth/e60b530ed4989df0c731afbb0c640515"><code>move-collections.sh</code></a> using the following config:</li>
 </ul>
@@ -311,7 +311,7 @@ $ gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -
 <li>Run all updates on DSpace Test and reboot the server</li>
 <li>Run fixes for Journal titles on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/fix-49-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p 'password'
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/fix-49-journal-titles.csv -f dc.source -t correct -m 55 -d dspace -u dspace -p &#39;password&#39;
 </code></pre><ul>
 <li>Create a new list of the top 500 journal titles from the database:</li>
 </ul>

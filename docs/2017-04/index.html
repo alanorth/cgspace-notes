@@ -17,7 +17,7 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 Remove redundant/duplicate text in the DSpace submission license
 Testing the CMYK patch on a collection with 650 items:
 
-$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &#34;ImageMagick PDF Thumbnail&#34; -v &gt;&amp; /tmp/filter-media-cmyk.txt
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-04/" />
@@ -38,9 +38,9 @@ Quick proof-of-concept hack to add dc.rights to the input form, including some i
 Remove redundant/duplicate text in the DSpace submission license
 Testing the CMYK patch on a collection with 650 items:
 
-$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &#34;ImageMagick PDF Thumbnail&#34; -v &gt;&amp; /tmp/filter-media-cmyk.txt
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -136,12 +136,12 @@ $ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Th
 <li>Remove redundant/duplicate text in the DSpace submission license</li>
 <li>Testing the CMYK patch on a collection with 650 items:</li>
 </ul>
-<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/16498 -p &#34;ImageMagick PDF Thumbnail&#34; -v &gt;&amp; /tmp/filter-media-cmyk.txt
 </code></pre><h2 id="2017-04-03">2017-04-03</h2>
 <ul>
 <li>Continue testing the CMYK patch on more communities:</li>
 </ul>
-<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/1 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&gt; /tmp/filter-media-cmyk.txt 2&gt;&amp;1
+<pre tabindex="0"><code>$ [dspace]/bin/dspace filter-media -f -i 10568/1 -p &#34;ImageMagick PDF Thumbnail&#34; -v &gt;&gt; /tmp/filter-media-cmyk.txt 2&gt;&amp;1
 </code></pre><ul>
 <li>So far there are almost 500:</li>
 </ul>
@@ -174,17 +174,17 @@ ILAC_Brief21_PMCA.pdf: 113462 bytes, checksum: 249fef468f401c066a119f5db687add0 
 </code></pre><ul>
 <li>This SQL query returns fields that were submitted or approved by giampieri in 2016 and contain a &ldquo;checksum&rdquo; (ie, there was a bitstream in the submission):</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^(Submitted|Approved).*giampieri.*2016-.*checksum.*&#39;;
 </code></pre><ul>
 <li>Then this one does the same, but for fields that don&rsquo;t contain checksums (ie, there was no bitstream in the submission):</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^(Submitted|Approved).*giampieri.*2016-.*' and text_value !~ '^(Submitted|Approved).*giampieri.*2016-.*checksum.*';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^(Submitted|Approved).*giampieri.*2016-.*&#39; and text_value !~ &#39;^(Submitted|Approved).*giampieri.*2016-.*checksum.*&#39;;
 </code></pre><ul>
 <li>For some reason there seem to be way too many fields, for example there are 498 + 13 here, which is 511 items for just this one user.</li>
 <li>It looks like there can be a scenario where the user submitted AND approved it, so some records might be doubled&hellip;</li>
 <li>In that case it might just be better to see how many the user submitted (both <em>with</em> and <em>without</em> bitstreams):</li>
 </ul>
-<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ '^Submitted.*giampieri.*2016-.*';
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^Submitted.*giampieri.*2016-.*&#39;;
 </code></pre><h2 id="2017-04-05">2017-04-05</h2>
 <ul>
 <li>After doing a few more large communities it seems this is the final count of CMYK PDFs:</li>
@@ -273,7 +273,7 @@ OAI 2.0 manager action ended. It took 829 seconds.
 <li>The import command should theoretically catch situations like this where an item&rsquo;s metadata was updated, but in this case we changed the metadata schema and it doesn&rsquo;t seem to catch it (could be a bug!)</li>
 <li>Attempting a full rebuild of OAI on CGSpace:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
 $ time schedtool -D -e ionice -c2 -n7 nice -n19 /home/cgspace.cgiar.org/bin/dspace oai import -c
 ...
 58700 items imported so far...
@@ -326,8 +326,8 @@ sys     1m29.310s
 <li>One thing we need to remember if we start using OAI is to enable the autostart of the harvester process (see <code>harvester.autoStart</code> in <code>dspace/config/modules/oai.cfg</code>)</li>
 <li>Error when running DSpace cleanup task on DSpace Test and CGSpace (on the same item), I need to look this up:</li>
 </ul>
-<pre tabindex="0"><code>Error: ERROR: update or delete on table &quot;bitstream&quot; violates foreign key constraint &quot;bundle_primary_bitstream_id_fkey&quot; on table &quot;bundle&quot;
-  Detail: Key (bitstream_id)=(435) is still referenced from table &quot;bundle&quot;.
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(435) is still referenced from table &#34;bundle&#34;.
 </code></pre><h2 id="2017-04-18">2017-04-18</h2>
 <ul>
 <li>Helping Tsega test his new <a href="https://github.com/ilri/ckm-cgspace-rest-api">CGSpace REST API Rails app</a> on DSpace Test</li>
@@ -342,7 +342,7 @@ $ rails -s
 </code></pre><ul>
 <li>I used Ansible to create a PostgreSQL user that only has <code>SELECT</code> privileges on the tables it needs:</li>
 </ul>
-<pre tabindex="0"><code>$ ansible linode02 -u aorth -b --become-user=postgres -K -m postgresql_user -a 'db=database name=username password=password priv=CONNECT/item:SELECT/metadatavalue:SELECT/metadatafieldregistry:SELECT/metadataschemaregistry:SELECT/collection:SELECT/handle:SELECT/bundle2bitstream:SELECT/bitstream:SELECT/bundle:SELECT/item2bundle:SELECT state=present
+<pre tabindex="0"><code>$ ansible linode02 -u aorth -b --become-user=postgres -K -m postgresql_user -a &#39;db=database name=username password=password priv=CONNECT/item:SELECT/metadatavalue:SELECT/metadatafieldregistry:SELECT/metadataschemaregistry:SELECT/collection:SELECT/handle:SELECT/bundle2bitstream:SELECT/bitstream:SELECT/bundle:SELECT/item2bundle:SELECT state=present
 </code></pre><ul>
 <li>Need to look into <a href="https://github.com/puma/puma/blob/master/docs/systemd.md">running this via systemd</a></li>
 <li>This is interesting for creating runnable commands from <code>bundle</code>:</li>
@@ -360,15 +360,15 @@ $ rails -s
 <li>Looking at 933 CIAT records from Sisay, he&rsquo;s having problems creating a SAF bundle to import to DSpace Test</li>
 <li>I started by looking at his CSV in OpenRefine, and I see there a <em>bunch</em> of fields with whitespace issues that I cleaned up:</li>
 </ul>
-<pre tabindex="0"><code>value.replace(&quot; ||&quot;,&quot;||&quot;).replace(&quot;|| &quot;,&quot;||&quot;).replace(&quot; || &quot;,&quot;||&quot;)
+<pre tabindex="0"><code>value.replace(&#34; ||&#34;,&#34;||&#34;).replace(&#34;|| &#34;,&#34;||&#34;).replace(&#34; || &#34;,&#34;||&#34;)
 </code></pre><ul>
 <li>Also, all the filenames have spaces and URL encoded characters in them, so I decoded them from URL encoding:</li>
 </ul>
-<pre tabindex="0"><code>unescape(value,&quot;url&quot;)
+<pre tabindex="0"><code>unescape(value,&#34;url&#34;)
 </code></pre><ul>
 <li>Then create the filename column using the following transform from URL:</li>
 </ul>
-<pre tabindex="0"><code>value.split('/')[-1].replace(/#.*$/,&quot;&quot;)
+<pre tabindex="0"><code>value.split(&#39;/&#39;)[-1].replace(/#.*$/,&#34;&#34;)
 </code></pre><ul>
 <li>The <code>replace</code> part is because some URLs have an anchor like <code>#page=14</code> which we obviously don&rsquo;t want on the filename</li>
 <li>Also, we need to only use the PDF on the item corresponding with page 1, so we don&rsquo;t end up with literally hundreds of duplicate PDFs</li>
@@ -381,7 +381,7 @@ $ rails -s
 <li>Looking at the CIAT data again, a bunch of items have metadata values ending in <code>||</code>, which might cause blank fields to be added at import time</li>
 <li>Cleaning them up with OpenRefine:</li>
 </ul>
-<pre tabindex="0"><code>value.replace(/\|\|$/,&quot;&quot;)
+<pre tabindex="0"><code>value.replace(/\|\|$/,&#34;&#34;)
 </code></pre><ul>
 <li>Working with the CIAT data in OpenRefine to remove the filename column from all but the first item which requires a particular PDF, as there are many items pointing to the same PDF, which would cause hundreds of duplicates to be added if we included them in the SAF bundle</li>
 <li>I did some massaging in OpenRefine, flagging duplicates with stars and flags, then filtering and removing the filenames of those items</li>
@@ -395,7 +395,7 @@ $ rails -s
 </code></pre><ul>
 <li>Add a description to the file names using:</li>
 </ul>
-<pre tabindex="0"><code>value + &quot;__description:&quot; + cells[&quot;dc.type&quot;].value
+<pre tabindex="0"><code>value + &#34;__description:&#34; + cells[&#34;dc.type&#34;].value
 </code></pre><ul>
 <li>Test import of 933 records:</li>
 </ul>
@@ -409,8 +409,8 @@ $ wc -l /tmp/ciat
 <li>More work on Ansible infrastructure stuff for Tsega&rsquo;s CKM DSpace REST API</li>
 <li>I&rsquo;m going to start re-processing all the PDF thumbnails on CGSpace, one community at a time:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1024m&quot;
-$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace filter-media -f -v -i 10568/71249 -p &quot;ImageMagick PDF Thumbnail&quot; -v &gt;&amp; /tmp/filter-media-cmyk.txt
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace filter-media -f -v -i 10568/71249 -p &#34;ImageMagick PDF Thumbnail&#34; -v &gt;&amp; /tmp/filter-media-cmyk.txt
 </code></pre><h2 id="2017-04-22">2017-04-22</h2>
 <ul>
 <li>Someone on the dspace-tech mailing list responded with a suggestion about the foreign key violation in the <code>cleanup</code> task</li>
@@ -447,7 +447,7 @@ org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: this Index
 </code></pre><ul>
 <li>Looking at the past few days of logs, it looks like the indexing process started crashing on 2017-04-20:</li>
 </ul>
-<pre tabindex="0"><code># grep -c 'IndexWriter is closed' [dspace]/log/dspace.log.2017-04-*
+<pre tabindex="0"><code># grep -c &#39;IndexWriter is closed&#39; [dspace]/log/dspace.log.2017-04-*
 [dspace]/log/dspace.log.2017-04-01:0
 [dspace]/log/dspace.log.2017-04-02:0
 [dspace]/log/dspace.log.2017-04-03:0

@@ -34,7 +34,7 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 
 
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -163,19 +163,19 @@ Also, we found some issues building and running OpenRXV currently due to ecosyst
 <ul>
 <li>I looked at the number of connections in PostgreSQL and it&rsquo;s definitely high again:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-1020
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>1020
+</span></span></code></pre></div><ul>
 <li>I reported it to Atmire to take a look, on the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=851">same issue</a> we had been tracking this before</li>
 <li>Abenet asked me to add a new ORCID for ILRI staff member Zoe Campbell</li>
 <li>I added it to the controlled vocabulary and then tagged her existing items on CGSpace using my <code>add-orcid-identifier.py</code> script:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2021-03-04-add-zoe-campbell-orcid.csv 
-dc.contributor.author,cg.creator.identifier
-&#34;Campbell, Zoë&#34;,&#34;Zoe Campbell: 0000-0002-4759-9976&#34;
-&#34;Campbell, Zoe A.&#34;,&#34;Zoe Campbell: 0000-0002-4759-9976&#34;
-$ ./ilri/add-orcid-identifiers-csv.py -i 2021-03-04-add-zoe-campbell-orcid.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2021-03-04-add-zoe-campbell-orcid.csv 
+</span></span><span style="display:flex;"><span>dc.contributor.author,cg.creator.identifier
+</span></span><span style="display:flex;"><span>&#34;Campbell, Zoë&#34;,&#34;Zoe Campbell: 0000-0002-4759-9976&#34;
+</span></span><span style="display:flex;"><span>&#34;Campbell, Zoe A.&#34;,&#34;Zoe Campbell: 0000-0002-4759-9976&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i 2021-03-04-add-zoe-campbell-orcid.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</span></span></code></pre></div><ul>
 <li>I still need to do cleanup on the journal articles metadata
 <ul>
 <li>Peter sent me some cleanups but I can&rsquo;t use them in the search/replace format he gave</li>
@@ -183,9 +183,9 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-03-04-add-zoe-campbell-orcid.csv -
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT dspace_object_id AS id, text_value as &#34;cg.journal&#34; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
-COPY 32087
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT dspace_object_id AS id, text_value as &#34;cg.journal&#34; FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 32087
+</span></span></code></pre></div><ul>
 <li>I used OpenRefine to remove all journal values that didn&rsquo;t have one of these values: ; ( )
 <ul>
 <li>Then I cloned the <code>cg.journal</code> field to <code>cg.volume</code> and <code>cg.issue</code></li>
@@ -193,10 +193,10 @@ COPY 32087
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">value.partition(&#39;;&#39;)[0].trim() # to get journal names
-value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^(\d+)\(\d+\)/,&#34;$1&#34;) # to get journal volumes
-value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&#34;$1&#34;) # to get journal issues
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>value.partition(&#39;;&#39;)[0].trim() # to get journal names
+</span></span><span style="display:flex;"><span>value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^(\d+)\(\d+\)/,&#34;$1&#34;) # to get journal volumes
+</span></span><span style="display:flex;"><span>value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&#34;$1&#34;) # to get journal issues
+</span></span></code></pre></div><ul>
 <li>Then I uploaded the changes to CGSpace using <code>dspace metadata-import</code></li>
 <li>Margarita from CCAFS was asking about an error deleting some items that were showing up in Google and should have been private
 <ul>
@@ -233,14 +233,14 @@ value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&#34;$1&#34;) # t
 <ul>
 <li>I migrated the Docker bind mount for the AReS Elasticsearch container to a Docker volume:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker-compose -f docker/docker-compose.yml down
-$ docker volume create docker_esData_7
-$ docker container create --name es_dummy -v docker_esData_7:/usr/share/elasticsearch/data:rw elasticsearch:7.6.2
-$ docker cp docker/esData_7/nodes es_dummy:/usr/share/elasticsearch/data
-$ docker rm es_dummy
-# edit docker/docker-compose.yml to switch from bind mount to volume
-$ docker-compose -f docker/docker-compose.yml up -d
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker-compose -f docker/docker-compose.yml down
+</span></span><span style="display:flex;"><span>$ docker volume create docker_esData_7
+</span></span><span style="display:flex;"><span>$ docker container create --name es_dummy -v docker_esData_7:/usr/share/elasticsearch/data:rw elasticsearch:7.6.2
+</span></span><span style="display:flex;"><span>$ docker cp docker/esData_7/nodes es_dummy:/usr/share/elasticsearch/data
+</span></span><span style="display:flex;"><span>$ docker rm es_dummy
+</span></span><span style="display:flex;"><span># edit docker/docker-compose.yml to switch from bind mount to volume
+</span></span><span style="display:flex;"><span>$ docker-compose -f docker/docker-compose.yml up -d
+</span></span></code></pre></div><ul>
 <li>The trick is that when you create a volume like &ldquo;myvolume&rdquo; from a <code>docker-compose.yml</code> file, Docker will create it with the name &ldquo;docker_myvolume&rdquo;
 <ul>
 <li>If you create it manually on the command line with <code>docker volume create myvolume</code> then the name is literally &ldquo;myvolume&rdquo;</li>
@@ -249,39 +249,39 @@ $ docker-compose -f docker/docker-compose.yml up -d
 <li>I still need to make the changes to git master and add these notes to the pull request so Moayad and others can benefit</li>
 <li>Delete the <code>openrxv-items-temp</code> index to test a fresh harvesting:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-</code></pre></div><h2 id="2021-03-05-1">2021-03-05</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span></code></pre></div><h2 id="2021-03-05-1">2021-03-05</h2>
 <ul>
 <li>Check the results of the AReS harvesting from last night:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 101761,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 101761,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-03-05
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-03-05
+</span></span></code></pre></div><ul>
 <li>Delete the current items index and clone the temp one to it:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span></code></pre></div><ul>
 <li>Then delete the temp and backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-{&#34;acknowledged&#34;:true}%
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-03-05&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>{&#34;acknowledged&#34;:true}%
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-03-05&#39;</span>
+</span></span></code></pre></div><ul>
 <li>I made some pull requests to OpenRXV:
 <ul>
 <li><a href="https://github.com/ilri/OpenRXV/pull/86">docker/docker-compose.yml: Use docker volumes</a></li>
@@ -298,57 +298,57 @@ $ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-i
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
-...
-    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {
-            &#34;openrxv-items&#34;: {}
-        }
-    },
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;openrxv-items&#34;: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span></code></pre></div><ul>
 <li>But on AReS production <code>openrxv-items</code> has somehow become a concrete index:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
-...
-    &#34;openrxv-items&#34;: {
-        &#34;aliases&#34;: {}
-    },
-    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {}
-    },
-    &#34;openrxv-items-temp&#34;: {
-        &#34;aliases&#34;: {}
-    },
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-temp&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span></code></pre></div><ul>
 <li>I fixed the issue on production by cloning the <code>openrxv-items</code> index to <code>openrxv-items-final</code>, deleting <code>openrxv-items</code>, and then re-creating it as an alias:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-03-07
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-final
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
-$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-03-07
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-final
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Delete backups and remove read-only mode on <code>openrxv-items</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-03-07&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-03-07&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Linode sent alerts about the CPU usage on CGSpace yesterday and the day before
 <ul>
 <li>Looking in the logs I see a few IPs making heavy usage on the REST API and XMLUI:</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E <span style="color:#e6db74">&#39;0[56]/Mar/2021&#39;</span> | goaccess --log-format<span style="color:#f92672">=</span>COMBINED -
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E <span style="color:#e6db74">&#39;0[56]/Mar/2021&#39;</span> | goaccess --log-format<span style="color:#f92672">=</span>COMBINED -
+</span></span></code></pre></div><ul>
 <li>I see the usual IPs for CCAFS and ILRI importer bots, but also <code>143.233.242.132</code> which appears to be for GARDIAN:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># zgrep <span style="color:#e6db74">&#39;143.233.242.132&#39;</span> /var/log/nginx/access.log.1 | grep -c Delphi
-6237
-# zgrep <span style="color:#e6db74">&#39;143.233.242.132&#39;</span> /var/log/nginx/access.log.1 | grep -c -v Delphi
-6418
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zgrep <span style="color:#e6db74">&#39;143.233.242.132&#39;</span> /var/log/nginx/access.log.1 | grep -c Delphi
+</span></span><span style="display:flex;"><span>6237
+</span></span><span style="display:flex;"><span># zgrep <span style="color:#e6db74">&#39;143.233.242.132&#39;</span> /var/log/nginx/access.log.1 | grep -c -v Delphi
+</span></span><span style="display:flex;"><span>6418
+</span></span></code></pre></div><ul>
 <li>They seem to make requests twice, once with the Delphi user agent that we know and already mark as a bot, and once with a &ldquo;normal&rdquo; user agent
 <ul>
 <li>Looking in Solr I see they have been using this IP for awhile, as they have 100,000 hits going back into 2020</li>
@@ -375,9 +375,9 @@ $ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_set
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-13
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>13
+</span></span></code></pre></div><ul>
 <li>On 2021-03-03 the PostgreSQL transactions started rising:</li>
 </ul>
 <p><img src="/cgspace-notes/2021/03/postgres_querylength_ALL-week.png" alt="PostgreSQL query length week"></p>
@@ -409,10 +409,10 @@ $ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_set
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-08
-# start harvesting on AReS
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-08
+</span></span><span style="display:flex;"><span># start harvesting on AReS
+</span></span></code></pre></div><ul>
 <li>As I saw on my local test instance, even when you cancel a harvesting, it replaces the <code>openrxv-items-final</code> index with whatever is in <code>openrxv-items-temp</code> automatically, so I assume it will do the same now</li>
 </ul>
 <h2 id="2021-03-09">2021-03-09</h2>
@@ -434,8 +434,8 @@ $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.txt -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
-</code></pre></div><h2 id="2021-03-10">2021-03-10</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.txt -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</span></span></code></pre></div><h2 id="2021-03-10">2021-03-10</h2>
 <ul>
 <li>Colleagues from ICARDA asked about how we should handle ISI journals in CG Core, as CGSpace uses <code>cg.isijournal</code> and MELSpace uses <code>mel.impact-factor</code>
 <ul>
@@ -444,12 +444,12 @@ $ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items
 </li>
 <li>Peter said he doesn&rsquo;t see &ldquo;Source Code&rdquo; or &ldquo;Software&rdquo; in the <a href="https://cgspace.cgiar.org/handle/10568/1/search-filter?field=type">output type facet on the ILRI community</a>, but I see it on the home page, so I will try to do a full Discovery re-index:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>real    318m20.485s
-user    215m15.196s
-sys     2m51.529s
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>real    318m20.485s
+</span></span><span style="display:flex;"><span>user    215m15.196s
+</span></span><span style="display:flex;"><span>sys     2m51.529s
+</span></span></code></pre></div><ul>
 <li>Now I see ten items for &ldquo;Source Code&rdquo; in the facets&hellip;</li>
 <li>Add GPL and MIT licenses to the list of licenses on CGSpace input form since we will start capturing more software and source code</li>
 <li>Added the ability to check <code>dcterms.license</code> values against the SPDX licenses in the csv-metadata-quality tool
@@ -467,34 +467,34 @@ sys     2m51.529s
 <ul>
 <li>Switch to linux-kvm kernel on linode20 and linode18:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># apt update <span style="color:#f92672">&amp;&amp;</span> apt full-upgrade
-# apt install linux-kvm
-# apt remove linux-generic linux-image-generic linux-headers-generic linux-firmware
-# apt autoremove <span style="color:#f92672">&amp;&amp;</span> apt autoclean
-# reboot
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># apt update <span style="color:#f92672">&amp;&amp;</span> apt full-upgrade
+</span></span><span style="display:flex;"><span># apt install linux-kvm
+</span></span><span style="display:flex;"><span># apt remove linux-generic linux-image-generic linux-headers-generic linux-firmware
+</span></span><span style="display:flex;"><span># apt autoremove <span style="color:#f92672">&amp;&amp;</span> apt autoclean
+</span></span><span style="display:flex;"><span># reboot
+</span></span></code></pre></div><ul>
 <li>Deploy latest changes from <code>6_x-prod</code> branch on CGSpace</li>
 <li>Deploy latest changes from OpenRXV <code>master</code> branch on AReS</li>
 <li>Last week Peter added OpenRXV to CGSpace: <a href="https://hdl.handle.net/10568/112982">https://hdl.handle.net/10568/112982</a></li>
 <li>Back up the current <code>openrxv-items-final</code> index on AReS to start a new harvest:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-14
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-14
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><ul>
 <li>After the harvesting finished it seems the indexes got messed up again, as <code>openrxv-items</code> is an alias of <code>openrxv-items-temp</code> instead of <code>openrxv-items-final</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
-...
-    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {}
-    },
-    &#34;openrxv-items-temp&#34;: {
-        &#34;aliases&#34;: {
-            &#34;openrxv-items&#34;: {}
-        }
-    },
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-temp&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;openrxv-items&#34;: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span></code></pre></div><ul>
 <li>Anyways, the number of items in <code>openrxv-items</code> seems OK and the AReS Explorer UI is working fine
 <ul>
 <li>I will have to manually fix the indexes before the next harvesting</li>
@@ -535,54 +535,54 @@ $ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-fina
 </li>
 <li>Back up the current <code>openrxv-items-final</code> index to start a fresh AReS Harvest:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-21
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-2021-03-21
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Then start harvesting in the AReS Explorer admin UI</li>
 </ul>
 <h2 id="2021-03-22">2021-03-22</h2>
 <ul>
 <li>The harvesting on AReS yesterday completed, but somehow I have twice the number of items:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 206204,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 206204,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Hmmm and even my backup index has a strange number of items:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final-2021-03-21/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 844,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final-2021-03-21/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 844,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>I deleted all indexes and re-created the openrxv-items alias:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
-$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
-...
-    &#34;openrxv-items-temp&#34;: {
-        &#34;aliases&#34;: {}
-    },
-    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {
-            &#34;openrxv-items&#34;: {}
-        }
-    }
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-temp&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;openrxv-items&#34;: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><ul>
 <li>Then I started a new harvesting</li>
 <li>I switched the Node.js in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a> to v12 since v10 will cease to be supported soon
 <ul>
@@ -591,26 +591,26 @@ $ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</s
 </li>
 <li>The AReS harvest finally finished, with 1047 pages of items, but the <code>openrxv-items-final</code> index is empty and the <code>openrxv-items-temp</code> index has a 103,000 items:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 103162,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 103162,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>I tried to clone the temp index to the final, but got an error:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
-{&#34;error&#34;:{&#34;root_cause&#34;:[{&#34;type&#34;:&#34;resource_already_exists_exception&#34;,&#34;reason&#34;:&#34;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&#34;,&#34;index_uuid&#34;:&#34;LmxH-rQsTRmTyWex2d8jxw&#34;,&#34;index&#34;:&#34;openrxv-items-final&#34;}],&#34;type&#34;:&#34;resource_already_exists_exception&#34;,&#34;reason&#34;:&#34;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&#34;,&#34;index_uuid&#34;:&#34;LmxH-rQsTRmTyWex2d8jxw&#34;,&#34;index&#34;:&#34;openrxv-items-final&#34;},&#34;status&#34;:400}% 
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
+</span></span><span style="display:flex;"><span>{&#34;error&#34;:{&#34;root_cause&#34;:[{&#34;type&#34;:&#34;resource_already_exists_exception&#34;,&#34;reason&#34;:&#34;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&#34;,&#34;index_uuid&#34;:&#34;LmxH-rQsTRmTyWex2d8jxw&#34;,&#34;index&#34;:&#34;openrxv-items-final&#34;}],&#34;type&#34;:&#34;resource_already_exists_exception&#34;,&#34;reason&#34;:&#34;index [openrxv-items-final/LmxH-rQsTRmTyWex2d8jxw] already exists&#34;,&#34;index_uuid&#34;:&#34;LmxH-rQsTRmTyWex2d8jxw&#34;,&#34;index&#34;:&#34;openrxv-items-final&#34;},&#34;status&#34;:400}% 
+</span></span></code></pre></div><ul>
 <li>I looked in the Docker logs for Elasticsearch and saw a few memory errors:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">java.lang.OutOfMemoryError: Java heap space
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>java.lang.OutOfMemoryError: Java heap space
+</span></span></code></pre></div><ul>
 <li>According to <code>/usr/share/elasticsearch/config/jvm.options</code> in the Elasticsearch container the default JVM heap is 1g
 <ul>
 <li>I see the running Java process has <code>-Xms 1g -Xmx 1g</code> in its process invocation so I guess that it must be indeed using 1g</li>
@@ -622,20 +622,20 @@ $ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</s
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {}
-    },
-    &#34;openrxv-items-temp&#34;: {
-        &#34;aliases&#34;: {
-            &#34;openrxv-items&#34;: {}
-        }
-    },
-</code></pre></div><h2 id="2021-03-23">2021-03-23</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-temp&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;openrxv-items&#34;: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span></code></pre></div><h2 id="2021-03-23">2021-03-23</h2>
 <ul>
 <li>For reference you can also get the Elasticsearch JVM stats from the API:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_nodes/jvm?human&#39;</span> | python -m json.tool
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_nodes/jvm?human&#39;</span> | python -m json.tool
+</span></span></code></pre></div><ul>
 <li>I re-deployed AReS with 1.5GB of heap using the <code>ES_JAVA_OPTS</code> environment variable
 <ul>
 <li>It turns out that this <em>is</em> the recommended way to set the heap: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.6/jvm-options.html">https://www.elastic.co/guide/en/elasticsearch/reference/7.6/jvm-options.html</a></li>
@@ -644,8 +644,8 @@ $ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</s
 <li>Then I fixed the aliases to make sure <code>openrxv-items</code> was an alias of <code>openrxv-items-final</code>, similar to how I did a few weeks ago</li>
 <li>I re-created the temp index:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XPUT <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-</code></pre></div><h2 id="2021-03-24">2021-03-24</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XPUT <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span></code></pre></div><h2 id="2021-03-24">2021-03-24</h2>
 <ul>
 <li>Atmire responded to the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=934">ticket about the Duplicate Checker</a>
 <ul>
@@ -659,105 +659,105 @@ $ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</s
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># du -s /home/dspacetest.cgiar.org/solr/statistics
-57861236        /home/dspacetest.cgiar.org/solr/statistics
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># du -s /home/dspacetest.cgiar.org/solr/statistics
+</span></span><span style="display:flex;"><span>57861236        /home/dspacetest.cgiar.org/solr/statistics
+</span></span></code></pre></div><ul>
 <li>I applied their changes to <code>config/spring/api/atmire-cua-update.xml</code> and started the duplicate processor:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-Dfile.encoding=UTF-8 -Xmx4096m&#39;</span>
-$ chrt -b <span style="color:#ae81ff">0</span> dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r <span style="color:#ae81ff">1000</span> -c statistics -t <span style="color:#ae81ff">12</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-Dfile.encoding=UTF-8 -Xmx4096m&#39;</span>
+</span></span><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r <span style="color:#ae81ff">1000</span> -c statistics -t <span style="color:#ae81ff">12</span>
+</span></span></code></pre></div><ul>
 <li>The default number of records per query is 10,000, which caused memory issues, so I will try with 1000 (Atmire used 100, but that seems too low!)</li>
 <li>Hah, I still got a memory error after only a few minutes:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">...
-Run 1 —  80% — 5,000/6,263 docs — 25s — 6m 31s                                      
-Exception: GC overhead limit exceeded                                                                          
-java.lang.OutOfMemoryError: GC overhead limit exceeded 
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Run 1 —  80% — 5,000/6,263 docs — 25s — 6m 31s                                      
+</span></span><span style="display:flex;"><span>Exception: GC overhead limit exceeded                                                                          
+</span></span><span style="display:flex;"><span>java.lang.OutOfMemoryError: GC overhead limit exceeded 
+</span></span></code></pre></div><ul>
 <li>I guess we really do have to use <code>-r 100</code></li>
 <li>Now the thing runs for a few minutes and &ldquo;finishes&rdquo;:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ chrt -b <span style="color:#ae81ff">0</span> dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r <span style="color:#ae81ff">100</span> -c statistics -t <span style="color:#ae81ff">12</span>
-Loading @mire database changes for module MQM
-Changes have been processed
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>*************************
-* Update Script Started *
-*************************
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Run 1
-Start updating Solr Storage Reports | Wed Mar 24 14:42:17 CET 2021
-Deleting old storage docs from Solr... | Wed Mar 24 14:42:17 CET 2021
-Done. | Wed Mar 24 14:42:17 CET 2021
-Processing storage reports for type: eperson | Wed Mar 24 14:42:17 CET 2021
-Done. | Wed Mar 24 14:42:41 CET 2021
-Processing storage reports for type: group | Wed Mar 24 14:42:41 CET 2021
-Done. | Wed Mar 24 14:45:46 CET 2021
-Processing storage reports for type: collection | Wed Mar 24 14:45:46 CET 2021
-Done. | Wed Mar 24 14:45:54 CET 2021
-Processing storage reports for type: community | Wed Mar 24 14:45:54 CET 2021
-Done. | Wed Mar 24 14:45:58 CET 2021
-Committing to Solr... | Wed Mar 24 14:45:58 CET 2021
-Done. | Wed Mar 24 14:45:59 CET 2021
-Successfully finished updating Solr Storage Reports | Wed Mar 24 14:45:59 CET 2021
-Run 1 —   2% — 100/4,824 docs — 3m 47s — 3m 47s
-Run 1 —   4% — 200/4,824 docs — 2s — 3m 50s
-Run 1 —   6% — 300/4,824 docs — 2s — 3m 53s
-Run 1 —   8% — 400/4,824 docs — 2s — 3m 55s
-Run 1 —  10% — 500/4,824 docs — 2s — 3m 58s
-Run 1 —  12% — 600/4,824 docs — 2s — 4m 1s
-Run 1 —  15% — 700/4,824 docs — 2s — 4m 3s
-Run 1 —  17% — 800/4,824 docs — 2s — 4m 6s
-Run 1 —  19% — 900/4,824 docs — 2s — 4m 9s
-Run 1 —  21% — 1,000/4,824 docs — 2s — 4m 11s
-Run 1 —  23% — 1,100/4,824 docs — 2s — 4m 14s
-Run 1 —  25% — 1,200/4,824 docs — 2s — 4m 16s
-Run 1 —  27% — 1,300/4,824 docs — 2s — 4m 19s
-Run 1 —  29% — 1,400/4,824 docs — 2s — 4m 22s
-Run 1 —  31% — 1,500/4,824 docs — 2s — 4m 24s
-Run 1 —  33% — 1,600/4,824 docs — 2s — 4m 27s
-Run 1 —  35% — 1,700/4,824 docs — 2s — 4m 29s
-Run 1 —  37% — 1,800/4,824 docs — 2s — 4m 32s
-Run 1 —  39% — 1,900/4,824 docs — 2s — 4m 35s
-Run 1 —  41% — 2,000/4,824 docs — 2s — 4m 37s
-Run 1 —  44% — 2,100/4,824 docs — 2s — 4m 40s
-Run 1 —  46% — 2,200/4,824 docs — 2s — 4m 42s
-Run 1 —  48% — 2,300/4,824 docs — 2s — 4m 45s
-Run 1 —  50% — 2,400/4,824 docs — 2s — 4m 48s
-Run 1 —  52% — 2,500/4,824 docs — 2s — 4m 50s
-Run 1 —  54% — 2,600/4,824 docs — 2s — 4m 53s
-Run 1 —  56% — 2,700/4,824 docs — 2s — 4m 55s
-Run 1 —  58% — 2,800/4,824 docs — 2s — 4m 58s
-Run 1 —  60% — 2,900/4,824 docs — 2s — 5m 1s
-Run 1 —  62% — 3,000/4,824 docs — 2s — 5m 3s
-Run 1 —  64% — 3,100/4,824 docs — 2s — 5m 6s
-Run 1 —  66% — 3,200/4,824 docs — 3s — 5m 9s
-Run 1 —  68% — 3,300/4,824 docs — 2s — 5m 12s
-Run 1 —  70% — 3,400/4,824 docs — 2s — 5m 14s
-Run 1 —  73% — 3,500/4,824 docs — 2s — 5m 17s
-Run 1 —  75% — 3,600/4,824 docs — 2s — 5m 20s
-Run 1 —  77% — 3,700/4,824 docs — 2s — 5m 22s
-Run 1 —  79% — 3,800/4,824 docs — 2s — 5m 25s
-Run 1 —  81% — 3,900/4,824 docs — 2s — 5m 27s
-Run 1 —  83% — 4,000/4,824 docs — 2s — 5m 30s
-Run 1 —  85% — 4,100/4,824 docs — 2s — 5m 33s
-Run 1 —  87% — 4,200/4,824 docs — 2s — 5m 35s
-Run 1 —  89% — 4,300/4,824 docs — 2s — 5m 38s
-Run 1 —  91% — 4,400/4,824 docs — 2s — 5m 41s
-Run 1 —  93% — 4,500/4,824 docs — 2s — 5m 43s
-Run 1 —  95% — 4,600/4,824 docs — 2s — 5m 46s
-Run 1 —  97% — 4,700/4,824 docs — 2s — 5m 49s
-Run 1 — 100% — 4,800/4,824 docs — 2s — 5m 51s
-Run 1 — 100% — 4,824/4,824 docs — 2s — 5m 53s
-Run 1 took 5m 53s
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>**************************
-* Update Script Finished *
-**************************
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r <span style="color:#ae81ff">100</span> -c statistics -t <span style="color:#ae81ff">12</span>
+</span></span><span style="display:flex;"><span>Loading @mire database changes for module MQM
+</span></span><span style="display:flex;"><span>Changes have been processed
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>*************************
+</span></span><span style="display:flex;"><span>* Update Script Started *
+</span></span><span style="display:flex;"><span>*************************
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Run 1
+</span></span><span style="display:flex;"><span>Start updating Solr Storage Reports | Wed Mar 24 14:42:17 CET 2021
+</span></span><span style="display:flex;"><span>Deleting old storage docs from Solr... | Wed Mar 24 14:42:17 CET 2021
+</span></span><span style="display:flex;"><span>Done. | Wed Mar 24 14:42:17 CET 2021
+</span></span><span style="display:flex;"><span>Processing storage reports for type: eperson | Wed Mar 24 14:42:17 CET 2021
+</span></span><span style="display:flex;"><span>Done. | Wed Mar 24 14:42:41 CET 2021
+</span></span><span style="display:flex;"><span>Processing storage reports for type: group | Wed Mar 24 14:42:41 CET 2021
+</span></span><span style="display:flex;"><span>Done. | Wed Mar 24 14:45:46 CET 2021
+</span></span><span style="display:flex;"><span>Processing storage reports for type: collection | Wed Mar 24 14:45:46 CET 2021
+</span></span><span style="display:flex;"><span>Done. | Wed Mar 24 14:45:54 CET 2021
+</span></span><span style="display:flex;"><span>Processing storage reports for type: community | Wed Mar 24 14:45:54 CET 2021
+</span></span><span style="display:flex;"><span>Done. | Wed Mar 24 14:45:58 CET 2021
+</span></span><span style="display:flex;"><span>Committing to Solr... | Wed Mar 24 14:45:58 CET 2021
+</span></span><span style="display:flex;"><span>Done. | Wed Mar 24 14:45:59 CET 2021
+</span></span><span style="display:flex;"><span>Successfully finished updating Solr Storage Reports | Wed Mar 24 14:45:59 CET 2021
+</span></span><span style="display:flex;"><span>Run 1 —   2% — 100/4,824 docs — 3m 47s — 3m 47s
+</span></span><span style="display:flex;"><span>Run 1 —   4% — 200/4,824 docs — 2s — 3m 50s
+</span></span><span style="display:flex;"><span>Run 1 —   6% — 300/4,824 docs — 2s — 3m 53s
+</span></span><span style="display:flex;"><span>Run 1 —   8% — 400/4,824 docs — 2s — 3m 55s
+</span></span><span style="display:flex;"><span>Run 1 —  10% — 500/4,824 docs — 2s — 3m 58s
+</span></span><span style="display:flex;"><span>Run 1 —  12% — 600/4,824 docs — 2s — 4m 1s
+</span></span><span style="display:flex;"><span>Run 1 —  15% — 700/4,824 docs — 2s — 4m 3s
+</span></span><span style="display:flex;"><span>Run 1 —  17% — 800/4,824 docs — 2s — 4m 6s
+</span></span><span style="display:flex;"><span>Run 1 —  19% — 900/4,824 docs — 2s — 4m 9s
+</span></span><span style="display:flex;"><span>Run 1 —  21% — 1,000/4,824 docs — 2s — 4m 11s
+</span></span><span style="display:flex;"><span>Run 1 —  23% — 1,100/4,824 docs — 2s — 4m 14s
+</span></span><span style="display:flex;"><span>Run 1 —  25% — 1,200/4,824 docs — 2s — 4m 16s
+</span></span><span style="display:flex;"><span>Run 1 —  27% — 1,300/4,824 docs — 2s — 4m 19s
+</span></span><span style="display:flex;"><span>Run 1 —  29% — 1,400/4,824 docs — 2s — 4m 22s
+</span></span><span style="display:flex;"><span>Run 1 —  31% — 1,500/4,824 docs — 2s — 4m 24s
+</span></span><span style="display:flex;"><span>Run 1 —  33% — 1,600/4,824 docs — 2s — 4m 27s
+</span></span><span style="display:flex;"><span>Run 1 —  35% — 1,700/4,824 docs — 2s — 4m 29s
+</span></span><span style="display:flex;"><span>Run 1 —  37% — 1,800/4,824 docs — 2s — 4m 32s
+</span></span><span style="display:flex;"><span>Run 1 —  39% — 1,900/4,824 docs — 2s — 4m 35s
+</span></span><span style="display:flex;"><span>Run 1 —  41% — 2,000/4,824 docs — 2s — 4m 37s
+</span></span><span style="display:flex;"><span>Run 1 —  44% — 2,100/4,824 docs — 2s — 4m 40s
+</span></span><span style="display:flex;"><span>Run 1 —  46% — 2,200/4,824 docs — 2s — 4m 42s
+</span></span><span style="display:flex;"><span>Run 1 —  48% — 2,300/4,824 docs — 2s — 4m 45s
+</span></span><span style="display:flex;"><span>Run 1 —  50% — 2,400/4,824 docs — 2s — 4m 48s
+</span></span><span style="display:flex;"><span>Run 1 —  52% — 2,500/4,824 docs — 2s — 4m 50s
+</span></span><span style="display:flex;"><span>Run 1 —  54% — 2,600/4,824 docs — 2s — 4m 53s
+</span></span><span style="display:flex;"><span>Run 1 —  56% — 2,700/4,824 docs — 2s — 4m 55s
+</span></span><span style="display:flex;"><span>Run 1 —  58% — 2,800/4,824 docs — 2s — 4m 58s
+</span></span><span style="display:flex;"><span>Run 1 —  60% — 2,900/4,824 docs — 2s — 5m 1s
+</span></span><span style="display:flex;"><span>Run 1 —  62% — 3,000/4,824 docs — 2s — 5m 3s
+</span></span><span style="display:flex;"><span>Run 1 —  64% — 3,100/4,824 docs — 2s — 5m 6s
+</span></span><span style="display:flex;"><span>Run 1 —  66% — 3,200/4,824 docs — 3s — 5m 9s
+</span></span><span style="display:flex;"><span>Run 1 —  68% — 3,300/4,824 docs — 2s — 5m 12s
+</span></span><span style="display:flex;"><span>Run 1 —  70% — 3,400/4,824 docs — 2s — 5m 14s
+</span></span><span style="display:flex;"><span>Run 1 —  73% — 3,500/4,824 docs — 2s — 5m 17s
+</span></span><span style="display:flex;"><span>Run 1 —  75% — 3,600/4,824 docs — 2s — 5m 20s
+</span></span><span style="display:flex;"><span>Run 1 —  77% — 3,700/4,824 docs — 2s — 5m 22s
+</span></span><span style="display:flex;"><span>Run 1 —  79% — 3,800/4,824 docs — 2s — 5m 25s
+</span></span><span style="display:flex;"><span>Run 1 —  81% — 3,900/4,824 docs — 2s — 5m 27s
+</span></span><span style="display:flex;"><span>Run 1 —  83% — 4,000/4,824 docs — 2s — 5m 30s
+</span></span><span style="display:flex;"><span>Run 1 —  85% — 4,100/4,824 docs — 2s — 5m 33s
+</span></span><span style="display:flex;"><span>Run 1 —  87% — 4,200/4,824 docs — 2s — 5m 35s
+</span></span><span style="display:flex;"><span>Run 1 —  89% — 4,300/4,824 docs — 2s — 5m 38s
+</span></span><span style="display:flex;"><span>Run 1 —  91% — 4,400/4,824 docs — 2s — 5m 41s
+</span></span><span style="display:flex;"><span>Run 1 —  93% — 4,500/4,824 docs — 2s — 5m 43s
+</span></span><span style="display:flex;"><span>Run 1 —  95% — 4,600/4,824 docs — 2s — 5m 46s
+</span></span><span style="display:flex;"><span>Run 1 —  97% — 4,700/4,824 docs — 2s — 5m 49s
+</span></span><span style="display:flex;"><span>Run 1 — 100% — 4,800/4,824 docs — 2s — 5m 51s
+</span></span><span style="display:flex;"><span>Run 1 — 100% — 4,824/4,824 docs — 2s — 5m 53s
+</span></span><span style="display:flex;"><span>Run 1 took 5m 53s
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>**************************
+</span></span><span style="display:flex;"><span>* Update Script Finished *
+</span></span><span style="display:flex;"><span>**************************
+</span></span></code></pre></div><ul>
 <li>If I run it again it finds the same 4,824 docs and processes them&hellip;
 <ul>
 <li>I asked Atmire for feedback on this: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839</a></li>
@@ -796,8 +796,8 @@ Run 1 took 5m 53s
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">2021-03-29 08:55:40,073 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=Gender+mainstreaming+in+local+potato+seed+system+in+Georgia&amp;fl=handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=-location:l5308ea39-7c65-401b-890b-c2b93dad649a&amp;wt=javabin&amp;version=2} hits=143 status=0 QTime=0
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2021-03-29 08:55:40,073 INFO  org.apache.solr.core.SolrCore @ [search] webapp=/solr path=/select params={q=Gender+mainstreaming+in+local+potato+seed+system+in+Georgia&amp;fl=handle,search.resourcetype,search.resourceid,search.uniqueid&amp;start=0&amp;fq=NOT(withdrawn:true)&amp;fq=NOT(discoverable:false)&amp;fq=-location:l5308ea39-7c65-401b-890b-c2b93dad649a&amp;wt=javabin&amp;version=2} hits=143 status=0 QTime=0
+</span></span></code></pre></div><ul>
 <li>But the item mapper only displays ten items, with no pagination
 <ul>
 <li>There is no way to search by handle or ID</li>
@@ -836,18 +836,18 @@ Run 1 took 5m 53s
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> requests
-
-query_params <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;item-type&#39;</span>: <span style="color:#e6db74">&#39;publication&#39;</span>, <span style="color:#e6db74">&#39;format&#39;</span>: <span style="color:#e6db74">&#39;Json&#39;</span>, <span style="color:#e6db74">&#39;limit&#39;</span>: <span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#39;offset&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;api-key&#39;</span>: <span style="color:#e6db74">&#39;blahhhahahah&#39;</span>, <span style="color:#e6db74">&#39;filter&#39;</span>: <span style="color:#e6db74">&#39;[[&#34;issn&#34;,&#34;equals&#34;,&#34;0011-183X&#34;]]&#39;</span>}
-r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;https://v2.sherpa.ac.uk/cgi/retrieve&#39;</span>)
-<span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>status_code <span style="color:#f92672">and</span> len(r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;items&#39;</span>]) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
-    r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;items&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;title&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;title&#39;</span>]
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>query_params <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;item-type&#39;</span>: <span style="color:#e6db74">&#39;publication&#39;</span>, <span style="color:#e6db74">&#39;format&#39;</span>: <span style="color:#e6db74">&#39;Json&#39;</span>, <span style="color:#e6db74">&#39;limit&#39;</span>: <span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#39;offset&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;api-key&#39;</span>: <span style="color:#e6db74">&#39;blahhhahahah&#39;</span>, <span style="color:#e6db74">&#39;filter&#39;</span>: <span style="color:#e6db74">&#39;[[&#34;issn&#34;,&#34;equals&#34;,&#34;0011-183X&#34;]]&#39;</span>}
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;https://v2.sherpa.ac.uk/cgi/retrieve&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>status_code <span style="color:#f92672">and</span> len(r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;items&#39;</span>]) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>    r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;items&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;title&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;title&#39;</span>]
+</span></span></code></pre></div><ul>
 <li>I exported a list of all our ISSNs from CGSpace:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=253) to /tmp/2021-03-31-issns.csv;
-COPY 3081
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=253) to /tmp/2021-03-31-issns.csv;
+</span></span><span style="display:flex;"><span>COPY 3081
+</span></span></code></pre></div><ul>
 <li>I wrote a script to check the ISSNs against Crossref&rsquo;s API: <code>crossref-issn-lookup.py</code>
 <ul>
 <li>I suspect Crossref might have better data actually&hellip;</li>

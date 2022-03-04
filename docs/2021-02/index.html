@@ -60,7 +60,7 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
   }
 }
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -157,34 +157,34 @@ $ curl -s &#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#3
 <li>I had a call with CodeObia to discuss the work on OpenRXV</li>
 <li>Check the results of the AReS harvesting from last night:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 100875,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 100875,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-01
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-01
+</span></span></code></pre></div><ul>
 <li>Delete the current items index and clone the temp one to it:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span></code></pre></div><ul>
 <li>Then delete the temp and backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-{&#34;acknowledged&#34;:true}%
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-01&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>{&#34;acknowledged&#34;:true}%
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-01&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Meeting with Peter and Abenet about CGSpace goals and progress</li>
 <li>Test submission to DSpace via REST API to see if Abenet can fix / reject it (submit workflow?)</li>
 <li>Get Peter a list of users who have submitted or approved on DSpace everrrrrrr, so he can remove some</li>
@@ -196,25 +196,25 @@ $ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-i
 </li>
 <li>I tried to export the ILRI community from CGSpace but I got an error:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace metadata-export -i 10568/1 -f /tmp/2021-02-01-ILRI.csv
-Loading @mire database changes for module MQM
-Changes have been processed
-Exporting community &#39;International Livestock Research Institute (ILRI)&#39; (10568/1)
-           Exception: null
-java.lang.NullPointerException
-        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:212)
-        at com.google.common.collect.Iterators.concat(Iterators.java:464)
-        at org.dspace.app.bulkedit.MetadataExport.addItemsToResult(MetadataExport.java:136)
-        at org.dspace.app.bulkedit.MetadataExport.buildFromCommunity(MetadataExport.java:125)
-        at org.dspace.app.bulkedit.MetadataExport.&lt;init&gt;(MetadataExport.java:77)
-        at org.dspace.app.bulkedit.MetadataExport.main(MetadataExport.java:282)
-        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.lang.reflect.Method.invoke(Method.java:498)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace metadata-export -i 10568/1 -f /tmp/2021-02-01-ILRI.csv
+</span></span><span style="display:flex;"><span>Loading @mire database changes for module MQM
+</span></span><span style="display:flex;"><span>Changes have been processed
+</span></span><span style="display:flex;"><span>Exporting community &#39;International Livestock Research Institute (ILRI)&#39; (10568/1)
+</span></span><span style="display:flex;"><span>           Exception: null
+</span></span><span style="display:flex;"><span>java.lang.NullPointerException
+</span></span><span style="display:flex;"><span>        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:212)
+</span></span><span style="display:flex;"><span>        at com.google.common.collect.Iterators.concat(Iterators.java:464)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.addItemsToResult(MetadataExport.java:136)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.buildFromCommunity(MetadataExport.java:125)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.&lt;init&gt;(MetadataExport.java:77)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.main(MetadataExport.java:282)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.lang.reflect.Method.invoke(Method.java:498)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</span></span></code></pre></div><ul>
 <li>I imported the production database to my local development environment and I get the same error&hellip; WTF is this?
 <ul>
 <li>I was able to export another smaller community</li>
@@ -234,28 +234,28 @@ java.lang.NullPointerException
 <li>Maria Garruccio sent me some new ORCID iDs for Bioversity authors, as well as a correction for Stefan Burkart&rsquo;s iD</li>
 <li>I saved the new ones to a text file, combined them with the others, extracted the ORCID iDs themselves, and updated the names using <code>resolve-orcids.py</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcid-ids.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort | uniq &gt; /tmp/2021-02-02-combined-orcids.txt
-$ ./ilri/resolve-orcids.py -i /tmp/2021-02-02-combined-orcids.txt -o /tmp/2021-02-02-combined-orcid-names.txt
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/bioversity-orcid-ids.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort | uniq &gt; /tmp/2021-02-02-combined-orcids.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/resolve-orcids.py -i /tmp/2021-02-02-combined-orcids.txt -o /tmp/2021-02-02-combined-orcid-names.txt
+</span></span></code></pre></div><ul>
 <li>I sorted the names and added the XML formatting in vim, then ran it through tidy:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ tidy -xml -utf8 -m -iq -w <span style="color:#ae81ff">0</span> dspace/config/controlled-vocabularies/cg-creator-id.xml
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ tidy -xml -utf8 -m -iq -w <span style="color:#ae81ff">0</span> dspace/config/controlled-vocabularies/cg-creator-id.xml
+</span></span></code></pre></div><ul>
 <li>Then I added all the changed names plus Stefan&rsquo;s incorrect ones to a CSV and processed them with <code>fix-metadata-values.py</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2021-02-02-fix-orcid-ids.csv 
-cg.creator.id,correct
-Burkart Stefan: 0000-0001-5297-2184,Stefan Burkart: 0000-0001-5297-2184
-Burkart Stefan: 0000-0002-7558-9177,Stefan Burkart: 0000-0001-5297-2184
-Stefan  Burkart: 0000-0001-5297-2184,Stefan Burkart: 0000-0001-5297-2184
-Stefan Burkart: 0000-0002-7558-9177,Stefan Burkart: 0000-0001-5297-2184
-Adina Chain Guadarrama: 0000-0002-6944-2064,Adina Chain-Guadarrama: 0000-0002-6944-2064
-Bedru: 0000-0002-7344-5743,Bedru B. Balana: 0000-0002-7344-5743
-Leigh Winowiecki: 0000-0001-5572-1284,Leigh Ann Winowiecki: 0000-0001-5572-1284
-Sander J. Zwart: 0000-0002-5091-1801,Sander Zwart: 0000-0002-5091-1801
-saul lozano-fuentes: 0000-0003-1517-6853,Saul Lozano: 0000-0003-1517-6853
-$ ./ilri/fix-metadata-values.py -i 2021-02-02-fix-orcid-ids.csv -db dspace63 -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.creator.id -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">240</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2021-02-02-fix-orcid-ids.csv 
+</span></span><span style="display:flex;"><span>cg.creator.id,correct
+</span></span><span style="display:flex;"><span>Burkart Stefan: 0000-0001-5297-2184,Stefan Burkart: 0000-0001-5297-2184
+</span></span><span style="display:flex;"><span>Burkart Stefan: 0000-0002-7558-9177,Stefan Burkart: 0000-0001-5297-2184
+</span></span><span style="display:flex;"><span>Stefan  Burkart: 0000-0001-5297-2184,Stefan Burkart: 0000-0001-5297-2184
+</span></span><span style="display:flex;"><span>Stefan Burkart: 0000-0002-7558-9177,Stefan Burkart: 0000-0001-5297-2184
+</span></span><span style="display:flex;"><span>Adina Chain Guadarrama: 0000-0002-6944-2064,Adina Chain-Guadarrama: 0000-0002-6944-2064
+</span></span><span style="display:flex;"><span>Bedru: 0000-0002-7344-5743,Bedru B. Balana: 0000-0002-7344-5743
+</span></span><span style="display:flex;"><span>Leigh Winowiecki: 0000-0001-5572-1284,Leigh Ann Winowiecki: 0000-0001-5572-1284
+</span></span><span style="display:flex;"><span>Sander J. Zwart: 0000-0002-5091-1801,Sander Zwart: 0000-0002-5091-1801
+</span></span><span style="display:flex;"><span>saul lozano-fuentes: 0000-0003-1517-6853,Saul Lozano: 0000-0003-1517-6853
+</span></span><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i 2021-02-02-fix-orcid-ids.csv -db dspace63 -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.creator.id -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">240</span>
+</span></span></code></pre></div><ul>
 <li>I also looked up which of these new authors might have existing items that are missing ORCID iDs</li>
 <li>I had to port my <code>add-orcid-identifiers-csv.py</code> to DSpace 6 UUIDs and I think it&rsquo;s working but I want to do a few more tests because it uses a sequence for the metadata_value_id</li>
 </ul>
@@ -263,23 +263,23 @@ $ ./ilri/fix-metadata-values.py -i 2021-02-02-fix-orcid-ids.csv -db dspace63 -u 
 <ul>
 <li>Tag forty-three items from Bioversity&rsquo;s new authors with ORCID iDs using <code>add-orcid-identifiers-csv.py</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat /tmp/2021-02-02-add-orcid-ids.csv
-dc.contributor.author,cg.creator.id
-&#34;Nchanji, E.&#34;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
-&#34;Nchanji, Eileen&#34;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
-&#34;Nchanji, Eileen Bogweh&#34;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
-&#34;Machida, Lewis&#34;,Lewis Machida: 0000-0002-0012-3997
-&#34;Mockshell, Jonathan&#34;,Jonathan Mockshell: 0000-0003-1990-6657&#34;
-&#34;Aubert, C.&#34;,Celine Aubert: 0000-0001-6284-4821
-&#34;Aubert, Céline&#34;,Celine Aubert: 0000-0001-6284-4821
-&#34;Devare, M.&#34;,Medha Devare: 0000-0003-0041-4812
-&#34;Devare, Medha&#34;,Medha Devare: 0000-0003-0041-4812
-&#34;Benites-Alfaro, O.E.&#34;,Omar E. Benites-Alfaro: 0000-0002-6852-9598
-&#34;Benites-Alfaro, Omar Eduardo&#34;,Omar E. Benites-Alfaro: 0000-0002-6852-9598
-&#34;Johnson, Vincent&#34;,VINCENT JOHNSON: 0000-0001-7874-178X
-&#34;Lesueur, Didier&#34;,didier lesueur: 0000-0002-6694-0869
-$ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2021-02-02-add-orcid-ids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -d
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat /tmp/2021-02-02-add-orcid-ids.csv
+</span></span><span style="display:flex;"><span>dc.contributor.author,cg.creator.id
+</span></span><span style="display:flex;"><span>&#34;Nchanji, E.&#34;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
+</span></span><span style="display:flex;"><span>&#34;Nchanji, Eileen&#34;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
+</span></span><span style="display:flex;"><span>&#34;Nchanji, Eileen Bogweh&#34;,Eileen Bogweh Nchanji: 0000-0002-6859-0962
+</span></span><span style="display:flex;"><span>&#34;Machida, Lewis&#34;,Lewis Machida: 0000-0002-0012-3997
+</span></span><span style="display:flex;"><span>&#34;Mockshell, Jonathan&#34;,Jonathan Mockshell: 0000-0003-1990-6657&#34;
+</span></span><span style="display:flex;"><span>&#34;Aubert, C.&#34;,Celine Aubert: 0000-0001-6284-4821
+</span></span><span style="display:flex;"><span>&#34;Aubert, Céline&#34;,Celine Aubert: 0000-0001-6284-4821
+</span></span><span style="display:flex;"><span>&#34;Devare, M.&#34;,Medha Devare: 0000-0003-0041-4812
+</span></span><span style="display:flex;"><span>&#34;Devare, Medha&#34;,Medha Devare: 0000-0003-0041-4812
+</span></span><span style="display:flex;"><span>&#34;Benites-Alfaro, O.E.&#34;,Omar E. Benites-Alfaro: 0000-0002-6852-9598
+</span></span><span style="display:flex;"><span>&#34;Benites-Alfaro, Omar Eduardo&#34;,Omar E. Benites-Alfaro: 0000-0002-6852-9598
+</span></span><span style="display:flex;"><span>&#34;Johnson, Vincent&#34;,VINCENT JOHNSON: 0000-0001-7874-178X
+</span></span><span style="display:flex;"><span>&#34;Lesueur, Didier&#34;,didier lesueur: 0000-0002-6694-0869
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2021-02-02-add-orcid-ids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -d
+</span></span></code></pre></div><ul>
 <li>I&rsquo;m working on the CGSpace accession for Karl Rich&rsquo;s <a href="https://github.com/ilri/vietnam-pig-model-2018">Viet Nam Pig Model 2018</a> and I noticed his ORCID iD is missing from CGSpace
 <ul>
 <li>I added it and tagged 141 items of his with the iD</li>
@@ -300,9 +300,9 @@ $ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2021-02-02-add-orcid-ids.csv -db d
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> dspace index-discovery -b
-$ dspace oai import -c
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ time chrt -b <span style="color:#ae81ff">0</span> dspace index-discovery -b
+</span></span><span style="display:flex;"><span>$ dspace oai import -c
+</span></span></code></pre></div><ul>
 <li>Attend Accenture meeting for repository managers
 <ul>
 <li>Not clear what the SMO wants to get out of us</li>
@@ -333,8 +333,8 @@ $ dspace oai import -c
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/delete-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.relation.ispartofseries -m <span style="color:#ae81ff">43</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/delete-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.relation.ispartofseries -m <span style="color:#ae81ff">43</span>
+</span></span></code></pre></div><ul>
 <li>The corrected versions have a lot of encoding issues so I asked Peter to give me the correct ones so I can search/replace them:
 <ul>
 <li>CIAT PublicaÃ§ao</li>
@@ -358,8 +358,8 @@ $ dspace oai import -c
 <li>I ended up using <a href="https://github.com/LuminosoInsight/python-ftfy">python-ftfy</a> to fix those very easily, then replaced them in the CSV</li>
 <li>Then I trimmed whitespace at the beginning, end, and around the &ldquo;;&rdquo;, and applied the 1,600 fixes using <code>fix-metadata-values.py</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/fix-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.relation.ispartofseries -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">43</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i /tmp/2020-10-28-Series-PB.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.relation.ispartofseries -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">43</span>
+</span></span></code></pre></div><ul>
 <li>Help Peter debug an issue with one of Alan Duncan&rsquo;s new FEAST Data reports on CGSpace
 <ul>
 <li>For some reason the default policy for the item was &ldquo;COLLECTION_492_DEFAULT_READ&rdquo; group, which had zero members</li>
@@ -372,12 +372,12 @@ $ dspace oai import -c
 <li>Run system updates on CGSpace (linode18), deploy latest 6_x-prod branch, and reboot the server</li>
 <li>After the server came back up I started a full Discovery re-indexing:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>real    247m30.850s
-user    160m36.657s
-sys     2m26.050s
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>real    247m30.850s
+</span></span><span style="display:flex;"><span>user    160m36.657s
+</span></span><span style="display:flex;"><span>sys     2m26.050s
+</span></span></code></pre></div><ul>
 <li>Regarding the CG Core v2 migration, Fabio wrote to tell me that he is not using CGSpace directly, instead harvesting via GARDIAN
 <ul>
 <li>He gave me the contact of Sotiris Konstantinidis, who is the CTO at SCIO Systems and works on the GARDIAN platform</li>
@@ -385,30 +385,30 @@ sys     2m26.050s
 </li>
 <li>Delete the old Elasticsearch temp index to prepare for starting an AReS re-harvest:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-# start indexing in AReS
-</code></pre></div><h2 id="2021-02-08">2021-02-08</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span># start indexing in AReS
+</span></span></code></pre></div><h2 id="2021-02-08">2021-02-08</h2>
 <ul>
 <li>Finish rotating the AReS indexes after the harvesting last night:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 100983,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-08
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-08&#39;</span>
-</code></pre></div><h2 id="2021-02-10">2021-02-10</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 100983,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-08
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-08&#39;</span>
+</span></span></code></pre></div><h2 id="2021-02-10">2021-02-10</h2>
 <ul>
 <li>Talk to Abdullah from CodeObia about a few of the issues we filed on OpenRXV
 <ul>
@@ -429,22 +429,22 @@ $ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-i
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | wc -l
-30354
-$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | sort -u | wc -l
-18555
-$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | sort | uniq -c | sort -h | tail
-      5 c21a79e5-e24e-4861-aa07-e06703d1deb7
-      5 c2460aa1-ae28-4003-9a99-2d7c5cd7fd38
-      5 d73fb3ae-9fac-4f7e-990f-e394f344246c
-      5 dc0e24fa-b7f5-437e-ac09-e15c0704be00
-      5 dc50bcca-0abf-473f-8770-69d5ab95cc33
-      5 e714bdf9-cc0f-4d9a-a808-d572e25c9238
-      6 7dfd1c61-9e8c-4677-8d41-e1c4b11d867d
-      6 fb76888c-03ae-4d53-b27d-87d7ca91371a
-      6 ff42d1e6-c489-492c-a40a-803cabd901ed
-      7 094e9e1d-09ff-40ca-a6b9-eca580936147
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>30354
+</span></span><span style="display:flex;"><span>$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | sort -u | wc -l
+</span></span><span style="display:flex;"><span>18555
+</span></span><span style="display:flex;"><span>$ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> | sort | uniq -c | sort -h | tail
+</span></span><span style="display:flex;"><span>      5 c21a79e5-e24e-4861-aa07-e06703d1deb7
+</span></span><span style="display:flex;"><span>      5 c2460aa1-ae28-4003-9a99-2d7c5cd7fd38
+</span></span><span style="display:flex;"><span>      5 d73fb3ae-9fac-4f7e-990f-e394f344246c
+</span></span><span style="display:flex;"><span>      5 dc0e24fa-b7f5-437e-ac09-e15c0704be00
+</span></span><span style="display:flex;"><span>      5 dc50bcca-0abf-473f-8770-69d5ab95cc33
+</span></span><span style="display:flex;"><span>      5 e714bdf9-cc0f-4d9a-a808-d572e25c9238
+</span></span><span style="display:flex;"><span>      6 7dfd1c61-9e8c-4677-8d41-e1c4b11d867d
+</span></span><span style="display:flex;"><span>      6 fb76888c-03ae-4d53-b27d-87d7ca91371a
+</span></span><span style="display:flex;"><span>      6 ff42d1e6-c489-492c-a40a-803cabd901ed
+</span></span><span style="display:flex;"><span>      7 094e9e1d-09ff-40ca-a6b9-eca580936147
+</span></span></code></pre></div><ul>
 <li>I added a comment to that bug to ask if this is a side effect of the patch</li>
 <li>I started working on tagging pre-2010 ILRI items with license information, like we talked about with Peter and Abenet last week
 <ul>
@@ -452,23 +452,23 @@ $ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvcut -c <span style="color:#e6db74">&#39;id,dc.date.issued,dc.date.issued[],dc.date.issued[en_US],dc.rights,dc.rights[],dc.rights[en],dc.rights[en_US],dc.publisher,dc.publisher[],dc.publisher[en_US],dc.type[en_US]&#39;</span> /tmp/2021-02-10-ILRI.csv | csvgrep -c <span style="color:#e6db74">&#39;dc.type[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^.+[^(Journal Item|Journal Article|Book|Book Chapter)]&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,dc.date.issued,dc.date.issued[],dc.date.issued[en_US],dc.rights,dc.rights[],dc.rights[en],dc.rights[en_US],dc.publisher,dc.publisher[],dc.publisher[en_US],dc.type[en_US]&#39;</span> /tmp/2021-02-10-ILRI.csv | csvgrep -c <span style="color:#e6db74">&#39;dc.type[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^.+[^(Journal Item|Journal Article|Book|Book Chapter)]&#39;</span>
+</span></span></code></pre></div><ul>
 <li>I imported the CSV into OpenRefine and converted the date text values to date types so I could facet by dates before 2010:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">if(diff(value,&#34;01/01/2010&#34;.toDate(),&#34;days&#34;)&lt;0, true, false)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>if(diff(value,&#34;01/01/2010&#34;.toDate(),&#34;days&#34;)&lt;0, true, false)
+</span></span></code></pre></div><ul>
 <li>Then I filtered by publisher to make sure they were only ours:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">or(
-  value.contains(&#34;International Livestock Research Institute&#34;),
-  value.contains(&#34;ILRI&#34;),
-  value.contains(&#34;International Livestock Centre for Africa&#34;),
-  value.contains(&#34;ILCA&#34;),
-  value.contains(&#34;ILRAD&#34;),
-  value.contains(&#34;International Laboratory for Research on Animal Diseases&#34;)
-)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>or(
+</span></span><span style="display:flex;"><span>  value.contains(&#34;International Livestock Research Institute&#34;),
+</span></span><span style="display:flex;"><span>  value.contains(&#34;ILRI&#34;),
+</span></span><span style="display:flex;"><span>  value.contains(&#34;International Livestock Centre for Africa&#34;),
+</span></span><span style="display:flex;"><span>  value.contains(&#34;ILCA&#34;),
+</span></span><span style="display:flex;"><span>  value.contains(&#34;ILRAD&#34;),
+</span></span><span style="display:flex;"><span>  value.contains(&#34;International Laboratory for Research on Animal Diseases&#34;)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><ul>
 <li>I tagged these pre-2010 items with &ldquo;Other&rdquo; if they didn&rsquo;t already have a license</li>
 <li>I checked 2010 to 2015, and 2016 to date, but they were all tagged already!</li>
 <li>In the end I added the &ldquo;Other&rdquo; license to 1,523 items from before 2010</li>
@@ -496,7 +496,7 @@ $ csvcut -c id /tmp/2021-02-10-ILRI.csv | sed <span style="color:#e6db74">&#39;1
  en        |    7601
            |       0
 (4 rows)
-dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (SELECT uuid FROM item);
+dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE dspace_object_id IN (SELECT uuid FROM item);
 </code></pre><ul>
 <li>Start a full Discovery re-indexing on CGSpace</li>
 </ul>
@@ -504,8 +504,8 @@ dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (S
 <ul>
 <li>Clear the OpenRXV temp items index:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Then start a full harvesting of CGSpace in the AReS Explorer admin dashboard</li>
 <li>Peter asked me about a few other recently submitted FEAST items that are restricted
 <ul>
@@ -521,35 +521,35 @@ dspace=# UPDATE metadatavalue SET text_lang='en_US' WHERE dspace_object_id IN (S
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/move-metadata-values.py -i /tmp/move.txt -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f <span style="color:#ae81ff">43</span> -t <span style="color:#ae81ff">55</span>
-</code></pre></div><h2 id="2021-02-15">2021-02-15</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/move-metadata-values.py -i /tmp/move.txt -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f <span style="color:#ae81ff">43</span> -t <span style="color:#ae81ff">55</span>
+</span></span></code></pre></div><h2 id="2021-02-15">2021-02-15</h2>
 <ul>
 <li>Check the results of the AReS Harvesting from last night:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 101126,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 101126,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-15
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-15
+</span></span></code></pre></div><ul>
 <li>Delete the current items index and clone the temp one:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-15&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-15&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Call with Abdullah from CodeObia to discuss community and collection statistics reporting</li>
 </ul>
 <h2 id="2021-02-16">2021-02-16</h2>
@@ -563,49 +563,49 @@ $ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-i
 </li>
 <li>They are definitely bots posing as users, as I see they have created six thousand DSpace sessions today:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat dspace.log.2021-02-16 | grep -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=45.146.165.203&#39;</span> | sort | uniq | wc -l
-4007
-$ cat dspace.log.2021-02-16 | grep -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=130.255.161.231&#39;</span> | sort | uniq | wc -l
-2128
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat dspace.log.2021-02-16 | grep -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=45.146.165.203&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>4007
+</span></span><span style="display:flex;"><span>$ cat dspace.log.2021-02-16 | grep -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=130.255.161.231&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>2128
+</span></span></code></pre></div><ul>
 <li>Ah, actually 45.146.165.203 is making requests like this:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">&#34;http://cgspace.cgiar.org:80/bitstream/handle/10568/238/Res_report_no3.pdf;jsessionid=7311DD88B30EEF9A8F526FF89378C2C5%&#39; AND 4313=CONCAT(CHAR(113)+CHAR(98)+CHAR(106)+CHAR(112)+CHAR(113),(SELECT (CASE WHEN (4313=4313) THEN CHAR(49) ELSE CHAR(48) END)),CHAR(113)+CHAR(106)+CHAR(98)+CHAR(112)+CHAR(113)) AND &#39;XzQO%&#39;=&#39;XzQO&#34;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>&#34;http://cgspace.cgiar.org:80/bitstream/handle/10568/238/Res_report_no3.pdf;jsessionid=7311DD88B30EEF9A8F526FF89378C2C5%&#39; AND 4313=CONCAT(CHAR(113)+CHAR(98)+CHAR(106)+CHAR(112)+CHAR(113),(SELECT (CASE WHEN (4313=4313) THEN CHAR(49) ELSE CHAR(48) END)),CHAR(113)+CHAR(106)+CHAR(98)+CHAR(112)+CHAR(113)) AND &#39;XzQO%&#39;=&#39;XzQO&#34;
+</span></span></code></pre></div><ul>
 <li>I purged the hits from these two using my <code>check-spider-ip-hits.sh</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
-Purging 4005 hits from 45.146.165.203 in statistics
-Purging 3493 hits from 130.255.161.231 in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 7498
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+</span></span><span style="display:flex;"><span>Purging 4005 hits from 45.146.165.203 in statistics
+</span></span><span style="display:flex;"><span>Purging 3493 hits from 130.255.161.231 in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 7498
+</span></span></code></pre></div><ul>
 <li>Ugh, I looked in Solr for the top IPs in 2021-01 and found a few more of these Russian IPs so I purged them too:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
-Purging 27163 hits from 45.146.164.176 in statistics
-Purging 19556 hits from 45.146.165.105 in statistics
-Purging 15927 hits from 45.146.165.83 in statistics
-Purging 8085 hits from 45.146.165.104 in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 70731
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+</span></span><span style="display:flex;"><span>Purging 27163 hits from 45.146.164.176 in statistics
+</span></span><span style="display:flex;"><span>Purging 19556 hits from 45.146.165.105 in statistics
+</span></span><span style="display:flex;"><span>Purging 15927 hits from 45.146.165.83 in statistics
+</span></span><span style="display:flex;"><span>Purging 8085 hits from 45.146.165.104 in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 70731
+</span></span></code></pre></div><ul>
 <li>My god, and 64.39.99.15 is from Qualys, the domain scanning security people, who are making queries trying to see if we are vulnerable or something (wtf?)
 <ul>
 <li>Looking in Solr I see a few different IPs with DNS like <code>sn003.s02.iad01.qualys.com.</code> so I will purge their requests too:</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
-Purging 3 hits from 130.255.161.231 in statistics
-Purging 16773 hits from 64.39.99.15 in statistics
-Purging 6976 hits from 64.39.99.13 in statistics
-Purging 13 hits from 64.39.99.63 in statistics
-Purging 12 hits from 64.39.99.65 in statistics
-Purging 12 hits from 64.39.99.94 in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 23789
-</code></pre></div><h2 id="2021-02-17">2021-02-17</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+</span></span><span style="display:flex;"><span>Purging 3 hits from 130.255.161.231 in statistics
+</span></span><span style="display:flex;"><span>Purging 16773 hits from 64.39.99.15 in statistics
+</span></span><span style="display:flex;"><span>Purging 6976 hits from 64.39.99.13 in statistics
+</span></span><span style="display:flex;"><span>Purging 13 hits from 64.39.99.63 in statistics
+</span></span><span style="display:flex;"><span>Purging 12 hits from 64.39.99.65 in statistics
+</span></span><span style="display:flex;"><span>Purging 12 hits from 64.39.99.94 in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 23789
+</span></span></code></pre></div><h2 id="2021-02-17">2021-02-17</h2>
 <ul>
 <li>I tested Node.js 10 vs 12 on CGSpace (linode18) and DSpace Test (linode26) and the build times were surprising
 <ul>
@@ -627,11 +627,11 @@ Purging 12 hits from 64.39.99.94 in statistics
 <li>Abenet asked me to add Tom Randolph&rsquo;s ORCID identifier to CGSpace</li>
 <li>I also tagged all his 247 existing items on CGSpace:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ cat 2021-02-17-add-tom-orcid.csv 
-dc.contributor.author,cg.creator.id
-&#34;Randolph, Thomas F.&#34;,&#34;Thomas Fitz Randolph: 0000-0003-1849-9877&#34;
-$ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
-</code></pre></div><h2 id="2021-02-20">2021-02-20</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2021-02-17-add-tom-orcid.csv 
+</span></span><span style="display:flex;"><span>dc.contributor.author,cg.creator.id
+</span></span><span style="display:flex;"><span>&#34;Randolph, Thomas F.&#34;,&#34;Thomas Fitz Randolph: 0000-0003-1849-9877&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</span></span></code></pre></div><h2 id="2021-02-20">2021-02-20</h2>
 <ul>
 <li>Test the CG Core v2 migration on DSpace Test (linode26) one last time</li>
 </ul>
@@ -640,17 +640,17 @@ $ ./ilri/add-orcid-identifiers-csv.py -i 2021-02-17-add-tom-orcid.csv -db dspace
 <li>Start the CG Core v2 migration on CGSpace (linode18)</li>
 <li>After deploying the latest <code>6_x-prod</code> branch and running <code>migrate-fields.sh</code> I started a full Discovery reindex:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>real    311m12.617s
-user    217m3.102s
-sys     2m37.363s
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>real    311m12.617s
+</span></span><span style="display:flex;"><span>user    217m3.102s
+</span></span><span style="display:flex;"><span>sys     2m37.363s
+</span></span></code></pre></div><ul>
 <li>Then update OAI:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace oai import -c
-$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dfile.encoding=UTF-8 -Xmx2048m&#34;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace oai import -c
+</span></span><span style="display:flex;"><span>$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dfile.encoding=UTF-8 -Xmx2048m&#34;</span>
+</span></span></code></pre></div><ul>
 <li>Ben Hack was asking if there is a REST API query that will give him all ILRI outputs for their new Sharepoint intranet
 <ul>
 <li>I told him he can try to use something like this if it&rsquo;s just something like the ILRI articles in journals collection:</li>
@@ -668,16 +668,16 @@ $ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-Dfile.encoding=UTF-8 -Xmx1024m&#39;</span>
-$ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-Dfile.encoding=UTF-8 -Xmx1024m&#39;</span>
+</span></span><span style="display:flex;"><span>$ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
+</span></span></code></pre></div><ul>
 <li>The process took an hour or so!</li>
 <li>I added colorized output to the csv-metadata-quality tool and tagged <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.4.4">version 0.4.4 on GitHub</a></li>
 <li>I updated the fields in AReS Explorer and then removed the old temp index so I can start a fresh re-harvest of CGSpace:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-# start indexing in AReS
-</code></pre></div><h2 id="2021-02-22">2021-02-22</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span># start indexing in AReS
+</span></span></code></pre></div><h2 id="2021-02-22">2021-02-22</h2>
 <ul>
 <li>Start looking at splitting the series name and number in <code>dcterms.isPartOf</code> now that we have migrated to CG Core v2
 <ul>
@@ -687,43 +687,43 @@ $ dspace metadata-import -e aorth@mjanja.ch -f /tmp/cifor.csv
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;^(.+?);$&#39;,&#39;\1&#39;, &#39;g&#39;) WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ &#39;;$&#39;;
-UPDATE 104
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;^(.+?);$&#39;,&#39;\1&#39;, &#39;g&#39;) WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ &#39;;$&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 104
+</span></span></code></pre></div><ul>
 <li>As for splitting the other values, I think I can export the <code>dspace_object_id</code> and <code>text_value</code> and then upload it as a CSV rather than writing a Python script to create the new metadata values</li>
 </ul>
 <h2 id="2021-02-22-1">2021-02-22</h2>
 <ul>
 <li>Check the results of the AReS harvesting from last night:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 101380,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 101380,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Set the current items index to read only and make a backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-22
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39; {&#34;settings&#34;: {&#34;index.blocks.write&#34;:true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2021-02-22
+</span></span></code></pre></div><ul>
 <li>Delete the current items index and clone the temp one to it:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span></code></pre></div><ul>
 <li>Then delete the temp and backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-{&#34;acknowledged&#34;:true}%
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-22&#39;</span>
-</code></pre></div><h2 id="2021-02-23">2021-02-23</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>{&#34;acknowledged&#34;:true}%
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2021-02-22&#39;</span>
+</span></span></code></pre></div><h2 id="2021-02-23">2021-02-23</h2>
 <ul>
 <li>CodeObia sent a <a href="https://github.com/ilri/OpenRXV/pull/75">pull request for clickable countries on AReS</a>
 <ul>
@@ -732,22 +732,22 @@ $ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-i
 </li>
 <li>Remove semicolons from series names without numbers:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# BEGIN;
-dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;^(.+?);$&#39;,&#39;\1&#39;, &#39;g&#39;) WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ &#39;;$&#39;;
-UPDATE 104
-dspace=# COMMIT;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# BEGIN;
+</span></span><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;^(.+?);$&#39;,&#39;\1&#39;, &#39;g&#39;) WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item) AND text_value ~ &#39;;$&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 104
+</span></span><span style="display:flex;"><span>dspace=# COMMIT;
+</span></span></code></pre></div><ul>
 <li>Set all <code>text_lang</code> values on CGSpace to <code>en_US</code> to make the series replacements easier (this didn&rsquo;t work, read below):</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# BEGIN;
-dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE text_lang !=&#39;en_US&#39; AND dspace_object_id IN (SELECT uuid FROM item);
-UPDATE 911
-cgspace=# COMMIT;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# BEGIN;
+</span></span><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE text_lang !=&#39;en_US&#39; AND dspace_object_id IN (SELECT uuid FROM item);
+</span></span><span style="display:flex;"><span>UPDATE 911
+</span></span><span style="display:flex;"><span>cgspace=# COMMIT;
+</span></span></code></pre></div><ul>
 <li>Then export all series with their IDs to CSV:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# \COPY (SELECT dspace_object_id, text_value as &#34;dcterms.isPartOf[en_US]&#34; FROM metadatavalue WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item)) TO /tmp/2021-02-23-series.csv WITH CSV HEADER;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# \COPY (SELECT dspace_object_id, text_value as &#34;dcterms.isPartOf[en_US]&#34; FROM metadatavalue WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item)) TO /tmp/2021-02-23-series.csv WITH CSV HEADER;
+</span></span></code></pre></div><ul>
 <li>In OpenRefine I trimmed and consolidated whitespace, then made some quick cleanups to normalize the fields based on a sanity check
 <ul>
 <li>For example many Spore items are like &ldquo;Spore, Spore 23&rdquo;</li>
@@ -761,23 +761,23 @@ cgspace=# COMMIT;
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE metadata_value_id=5355845;
-UPDATE 1
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE metadata_value_id=5355845;
+</span></span><span style="display:flex;"><span>UPDATE 1
+</span></span></code></pre></div><ul>
 <li>This also seems to work, using the id for just that one item:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE dspace_object_id=&#39;9840d19b-a6ae-4352-a087-6d74d2629322&#39;;
-UPDATE 37
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE dspace_object_id=&#39;9840d19b-a6ae-4352-a087-6d74d2629322&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 37
+</span></span></code></pre></div><ul>
 <li>This seems to work better for some reason:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">dspacetest=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item);
-UPDATE 18659
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspacetest=# UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE metadata_field_id=166 AND dspace_object_id IN (SELECT uuid FROM item);
+</span></span><span style="display:flex;"><span>UPDATE 18659
+</span></span></code></pre></div><ul>
 <li>I split the CSV file in batches of 5,000 using xsv, then imported them one by one in CGSpace:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace metadata-import -f /tmp/0.csv
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace metadata-import -f /tmp/0.csv
+</span></span></code></pre></div><ul>
 <li>It took FOREVER to import each file&hellip; like several hours <em>each</em>. MY GOD DSpace 6 is slow.</li>
 <li>Help Dominique Perera debug some issues with the WordPress DSpace importer plugin from Macaroni Bros
 <ul>
@@ -785,40 +785,40 @@ UPDATE 18659
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">104.198.97.97 - - [23/Feb/2021:11:41:17 +0100] &#34;GET /rest/communities?limit=1000 HTTP/1.1&#34; 200 188779 &#34;https://cgspace.cgiar.org/rest /communities?limit=1000&#34; &#34;RTB website BOT&#34;
-104.198.97.97 - - [23/Feb/2021:11:41:18 +0100] &#34;GET /rest/communities//communities HTTP/1.1&#34; 404 714 &#34;https://cgspace.cgiar.org/rest/communities//communities&#34; &#34;RTB website BOT&#34;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>104.198.97.97 - - [23/Feb/2021:11:41:17 +0100] &#34;GET /rest/communities?limit=1000 HTTP/1.1&#34; 200 188779 &#34;https://cgspace.cgiar.org/rest /communities?limit=1000&#34; &#34;RTB website BOT&#34;
+</span></span><span style="display:flex;"><span>104.198.97.97 - - [23/Feb/2021:11:41:18 +0100] &#34;GET /rest/communities//communities HTTP/1.1&#34; 404 714 &#34;https://cgspace.cgiar.org/rest/communities//communities&#34; &#34;RTB website BOT&#34;
+</span></span></code></pre></div><ul>
 <li>The first request is OK, but the second one is malformed for sure</li>
 </ul>
 <h2 id="2021-02-24">2021-02-24</h2>
 <ul>
 <li>Export a list of journals for Peter to look through:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.journal&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
-COPY 3345
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.journal&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=251 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-02-24-journals.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 3345
+</span></span></code></pre></div><ul>
 <li>Start a fresh harvesting on AReS because Udana mapped some items today and wants to include them in his report:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-# start indexing in AReS
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span># start indexing in AReS
+</span></span></code></pre></div><ul>
 <li>Also, I want to include the new series name/number cleanups so it&rsquo;s not a total waste of time</li>
 </ul>
 <h2 id="2021-02-25">2021-02-25</h2>
 <ul>
 <li>Hmm the AReS harvest last night seems to have finished successfully, but the number of items is less than I was expecting:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 99546,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 99546,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>The current items index has 101380 items&hellip; I wonder what happened
 <ul>
 <li>I started a new indexing</li>
@@ -843,9 +843,9 @@ COPY 3345
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/\(.*\)/,&#34;&#34;)
-value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&#34;$1&#34;)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/\(.*\)/,&#34;&#34;)
+</span></span><span style="display:flex;"><span>value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&#34;$1&#34;)
+</span></span></code></pre></div><ul>
 <li>This <code>value.partition</code> was new to me&hellip; and it took me a bit of time to figure out whether I needed to escape the parentheses in the issue number or not (no) and how to reference a capture group with <code>value.replace</code></li>
 <li>I tried to check the 1095 CIFOR records from last week for duplicates on DSpace Test, but the page says &ldquo;Processing&rdquo; and never loads
 <ul>
@@ -857,27 +857,27 @@ value.partition(/[0-9]+\([0-9]+\)/)[1].replace(/^\d+\((\d+)\)/,&#34;$1&#34;)
 <li>Niroshini from IWMI is still having issues adding WLE subjects to items during the metadata review step in the workflow</li>
 <li>It seems the BatchEditConsumer log spam is gone since I applied <a href="https://github.com/ilri/DSpace/pull/462">Atmire&rsquo;s patch</a></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -c <span style="color:#e6db74">&#39;BatchEditConsumer should not have been given&#39;</span> dspace.log.2021-02-<span style="color:#f92672">[</span>12<span style="color:#f92672">]</span>*
-dspace.log.2021-02-10:5067
-dspace.log.2021-02-11:2647
-dspace.log.2021-02-12:4231
-dspace.log.2021-02-13:221
-dspace.log.2021-02-14:0
-dspace.log.2021-02-15:0
-dspace.log.2021-02-16:0
-dspace.log.2021-02-17:0
-dspace.log.2021-02-18:0
-dspace.log.2021-02-19:0
-dspace.log.2021-02-20:0
-dspace.log.2021-02-21:0
-dspace.log.2021-02-22:0
-dspace.log.2021-02-23:0
-dspace.log.2021-02-24:0
-dspace.log.2021-02-25:0
-dspace.log.2021-02-26:0
-dspace.log.2021-02-27:0
-dspace.log.2021-02-28:0
-</code></pre></div><!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep -c <span style="color:#e6db74">&#39;BatchEditConsumer should not have been given&#39;</span> dspace.log.2021-02-<span style="color:#f92672">[</span>12<span style="color:#f92672">]</span>*
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-10:5067
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-11:2647
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-12:4231
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-13:221
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-14:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-15:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-16:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-17:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-18:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-19:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-20:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-21:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-22:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-23:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-24:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-25:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-26:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-27:0
+</span></span><span style="display:flex;"><span>dspace.log.2021-02-28:0
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 

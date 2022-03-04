@@ -46,7 +46,7 @@ After rebooting, all statistics cores were loaded&hellip; wow, that&rsquo;s luck
 
 Run system updates on DSpace Test (linode19) and reboot it
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -235,7 +235,7 @@ Run system updates on DSpace Test (linode19) and reboot it
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code># /opt/certbot-auto renew --standalone --pre-hook &quot;/usr/bin/docker stop angular_nginx; /bin/systemctl stop firewalld&quot; --post-hook &quot;/bin/systemctl start firewalld; /usr/bin/docker start angular_nginx&quot;
+<pre tabindex="0"><code># /opt/certbot-auto renew --standalone --pre-hook &#34;/usr/bin/docker stop angular_nginx; /bin/systemctl stop firewalld&#34; --post-hook &#34;/bin/systemctl start firewalld; /usr/bin/docker start angular_nginx&#34;
 </code></pre><ul>
 <li>It is important that the firewall starts back up before the Docker container or else Docker will complain about missing iptables chains</li>
 <li>Also, I updated to the latest TLS Intermediate settings as appropriate for Ubuntu 18.04&rsquo;s <a href="https://ssl-config.mozilla.org/#server=nginx&amp;server-version=1.16.0&amp;config=intermediate&amp;openssl-version=1.1.0g&amp;hsts=false&amp;ocsp=false">OpenSSL 1.1.0g with nginx 1.16.0</a></li>
@@ -243,9 +243,9 @@ Run system updates on DSpace Test (linode19) and reboot it
 <li>Get a list of all PDFs from the Bioversity migration that fail to download and save them so I can try again with a different path in the URL:</li>
 </ul>
 <pre tabindex="0"><code>$ ./generate-thumbnails.py -i /tmp/2019-08-05-Bioversity-Migration.csv -w --url-field-name url -d | tee /tmp/2019-08-08-download-pdfs.txt
-$ grep -B1 &quot;Download failed&quot; /tmp/2019-08-08-download-pdfs.txt | grep &quot;Downloading&quot; | sed -e 's/&gt; Downloading //' -e 's/\.\.\.//' | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g' | csvcut -H -c 1,1 &gt; /tmp/user-upload.csv
+$ grep -B1 &#34;Download failed&#34; /tmp/2019-08-08-download-pdfs.txt | grep &#34;Downloading&#34; | sed -e &#39;s/&gt; Downloading //&#39; -e &#39;s/\.\.\.//&#39; | sed -r &#39;s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g&#39; | csvcut -H -c 1,1 &gt; /tmp/user-upload.csv
 $ ./generate-thumbnails.py -i /tmp/user-upload.csv -w --url-field-name url -d | tee /tmp/2019-08-08-download-pdfs2.txt
-$ grep -B1 &quot;Download failed&quot; /tmp/2019-08-08-download-pdfs2.txt | grep &quot;Downloading&quot; | sed -e 's/&gt; Downloading //' -e 's/\.\.\.//' | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g' | csvcut -H -c 1,1 &gt; /tmp/user-upload2.csv
+$ grep -B1 &#34;Download failed&#34; /tmp/2019-08-08-download-pdfs2.txt | grep &#34;Downloading&#34; | sed -e &#39;s/&gt; Downloading //&#39; -e &#39;s/\.\.\.//&#39; | sed -r &#39;s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g&#39; | csvcut -H -c 1,1 &gt; /tmp/user-upload2.csv
 $ ./generate-thumbnails.py -i /tmp/user-upload2.csv -w --url-field-name url -d | tee /tmp/2019-08-08-download-pdfs3.txt
 </code></pre><ul>
 <li>
@@ -329,7 +329,7 @@ $ ./generate-thumbnails.py -i /tmp/user-upload2.csv -w --url-field-name url -d |
 <ul>
 <li>Create a test user on DSpace Test for Mohammad Salem to attempt depositing:</li>
 </ul>
-<pre tabindex="0"><code>$ dspace user -a -m blah@blah.com -g Mohammad -s Salem -p 'domoamaaa'
+<pre tabindex="0"><code>$ dspace user -a -m blah@blah.com -g Mohammad -s Salem -p &#39;domoamaaa&#39;
 </code></pre><ul>
 <li>Create and merge a pull request (<a href="https://github.com/ilri/DSpace/pull/429">#429</a>) to add eleven new CCAFS Phase II Project Tags to CGSpace</li>
 <li>Atmire responded to the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=685">Solr cores issue</a> last week, but they could not reproduce the issue
@@ -345,7 +345,7 @@ java.lang.OutOfMemoryError: GC overhead limit exceeded
 </code></pre><ul>
 <li>I increased the heap size to 1536m and tried again:</li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&quot;-Dfile.encoding=UTF-8 -Xmx1536m&quot;
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1536m&#34;
 $ ~/dspace/bin/dspace metadata-import -f /tmp/bioversity.csv -e blah@blah.com
 </code></pre><ul>
 <li>This time it succeeded, and using VisualVM I noticed that the import process used a maximum of 620MB of RAM</li>
@@ -361,7 +361,7 @@ $ ~/dspace/bin/dspace metadata-import -f /tmp/bioversity.csv -e blah@blah.com
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx512m'
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx512m&#39;
 $ dspace metadata-import -f /tmp/bioversity1.csv -e blah@blah.com
 $ dspace metadata-import -f /tmp/bioversity2.csv -e blah@blah.com
 </code></pre><ul>
@@ -429,7 +429,7 @@ return os.path.basename(value)
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ~/Downloads/2019-08-26-Peter-authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t correct
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ~/Downloads/2019-08-26-Peter-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -m 3 -t correct
 </code></pre><ul>
 <li>Apply the corrections on CGSpace and DSpace Test
 <ul>
@@ -478,7 +478,7 @@ sys     2m24.715s
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = 'contributor' and qualifier = 'author') AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-08-28-all-authors.csv with csv header;
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-08-28-all-authors.csv with csv header;
 COPY 65597
 </code></pre><ul>
 <li>Then I created a new CSV with two author columns (edit title of second column after):</li>
@@ -492,7 +492,7 @@ COPY 65597
 <li>This fixed a bunch of issues with spaces, commas, unneccesary Unicode characters, etc</li>
 <li>Then I ran the corrections on my test server and there were 185 of them!</li>
 </ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/authors.csv -db dspace -u dspace -p 'fuuu' -f dc.contributor.author -m 3 -t correctauthor
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -m 3 -t correctauthor
 </code></pre><ul>
 <li>I very well might run these on CGSpace soon&hellip;</li>
 </ul>
@@ -506,7 +506,7 @@ COPY 65597
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ find dspace/modules/xmlui-mirage2/src/main/webapp/themes -iname &quot;*.xsl&quot; -exec ./cgcore-xsl-replacements.sed {} \;
+<pre tabindex="0"><code>$ find dspace/modules/xmlui-mirage2/src/main/webapp/themes -iname &#34;*.xsl&#34; -exec ./cgcore-xsl-replacements.sed {} \;
 </code></pre><ul>
 <li>I think I got everything in the XMLUI themes, but there may be some things I should check once I get a deployment up and running:
 <ul>
@@ -526,7 +526,7 @@ COPY 65597
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>&quot;handles&quot;:[&quot;10986/30568&quot;,&quot;10568/97825&quot;],&quot;handle&quot;:&quot;10986/30568&quot;
+<pre tabindex="0"><code>&#34;handles&#34;:[&#34;10986/30568&#34;,&#34;10568/97825&#34;],&#34;handle&#34;:&#34;10986/30568&#34;
 </code></pre><ul>
 <li>So this is the same issue we had before, where Altmetric <em>knows</em> this Handle is associated with a DOI that has a score, but the client-side JavaScript code doesn&rsquo;t show it because it seems to a secondary handle or something</li>
 </ul>

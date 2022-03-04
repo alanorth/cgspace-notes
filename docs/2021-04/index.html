@@ -44,7 +44,7 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
 
 
 "/>
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.1" />
 
 
     
@@ -153,21 +153,21 @@ Perhaps one of the containers crashed, I should have looked closer but I was in 
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b <span style="color:#e6db74">&#34;dc=cgiarad,dc=org&#34;</span> -D <span style="color:#e6db74">&#34;cgspace-account&#34;</span> -W <span style="color:#e6db74">&#34;(sAMAccountName=otheraccounttoquery)&#34;</span>
-</code></pre></div><h2 id="2021-04-04">2021-04-04</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ldapsearch -x -H ldaps://AZCGNEROOT2.CGIARAD.ORG:636/ -b <span style="color:#e6db74">&#34;dc=cgiarad,dc=org&#34;</span> -D <span style="color:#e6db74">&#34;cgspace-account&#34;</span> -W <span style="color:#e6db74">&#34;(sAMAccountName=otheraccounttoquery)&#34;</span>
+</span></span></code></pre></div><h2 id="2021-04-04">2021-04-04</h2>
 <ul>
 <li>Check the index aliases on AReS Explorer to make sure they are sane before starting a new harvest:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool | less
+</span></span></code></pre></div><ul>
 <li>Then set the <code>openrxv-items-final</code> index to read-only so we can make a backup:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span> 
-{&#34;acknowledged&#34;:true}%
-$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-backup
-{&#34;acknowledged&#34;:true,&#34;shards_acknowledged&#34;:true,&#34;index&#34;:&#34;openrxv-items-final-backup&#34;}%
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span> 
+</span></span><span style="display:flex;"><span>{&#34;acknowledged&#34;:true}%
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-final/_clone/openrxv-items-final-backup
+</span></span><span style="display:flex;"><span>{&#34;acknowledged&#34;:true,&#34;shards_acknowledged&#34;:true,&#34;index&#34;:&#34;openrxv-items-final-backup&#34;}%
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-final/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Then start a harvesting on AReS Explorer</li>
 <li>Help Enrico get some 2020 statistics for the Roots, Tubers and Bananas (RTB) community on CGSpace
 <ul>
@@ -181,8 +181,8 @@ $ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-fina
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/fix-metadata-values.py -i /tmp/2021-04-01-ISSNs.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.issn -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">253</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i /tmp/2021-04-01-ISSNs.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.issn -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">253</span>
+</span></span></code></pre></div><ul>
 <li>For now I only fixed obvious errors like &ldquo;1234-5678.&rdquo; and &ldquo;e-ISSN: 1234-5678&rdquo; etc, but there are still lots of invalid ones which need more manual work:
 <ul>
 <li>Too few characters</li>
@@ -196,19 +196,19 @@ $ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-fina
 <ul>
 <li>The AReS Explorer harvesting from yesterday finished, and the results look OK, but actually the Elasticsearch indexes are messed up again:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool
-{
-    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {}
-    },
-    &#34;openrxv-items-temp&#34;: {
-        &#34;aliases&#34;: {
-            &#34;openrxv-items&#34;: {}
-        }
-    },
-...
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-temp&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;openrxv-items&#34;: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li><code>openrxv-items</code> should be an alias of <code>openrxv-items-final</code>, not <code>openrxv-temp</code>&hellip; I will have to fix that manually</li>
 <li>Enrico asked for more information on the RTB stats I gave him yesterday
 <ul>
@@ -218,16 +218,16 @@ $ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-fina
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ~/dspace63/bin/dspace metadata-export -i 10568/80100 -f /tmp/rtb.csv
-$ csvcut -c <span style="color:#e6db74">&#39;id,dcterms.issued,dcterms.issued[],dcterms.issued[en_US]&#39;</span> /tmp/rtb.csv | <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  sed &#39;1d&#39; | \
-  csvsql --no-header --no-inference --query &#39;SELECT a AS id,COALESCE(b, &#34;&#34;)||COALESCE(c, &#34;&#34;)||COALESCE(d, &#34;&#34;) AS issued FROM stdin&#39; | \
-  csvgrep -c issued -m 2020 | \
-  csvcut -c id | \
-  sed &#39;1d&#39; | \
-  sort | \
-  uniq
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ~/dspace63/bin/dspace metadata-export -i 10568/80100 -f /tmp/rtb.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,dcterms.issued,dcterms.issued[],dcterms.issued[en_US]&#39;</span> /tmp/rtb.csv | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  sed &#39;1d&#39; | \
+</span></span><span style="display:flex;"><span>  csvsql --no-header --no-inference --query &#39;SELECT a AS id,COALESCE(b, &#34;&#34;)||COALESCE(c, &#34;&#34;)||COALESCE(d, &#34;&#34;) AS issued FROM stdin&#39; | \
+</span></span><span style="display:flex;"><span>  csvgrep -c issued -m 2020 | \
+</span></span><span style="display:flex;"><span>  csvcut -c id | \
+</span></span><span style="display:flex;"><span>  sed &#39;1d&#39; | \
+</span></span><span style="display:flex;"><span>  sort | \
+</span></span><span style="display:flex;"><span>  uniq
+</span></span></code></pre></div><ul>
 <li>So I remember in the future, this basically does the following:
 <ul>
 <li>Use csvcut to extract the id and all date issued columns from the CSV</li>
@@ -242,32 +242,32 @@ $ csvcut -c <span style="color:#e6db74">&#39;id,dcterms.issued,dcterms.issued[],
 <li>Then I have a list of 296 IDs for RTB items issued in 2020</li>
 <li>I constructed a JSON file to post to the DSpace Statistics API:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-  <span style="color:#f92672">&#34;limit&#34;</span>: <span style="color:#ae81ff">100</span>,
-  <span style="color:#f92672">&#34;page&#34;</span>: <span style="color:#ae81ff">0</span>,
-  <span style="color:#f92672">&#34;dateFrom&#34;</span>: <span style="color:#e6db74">&#34;2020-01-01T00:00:00Z&#34;</span>,
-  <span style="color:#f92672">&#34;dateTo&#34;</span>: <span style="color:#e6db74">&#34;2020-12-31T00:00:00Z&#34;</span>,
-  <span style="color:#f92672">&#34;items&#34;</span>: [
-<span style="color:#e6db74">&#34;00358715-b70c-4fdd-aa55-730e05ba739e&#34;</span>,
-<span style="color:#e6db74">&#34;004b54bb-f16f-4cec-9fbc-ab6c6345c43d&#34;</span>,
-<span style="color:#e6db74">&#34;02fb7630-d71a-449e-b65d-32b4ea7d6904&#34;</span>,
-<span style="color:#960050;background-color:#1e0010">...</span>
-  ]
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;limit&#34;</span>: <span style="color:#ae81ff">100</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;page&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;dateFrom&#34;</span>: <span style="color:#e6db74">&#34;2020-01-01T00:00:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;dateTo&#34;</span>: <span style="color:#e6db74">&#34;2020-12-31T00:00:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;items&#34;</span>: [
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;00358715-b70c-4fdd-aa55-730e05ba739e&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;004b54bb-f16f-4cec-9fbc-ab6c6345c43d&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;02fb7630-d71a-449e-b65d-32b4ea7d6904&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">...</span>
+</span></span><span style="display:flex;"><span>  ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Then I submitted the file three times (changing the page parameter):</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s -d @/tmp/2020-items.txt https://cgspace.cgiar.org/rest/statistics/items | json_pp &gt; /tmp/page1.json
-$ curl -s -d @/tmp/2020-items.txt https://cgspace.cgiar.org/rest/statistics/items | json_pp &gt; /tmp/page2.json
-$ curl -s -d @/tmp/2020-items.txt https://cgspace.cgiar.org/rest/statistics/items | json_pp &gt; /tmp/page3.json
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s -d @/tmp/2020-items.txt https://cgspace.cgiar.org/rest/statistics/items | json_pp &gt; /tmp/page1.json
+</span></span><span style="display:flex;"><span>$ curl -s -d @/tmp/2020-items.txt https://cgspace.cgiar.org/rest/statistics/items | json_pp &gt; /tmp/page2.json
+</span></span><span style="display:flex;"><span>$ curl -s -d @/tmp/2020-items.txt https://cgspace.cgiar.org/rest/statistics/items | json_pp &gt; /tmp/page3.json
+</span></span></code></pre></div><ul>
 <li>Then I extracted the views and downloads in the most ridiculous way:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep views /tmp/page*.json | grep -o -E <span style="color:#e6db74">&#39;[0-9]+$&#39;</span> | sed <span style="color:#e6db74">&#39;s/,//&#39;</span> | xargs | sed -e <span style="color:#e6db74">&#39;s/ /+/g&#39;</span> | bc
-30364
-$ grep downloads /tmp/page*.json | grep -o -E <span style="color:#e6db74">&#39;[0-9]+,&#39;</span> | sed <span style="color:#e6db74">&#39;s/,//&#39;</span> | xargs | sed -e <span style="color:#e6db74">&#39;s/ /+/g&#39;</span> | bc
-9100
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep views /tmp/page*.json | grep -o -E <span style="color:#e6db74">&#39;[0-9]+$&#39;</span> | sed <span style="color:#e6db74">&#39;s/,//&#39;</span> | xargs | sed -e <span style="color:#e6db74">&#39;s/ /+/g&#39;</span> | bc
+</span></span><span style="display:flex;"><span>30364
+</span></span><span style="display:flex;"><span>$ grep downloads /tmp/page*.json | grep -o -E <span style="color:#e6db74">&#39;[0-9]+,&#39;</span> | sed <span style="color:#e6db74">&#39;s/,//&#39;</span> | xargs | sed -e <span style="color:#e6db74">&#39;s/ /+/g&#39;</span> | bc
+</span></span><span style="display:flex;"><span>9100
+</span></span></code></pre></div><ul>
 <li>For curiousity I did the same exercise for items issued in 2019 and got the following:
 <ul>
 <li>Views: 30721</li>
@@ -290,17 +290,17 @@ $ grep downloads /tmp/page*.json | grep -o -E <span style="color:#e6db74">&#39;[
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-12413
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>12413
+</span></span></code></pre></div><ul>
 <li>The system journal shows thousands of these messages in the system journal, this is the first one:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">Apr 06 07:52:13 linode18 tomcat7[556]: Apr 06, 2021 7:52:13 AM org.apache.tomcat.jdbc.pool.ConnectionPool abandon
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Apr 06 07:52:13 linode18 tomcat7[556]: Apr 06, 2021 7:52:13 AM org.apache.tomcat.jdbc.pool.ConnectionPool abandon
+</span></span></code></pre></div><ul>
 <li>Around that time in the dspace log I see nothing unusual, but maybe these?</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">2021-04-06 07:52:29,409 INFO  com.atmire.dspace.cua.CUASolrLoggerServiceImpl @ Updating : 200/127 docs in http://localhost:8081/solr/statistics
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2021-04-06 07:52:29,409 INFO  com.atmire.dspace.cua.CUASolrLoggerServiceImpl @ Updating : 200/127 docs in http://localhost:8081/solr/statistics
+</span></span></code></pre></div><ul>
 <li>(BTW what is the deal with the &ldquo;200/127&rdquo;? I should send a comment to Atmire)
 <ul>
 <li>I file a ticket with Atmire: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-tickets">https://tracker.atmire.com/tickets-cgiar-ilri/view-tickets</a></li>
@@ -308,38 +308,38 @@ $ grep downloads /tmp/page*.json | grep -o -E <span style="color:#e6db74">&#39;[
 </li>
 <li>I restarted the PostgreSQL and Tomcat services and now I see less connections, but still WAY high:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-3640
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-2968
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-13
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>3640
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>2968
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>13
+</span></span></code></pre></div><ul>
 <li>After ten minutes or so it went back down&hellip;</li>
 <li>And now it&rsquo;s back up in the thousands&hellip; I am seeing a lot of stuff in dspace log like this:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">2021-04-06 11:59:34,364 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717951
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717952
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717953
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717954
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717955
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717956
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717957
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717958
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717959
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717960
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717961
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717962
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717963
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717964
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717965
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717966
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717967
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717968
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717969
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717970
-2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717971
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2021-04-06 11:59:34,364 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717951
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717952
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717953
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717954
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717955
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717956
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717957
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717958
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717959
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717960
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717961
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717962
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717963
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717964
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717965
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717966
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717967
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717968
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717969
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717970
+</span></span><span style="display:flex;"><span>2021-04-06 11:59:34,365 INFO  org.dspace.content.MetadataValueServiceImpl @ user.hidden@cgiar.org:session_id=65F32E67CE8E347F64EFB5EB4E349B9B:delete_metadata_value: metadata_value_id=5717971
+</span></span></code></pre></div><ul>
 <li>I sent some notes and a log to Atmire on our existing issue about the database stuff
 <ul>
 <li>Also I asked them about the possibility of doing a formal review of Hibernate</li>
@@ -354,65 +354,65 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 <li>I had a meeting with Peter and Abenet about CGSpace TODOs</li>
 <li>CGSpace went down again and the PostgreSQL locks are through the roof:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-12154
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>12154
+</span></span></code></pre></div><ul>
 <li>I don&rsquo;t see any activity on REST API, but in the last four hours there have been 3,500 DSpace sessions:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># grep -a -E <span style="color:#e6db74">&#39;2021-04-06 (13|14|15|16|17):&#39;</span> /home/cgspace.cgiar.org/log/dspace.log.2021-04-06 | grep -o -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}&#39;</span> | sort | uniq | wc -l
-3547
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep -a -E <span style="color:#e6db74">&#39;2021-04-06 (13|14|15|16|17):&#39;</span> /home/cgspace.cgiar.org/log/dspace.log.2021-04-06 | grep -o -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>3547
+</span></span></code></pre></div><ul>
 <li>I looked at the same time of day for the past few weeks and it seems to be a normal number of sessions:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># <span style="color:#66d9ef">for</span> file in /home/cgspace.cgiar.org/log/dspace.log.2021-0<span style="color:#f92672">{</span>3,4<span style="color:#f92672">}</span>-*; <span style="color:#66d9ef">do</span> grep -a -E <span style="color:#e6db74">&#34;2021-0(3|4)-[0-9]{2} (13|14|15|16|17):&#34;</span> <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">&#34;</span> | grep -o -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}&#39;</span> | sort | uniq | wc -l; <span style="color:#66d9ef">done</span>
-...
-3572
-4085
-3476
-3128
-2949
-2016
-1839
-4513
-3463
-4425
-3328
-2783
-3898
-3848
-7799
-255
-534
-2755
-599
-4463
-3547
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># <span style="color:#66d9ef">for</span> file in /home/cgspace.cgiar.org/log/dspace.log.2021-0<span style="color:#f92672">{</span>3,4<span style="color:#f92672">}</span>-*; <span style="color:#66d9ef">do</span> grep -a -E <span style="color:#e6db74">&#34;2021-0(3|4)-[0-9]{2} (13|14|15|16|17):&#34;</span> <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">&#34;</span> | grep -o -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}&#39;</span> | sort | uniq | wc -l; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>3572
+</span></span><span style="display:flex;"><span>4085
+</span></span><span style="display:flex;"><span>3476
+</span></span><span style="display:flex;"><span>3128
+</span></span><span style="display:flex;"><span>2949
+</span></span><span style="display:flex;"><span>2016
+</span></span><span style="display:flex;"><span>1839
+</span></span><span style="display:flex;"><span>4513
+</span></span><span style="display:flex;"><span>3463
+</span></span><span style="display:flex;"><span>4425
+</span></span><span style="display:flex;"><span>3328
+</span></span><span style="display:flex;"><span>2783
+</span></span><span style="display:flex;"><span>3898
+</span></span><span style="display:flex;"><span>3848
+</span></span><span style="display:flex;"><span>7799
+</span></span><span style="display:flex;"><span>255
+</span></span><span style="display:flex;"><span>534
+</span></span><span style="display:flex;"><span>2755
+</span></span><span style="display:flex;"><span>599
+</span></span><span style="display:flex;"><span>4463
+</span></span><span style="display:flex;"><span>3547
+</span></span></code></pre></div><ul>
 <li>What about total number of sessions per day?</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># <span style="color:#66d9ef">for</span> file in /home/cgspace.cgiar.org/log/dspace.log.2021-0<span style="color:#f92672">{</span>3,4<span style="color:#f92672">}</span>-*; <span style="color:#66d9ef">do</span> echo <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">:&#34;</span>; grep -a -o -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}&#39;</span> <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">&#34;</span> | sort | uniq | wc -l; <span style="color:#66d9ef">done</span>
-...
-/home/cgspace.cgiar.org/log/dspace.log.2021-03-28:
-11784
-/home/cgspace.cgiar.org/log/dspace.log.2021-03-29:
-15104
-/home/cgspace.cgiar.org/log/dspace.log.2021-03-30:
-19396
-/home/cgspace.cgiar.org/log/dspace.log.2021-03-31:
-32612
-/home/cgspace.cgiar.org/log/dspace.log.2021-04-01:
-26037
-/home/cgspace.cgiar.org/log/dspace.log.2021-04-02:
-14315
-/home/cgspace.cgiar.org/log/dspace.log.2021-04-03:
-12530
-/home/cgspace.cgiar.org/log/dspace.log.2021-04-04:
-13138
-/home/cgspace.cgiar.org/log/dspace.log.2021-04-05:
-16756
-/home/cgspace.cgiar.org/log/dspace.log.2021-04-06:
-12343
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># <span style="color:#66d9ef">for</span> file in /home/cgspace.cgiar.org/log/dspace.log.2021-0<span style="color:#f92672">{</span>3,4<span style="color:#f92672">}</span>-*; <span style="color:#66d9ef">do</span> echo <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">:&#34;</span>; grep -a -o -E <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}&#39;</span> <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">&#34;</span> | sort | uniq | wc -l; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-03-28:
+</span></span><span style="display:flex;"><span>11784
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-03-29:
+</span></span><span style="display:flex;"><span>15104
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-03-30:
+</span></span><span style="display:flex;"><span>19396
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-03-31:
+</span></span><span style="display:flex;"><span>32612
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-04-01:
+</span></span><span style="display:flex;"><span>26037
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-04-02:
+</span></span><span style="display:flex;"><span>14315
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-04-03:
+</span></span><span style="display:flex;"><span>12530
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-04-04:
+</span></span><span style="display:flex;"><span>13138
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-04-05:
+</span></span><span style="display:flex;"><span>16756
+</span></span><span style="display:flex;"><span>/home/cgspace.cgiar.org/log/dspace.log.2021-04-06:
+</span></span><span style="display:flex;"><span>12343
+</span></span></code></pre></div><ul>
 <li>So it&rsquo;s not the number of sessions&hellip; it&rsquo;s something with the workload&hellip;</li>
 <li>I had to step away for an hour or so and when I came back the site was still down and there were still 12,000 locks
 <ul>
@@ -421,13 +421,13 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 </li>
 <li>The locks in PostgreSQL shot up again&hellip;</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-3447
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-3527
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-4582
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>3447
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>3527
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>4582
+</span></span></code></pre></div><ul>
 <li>I don&rsquo;t know what the hell is going on, but the PostgreSQL connections and locks are way higher than ever before:</li>
 </ul>
 <p><img src="/cgspace-notes/2021/04/postgres_connections_cgspace-week.png" alt="PostgreSQL connections week">
@@ -440,9 +440,9 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 <ul>
 <li>While looking at the nginx logs I see that MEL is trying to log into CGSpace&rsquo;s REST API and delete items:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">34.209.213.122 - - [06/Apr/2021:03:50:46 +0200] &#34;POST /rest/login HTTP/1.1&#34; 401 727 &#34;-&#34; &#34;MEL&#34;
-34.209.213.122 - - [06/Apr/2021:03:50:48 +0200] &#34;DELETE /rest/items/95f52bf1-f082-4e10-ad57-268a76ca18ec/metadata HTTP/1.1&#34; 401 704 &#34;-&#34; &#34;-&#34;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>34.209.213.122 - - [06/Apr/2021:03:50:46 +0200] &#34;POST /rest/login HTTP/1.1&#34; 401 727 &#34;-&#34; &#34;MEL&#34;
+</span></span><span style="display:flex;"><span>34.209.213.122 - - [06/Apr/2021:03:50:48 +0200] &#34;DELETE /rest/items/95f52bf1-f082-4e10-ad57-268a76ca18ec/metadata HTTP/1.1&#34; 401 704 &#34;-&#34; &#34;-&#34;
+</span></span></code></pre></div><ul>
 <li>I see a few of these per day going back several months
 <ul>
 <li>I sent a message to Salem and Enrico to ask if they know</li>
@@ -450,13 +450,13 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 </li>
 <li>Also annoying, I see tons of what look like penetration testing requests from Qualys:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">2021-04-04 06:35:17,889 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:no DN found for user &#34;&#39;&gt;&lt;qss a=X158062356Y1_2Z&gt;
-2021-04-04 06:35:17,889 INFO  org.dspace.authenticate.PasswordAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:authenticate:attempting password auth of user=&#34;&#39;&gt;&lt;qss a=X158062356Y1_2Z&gt;
-2021-04-04 06:35:17,890 INFO  org.dspace.app.xmlui.utils.AuthenticationUtil @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:email=&#34;&#39;&gt;&lt;qss a=X158062356Y1_2Z&gt;, realm=null, result=2
-2021-04-04 06:35:18,145 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:auth:attempting trivial auth of user=was@qualys.com
-2021-04-04 06:35:18,519 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:no DN found for user was@qualys.com
-2021-04-04 06:35:18,520 INFO  org.dspace.authenticate.PasswordAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:authenticate:attempting password auth of user=was@qualys.com
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2021-04-04 06:35:17,889 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:no DN found for user &#34;&#39;&gt;&lt;qss a=X158062356Y1_2Z&gt;
+</span></span><span style="display:flex;"><span>2021-04-04 06:35:17,889 INFO  org.dspace.authenticate.PasswordAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:authenticate:attempting password auth of user=&#34;&#39;&gt;&lt;qss a=X158062356Y1_2Z&gt;
+</span></span><span style="display:flex;"><span>2021-04-04 06:35:17,890 INFO  org.dspace.app.xmlui.utils.AuthenticationUtil @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:email=&#34;&#39;&gt;&lt;qss a=X158062356Y1_2Z&gt;, realm=null, result=2
+</span></span><span style="display:flex;"><span>2021-04-04 06:35:18,145 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:auth:attempting trivial auth of user=was@qualys.com
+</span></span><span style="display:flex;"><span>2021-04-04 06:35:18,519 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:failed_login:no DN found for user was@qualys.com
+</span></span><span style="display:flex;"><span>2021-04-04 06:35:18,520 INFO  org.dspace.authenticate.PasswordAuthentication @ anonymous:session_id=FF1E051BCA7D81CC5A807D85380D81E5:ip_addr=64.39.108.48:authenticate:attempting password auth of user=was@qualys.com
+</span></span></code></pre></div><ul>
 <li>I deleted the ilri/AReS repository on GitHub since we haven&rsquo;t updated it in two years
 <ul>
 <li>All development is happening in <a href="https://github.com/ilri/openRXV">https://github.com/ilri/openRXV</a> now</li>
@@ -464,38 +464,38 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 </li>
 <li>10PM and the server is down again, with locks through the roof:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-12198
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>12198
+</span></span></code></pre></div><ul>
 <li>I see that there are tons of PostgreSQL connections getting abandoned today, compared to very few in the past few weeks:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ journalctl -u tomcat7 --since<span style="color:#f92672">=</span>today | grep -c <span style="color:#e6db74">&#39;ConnectionPool abandon&#39;</span>
-1838
-$ journalctl -u tomcat7 --since<span style="color:#f92672">=</span>2021-03-20 --until<span style="color:#f92672">=</span>2021-04-05 | grep -c <span style="color:#e6db74">&#39;ConnectionPool abandon&#39;</span>
-3
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ journalctl -u tomcat7 --since<span style="color:#f92672">=</span>today | grep -c <span style="color:#e6db74">&#39;ConnectionPool abandon&#39;</span>
+</span></span><span style="display:flex;"><span>1838
+</span></span><span style="display:flex;"><span>$ journalctl -u tomcat7 --since<span style="color:#f92672">=</span>2021-03-20 --until<span style="color:#f92672">=</span>2021-04-05 | grep -c <span style="color:#e6db74">&#39;ConnectionPool abandon&#39;</span>
+</span></span><span style="display:flex;"><span>3
+</span></span></code></pre></div><ul>
 <li>I even restarted the server and connections were low for a few minutes until they shot back up:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-13
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-8651
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-8940
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-10504
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>13
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>8651
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>8940
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>10504
+</span></span></code></pre></div><ul>
 <li>I had to go to bed and I bet it will crash and be down for hours until I wake up&hellip;</li>
 <li>What the hell is this user agent?</li>
 </ul>
-<pre tabindex="0"><code>54.197.119.143 - - [06/Apr/2021:19:18:11 +0200] &quot;GET /handle/10568/16499 HTTP/1.1&quot; 499 0 &quot;-&quot; &quot;GetUrl/1.0 wdestiny@umich.edu (Linux)&quot;
+<pre tabindex="0"><code>54.197.119.143 - - [06/Apr/2021:19:18:11 +0200] &#34;GET /handle/10568/16499 HTTP/1.1&#34; 499 0 &#34;-&#34; &#34;GetUrl/1.0 wdestiny@umich.edu (Linux)&#34;
 </code></pre><h2 id="2021-04-07">2021-04-07</h2>
 <ul>
 <li>CGSpace was still down from last night of course, with tons of database locks:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-12168
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>12168
+</span></span></code></pre></div><ul>
 <li>I restarted the server again and the locks came back</li>
 <li>Atmire responded to the message from yesterday
 <ul>
@@ -504,8 +504,8 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">2021-04-01 12:45:11,414 WARN  org.dspace.workflowbasic.BasicWorkflowServiceImpl @ a.akwarandu@cgiar.org:session_id=2F20F20D4A8C36DB53D42DE45DFA3CCE:notifyGroupofTask:cannot email user group_id=aecf811b-b7e9-4b6f-8776-3d372e6a048b workflow_item_id=33085\colon;  Invalid Addresses (com.sun.mail.smtp.SMTPAddressFailedException\colon; 501 5.1.3 Invalid address
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2021-04-01 12:45:11,414 WARN  org.dspace.workflowbasic.BasicWorkflowServiceImpl @ a.akwarandu@cgiar.org:session_id=2F20F20D4A8C36DB53D42DE45DFA3CCE:notifyGroupofTask:cannot email user group_id=aecf811b-b7e9-4b6f-8776-3d372e6a048b workflow_item_id=33085\colon;  Invalid Addresses (com.sun.mail.smtp.SMTPAddressFailedException\colon; 501 5.1.3 Invalid address
+</span></span></code></pre></div><ul>
 <li>The issue is not the named user above, but a member of the group&hellip;</li>
 <li>And the group does have users with invalid email addresses (probably accounts created automatically after authenticating with LDAP):</li>
 </ul>
@@ -513,51 +513,51 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 <ul>
 <li>I extracted all the group IDs from recent logs that had users with invalid email addresses:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ grep -a -E <span style="color:#e6db74">&#39;email user group_id=\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b&#39;</span> /home/cgspace.cgiar.org/log/dspace.log.* | grep -o -E <span style="color:#e6db74">&#39;\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b&#39;</span> | sort | uniq
-0a30d6ae-74a6-4eee-a8f5-ee5d15192ee6
-1769137c-36d4-42b2-8fec-60585e110db7
-203c8614-8a97-4ac8-9686-d9d62cb52acc
-294603de-3d09-464e-a5b0-09e452c6b5ab
-35878555-9623-4679-beb8-bb3395fdf26e
-3d8a5efa-5509-4bf9-9374-2bc714aceb99
-4238208a-f848-47cb-9dd2-43f9f954a4af
-44939b84-1894-41e7-b3e6-8c8d1781057b
-49ba087e-75a3-45ce-805c-69eeda0f786b
-4a6606ce-0284-421d-bf80-4dafddba2d42
-527de6aa-9cd0-4988-bf5f-c9c92ba2ac10
-54cd1b16-65bf-4041-9d84-fb2ea3301d6d
-58982847-5f7c-4b8b-a7b0-4d4de702136e
-5f0b85be-bd23-47de-927d-bca368fa1fbc
-646ada17-e4ef-49f6-9378-af7e58596ce1
-7e2f4bf8-fbc9-4b2f-97a4-75e5427bef90
-8029fd53-f9f5-4107-bfc3-8815507265cf
-81faa934-c602-4608-bf45-de91845dfea7
-8611a462-210c-4be1-a5bb-f87a065e6113
-8855c903-ef86-433c-b0be-c12300eb0f84
-8c7ece98-3598-4de7-a885-d61fd033bea8
-8c9a0d01-2d12-4a99-84f9-cdc25ac072f9
-8f9f888a-b501-41f3-a462-4da16150eebf
-94168f0e-9f45-4112-ac8d-3ba9be917842
-96998038-f381-47dc-8488-ff7252703627
-9768f4a8-3018-44e9-bf58-beba4296327c
-9a99e8d2-558e-4fc1-8011-e4411f658414
-a34e6400-78ed-45c0-a751-abc039eed2e6
-a9da5af3-4ec7-4a9b-becb-6e3d028d594d
-abf5201c-8be5-4dee-b461-132203dd51cb
-adb5658c-cef3-402f-87b6-b498f580351c
-aecf811b-b7e9-4b6f-8776-3d372e6a048b
-ba5aae61-ea34-4ac1-9490-4645acf2382f
-bf7f3638-c7c6-4a8f-893d-891a6d3dafff
-c617ada0-09d1-40ed-b479-1c4860a4f724
-cff91d44-a855-458c-89e5-bd48c17d1a54
-e65171ae-a2bf-4043-8f54-f8457bc9174b
-e7098b40-4701-4ca2-b9a9-3a1282f67044
-e904f122-71dc-439b-b877-313ef62486d7
-ede59734-adac-4c01-8691-b45f19088d37
-f88bd6bb-f93f-41cb-872f-ff26f6237068
-f985f5fb-be5c-430b-a8f1-cf86ae4fc49a
-fe800006-aaec-4f9e-9ab4-f9475b4cbdc3
-</code></pre></div><h2 id="2021-04-08">2021-04-08</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep -a -E <span style="color:#e6db74">&#39;email user group_id=\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b&#39;</span> /home/cgspace.cgiar.org/log/dspace.log.* | grep -o -E <span style="color:#e6db74">&#39;\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b&#39;</span> | sort | uniq
+</span></span><span style="display:flex;"><span>0a30d6ae-74a6-4eee-a8f5-ee5d15192ee6
+</span></span><span style="display:flex;"><span>1769137c-36d4-42b2-8fec-60585e110db7
+</span></span><span style="display:flex;"><span>203c8614-8a97-4ac8-9686-d9d62cb52acc
+</span></span><span style="display:flex;"><span>294603de-3d09-464e-a5b0-09e452c6b5ab
+</span></span><span style="display:flex;"><span>35878555-9623-4679-beb8-bb3395fdf26e
+</span></span><span style="display:flex;"><span>3d8a5efa-5509-4bf9-9374-2bc714aceb99
+</span></span><span style="display:flex;"><span>4238208a-f848-47cb-9dd2-43f9f954a4af
+</span></span><span style="display:flex;"><span>44939b84-1894-41e7-b3e6-8c8d1781057b
+</span></span><span style="display:flex;"><span>49ba087e-75a3-45ce-805c-69eeda0f786b
+</span></span><span style="display:flex;"><span>4a6606ce-0284-421d-bf80-4dafddba2d42
+</span></span><span style="display:flex;"><span>527de6aa-9cd0-4988-bf5f-c9c92ba2ac10
+</span></span><span style="display:flex;"><span>54cd1b16-65bf-4041-9d84-fb2ea3301d6d
+</span></span><span style="display:flex;"><span>58982847-5f7c-4b8b-a7b0-4d4de702136e
+</span></span><span style="display:flex;"><span>5f0b85be-bd23-47de-927d-bca368fa1fbc
+</span></span><span style="display:flex;"><span>646ada17-e4ef-49f6-9378-af7e58596ce1
+</span></span><span style="display:flex;"><span>7e2f4bf8-fbc9-4b2f-97a4-75e5427bef90
+</span></span><span style="display:flex;"><span>8029fd53-f9f5-4107-bfc3-8815507265cf
+</span></span><span style="display:flex;"><span>81faa934-c602-4608-bf45-de91845dfea7
+</span></span><span style="display:flex;"><span>8611a462-210c-4be1-a5bb-f87a065e6113
+</span></span><span style="display:flex;"><span>8855c903-ef86-433c-b0be-c12300eb0f84
+</span></span><span style="display:flex;"><span>8c7ece98-3598-4de7-a885-d61fd033bea8
+</span></span><span style="display:flex;"><span>8c9a0d01-2d12-4a99-84f9-cdc25ac072f9
+</span></span><span style="display:flex;"><span>8f9f888a-b501-41f3-a462-4da16150eebf
+</span></span><span style="display:flex;"><span>94168f0e-9f45-4112-ac8d-3ba9be917842
+</span></span><span style="display:flex;"><span>96998038-f381-47dc-8488-ff7252703627
+</span></span><span style="display:flex;"><span>9768f4a8-3018-44e9-bf58-beba4296327c
+</span></span><span style="display:flex;"><span>9a99e8d2-558e-4fc1-8011-e4411f658414
+</span></span><span style="display:flex;"><span>a34e6400-78ed-45c0-a751-abc039eed2e6
+</span></span><span style="display:flex;"><span>a9da5af3-4ec7-4a9b-becb-6e3d028d594d
+</span></span><span style="display:flex;"><span>abf5201c-8be5-4dee-b461-132203dd51cb
+</span></span><span style="display:flex;"><span>adb5658c-cef3-402f-87b6-b498f580351c
+</span></span><span style="display:flex;"><span>aecf811b-b7e9-4b6f-8776-3d372e6a048b
+</span></span><span style="display:flex;"><span>ba5aae61-ea34-4ac1-9490-4645acf2382f
+</span></span><span style="display:flex;"><span>bf7f3638-c7c6-4a8f-893d-891a6d3dafff
+</span></span><span style="display:flex;"><span>c617ada0-09d1-40ed-b479-1c4860a4f724
+</span></span><span style="display:flex;"><span>cff91d44-a855-458c-89e5-bd48c17d1a54
+</span></span><span style="display:flex;"><span>e65171ae-a2bf-4043-8f54-f8457bc9174b
+</span></span><span style="display:flex;"><span>e7098b40-4701-4ca2-b9a9-3a1282f67044
+</span></span><span style="display:flex;"><span>e904f122-71dc-439b-b877-313ef62486d7
+</span></span><span style="display:flex;"><span>ede59734-adac-4c01-8691-b45f19088d37
+</span></span><span style="display:flex;"><span>f88bd6bb-f93f-41cb-872f-ff26f6237068
+</span></span><span style="display:flex;"><span>f985f5fb-be5c-430b-a8f1-cf86ae4fc49a
+</span></span><span style="display:flex;"><span>fe800006-aaec-4f9e-9ab4-f9475b4cbdc3
+</span></span></code></pre></div><h2 id="2021-04-08">2021-04-08</h2>
 <ul>
 <li>I can&rsquo;t believe it but the server has been down for twelve hours or so
 <ul>
@@ -565,26 +565,26 @@ fe800006-aaec-4f9e-9ab4-f9475b4cbdc3
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-12070
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>12070
+</span></span></code></pre></div><ul>
 <li>I restarted PostgreSQL and Tomcat and the locks go straight back up!</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-13
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-986
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-1194
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-1212
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-1489
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-2124
-$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
-5934
-</code></pre></div><h2 id="2021-04-09">2021-04-09</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>13
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>986
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>1194
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>1212
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>1489
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>2124
+</span></span><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>5934
+</span></span></code></pre></div><h2 id="2021-04-09">2021-04-09</h2>
 <ul>
 <li>Atmire managed to get CGSpace back up by killing all the PostgreSQL connections yesterday
 <ul>
@@ -608,46 +608,46 @@ $ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN p
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-backup
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-backup
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Then I updated all Docker containers and rebooted the server (linode20) so that the correct indexes would be created again:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+</span></span></code></pre></div><ul>
 <li>Then I realized I have to clone the backup index directly to <code>openrxv-items-final</code>, and re-create the <code>openrxv-items</code> alias:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
-$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-backup/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
-$ curl -s -X POST http://localhost:9200/openrxv-items-backup/_clone/openrxv-items-final
-$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-backup/_settings&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-backup/_clone/openrxv-items-final
+</span></span><span style="display:flex;"><span>$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
+</span></span></code></pre></div><ul>
 <li>Now I see both <code>openrxv-items-final</code> and <code>openrxv-items</code> have the current number of items:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>     
-{
-  &#34;count&#34; : 103373,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
-{
-  &#34;count&#34; : 103373,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>     
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 103373,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 103373,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>Then I started a fresh harvesting in the AReS Explorer admin dashboard</li>
 </ul>
 <h2 id="2021-04-12">2021-04-12</h2>
@@ -672,39 +672,39 @@ $ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-f
 <ul>
 <li>13,000 requests in the last two months from a user with user agent <code>SomeRandomText</code>, for example:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">84.33.2.97 - - [06/Apr/2021:06:25:13 +0200] &#34;GET /bitstream/handle/10568/77776/CROP%20SCIENCE.jpg.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>84.33.2.97 - - [06/Apr/2021:06:25:13 +0200] &#34;GET /bitstream/handle/10568/77776/CROP%20SCIENCE.jpg.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34;
+</span></span></code></pre></div><ul>
 <li>I purged them:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ./ilri/check-spider-hits.sh -f /tmp/agents.txt -p
-Purging 13159 hits from SomeRandomText in statistics
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 13159
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-hits.sh -f /tmp/agents.txt -p
+</span></span><span style="display:flex;"><span>Purging 13159 hits from SomeRandomText in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 13159
+</span></span></code></pre></div><ul>
 <li>I noticed there were 78 items submitted in the hour before CGSpace crashed:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># grep -a -E <span style="color:#e6db74">&#39;2021-04-06 0(6|7):&#39;</span> /home/cgspace.cgiar.org/log/dspace.log.2021-04-06 | grep -c -a add_item 
-78
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep -a -E <span style="color:#e6db74">&#39;2021-04-06 0(6|7):&#39;</span> /home/cgspace.cgiar.org/log/dspace.log.2021-04-06 | grep -c -a add_item 
+</span></span><span style="display:flex;"><span>78
+</span></span></code></pre></div><ul>
 <li>Of those 78, 77 of them were from Udana</li>
 <li>Compared to other mornings (0 to 9 AM) this month that seems to be pretty high:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console"># <span style="color:#66d9ef">for</span> num in <span style="color:#f92672">{</span>01..13<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span> grep -a -E <span style="color:#e6db74">&#34;2021-04-</span>$num<span style="color:#e6db74"> 0&#34;</span> /home/cgspace.cgiar.org/log/dspace.log.2021-04-$num | grep -c -a
- add_item; done
-32
-0
-0
-2
-8
-108
-4
-0
-29
-0
-1
-1
-2
-</code></pre></div><h2 id="2021-04-15">2021-04-15</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># <span style="color:#66d9ef">for</span> num in <span style="color:#f92672">{</span>01..13<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span> grep -a -E <span style="color:#e6db74">&#34;2021-04-</span>$num<span style="color:#e6db74"> 0&#34;</span> /home/cgspace.cgiar.org/log/dspace.log.2021-04-$num | grep -c -a
+</span></span><span style="display:flex;"><span> add_item; done
+</span></span><span style="display:flex;"><span>32
+</span></span><span style="display:flex;"><span>0
+</span></span><span style="display:flex;"><span>0
+</span></span><span style="display:flex;"><span>2
+</span></span><span style="display:flex;"><span>8
+</span></span><span style="display:flex;"><span>108
+</span></span><span style="display:flex;"><span>4
+</span></span><span style="display:flex;"><span>0
+</span></span><span style="display:flex;"><span>29
+</span></span><span style="display:flex;"><span>0
+</span></span><span style="display:flex;"><span>1
+</span></span><span style="display:flex;"><span>1
+</span></span><span style="display:flex;"><span>2
+</span></span></code></pre></div><h2 id="2021-04-15">2021-04-15</h2>
 <ul>
 <li>Release v1.4.2 of the DSpace Statistics API on GitHub: <a href="https://github.com/ilri/dspace-statistics-api/releases/tag/v1.4.2">https://github.com/ilri/dspace-statistics-api/releases/tag/v1.4.2</a>
 <ul>
@@ -723,8 +723,8 @@ Purging 13159 hits from SomeRandomText in statistics
 </li>
 <li>Create a test account for Rafael from Bioversity-CIAT to submit some items to DSpace Test:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace user -a -m tip-submit@cgiar.org -g CIAT -s Submit -p <span style="color:#e6db74">&#39;fuuuuuuuu&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace user -a -m tip-submit@cgiar.org -g CIAT -s Submit -p <span style="color:#e6db74">&#39;fuuuuuuuu&#39;</span>
+</span></span></code></pre></div><ul>
 <li>I added the account to the Alliance Admins account, which is should allow him to submit to any Alliance collection
 <ul>
 <li>According to my notes from <a href="/cgspace-notes/2020-10/">2020-10</a> the account must be in the admin group in order to submit via the REST API</li>
@@ -735,62 +735,62 @@ Purging 13159 hits from SomeRandomText in statistics
 <ul>
 <li>Update all containers on AReS (linode20):</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+</span></span></code></pre></div><ul>
 <li>Then run all system updates and reboot the server</li>
 <li>I learned a new command for Elasticsearch:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl http://localhost:9200/_cat/indices
-yellow open openrxv-values           ChyhGwMDQpevJtlNWO1vcw 1 1   1579      0 537.6kb 537.6kb
-yellow open openrxv-items-temp       PhV5ieuxQsyftByvCxzSIw 1 1 103585 104372 482.7mb 482.7mb
-yellow open openrxv-shared           J_8cxIz6QL6XTRZct7UBBQ 1 1    127      0 115.7kb 115.7kb
-yellow open openrxv-values-00001     jAoXTLR0R9mzivlDVbQaqA 1 1   3903      0 696.2kb 696.2kb
-green  open .kibana_task_manager_1   O1zgJ0YlQhKCFAwJZaNSIA 1 0      2      2  20.6kb  20.6kb
-yellow open openrxv-users            1hWGXh9kS_S6YPxAaBN8ew 1 1      5      0  28.6kb  28.6kb
-green  open .apm-agent-configuration f3RAkSEBRGaxJZs3ePVxsA 1 0      0      0    283b    283b
-yellow open openrxv-items-final      sgk-s8O-RZKdcLRoWt3G8A 1 1    970      0   2.3mb   2.3mb
-green  open .kibana_1                HHPN7RD_T7qe0zDj4rauQw 1 0     25      7  36.8kb  36.8kb
-yellow open users                    M0t2LaZhSm2NrF5xb64dnw 1 1      2      0  11.6kb  11.6kb
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl http://localhost:9200/_cat/indices
+</span></span><span style="display:flex;"><span>yellow open openrxv-values           ChyhGwMDQpevJtlNWO1vcw 1 1   1579      0 537.6kb 537.6kb
+</span></span><span style="display:flex;"><span>yellow open openrxv-items-temp       PhV5ieuxQsyftByvCxzSIw 1 1 103585 104372 482.7mb 482.7mb
+</span></span><span style="display:flex;"><span>yellow open openrxv-shared           J_8cxIz6QL6XTRZct7UBBQ 1 1    127      0 115.7kb 115.7kb
+</span></span><span style="display:flex;"><span>yellow open openrxv-values-00001     jAoXTLR0R9mzivlDVbQaqA 1 1   3903      0 696.2kb 696.2kb
+</span></span><span style="display:flex;"><span>green  open .kibana_task_manager_1   O1zgJ0YlQhKCFAwJZaNSIA 1 0      2      2  20.6kb  20.6kb
+</span></span><span style="display:flex;"><span>yellow open openrxv-users            1hWGXh9kS_S6YPxAaBN8ew 1 1      5      0  28.6kb  28.6kb
+</span></span><span style="display:flex;"><span>green  open .apm-agent-configuration f3RAkSEBRGaxJZs3ePVxsA 1 0      0      0    283b    283b
+</span></span><span style="display:flex;"><span>yellow open openrxv-items-final      sgk-s8O-RZKdcLRoWt3G8A 1 1    970      0   2.3mb   2.3mb
+</span></span><span style="display:flex;"><span>green  open .kibana_1                HHPN7RD_T7qe0zDj4rauQw 1 0     25      7  36.8kb  36.8kb
+</span></span><span style="display:flex;"><span>yellow open users                    M0t2LaZhSm2NrF5xb64dnw 1 1      2      0  11.6kb  11.6kb
+</span></span></code></pre></div><ul>
 <li>Somehow the <code>openrxv-items-final</code> index only has a few items and the majority are in <code>openrxv-items-temp</code>, via the <code>openrxv-items</code> alias (which is in the temp index):</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span> 
-{
-  &#34;count&#34; : 103585,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span> 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 103585,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>I found a cool tool to help with exporting and restoring Elasticsearch indexes:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --type<span style="color:#f92672">=</span>mapping
-$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --limit<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
-...
-Sun, 18 Apr 2021 06:27:07 GMT | Total Writes: 103585
-Sun, 18 Apr 2021 06:27:07 GMT | dump complete
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --type<span style="color:#f92672">=</span>mapping
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --limit<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Sun, 18 Apr 2021 06:27:07 GMT | Total Writes: 103585
+</span></span><span style="display:flex;"><span>Sun, 18 Apr 2021 06:27:07 GMT | dump complete
+</span></span></code></pre></div><ul>
 <li>It took only two or three minutes to export everything&hellip;</li>
 <li>I did a test to restore the index:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-test --type<span style="color:#f92672">=</span>mapping
-$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-test --limit <span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-test --type<span style="color:#f92672">=</span>mapping
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-test --limit <span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
+</span></span></code></pre></div><ul>
 <li>So that&rsquo;s pretty cool!</li>
 <li>I deleted the <code>openrxv-items-final</code> index and <code>openrxv-items-temp</code> indexes and then restored the mappings to <code>openrxv-items-final</code>, added the <code>openrxv-items</code> alias, and started restoring the data to <code>openrxv-items</code> with elasticdump:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
-$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-final --type<span style="color:#f92672">=</span>mapping
-$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
-$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --limit <span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-final --type<span style="color:#f92672">=</span>mapping
+</span></span><span style="display:flex;"><span>$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --limit <span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
+</span></span></code></pre></div><ul>
 <li>AReS seems to be working fine аfter that, so I created the <code>openrxv-items-temp</code> index and then started a fresh harvest on AReS Explorer:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp&#34;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp&#34;</span>
+</span></span></code></pre></div><ul>
 <li>Run system updates on CGSpace (linode18) and run the latest Ansible infrastructure playbook to update the DSpace Statistics API, PostgreSQL JDBC driver, etc, and then reboot the system</li>
 <li>I wasted a bit of time trying to get TSLint and then ESLint running for OpenRXV on GitHub Actions</li>
 </ul>
@@ -798,35 +798,35 @@ $ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-ite
 <ul>
 <li>The AReS harvesting last night seems to have completed successfully, but the number of results is strange:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
-yellow open openrxv-items-temp       kNUlupUyS_i7vlBGiuVxwg 1 1 103741 105553 483.6mb 483.6mb
-yellow open openrxv-items-final      HFc3uytTRq2GPpn13vkbmg 1 1    970      0   2.3mb   2.3mb
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
+</span></span><span style="display:flex;"><span>yellow open openrxv-items-temp       kNUlupUyS_i7vlBGiuVxwg 1 1 103741 105553 483.6mb 483.6mb
+</span></span><span style="display:flex;"><span>yellow open openrxv-items-final      HFc3uytTRq2GPpn13vkbmg 1 1    970      0   2.3mb   2.3mb
+</span></span></code></pre></div><ul>
 <li>The indices endpoint doesn&rsquo;t include the <code>openrxv-items</code> alias, but it is currently in the <code>openrxv-items-temp</code> index so the number of items is the same:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>     
-{
-  &#34;count&#34; : 103741,
-  &#34;_shards&#34; : {
-    &#34;total&#34; : 1,
-    &#34;successful&#34; : 1,
-    &#34;skipped&#34; : 0,
-    &#34;failed&#34; : 0
-  }
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>     
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 103741,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>A user was having problems resetting their password on CGSpace, with some message about SMTP etc
 <ul>
 <li>I checked and we are indeed locked out of our mailbox:</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ dspace test-email
-...
-Error sending email:
- - Error: javax.mail.SendFailedException: Send failure (javax.mail.AuthenticationFailedException: 550 5.2.1 Mailbox cannot be accessed [PR0P264CA0280.FRAP264.PROD.OUTLOOK.COM]
-)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace test-email
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Error sending email:
+</span></span><span style="display:flex;"><span> - Error: javax.mail.SendFailedException: Send failure (javax.mail.AuthenticationFailedException: 550 5.2.1 Mailbox cannot be accessed [PR0P264CA0280.FRAP264.PROD.OUTLOOK.COM]
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><ul>
 <li>I have to write to ICT&hellip;</li>
 <li>I decided to switch back to the G1GC garbage collector on DSpace Test
 <ul>
@@ -850,7 +850,7 @@ Error sending email:
 </ul>
 </li>
 </ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS='-Dfile.encoding=UTF-8 -Xmx2048m'
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
 $ cp atmire-cua-update.xml-20210124-132112.old /home/dspacetest.cgiar.org/config/spring/api/atmire-cua-update.xml
 $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -r 100 -c statistics -t 12 -g
 </code></pre><ul>
@@ -869,46 +869,46 @@ $ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisti
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --type<span style="color:#f92672">=</span>mapping
-$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --limit<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
-$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
-$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-final --type<span style="color:#f92672">=</span>mapping
-$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
-$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --limit <span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --type<span style="color:#f92672">=</span>mapping
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --output<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --limit<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final&#39;</span>
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_mapping.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items-final --type<span style="color:#f92672">=</span>mapping
+</span></span><span style="display:flex;"><span>$ curl -s -X POST <span style="color:#e6db74">&#39;http://localhost:9200/_aliases&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;actions&#34; : [{&#34;add&#34; : { &#34;index&#34; : &#34;openrxv-items-final&#34;, &#34;alias&#34; : &#34;openrxv-items&#34;}}]}&#39;</span>
+</span></span><span style="display:flex;"><span>$ elasticdump --input<span style="color:#f92672">=</span>/home/aorth/openrxv-items_data.json --output<span style="color:#f92672">=</span>http://localhost:9200/openrxv-items --limit <span style="color:#ae81ff">1000</span> --type<span style="color:#f92672">=</span>data
+</span></span></code></pre></div><ul>
 <li>Then I started a fresh AReS harvest</li>
 </ul>
 <h2 id="2021-04-26">2021-04-26</h2>
 <ul>
 <li>The AReS harvest last night seems to have finished successfully and the number of items looks good:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
-yellow open openrxv-items-temp       H-CGsyyLTaqAj6-nKXZ-7w 1 1      0 0    283b    283b
-yellow open openrxv-items-final      ul3SKsa7Q9Cd_K7qokBY_w 1 1 103951 0   254mb   254mb
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s http://localhost:9200/_cat/indices | grep openrxv-items
+</span></span><span style="display:flex;"><span>yellow open openrxv-items-temp       H-CGsyyLTaqAj6-nKXZ-7w 1 1      0 0    283b    283b
+</span></span><span style="display:flex;"><span>yellow open openrxv-items-final      ul3SKsa7Q9Cd_K7qokBY_w 1 1 103951 0   254mb   254mb
+</span></span></code></pre></div><ul>
 <li>And the aliases seem correct for once:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool
-...
-    &#34;openrxv-items-final&#34;: {
-        &#34;aliases&#34;: {
-            &#34;openrxv-items&#34;: {}
-        }
-    },
-    &#34;openrxv-items-temp&#34;: {
-        &#34;aliases&#34;: {}
-    },
-...
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/_alias/&#39;</span> | python -m json.tool
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-final&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;openrxv-items&#34;: {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;openrxv-items-temp&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;aliases&#34;: {}
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ul>
 <li>That&rsquo;s 250 new items in the index since the last harvest!</li>
 <li>Re-create my local Artifactory container because I&rsquo;m getting errors starting it and it has been a few months since it was updated:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ podman rm artifactory
-$ podman pull docker.bintray.io/jfrog/artifactory-oss:latest
-$ podman create --ulimit nofile<span style="color:#f92672">=</span>32000:32000 --name artifactory -v artifactory_data:/var/opt/jfrog/artifactory -p 8081-8082:8081-8082 docker.bintray.io/jfrog/artifactory-oss
-$ podman start artifactory
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ podman rm artifactory
+</span></span><span style="display:flex;"><span>$ podman pull docker.bintray.io/jfrog/artifactory-oss:latest
+</span></span><span style="display:flex;"><span>$ podman create --ulimit nofile<span style="color:#f92672">=</span>32000:32000 --name artifactory -v artifactory_data:/var/opt/jfrog/artifactory -p 8081-8082:8081-8082 docker.bintray.io/jfrog/artifactory-oss
+</span></span><span style="display:flex;"><span>$ podman start artifactory
+</span></span></code></pre></div><ul>
 <li>Start testing DSpace 7.0 Beta 5 so I can evaluate if it solves some of the problems we are having on DSpace 6, and if it&rsquo;s missing things like multiple handle resolvers, etc
 <ul>
 <li>I see it needs Java JDK 11, Tomcat 9, Solr 8, and PostgreSQL 11</li>
@@ -925,83 +925,83 @@ $ podman start artifactory
 </li>
 <li>I tried to delete all the Atmire SQL migrations:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace7b5= &gt; DELETE FROM schema_version WHERE description LIKE &#39;%Atmire%&#39; OR description LIKE &#39;%CUA%&#39; OR description LIKE &#39;%cua%&#39;;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7b5= &gt; DELETE FROM schema_version WHERE description LIKE &#39;%Atmire%&#39; OR description LIKE &#39;%CUA%&#39; OR description LIKE &#39;%cua%&#39;;
+</span></span></code></pre></div><ul>
 <li>But I got an error when running <code>dspace database migrate</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ~/dspace7b5/bin/dspace database migrate
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>Database URL: jdbc:postgresql://localhost:5432/dspace7b5
-Migrating database to latest version... (Check dspace logs for details)
-Migration exception:
-java.sql.SQLException: Flyway migration error occurred
-        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:738)
-        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:632)
-        at org.dspace.storage.rdbms.DatabaseUtils.main(DatabaseUtils.java:228)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:273)
-        at org.dspace.app.launcher.ScriptLauncher.handleScript(ScriptLauncher.java:129)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:94)
-Caused by: org.flywaydb.core.api.FlywayException: Validate failed: 
-Detected applied migration not resolved locally: 5.0.2017.09.25
-Detected applied migration not resolved locally: 6.0.2017.01.30
-Detected applied migration not resolved locally: 6.0.2017.09.25
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>        at org.flywaydb.core.Flyway.doValidate(Flyway.java:292)
-        at org.flywaydb.core.Flyway.access$100(Flyway.java:73)
-        at org.flywaydb.core.Flyway$1.execute(Flyway.java:166)
-        at org.flywaydb.core.Flyway$1.execute(Flyway.java:158)
-        at org.flywaydb.core.Flyway.execute(Flyway.java:527)
-        at org.flywaydb.core.Flyway.migrate(Flyway.java:158)
-        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:729)
-        ... 9 more
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ~/dspace7b5/bin/dspace database migrate
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Database URL: jdbc:postgresql://localhost:5432/dspace7b5
+</span></span><span style="display:flex;"><span>Migrating database to latest version... (Check dspace logs for details)
+</span></span><span style="display:flex;"><span>Migration exception:
+</span></span><span style="display:flex;"><span>java.sql.SQLException: Flyway migration error occurred
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:738)
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:632)
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.main(DatabaseUtils.java:228)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:273)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.handleScript(ScriptLauncher.java:129)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:94)
+</span></span><span style="display:flex;"><span>Caused by: org.flywaydb.core.api.FlywayException: Validate failed: 
+</span></span><span style="display:flex;"><span>Detected applied migration not resolved locally: 5.0.2017.09.25
+</span></span><span style="display:flex;"><span>Detected applied migration not resolved locally: 6.0.2017.01.30
+</span></span><span style="display:flex;"><span>Detected applied migration not resolved locally: 6.0.2017.09.25
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>        at org.flywaydb.core.Flyway.doValidate(Flyway.java:292)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.Flyway.access$100(Flyway.java:73)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.Flyway$1.execute(Flyway.java:166)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.Flyway$1.execute(Flyway.java:158)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.Flyway.execute(Flyway.java:527)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.Flyway.migrate(Flyway.java:158)
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:729)
+</span></span><span style="display:flex;"><span>        ... 9 more
+</span></span></code></pre></div><ul>
 <li>I deleted those migrations:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">localhost/dspace7b5= &gt; DELETE FROM schema_version WHERE version IN (&#39;5.0.2017.09.25&#39;, &#39;6.0.2017.01.30&#39;, &#39;6.0.2017.09.25&#39;);
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7b5= &gt; DELETE FROM schema_version WHERE version IN (&#39;5.0.2017.09.25&#39;, &#39;6.0.2017.01.30&#39;, &#39;6.0.2017.09.25&#39;);
+</span></span></code></pre></div><ul>
 <li>Then when I ran the migration again it failed for a new reason, related to the configurable workflow:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">Database URL: jdbc:postgresql://localhost:5432/dspace7b5
-Migrating database to latest version... (Check dspace logs for details)
-Migration exception:
-java.sql.SQLException: Flyway migration error occurred
-        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:738)
-        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:632)
-        at org.dspace.storage.rdbms.DatabaseUtils.main(DatabaseUtils.java:228)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:273)
-        at org.dspace.app.launcher.ScriptLauncher.handleScript(ScriptLauncher.java:129)
-        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:94)
-Caused by: org.flywaydb.core.internal.command.DbMigrate$FlywayMigrateException:
-Migration V7.0_2019.05.02__DS-4239-workflow-xml-migration.sql failed
---------------------------------------------------------------------
-SQL State  : 42P01
-Error Code : 0
-Message    : ERROR: relation &#34;cwf_pooltask&#34; does not exist
-  Position: 8
-Location   : org/dspace/storage/rdbms/sqlmigration/postgres/V7.0_2019.05.02__DS-4239-workflow-xml-migration.sql (/home/aorth/src/apache-tomcat-9.0.45/file:/home/aorth/dspace7b5/lib/dspace-api-7.0-beta5.jar!/org/dspace/storage/rdbms/sqlmigration/postgres/V7.0_2019.05.02__DS-4239-workflow-xml-migration.sql)
-Line       : 16
-Statement  : UPDATE cwf_pooltask SET workflow_id=&#39;defaultWorkflow&#39; WHERE workflow_id=&#39;default&#39;
-...
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Database URL: jdbc:postgresql://localhost:5432/dspace7b5
+</span></span><span style="display:flex;"><span>Migrating database to latest version... (Check dspace logs for details)
+</span></span><span style="display:flex;"><span>Migration exception:
+</span></span><span style="display:flex;"><span>java.sql.SQLException: Flyway migration error occurred
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:738)
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.updateDatabase(DatabaseUtils.java:632)
+</span></span><span style="display:flex;"><span>        at org.dspace.storage.rdbms.DatabaseUtils.main(DatabaseUtils.java:228)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:273)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.handleScript(ScriptLauncher.java:129)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:94)
+</span></span><span style="display:flex;"><span>Caused by: org.flywaydb.core.internal.command.DbMigrate$FlywayMigrateException:
+</span></span><span style="display:flex;"><span>Migration V7.0_2019.05.02__DS-4239-workflow-xml-migration.sql failed
+</span></span><span style="display:flex;"><span>--------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>SQL State  : 42P01
+</span></span><span style="display:flex;"><span>Error Code : 0
+</span></span><span style="display:flex;"><span>Message    : ERROR: relation &#34;cwf_pooltask&#34; does not exist
+</span></span><span style="display:flex;"><span>  Position: 8
+</span></span><span style="display:flex;"><span>Location   : org/dspace/storage/rdbms/sqlmigration/postgres/V7.0_2019.05.02__DS-4239-workflow-xml-migration.sql (/home/aorth/src/apache-tomcat-9.0.45/file:/home/aorth/dspace7b5/lib/dspace-api-7.0-beta5.jar!/org/dspace/storage/rdbms/sqlmigration/postgres/V7.0_2019.05.02__DS-4239-workflow-xml-migration.sql)
+</span></span><span style="display:flex;"><span>Line       : 16
+</span></span><span style="display:flex;"><span>Statement  : UPDATE cwf_pooltask SET workflow_id=&#39;defaultWorkflow&#39; WHERE workflow_id=&#39;default&#39;
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ul>
 <li>The <a href="https://wiki.lyrasis.org/display/DSDOC7x/Upgrading+DSpace">DSpace 7 upgrade docs</a> say I need to apply these previously optional migrations:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ ~/dspace7b5/bin/dspace database migrate ignored
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ~/dspace7b5/bin/dspace database migrate ignored
+</span></span></code></pre></div><ul>
 <li>Now I see all migrations have completed and DSpace actually starts up fine!</li>
 <li>I will try to do a full re-index to see how long it takes:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ time ~/dspace7b5/bin/dspace index-discovery -b
-...
-~/dspace7b5/bin/dspace index-discovery -b  25156.71s user 64.22s system 97% cpu 7:11:09.94 total
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ time ~/dspace7b5/bin/dspace index-discovery -b
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>~/dspace7b5/bin/dspace index-discovery -b  25156.71s user 64.22s system 97% cpu 7:11:09.94 total
+</span></span></code></pre></div><ul>
 <li>Not good, that shit took almost seven hours!</li>
 </ul>
 <h2 id="2021-04-27">2021-04-27</h2>
@@ -1012,9 +1012,9 @@ Statement  : UPDATE cwf_pooltask SET workflow_id=&#39;defaultWorkflow&#39; WHERE
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ csvgrep -e <span style="color:#e6db74">&#39;windows-1252&#39;</span> -c <span style="color:#e6db74">&#39;Handle.net IDs&#39;</span> -i -m <span style="color:#e6db74">&#39;10568/&#39;</span> ~/Downloads/Altmetric<span style="color:#ae81ff">\ </span>-<span style="color:#ae81ff">\ </span>Research<span style="color:#ae81ff">\ </span>Outputs<span style="color:#ae81ff">\ </span>-<span style="color:#ae81ff">\ </span>CGSpace<span style="color:#ae81ff">\ </span>-<span style="color:#ae81ff">\ </span>2021-04-26.csv | csvcut -c DOI | sed <span style="color:#e6db74">&#39;1d&#39;</span> &gt; /tmp/dois.txt
-$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.csv -db dspace63 -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -d
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvgrep -e <span style="color:#e6db74">&#39;windows-1252&#39;</span> -c <span style="color:#e6db74">&#39;Handle.net IDs&#39;</span> -i -m <span style="color:#e6db74">&#39;10568/&#39;</span> ~/Downloads/Altmetric<span style="color:#ae81ff">\ </span>-<span style="color:#ae81ff">\ </span>Research<span style="color:#ae81ff">\ </span>Outputs<span style="color:#ae81ff">\ </span>-<span style="color:#ae81ff">\ </span>CGSpace<span style="color:#ae81ff">\ </span>-<span style="color:#ae81ff">\ </span>2021-04-26.csv | csvcut -c DOI | sed <span style="color:#e6db74">&#39;1d&#39;</span> &gt; /tmp/dois.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/doi-to-handle.py -i /tmp/dois.txt -o /tmp/handles.csv -db dspace63 -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -d
+</span></span></code></pre></div><ul>
 <li>He will Tweet them&hellip;</li>
 </ul>
 <h2 id="2021-04-28">2021-04-28</h2>
