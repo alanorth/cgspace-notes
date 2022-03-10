@@ -19,7 +19,7 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-03/" />
 <meta property="article:published_time" content="2022-03-01T16:46:54+03:00" />
-<meta property="article:modified_time" content="2022-03-04T15:30:06+03:00" />
+<meta property="article:modified_time" content="2022-03-05T23:14:13+03:00" />
 
 
 
@@ -34,7 +34,7 @@ $ ./ilri/check-duplicates.py -i /tmp/tac4.csv -db dspace -u dspace -p &#39;fuuu&
 $ csvcut -c id,filename ~/Downloads/2022-03-01-CGSpace-TAC-ICW-batch4-701-980.csv &gt; /tmp/tac4-filenames.csv
 $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &gt; /tmp/2022-03-01-tac-batch4-701-980-filenames.csv
 "/>
-<meta name="generator" content="Hugo 0.93.1" />
+<meta name="generator" content="Hugo 0.93.2" />
 
 
     
@@ -44,9 +44,9 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
   "@type": "BlogPosting",
   "headline": "March, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-03/",
-  "wordCount": "353",
+  "wordCount": "443",
   "datePublished": "2022-03-01T16:46:54+03:00",
-  "dateModified": "2022-03-04T15:30:06+03:00",
+  "dateModified": "2022-03-05T23:14:13+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -188,7 +188,30 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
 <ul>
 <li>Start AReS harvest</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2022-03-10">2022-03-10</h2>
+<ul>
+<li>A few days ago Gaia sent me her notes on the fourth batch of TAC/ICW documents (items 701–980 in the spreadsheet)
+<ul>
+<li>I created a filter in LibreOffice and selected the IDs for items with the action &ldquo;delete&rdquo;, then I created a custom text facet in OpenRefine with this GREL:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>or(
+isNotNull(value.match(&#39;707&#39;)),
+isNotNull(value.match(&#39;709&#39;)),
+isNotNull(value.match(&#39;710&#39;)),
+isNotNull(value.match(&#39;711&#39;)),
+isNotNull(value.match(&#39;713&#39;)),
+isNotNull(value.match(&#39;717&#39;)),
+isNotNull(value.match(&#39;718&#39;)),
+...
+isNotNull(value.match(&#39;821&#39;))
+)
+</code></pre><ul>
+<li>Then I flagged all matching records, exported a CSV to use with SAFBuilder, and imported them on DSpace Test:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34;</span> dspace import --add --eperson<span style="color:#f92672">=</span>fuu@ummm.com --source /tmp/SimpleArchiveFormat --mapfile<span style="color:#f92672">=</span>./2022-03-10-tac-batch4-701to980.map
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
