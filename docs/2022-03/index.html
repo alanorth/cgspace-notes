@@ -19,7 +19,7 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-03/" />
 <meta property="article:published_time" content="2022-03-01T16:46:54+03:00" />
-<meta property="article:modified_time" content="2022-03-16T18:32:01+03:00" />
+<meta property="article:modified_time" content="2022-03-22T22:03:45+03:00" />
 
 
 
@@ -44,9 +44,9 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
   "@type": "BlogPosting",
   "headline": "March, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-03/",
-  "wordCount": "684",
+  "wordCount": "1011",
   "datePublished": "2022-03-01T16:46:54+03:00",
-  "dateModified": "2022-03-16T18:32:01+03:00",
+  "dateModified": "2022-03-22T22:03:45+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -258,6 +258,49 @@ isNotNull(value.match(&#39;821&#39;))
 </span></span><span style="display:flex;"><span>$ csvjoin -c id /tmp/2022-03-22-tac-duplicates.csv /tmp/tac-filenames.csv &gt; /tmp/tac-final-duplicates.csv
 </span></span></code></pre></div><ul>
 <li>I sent the resulting 76 items to Gaia to check</li>
+<li>UptimeRobot said that CGSpace was down
+<ul>
+<li>I looked and found many locks belonging to the REST API application:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi)&#39;</span> | sort | uniq -c | sort -n
+</span></span><span style="display:flex;"><span>    301 dspaceWeb
+</span></span><span style="display:flex;"><span>   2390 dspaceApi
+</span></span></code></pre></div><ul>
+<li>Looking at nginx&rsquo;s logs, I found the top addresses making requests today:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/rest.log | sort | uniq -c | sort -h
+</span></span><span style="display:flex;"><span>   1977 45.5.184.2
+</span></span><span style="display:flex;"><span>   3167 70.32.90.172
+</span></span><span style="display:flex;"><span>   4754 54.195.118.125
+</span></span><span style="display:flex;"><span>   5411 205.186.128.185
+</span></span><span style="display:flex;"><span>   6826 137.184.159.211
+</span></span></code></pre></div><ul>
+<li>137.184.159.211 is on DigitalOcean using this user agent: <code>GuzzleHttp/6.3.3 curl/7.81.0 PHP/7.4.28</code>
+<ul>
+<li>I blocked this IP in nginx and the load went down immediately</li>
+</ul>
+</li>
+<li>205.186.128.185 is on Media Temple, but it&rsquo;s OK because it&rsquo;s the CCAFS publications importer bot</li>
+<li>54.195.118.125 is on Amazon, but is also a CCAFS publications importer bot apparently (perhaps a test server)</li>
+<li>70.32.90.172 is on Media Temple and has no user agent</li>
+<li>What is surprising to me is that we already have an nginx rule to return HTTP 403 for requests without a user agent
+<ul>
+<li>I verified it works as expected with an empty user agent:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -H User-Agent:<span style="color:#e6db74">&#39;&#39;</span> <span style="color:#e6db74">&#39;https://dspacetest.cgiar.org/rest/handle/10568/34799?expand=all&#39;</span> 
+</span></span><span style="display:flex;"><span>Due to abuse we no longer permit requests without a user agent. Please specify a descriptive user agent, for example containing the word &#39;bot&#39;, if you are accessing the site programmatically. For more information see here: https://dspacetest.cgiar.org/page/about.
+</span></span></code></pre></div><ul>
+<li>I note that the nginx log shows &lsquo;-&rsquo; for a request with an empty user agent, which would be indistinguishable from a request with a &lsquo;-&rsquo;, for example these were successful:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>70.32.90.172 - - [22/Mar/2022:11:59:10 +0100] &#34;GET /rest/handle/10568/34374?expand=all HTTP/1.0&#34; 200 10671 &#34;-&#34; &#34;-&#34;
+</span></span><span style="display:flex;"><span>70.32.90.172 - - [22/Mar/2022:11:59:14 +0100] &#34;GET /rest/handle/10568/34795?expand=all HTTP/1.0&#34; 200 11394 &#34;-&#34; &#34;-&#34;
+</span></span></code></pre></div><ul>
+<li>I can only assume that these requests used a literal &lsquo;-&rsquo; so I will have to add an nginx rule to block those too</li>
+<li>Otherwise, I see from my notes that 70.32.90.172 is the wle.cgiar.org REST API harvester&hellip; I should ask Macaroni Bros about that</li>
 </ul>
 <!-- raw HTML omitted -->
 
