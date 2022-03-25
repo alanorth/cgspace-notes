@@ -19,7 +19,7 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-03/" />
 <meta property="article:published_time" content="2022-03-01T16:46:54+03:00" />
-<meta property="article:modified_time" content="2022-03-24T22:14:56+03:00" />
+<meta property="article:modified_time" content="2022-03-24T22:54:47+03:00" />
 
 
 
@@ -44,9 +44,9 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
   "@type": "BlogPosting",
   "headline": "March, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-03/",
-  "wordCount": "1159",
+  "wordCount": "1290",
   "datePublished": "2022-03-01T16:46:54+03:00",
-  "dateModified": "2022-03-24T22:14:56+03:00",
+  "dateModified": "2022-03-24T22:54:47+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -324,6 +324,29 @@ isNotNull(value.match(&#39;821&#39;))
 <ul>
 <li>I did this on DSpace Test in 2022-02 so I just followed the same procedure</li>
 <li>After that I ran all system updates and rebooted the server</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-03-25">2022-03-25</h2>
+<ul>
+<li>Looking at the PostgreSQL database size on CGSpace after the update yesterday:</li>
+</ul>
+<p><img src="/cgspace-notes/2022/03/postgres_size_cgspace-day.png" alt="PostgreSQL database size day"></p>
+<ul>
+<li>The space saving in indexes of recent PostgreSQL releases is awesome!</li>
+<li>Import a DSpace 6.x database dump from production into my local DSpace 7 database
+<ul>
+<li>I see I still the same errors <a href="/cgspace-notes/2021-04/">I saw in 2021-04</a> when testing DSpace 7.0 beta 5</li>
+<li>I had to delete some old migrations, as well as all Atmire ones first:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ DELETE FROM schema_version WHERE version IN (&#39;5.0.2017.09.25&#39;, &#39;6.0.2017.01.30&#39;, &#39;6.0.2017.09.25&#39;);
+</span></span><span style="display:flex;"><span>localhost/dspace7= ☘ DELETE FROM schema_version WHERE description LIKE &#39;%Atmire%&#39; OR description LIKE &#39;%CUA%&#39; OR description LIKE &#39;%cua%&#39;
+</span></span></code></pre></div><ul>
+<li>Then I was able to migrate to DSpace 7 with <code>dspace database migrate ignored</code> as the <a href="https://wiki.lyrasis.org/display/DSDOC7x/Upgrading+DSpace">DSpace upgrade notes say</a>
+<ul>
+<li>I see that the <a href="https://github.com/DSpace/dspace-angular/issues/1357">flash of unstyled content bug</a> still exists on dspace-angluar&hellip; ouch!</li>
 </ul>
 </li>
 </ul>
