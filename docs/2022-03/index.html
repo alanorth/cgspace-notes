@@ -19,7 +19,7 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-03/" />
 <meta property="article:published_time" content="2022-03-01T16:46:54+03:00" />
-<meta property="article:modified_time" content="2022-03-26T19:13:21+03:00" />
+<meta property="article:modified_time" content="2022-03-28T16:09:34+03:00" />
 
 
 
@@ -34,7 +34,7 @@ $ ./ilri/check-duplicates.py -i /tmp/tac4.csv -db dspace -u dspace -p &#39;fuuu&
 $ csvcut -c id,filename ~/Downloads/2022-03-01-CGSpace-TAC-ICW-batch4-701-980.csv &gt; /tmp/tac4-filenames.csv
 $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &gt; /tmp/2022-03-01-tac-batch4-701-980-filenames.csv
 "/>
-<meta name="generator" content="Hugo 0.95.0" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
     
@@ -44,9 +44,9 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
   "@type": "BlogPosting",
   "headline": "March, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-03/",
-  "wordCount": "1462",
+  "wordCount": "1584",
   "datePublished": "2022-03-01T16:46:54+03:00",
-  "dateModified": "2022-03-26T19:13:21+03:00",
+  "dateModified": "2022-03-28T16:09:34+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -377,6 +377,33 @@ isNotNull(value.match(&#39;821&#39;))
 <li>I also removed the pre-Ubuntu 20.04 Let&rsquo;s Encrypt stuff from the Ansble infrastructure playbooks</li>
 </ul>
 </li>
+</ul>
+<h2 id="2022-03-29">2022-03-29</h2>
+<ul>
+<li>Gaia sent me her notes on the final review of duplicates of all TAC/ICW documents
+<ul>
+<li>I created a filter in LibreOffice and selected the IDs for items with the action &ldquo;delete&rdquo;, then I created a custom text facet in OpenRefine with this GREL:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>or(
+isNotNull(value.match(&#39;33&#39;)),
+isNotNull(value.match(&#39;179&#39;)),
+isNotNull(value.match(&#39;452&#39;)),
+isNotNull(value.match(&#39;489&#39;)),
+isNotNull(value.match(&#39;541&#39;)),
+isNotNull(value.match(&#39;568&#39;)),
+isNotNull(value.match(&#39;646&#39;)),
+isNotNull(value.match(&#39;889&#39;))
+)
+</code></pre><ul>
+<li>Then I flagged all matching records, exported a CSV to use with SAFBuilder, and imported the 692 items on CGSpace, and generated the thumbnails:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;</span>
+</span></span><span style="display:flex;"><span>$ dspace import --add --eperson<span style="color:#f92672">=</span>umm@fuuu.com --source /tmp/SimpleArchiveFormat --mapfile<span style="color:#f92672">=</span>./2022-03-29-cgiar-tac.map
+</span></span><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> dspace filter-media -p <span style="color:#e6db74">&#34;ImageMagick PDF Thumbnail&#34;</span> -i 10947/50
+</span></span></code></pre></div><ul>
+<li>After that I did some normalization on the <code>cg.subject.system</code> metadata and extracted a few dozen countries to the country field</li>
 </ul>
 <!-- raw HTML omitted -->
 
