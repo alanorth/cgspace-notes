@@ -19,7 +19,7 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-03/" />
 <meta property="article:published_time" content="2022-03-01T16:46:54+03:00" />
-<meta property="article:modified_time" content="2022-03-29T16:01:48+03:00" />
+<meta property="article:modified_time" content="2022-03-29T21:26:07+03:00" />
 
 
 
@@ -44,9 +44,9 @@ $ csvjoin -c id /tmp/2022-03-01-tac-batch4-701-980.csv /tmp/tac4-filenames.csv &
   "@type": "BlogPosting",
   "headline": "March, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-03/",
-  "wordCount": "1589",
+  "wordCount": "1789",
   "datePublished": "2022-03-01T16:46:54+03:00",
-  "dateModified": "2022-03-29T16:01:48+03:00",
+  "dateModified": "2022-03-29T21:26:07+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -405,6 +405,38 @@ isNotNull(value.match(&#39;889&#39;))
 </span></span></code></pre></div><ul>
 <li>After that I did some normalization on the <code>cg.subject.system</code> metadata and extracted a few dozen countries to the country field</li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-03-30">2022-03-30</h2>
+<ul>
+<li>Yesterday Rafael from CIAT asked me to re-create his approver account on DSpace Test as well</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace user -a -m tip-approve@cgiar.org -g Rafael -s Rodriguez -p <span style="color:#e6db74">&#39;fuuuu&#39;</span>
+</span></span></code></pre></div><ul>
+<li>I started looking into the request regarding the CIAT Library PDFs
+<ul>
+<li>There are over 4,000 links to PDFs hosted on that server in CGSpace metadata</li>
+<li>The links seem to be down though! I emailed Paola to ask</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-03-31">2022-03-31</h2>
+<ul>
+<li>Switch DSpace Test (linode26) back to CMS GC so I can do some monitoring and evaluation of GC before switching to G1GC</li>
+<li>Leroy from CIAT said that the CIAT Library server has security issues so was limited to internal traffic
+<ul>
+<li>I extracted a list of URLs from CGSpace to send him:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ \COPY (SELECT DISTINCT(text_value) FROM metadatavalue WHERE metadata_field_id=219 AND text_value ~ &#39;https?://ciat-library&#39;) to /tmp/2022-03-31-ciat-library-urls.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 4552
+</span></span></code></pre></div><ul>
+<li>I did some checks and cleanups in OpenRefine because there are some values with &ldquo;#page&rdquo; etc
+<ul>
+<li>Once I sorted them there were only ~2,700, which means there are going to be almost two thousand items with duplicate PDFs</li>
+<li>I suggested that we might want to handle those cases specially and extract the chapters or whatever page range since they are probably books</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
