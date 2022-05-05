@@ -35,7 +35,7 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-05/" />
 <meta property="article:published_time" content="2022-05-04T09:13:39+03:00" />
-<meta property="article:modified_time" content="2022-05-04T11:09:45+03:00" />
+<meta property="article:modified_time" content="2022-05-04T16:48:24+03:00" />
 
 
 
@@ -76,9 +76,9 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
   "@type": "BlogPosting",
   "headline": "May, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-05/",
-  "wordCount": "300",
+  "wordCount": "538",
   "datePublished": "2022-05-04T09:13:39+03:00",
-  "dateModified": "2022-05-04T11:09:45+03:00",
+  "dateModified": "2022-05-04T16:48:24+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -203,6 +203,45 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <li>Start a harvest on AReS</li>
 </ul>
 </li>
+</ul>
+<h2 id="2022-05-05">2022-05-05</h2>
+<ul>
+<li>Update PostgreSQL JDBC driver to 42.3.5 in the Ansible infrastructure playbooks and deploy on DSpace Test</li>
+<li>Peter asked me how many items we add to CGSpace every year
+<ul>
+<li>I wrote a SQL query to check the number of items grouped by their accession dates since 2009:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ SELECT EXTRACT(year from text_value::date) AS YYYY, COUNT(*) FROM metadatavalue WHERE metadata_field_id=11 GROUP BY YYYY ORDER BY YYYY DESC LIMIT 14;
+</span></span><span style="display:flex;"><span> yyyy │ count 
+</span></span><span style="display:flex;"><span>──────┼───────
+</span></span><span style="display:flex;"><span> 2022 │  2073
+</span></span><span style="display:flex;"><span> 2021 │  6471
+</span></span><span style="display:flex;"><span> 2020 │  4074
+</span></span><span style="display:flex;"><span> 2019 │  7330
+</span></span><span style="display:flex;"><span> 2018 │  8899
+</span></span><span style="display:flex;"><span> 2017 │  6860
+</span></span><span style="display:flex;"><span> 2016 │  8451
+</span></span><span style="display:flex;"><span> 2015 │ 15692
+</span></span><span style="display:flex;"><span> 2014 │ 16479
+</span></span><span style="display:flex;"><span> 2013 │  4388
+</span></span><span style="display:flex;"><span> 2012 │  6472
+</span></span><span style="display:flex;"><span> 2011 │  2694
+</span></span><span style="display:flex;"><span> 2010 │  2457
+</span></span><span style="display:flex;"><span> 2009 │   293
+</span></span></code></pre></div><ul>
+<li>Note that I had an issue with casting <code>text_value</code> to date because one item had an accession date of <code>2016</code> instead of <code>2016-09-29T20:14:47Z</code>
+<ul>
+<li>Once I fixed that PostgreSQL was able to <a href="https://www.postgresql.org/docs/12/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT">extract() the year</a></li>
+<li>There were some other methods I tried that worked also, for example <code>TO_DATE()</code>:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ SELECT EXTRACT(year from TO_DATE(text_value, &#39;YYYY-MM-DD&#34;T&#34;HH24:MI:SS&#34;Z&#34;&#39;)) AS YYYY, COUNT(*) FROM metadatavalue WHERE metadata_field_id=11 GROUP BY YYYY ORDER BY YYYY DESC LIMIT 14;
+</span></span></code></pre></div><ul>
+<li>But it seems PostgreSQL is smart enough to recognize date formatting in strings automatically when we cast so we don&rsquo;t need to convert to date first</li>
+<li>Another thing I noticed is that a few hundred items have accession dates from decades ago, perhaps this is due to importing items from the CGIAR Library?</li>
 </ul>
 <!-- raw HTML omitted -->
 
