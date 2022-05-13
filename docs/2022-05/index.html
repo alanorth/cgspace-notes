@@ -35,7 +35,7 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-05/" />
 <meta property="article:published_time" content="2022-05-04T09:13:39+03:00" />
-<meta property="article:modified_time" content="2022-05-10T16:35:50+03:00" />
+<meta property="article:modified_time" content="2022-05-13T08:39:15+03:00" />
 
 
 
@@ -76,9 +76,9 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
   "@type": "BlogPosting",
   "headline": "May, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-05/",
-  "wordCount": "947",
+  "wordCount": "1070",
   "datePublished": "2022-05-04T09:13:39+03:00",
-  "dateModified": "2022-05-10T16:35:50+03:00",
+  "dateModified": "2022-05-13T08:39:15+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -269,7 +269,7 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <li>We discussed the future of CGSpace and DSpace in general in the new One CGIAR</li>
 <li>We discussed how to prepare for bringing in content from the Initiatives, whether we need new metadata fields to support people from IFPRI etc</li>
 <li>We discussed the need for good quality Drupal and WordPress modules so sites can harvest content from the repository</li>
-<li>Peter asked me to send him a list of investors/funders/donors so he can clean it up, but also to try to align it with RoR and evntually do something like we do with country codes, adding the RoR IDs and potentially showing the badge on item views</li>
+<li>Peter asked me to send him a list of investors/funders/donors so he can clean it up, but also to try to align it with ROR and evntually do something like we do with country codes, adding the ROR IDs and potentially showing the badge on item views</li>
 <li>We also discussed removing some Mirage 2 themes for old programs and CRPs that don&rsquo;t have custom branding, ie only Google Analytics</li>
 </ul>
 </li>
@@ -300,7 +300,23 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <li>I generated a report from the AReS nginx logs on linode18:</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat --force /var/log/nginx/access.log.* | grep <span style="color:#e6db74">&#39;GET /explorer&#39;</span> | goaccess --log-format<span style="color:#f92672">=</span>COMBINED - -o /tmp/ares_report.html
-</span></span></code></pre></div><!-- raw HTML omitted -->
+</span></span></code></pre></div><h2 id="2022-05-13">2022-05-13</h2>
+<ul>
+<li>Peter finalized the corrections on donors from yesterday so I extracted them into fix/delete CSVs and ran them on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i 2022-05-13-fix-CGSpace-Donors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.contributor.donor -m <span style="color:#ae81ff">248</span> -t correct -d
+</span></span><span style="display:flex;"><span>$ ./ilri/delete-metadata-values.py -i 2022-05-13-delete-CGSpace-Donors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.contributor.donor -m <span style="color:#ae81ff">248</span> -d
+</span></span></code></pre></div><ul>
+<li>I cleaned up a few records manually (like some that had \r\n) then re-exported the donors and checked against the latest ROR dump:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/ror-lookup.py -i /tmp/2022-05-13-donors.csv -r v1.0-2022-03-17-ror-data.json -o /tmp/2022-05-13-ror.csv
+</span></span><span style="display:flex;"><span>$ csvgrep -c matched -m true /tmp/2022-05-13-ror.csv | wc -l
+</span></span><span style="display:flex;"><span>230
+</span></span><span style="display:flex;"><span>$ csvgrep -c matched -m false /tmp/2022-05-13-ror.csv | csvcut -c organization &gt; /tmp/2022-05-13-ror-unmatched.csv
+</span></span></code></pre></div><ul>
+<li>Then I sent Peter a list so he can try to update some from ROR</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
