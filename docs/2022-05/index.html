@@ -35,7 +35,7 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-05/" />
 <meta property="article:published_time" content="2022-05-04T09:13:39+03:00" />
-<meta property="article:modified_time" content="2022-05-05T12:47:48+03:00" />
+<meta property="article:modified_time" content="2022-05-10T16:35:50+03:00" />
 
 
 
@@ -76,9 +76,9 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
   "@type": "BlogPosting",
   "headline": "May, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-05/",
-  "wordCount": "564",
+  "wordCount": "947",
   "datePublished": "2022-05-04T09:13:39+03:00",
-  "dateModified": "2022-05-05T12:47:48+03:00",
+  "dateModified": "2022-05-10T16:35:50+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -243,12 +243,64 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <li>But it seems PostgreSQL is smart enough to recognize date formatting in strings automatically when we cast so we don&rsquo;t need to convert to date first</li>
 <li>Another thing I noticed is that a few hundred items have accession dates from decades ago, perhaps this is due to importing items from the CGIAR Library?</li>
 <li>I spent some time merging a few pull requests for DSpace 6.4 and porting one to <code>main</code> for DSpace 7.x</li>
+<li>I also submitted a <a href="https://github.com/DSpace/DSpace/pull/8288">pull request to migrate Mirage 2&rsquo;s build from bower and compass to yarn and node-sass</a></li>
 </ul>
 <h2 id="2022-05-07">2022-05-07</h2>
 <ul>
 <li>Start a harvest on AReS</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2022-05-09">2022-05-09</h2>
+<ul>
+<li>Submit an issue to Atmire&rsquo;s bug tracker inquiring about DSpace 6.4 support</li>
+</ul>
+<h2 id="2022-05-10">2022-05-10</h2>
+<ul>
+<li>Submit an updated <a href="https://github.com/DSpace/DSpace/pull/8292">pull request to migrate Mirage 2&rsquo;s build from bower and compass to npm and node-sass</a>
+<ul>
+<li>This one is better than the previous one because it uses npm directly, which comes with the Node.js distribution, rather than requiring the user to install yarn</li>
+<li>I also updated a bunch of grunt build deps</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-05-12">2022-05-12</h2>
+<ul>
+<li>CGSpace meeting with Abenet and Peter
+<ul>
+<li>We discussed the future of CGSpace and DSpace in general in the new One CGIAR</li>
+<li>We discussed how to prepare for bringing in content from the Initiatives, whether we need new metadata fields to support people from IFPRI etc</li>
+<li>We discussed the need for good quality Drupal and WordPress modules so sites can harvest content from the repository</li>
+<li>Peter asked me to send him a list of investors/funders/donors so he can clean it up, but also to try to align it with RoR and evntually do something like we do with country codes, adding the RoR IDs and potentially showing the badge on item views</li>
+<li>We also discussed removing some Mirage 2 themes for old programs and CRPs that don&rsquo;t have custom branding, ie only Google Analytics</li>
+</ul>
+</li>
+<li>Export a list of donors for Peter to clean up:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.donor&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 248 GROUP BY text_value ORDER BY count DESC) to /tmp/2022-05-12-donors.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 1184
+</span></span></code></pre></div><ul>
+<li>Then I created a CSV from our <code>cg-creator-identifier.xml</code> controlled vocabulary and ran it against our database with <code>add-orcid-identifiers-csv.py</code> to see if any author names by chance matched that are missing ORCIDs in CGSpace</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2022-05-12-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> | tee /tmp/orcid.log
+</span></span><span style="display:flex;"><span>$ grep -c <span style="color:#e6db74">&#34;Adding ORCID&#34;</span> /tmp/add-orcids.log
+</span></span><span style="display:flex;"><span>85
+</span></span></code></pre></div><ul>
+<li>So it&rsquo;s only eighty-five, but better than nothing&hellip;</li>
+<li>I removed the custom Mirage 2 themes for some old projects:
+<ul>
+<li>AgriFood</li>
+<li>AVCD</li>
+<li>LIVES</li>
+<li>FeedTheFuture</li>
+<li>DrylandSystems</li>
+<li>TechnicalConsortium</li>
+<li>EADD</li>
+</ul>
+</li>
+<li>That should knock off a few minutes of the maven build time!</li>
+<li>I generated a report from the AReS nginx logs on linode18:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat --force /var/log/nginx/access.log.* | grep <span style="color:#e6db74">&#39;GET /explorer&#39;</span> | goaccess --log-format<span style="color:#f92672">=</span>COMBINED - -o /tmp/ares_report.html
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
