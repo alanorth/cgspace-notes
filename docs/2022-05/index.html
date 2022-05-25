@@ -35,7 +35,7 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-05/" />
 <meta property="article:published_time" content="2022-05-04T09:13:39+03:00" />
-<meta property="article:modified_time" content="2022-05-24T09:42:54+03:00" />
+<meta property="article:modified_time" content="2022-05-24T22:10:47+03:00" />
 
 
 
@@ -76,9 +76,9 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
   "@type": "BlogPosting",
   "headline": "May, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-05/",
-  "wordCount": "1223",
+  "wordCount": "1423",
   "datePublished": "2022-05-04T09:13:39+03:00",
-  "dateModified": "2022-05-24T09:42:54+03:00",
+  "dateModified": "2022-05-24T22:10:47+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -341,8 +341,42 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <h2 id="2022-05-24">2022-05-24</h2>
 <ul>
 <li>Update CGSpace to latest <code>6_x-prod</code> branch, which removes a handful of Mirage 2 themes and migrates to Node.js 14 and some newer build deps</li>
+<li>Run all system updates on CGSpace (linode18) and reboot it</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2022-05-25">2022-05-25</h2>
+<ul>
+<li>Maria Garruccio sent me a handful of new ORCID identifiers for Alliance staff
+<ul>
+<li>We currently have 1349 unique identifiers and this adds about forty-five new ones (!):</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1349
+</span></span><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/new-abc-orcids.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort | uniq &gt; /tmp/2022-05-25-combined-orcids.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2022-05-25-combined-orcids.txt
+</span></span><span style="display:flex;"><span>1395 /tmp/2022-05-25-combined-orcids.txt
+</span></span></code></pre></div><ul>
+<li>After combining and filtering them I resolved their names using my <code>resolve-orcids.py</code> script:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/resolve-orcids.py -i /tmp/2022-05-25-combined-orcids.txt -o /tmp/2022-05-25-combined-orcids-names.txt
+</span></span></code></pre></div><ul>
+<li>There are some names that changed, so I need to run them through the <code>fix-metadata-values.py</code> script:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2022-05-25-update-orcids.csv
+</span></span><span style="display:flex;"><span>cg.creator.identifier,correct
+</span></span><span style="display:flex;"><span>&#34;Andrea Fongar: 0000-0003-2084-1571&#34;,&#34;ANDREA CECILIA SANCHEZ BOGADO: 0000-0003-4549-6970&#34;
+</span></span><span style="display:flex;"><span>&#34;Bekele Shiferaw: 0000-0002-3645-320X&#34;,&#34;Bekele A. Shiferaw: 0000-0002-3645-320X&#34;
+</span></span><span style="display:flex;"><span>&#34;Henry Kpaka: 0000-0002-7480-2933&#34;,&#34;Henry Musa Kpaka: 0000-0002-7480-2933&#34;
+</span></span><span style="display:flex;"><span>&#34;Josephine Agogbua: 0000-0001-6317-1227&#34;,&#34;Josephine Udunma Agogbua: 0000-0001-6317-1227&#34;
+</span></span><span style="display:flex;"><span>&#34;Martha Lilia Del Río Duque: 0000-0002-0879-0292&#34;,&#34;Martha Del Río: 0000-0002-0879-0292&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i 2022-05-25-update-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.creator.identifier -m <span style="color:#ae81ff">247</span> -t correct -d -n
+</span></span><span style="display:flex;"><span>Connected to database.
+</span></span><span style="display:flex;"><span>Would fix 4 occurences of: Andrea Fongar: 0000-0003-2084-1571
+</span></span><span style="display:flex;"><span>Would fix 1 occurences of: Bekele Shiferaw: 0000-0002-3645-320X
+</span></span><span style="display:flex;"><span>Would fix 2 occurences of: Josephine Agogbua: 0000-0001-6317-1227
+</span></span><span style="display:flex;"><span>Would fix 34 occurences of: Martha Lilia Del Río Duque: 0000-0002-0879-0292
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
