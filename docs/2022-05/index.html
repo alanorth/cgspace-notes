@@ -35,7 +35,7 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-05/" />
 <meta property="article:published_time" content="2022-05-04T09:13:39+03:00" />
-<meta property="article:modified_time" content="2022-05-27T16:46:18+03:00" />
+<meta property="article:modified_time" content="2022-05-28T18:25:00+03:00" />
 
 
 
@@ -76,9 +76,9 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
   "@type": "BlogPosting",
   "headline": "May, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-05/",
-  "wordCount": "1552",
+  "wordCount": "1673",
   "datePublished": "2022-05-04T09:13:39+03:00",
-  "dateModified": "2022-05-27T16:46:18+03:00",
+  "dateModified": "2022-05-28T18:25:00+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -403,6 +403,26 @@ I purged 93,974 hits from these IPs using my check-spider-ip-hits.sh script
 <h2 id="2022-05-28">2022-05-28</h2>
 <ul>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-05-30">2022-05-30</h2>
+<ul>
+<li>Help IITA with some collection authorization issues on CGSpace</li>
+<li>Finally looking into Peter&rsquo;s Altmetric export from 2022-02
+<ul>
+<li>We want to try to compare some of the information about open access status with that in CGSpace</li>
+<li>I created a new column for all items that have CGSpace handles using this GREL:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>&#34;https://hdl.handle.net/&#34; + value.match(/.*?(10568\/\d+).*?/)[0]
+</span></span></code></pre></div><ul>
+<li>With that I can do a join on the CGSpace metadata and perhaps clean up some items</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./bin/dspace metadata-export -f 2022-05-30-cgspace.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,dc.identifier.uri[en_US],dcterms.accessRights[en_US],dcterms.license[en_US]&#39;</span> 2022-05-30-cgspace.csv | sed <span style="color:#e6db74">&#39;1 s/dc\.identifier\.uri\[en_US\]/dc.identifier.uri/&#39;</span> &gt; /tmp/cgspace.csv
+</span></span><span style="display:flex;"><span>$ csvjoin -c <span style="color:#e6db74">&#39;dc.identifier.uri&#39;</span> ~/Downloads/2022-05-30-Altmetric-Research-Outputs-CGSpace.csv /tmp/cgspace.csv &gt; /tmp/cgspace-altmetric.csv
+</span></span></code></pre></div><ul>
+<li>Examining the data in OpenRefine I spot checked a few records where Altmetric and CGSpace disagree and in most cases I found Altmetric to be wrong&hellip;</li>
 </ul>
 <!-- raw HTML omitted -->
 
