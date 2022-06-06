@@ -10,7 +10,7 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/" />
-<meta property="og:updated_time" content="2022-05-28T18:25:00+03:00" />
+<meta property="og:updated_time" content="2022-06-06T09:01:36+03:00" />
 
 
 
@@ -31,7 +31,7 @@
     "@type": "Person",
     "name": "Alan Orth"
   },
-  "dateModified": "2022-05-04T09:13:39+03:00",
+  "dateModified": "2022-06-06T09:01:36+03:00",
   "keywords": "notes, migration, notes",
   "description":"Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."
 }
@@ -90,6 +90,47 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2019-04/">April, 2019</a></h2>
+    <p class="blog-post-meta"><time datetime="2019-04-01T09:00:43+03:00">Mon Apr 01, 2019</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2019-04-01">2019-04-01</h2>
+<ul>
+<li>Meeting with AgroKnow to discuss CGSpace, ILRI data, AReS, GARDIAN, etc
+<ul>
+<li>They asked if we had plans to enable RDF support in CGSpace</li>
+</ul>
+</li>
+<li>There have been 4,400 more downloads of the CTA Spore publication from those strange Amazon IP addresses today
+<ul>
+<li>I suspected that some might not be successful, because the stats show less, but today they were all HTTP 200!</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep &#39;Spore-192-EN-web.pdf&#39; | grep -E &#39;(18.196.196.108|18.195.78.144|18.195.218.6)&#39; | awk &#39;{print $9}&#39; | sort | uniq -c | sort -n | tail -n 5
+   4432 200
+</code></pre><ul>
+<li>In the last two weeks there have been 47,000 downloads of this <em>same exact PDF</em> by these three IP addresses</li>
+<li>Apply country and region corrections and deletions on DSpace Test and CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-9-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.country -m 228 -t ACTION -d
+$ ./fix-metadata-values.py -i /tmp/2019-02-21-fix-4-regions.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.region -m 231 -t action -d
+$ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-2-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 228 -f cg.coverage.country -d
+$ ./delete-metadata-values.py -i /tmp/2019-02-21-delete-1-region.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 231 -f cg.coverage.region -d
+</code></pre>
+  <a href='https://alanorth.github.io/cgspace-notes/2019-04/'>Read more →</a>
+</article> 
 
 
 
@@ -365,44 +406,6 @@ sys     0m1.979s
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-06/">June, 2018</a></h2>
-    <p class="blog-post-meta"><time datetime="2018-06-04T19:49:54-07:00">Mon Jun 04, 2018</time> by Alan Orth in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/cgspace-notes/categories/notes/" rel="category tag">Notes</a>
-
-
-</p>
-  </header>
-  <h2 id="2018-06-04">2018-06-04</h2>
-<ul>
-<li>Test the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 module upgrades from Atmire</a> (<a href="https://github.com/ilri/DSpace/pull/378">#378</a>)
-<ul>
-<li>There seems to be a problem with the CUA and L&amp;R versions in <code>pom.xml</code> because they are using SNAPSHOT and it doesn&rsquo;t build</li>
-</ul>
-</li>
-<li>I added the new CCAFS Phase II Project Tag <code>PII-FP1_PACCA2</code> and merged it into the <code>5_x-prod</code> branch (<a href="https://github.com/ilri/DSpace/pull/379">#379</a>)</li>
-<li>I proofed and tested the ILRI author corrections that Peter sent back to me this week:</li>
-</ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-05-30-Correct-660-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correct -m 3 -n
-</code></pre><ul>
-<li>I think a sane proofing workflow in OpenRefine is to apply the custom text facets for check/delete/remove and illegal characters that I developed in <a href="/cgspace-notes/2018-03/">March, 2018</a></li>
-<li>Time to index ~70,000 items on CGSpace:</li>
-</ul>
-<pre tabindex="0"><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b                                  
-
-real    74m42.646s
-user    8m5.056s
-sys     2m7.289s
-</code></pre>
-  <a href='https://alanorth.github.io/cgspace-notes/2018-06/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/page/4/" rel="prev" role="button">Previous page</a>
@@ -427,6 +430,8 @@ sys     2m7.289s
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2022-06/">June, 2022</a></li>
+
 <li><a href="/cgspace-notes/2022-05/">May, 2022</a></li>
 
 <li><a href="/cgspace-notes/2022-04/">April, 2022</a></li>
@@ -434,8 +439,6 @@ sys     2m7.289s
 <li><a href="/cgspace-notes/2022-03/">March, 2022</a></li>
 
 <li><a href="/cgspace-notes/2022-02/">February, 2022</a></li>
-
-<li><a href="/cgspace-notes/2022-01/">January, 2022</a></li>
 
     </ol>
   </section>
