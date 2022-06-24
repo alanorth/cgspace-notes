@@ -26,7 +26,7 @@ There seem to be many more of these:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-06/" />
 <meta property="article:published_time" content="2022-06-06T09:01:36+03:00" />
-<meta property="article:modified_time" content="2022-06-21T16:59:04+03:00" />
+<meta property="article:modified_time" content="2022-06-23T08:40:53+03:00" />
 
 
 
@@ -58,9 +58,9 @@ There seem to be many more of these:
   "@type": "BlogPosting",
   "headline": "June, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-06/",
-  "wordCount": "939",
+  "wordCount": "1190",
   "datePublished": "2022-06-06T09:01:36+03:00",
-  "dateModified": "2022-06-21T16:59:04+03:00",
+  "dateModified": "2022-06-23T08:40:53+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -299,7 +299,51 @@ There seem to be many more of these:
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2022-06-23">2022-06-23</h2>
+<ul>
+<li>Start looking at country names between MEL, CGSpace, and standards like UN M.49 and GeoNames
+<ul>
+<li>I used <code>xmllint</code> to extract the countries from CGSpace&rsquo;s input forms:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ xmllint --xpath <span style="color:#e6db74">&#39;//value-pairs[@value-pairs-name=&#34;countrylist&#34;]/pair/stored-value/node()&#39;</span> dspace/config/input-forms.xml &gt; /tmp/cgspace-countries.txt
+</span></span></code></pre></div><ul>
+<li>Then I wrote a Python script (<code>countries-to-csv.py</code>) to read them and save their names alongside the ISO 3166-1 Alpha2 code</li>
+<li>Then I joined them with the other lists:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvjoin --outer -c alpha2 ~/Downloads/clarisa-countries.csv ~/Downloads/UNSD<span style="color:#ae81ff">\ </span>—<span style="color:#ae81ff">\ </span>Methodology.csv ~/Downloads/geonames-countries.csv /tmp/cgspace-countries.csv /tmp/mel-countries.csv&gt; /tmp/countries.csv
+</span></span></code></pre></div><ul>
+<li>This mostly worked fine, and is much easier than writing another Python script with Pandas&hellip;</li>
+</ul>
+<h2 id="2022-06-24">2022-06-24</h2>
+<ul>
+<li>Spent some more time working on my <code>countries-to-csv.py</code> script to fix some logic errors</li>
+<li>Then re-export the UN M.49 countries to a clean list because the one I did yesterday somehow has errors:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>csvcut -d &#39;;&#39; -c &#39;ISO-alpha2 Code,Country or Area&#39; ~/Downloads/UNSD\ —\ Methodology.csv | sed -e &#39;1s/ISO-alpha2 Code/alpha2/&#39; -e &#39;1s/Country or Area/UN M.49 Name/&#39; &gt; ~/Downloads/un-countries.csv
+</span></span></code></pre></div><ul>
+<li>Check the number of lines in each file:</li>
+</ul>
+<pre tabindex="0"><code>$ wc -l clarisa-countries.csv un-countries.csv cgspace-countries.csv mel-countries.csv
+  250 clarisa-countries.csv
+  250 un-countries.csv
+  198 cgspace-countries.csv
+  258 mel-countries.csv
+</code></pre><ul>
+<li>I am seeing strange results with csvjoin&rsquo;s <code>--outer</code> join that I need to keep unmatched terms from both left and right files&hellip;
+<ul>
+<li>Using <code>xsv join --full</code> is giving me better results:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ xsv join --full alpha2 ~/Downloads/clarisa-countries.csv alpha2 ~/Downloads/un-countries.csv | xsv select &#39;!alpha2[1]&#39; &gt; /tmp/clarisa-un-xsv-full.csv
+</code></pre><ul>
+<li>Then adding the CGSpace and MEL countries:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ xsv join --full alpha2 /tmp/clarisa-un-xsv-full.csv alpha2 /tmp/cgspace-countries.csv | xsv <span style="color:#66d9ef">select</span> <span style="color:#e6db74">&#39;!alpha2[1]&#39;</span> &gt; /tmp/clarisa-un-cgspace-xsv-full.csv
+</span></span><span style="display:flex;"><span>$ xsv join --full alpha2 /tmp/clarisa-un-cgspace-xsv-full.csv alpha2 /tmp/mel-countries.csv | xsv <span style="color:#66d9ef">select</span> <span style="color:#e6db74">&#39;!alpha2[1]&#39;</span> &gt; /tmp/clarisa-un-cgspace-mel-xsv-full.csv
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
