@@ -19,7 +19,7 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
 <meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
-<meta property="article:modified_time" content="2022-07-02T14:07:36+03:00" />
+<meta property="article:modified_time" content="2022-07-04T09:25:14+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
   "@type": "BlogPosting",
   "headline": "July, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
-  "wordCount": "164",
+  "wordCount": "507",
   "datePublished": "2022-07-02T14:07:36+03:00",
-  "dateModified": "2022-07-02T14:07:36+03:00",
+  "dateModified": "2022-07-04T09:25:14+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -146,6 +146,63 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <h2 id="2022-07-03">2022-07-03</h2>
 <ul>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-07-04">2022-07-04</h2>
+<ul>
+<li>Linode told me that CGSpace had high load yesterday
+<ul>
+<li>I also got some up and down notices from UptimeRobot</li>
+<li>Looking now, I see there was a very high CPU and database pool load, but a mostly normal DSpace session count</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/cpu-day.png" alt="CPU load day">
+<img src="/cgspace-notes/2022/07/jmx_tomcat_dbpools-day.png" alt="JDBC pool day"></p>
+<ul>
+<li>Seems we have some old database transactions since 2022-06-27:</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/postgres_locks_ALL-week.png" alt="PostgreSQL locks week">
+<img src="/cgspace-notes/2022/07/postgres_querylength_ALL-week.png" alt="PostgreSQL query length week"></p>
+<ul>
+<li>Looking at the top connections to nginx yesterday:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log.1 | sort | uniq -c | sort -h | tail
+</span></span><span style="display:flex;"><span>   1132 64.124.8.34
+</span></span><span style="display:flex;"><span>   1146 2a01:4f8:1c17:5550::1
+</span></span><span style="display:flex;"><span>   1380 137.184.159.211
+</span></span><span style="display:flex;"><span>   1533 64.124.8.59
+</span></span><span style="display:flex;"><span>   4013 80.248.237.167
+</span></span><span style="display:flex;"><span>   4776 54.195.118.125
+</span></span><span style="display:flex;"><span>  10482 45.5.186.2
+</span></span><span style="display:flex;"><span>  11177 172.104.229.92
+</span></span><span style="display:flex;"><span>  15855 2a01:7e00::f03c:91ff:fe9a:3a37
+</span></span><span style="display:flex;"><span>  22179 64.39.98.251
+</span></span></code></pre></div><ul>
+<li>And the total number of unique IPs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log.1 | sort -u | wc -l
+</span></span><span style="display:flex;"><span>6952
+</span></span></code></pre></div><ul>
+<li>This seems low, so it must have been from the request patterns by certain visitors
+<ul>
+<li>64.39.98.251 is Qualys, and I&rsquo;m debating blocking <a href="https://pci.qualys.com/static/help/merchant/getting_started/check_scanner_ip_addresses.htm">all their IPs</a> using a geo block in nginx (need to test)</li>
+<li>The top few are known ILRI and other CGIAR scrapers, but 80.248.237.167 is on InternetVikings in Sweden, using a normal user agentand scraping Discover</li>
+<li>64.124.8.59 is making requests with a normal user agent and belongs to Castle Global or Zayo</li>
+</ul>
+</li>
+<li>I ran all system updates and rebooted the server (could have just restarted PostgreSQL but I thought I might as well do everything)</li>
+<li>I implemented a geo mapping for the user agent mapping AND the nginx <code>limit_req_zone</code> by extracting the networks into an external file and including it in two different geo mapping blocks
+<ul>
+<li>This is clever and relies on the fact that we can use defaults in both cases</li>
+<li>First, we map the user agent of requests from these networks to &ldquo;bot&rdquo; so that Tomcat and Solr handle them accordingly</li>
+<li>Second, we use this as a key in a <code>limit_req_zone</code>, which relies on a default mapping of &rsquo;&rsquo; (and nginx doesn&rsquo;t evaluate empty cache keys)</li>
+</ul>
+</li>
+<li>I noticed that CIP uploaded a number of Georgian presentations with <code>dcterms.language</code> set to English and Other so I changed them to &ldquo;ka&rdquo;
+<ul>
+<li>Perhaps we need to update our list of languages to include all instead of the most common ones</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
