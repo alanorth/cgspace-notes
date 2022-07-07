@@ -19,7 +19,7 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
 <meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
-<meta property="article:modified_time" content="2022-07-04T17:20:01+03:00" />
+<meta property="article:modified_time" content="2022-07-04T22:10:02+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
   "@type": "BlogPosting",
   "headline": "July, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
-  "wordCount": "532",
+  "wordCount": "739",
   "datePublished": "2022-07-02T14:07:36+03:00",
-  "dateModified": "2022-07-04T17:20:01+03:00",
+  "dateModified": "2022-07-04T22:10:02+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -204,6 +204,47 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 </ul>
 </li>
 <li>I wrote a script <code>ilri/iso-639-value-pairs.py</code> to extract the names and Alpha 2 codes for all ISO 639-1 languages from pycountry and added them to <code>input-forms.xml</code></li>
+</ul>
+<h2 id="2022-07-06">2022-07-06</h2>
+<ul>
+<li>CGSpace went down and up a few times due to high load
+<ul>
+<li>I found one host in Romania making very high speed requests with a normal user agent (<code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64; Trident/7.0; .NET4.0E; .NET4.0C</code>):</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | sort | uniq -c | sort -h | tail -n <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>    516 142.132.248.90
+</span></span><span style="display:flex;"><span>    525 157.55.39.234
+</span></span><span style="display:flex;"><span>    587 66.249.66.21
+</span></span><span style="display:flex;"><span>    593 95.108.213.59
+</span></span><span style="display:flex;"><span>   1372 137.184.159.211
+</span></span><span style="display:flex;"><span>   4776 54.195.118.125
+</span></span><span style="display:flex;"><span>   5441 205.186.128.185
+</span></span><span style="display:flex;"><span>   6267 45.5.186.2
+</span></span><span style="display:flex;"><span>  15839 2a01:7e00::f03c:91ff:fe9a:3a37
+</span></span><span style="display:flex;"><span>  36114 146.19.75.141
+</span></span></code></pre></div><ul>
+<li>I added 146.19.75.141 to the list of bot networks in nginx</li>
+<li>While looking at the logs I started thinking about Bing again
+<ul>
+<li>They apparently <a href="https://www.bing.com/toolbox/bingbot.json">publish a list of all their networks</a></li>
+<li>I wrote a script to use <code>prips</code> to <a href="https://stackoverflow.com/a/52501093/1996540">print the IPs for each network</a></li>
+<li>The script is <code>bing-networks-to-ips.sh</code></li>
+<li>From Bing&rsquo;s IPs alone I purged 145,403 hits&hellip; sheesh</li>
+</ul>
+</li>
+<li>Delete two items on CGSpace for Margarita because she was getting the &ldquo;Authorization denied for action OBSOLETE (DELETE) on BITSTREAM:0b26875a-&hellip;&rdquo; error
+<ul>
+<li>This is the same DSpace 6 bug I noticed in 2021-03, 2021-04, and 2021-05</li>
+</ul>
+</li>
+<li>Update some <code>cg.audience</code> metadata to use &ldquo;Academics&rdquo; instead of &ldquo;Academicians&rdquo;:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value=&#39;Academics&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value=&#39;Academicians&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 104
+</span></span></code></pre></div><ul>
+<li>I will also have to remove &ldquo;Academicians&rdquo; from input-forms.xml</li>
 </ul>
 <!-- raw HTML omitted -->
 
