@@ -19,7 +19,7 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
 <meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
-<meta property="article:modified_time" content="2022-07-07T10:02:04+03:00" />
+<meta property="article:modified_time" content="2022-07-08T15:49:45+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
   "@type": "BlogPosting",
   "headline": "July, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
-  "wordCount": "1095",
+  "wordCount": "1660",
   "datePublished": "2022-07-02T14:07:36+03:00",
-  "dateModified": "2022-07-07T10:02:04+03:00",
+  "dateModified": "2022-07-08T15:49:45+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -315,7 +315,123 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <li>For now we will keep them in the search filters</li>
 </ul>
 </li>
+<li>I modified my <code>check-duplicates.py</code> script a bit to fix a logic error for deleted items and add similarity scores from spacy (see: <a href="https://stackoverflow.com/questions/8897593/how-to-compute-the-similarity-between-two-text-documents">https://stackoverflow.com/questions/8897593/how-to-compute-the-similarity-between-two-text-documents</a>)
+<ul>
+<li>I want to use this with the MARLO innovation reports, to find related publications and working papers on CGSpace</li>
+<li>I am curious to see how the similarity scores compare to those from trgm&hellip; perhaps we don&rsquo;t need them actually</li>
 </ul>
+</li>
+<li>Deploy latest changes to submission form, Discovery, and browse on CGSpace
+<ul>
+<li>Also run all system updates and reboot the host</li>
+</ul>
+</li>
+<li>Fix 152 <code>dcterms.relation</code> that are using &ldquo;cgspace.cgiar.org&rdquo; links instead of handles:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;.*cgspace\.cgiar\.org/handle/(\d+/\d+)$&#39;, &#39;https://hdl.handle.net/\1&#39;) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=180 AND text_value ~ &#39;cgspace\.cgiar\.org/handle/\d+/\d+$&#39;;
+</span></span></code></pre></div><h2 id="2022-07-10">2022-07-10</h2>
+<ul>
+<li>UptimeRobot says that CGSpace is down
+<ul>
+<li>I see high load around 22, high CPU around 800%</li>
+<li>Doesn&rsquo;t seem to be a lot of unique IPs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | sort -u | wc -l
+</span></span><span style="display:flex;"><span>2243
+</span></span></code></pre></div><p>Looking at the top twenty I see some usual IPs, but some new ones on Hetzner that are using many DSpace sessions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep 65.109.2.97 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1613
+</span></span><span style="display:flex;"><span>$ grep 95.216.174.97 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1696
+</span></span><span style="display:flex;"><span>$ grep 65.109.15.213 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1708
+</span></span><span style="display:flex;"><span>$ grep 65.108.80.78 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1830
+</span></span><span style="display:flex;"><span>$ grep 65.108.95.23 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1811
+</span></span></code></pre></div><p><img src="/cgspace-notes/2022/07/jmx_dspace_sessions-week.png" alt="DSpace sessions week"></p>
+<ul>
+<li>
+<p>These IPs are using normal-looking user agents:</p>
+<ul>
+<li><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.9) Gecko/20100101 Goanna/4.1 Firefox/52.9 PaleMoon/28.0.0.1</code></li>
+<li><code>Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/45.0&quot;</code></li>
+<li><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:56.0) Gecko/20100101 Firefox/56.0.1 Waterfox/56.0.1</code></li>
+<li><code>Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.85 Safari/537.36</code></li>
+</ul>
+</li>
+<li>
+<p>I will add networks I&rsquo;m seeing now to nginx&rsquo;s bot-networks.conf for now (not all of Hetzner) and purge the hits later:</p>
+<ul>
+<li>65.108.0.0/16</li>
+<li>65.21.0.0/16</li>
+<li>95.216.0.0/16</li>
+<li>135.181.0.0/16</li>
+<li>138.201.0.0/16</li>
+</ul>
+</li>
+<li>
+<p>I think I&rsquo;m going to get to a point where I categorize all commercial subnets as bots by default and then whitelist those we need</p>
+</li>
+<li>
+<p>Sheesh, there are a bunch more IPv6 addresses also on Hetzner:</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access<span style="color:#f92672">}</span>.log | sort | grep 2a01:4f9 | uniq -c | sort -h
+</span></span><span style="display:flex;"><span>      1 2a01:4f9:6a:1c2b::2
+</span></span><span style="display:flex;"><span>      2 2a01:4f9:2b:5a8::2
+</span></span><span style="display:flex;"><span>      2 2a01:4f9:4b:4495::2
+</span></span><span style="display:flex;"><span>     96 2a01:4f9:c010:518c::1
+</span></span><span style="display:flex;"><span>    137 2a01:4f9:c010:a9bc::1
+</span></span><span style="display:flex;"><span>    142 2a01:4f9:c010:58c9::1
+</span></span><span style="display:flex;"><span>    142 2a01:4f9:c010:58ea::1
+</span></span><span style="display:flex;"><span>    144 2a01:4f9:c010:58eb::1
+</span></span><span style="display:flex;"><span>    145 2a01:4f9:c010:6ff8::1
+</span></span><span style="display:flex;"><span>    148 2a01:4f9:c010:5190::1
+</span></span><span style="display:flex;"><span>    149 2a01:4f9:c010:7d6d::1
+</span></span><span style="display:flex;"><span>    153 2a01:4f9:c010:5226::1
+</span></span><span style="display:flex;"><span>    156 2a01:4f9:c010:7f74::1
+</span></span><span style="display:flex;"><span>    160 2a01:4f9:c010:5188::1
+</span></span><span style="display:flex;"><span>    161 2a01:4f9:c010:58e5::1
+</span></span><span style="display:flex;"><span>    168 2a01:4f9:c010:58ed::1
+</span></span><span style="display:flex;"><span>    170 2a01:4f9:c010:548e::1
+</span></span><span style="display:flex;"><span>    170 2a01:4f9:c010:8c97::1
+</span></span><span style="display:flex;"><span>    175 2a01:4f9:c010:58c8::1
+</span></span><span style="display:flex;"><span>    175 2a01:4f9:c010:aada::1
+</span></span><span style="display:flex;"><span>    182 2a01:4f9:c010:58ec::1
+</span></span><span style="display:flex;"><span>    182 2a01:4f9:c010:ae8c::1
+</span></span><span style="display:flex;"><span>    502 2a01:4f9:c010:ee57::1
+</span></span><span style="display:flex;"><span>    530 2a01:4f9:c011:567a::1
+</span></span><span style="display:flex;"><span>    535 2a01:4f9:c010:d04e::1
+</span></span><span style="display:flex;"><span>    539 2a01:4f9:c010:3d9a::1
+</span></span><span style="display:flex;"><span>    586 2a01:4f9:c010:93db::1
+</span></span><span style="display:flex;"><span>    593 2a01:4f9:c010:a04a::1
+</span></span><span style="display:flex;"><span>    601 2a01:4f9:c011:4166::1
+</span></span><span style="display:flex;"><span>    607 2a01:4f9:c010:9881::1
+</span></span><span style="display:flex;"><span>    640 2a01:4f9:c010:87fb::1
+</span></span><span style="display:flex;"><span>    648 2a01:4f9:c010:e680::1
+</span></span><span style="display:flex;"><span>   1141 2a01:4f9:3a:2696::2
+</span></span><span style="display:flex;"><span>   1146 2a01:4f9:3a:2555::2
+</span></span><span style="display:flex;"><span>   3207 2a01:4f9:3a:2c19::2
+</span></span></code></pre></div><ul>
+<li>Maybe it&rsquo;s time I ban all of Hetzner&hellip; sheesh.</li>
+<li>I left for a few hours and the server was going up and down the whole time, still very high CPU and database when I got back</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/cpu-day.png" alt="CPU day"></p>
+<ul>
+<li>I am not sure what&rsquo;s going on
+<ul>
+<li>I extracted all the IPs and used <code>resolve-addresses-geoip2.py</code> to analyze them and extract all the Hetzner networks and block them</li>
+<li>It&rsquo;s 181 IPs on Hetzner&hellip;</li>
+</ul>
+</li>
+<li>I rebooted the server to see if it was just some stuck locks in PostgreSQL&hellip;</li>
+<li>The load is still higher than I would expect, and after a few more hours I see more Hetzner IPs coming through? Two more subnets to block</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
