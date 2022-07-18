@@ -19,7 +19,7 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
 <meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
-<meta property="article:modified_time" content="2022-07-17T22:45:16+03:00" />
+<meta property="article:modified_time" content="2022-07-18T12:32:23+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
   "@type": "BlogPosting",
   "headline": "July, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
-  "wordCount": "2156",
+  "wordCount": "2266",
   "datePublished": "2022-07-02T14:07:36+03:00",
-  "dateModified": "2022-07-17T22:45:16+03:00",
+  "dateModified": "2022-07-18T12:32:23+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -501,8 +501,27 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <li>I might try to purge some by enumerating all the networks in my block file and running them through <code>check-spider-ip-hits.sh</code></li>
 </ul>
 </li>
+<li>I extracted all the IPs/subnets from <code>bot-networks.conf</code> and prepared them so I could enumerate their IPs
+<ul>
+<li>I had to add <code>/32</code> to all single IPs, which I did with this crazy vim invocation:</li>
 </ul>
-<!-- raw HTML omitted -->
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>:g!/\/\d\+$/s/^\(\d\+\.\d\+\.\d\+\.\d\+\)$/\1\/32/
+</span></span></code></pre></div><ul>
+<li>Explanation:
+<ul>
+<li><code>g!</code>: global, lines <em>not</em> matching (the opposite of <code>g</code>)</li>
+<li><code>/\/\d\+$/</code>, pattern matching <code>/</code> with one or more digits at the end of the line</li>
+<li><code>s/^\(\d\+\.\d\+\.\d\+\.\d\+\)$/\1\/32/</code>, for lines not matching above, capture the IPv4 address and add <code>/32</code> at the end</li>
+</ul>
+</li>
+<li>Then I ran the list through prips to enumerate the IPs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">while</span> read -r line; <span style="color:#66d9ef">do</span> prips <span style="color:#e6db74">&#34;</span>$line<span style="color:#e6db74">&#34;</span> | sed -e <span style="color:#e6db74">&#39;1d; $d&#39;</span>; <span style="color:#66d9ef">done</span> &lt; /tmp/bot-networks.conf &gt; /tmp/bot-ips.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/bot-ips.txt                                                                                        
+</span></span><span style="display:flex;"><span>1946968 /tmp/bot-ips.txt
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
