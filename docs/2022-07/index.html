@@ -19,7 +19,7 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
 <meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
-<meta property="article:modified_time" content="2022-07-14T16:46:24+03:00" />
+<meta property="article:modified_time" content="2022-07-17T22:45:16+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
   "@type": "BlogPosting",
   "headline": "July, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
-  "wordCount": "1959",
+  "wordCount": "2156",
   "datePublished": "2022-07-02T14:07:36+03:00",
-  "dateModified": "2022-07-14T16:46:24+03:00",
+  "dateModified": "2022-07-17T22:45:16+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -482,6 +482,23 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <li>But I can&rsquo;t get it to work, neither for the default value or for matching my IP&hellip;
 <ul>
 <li>I will have to ask on the nginx mailing list</li>
+</ul>
+</li>
+<li>The total number of requests and unique hosts was not even very high (below here around midnight so is almost all day):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | sort -u | wc -l
+</span></span><span style="display:flex;"><span>2776
+</span></span><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | wc -l
+</span></span><span style="display:flex;"><span>40325
+</span></span></code></pre></div><h2 id="2022-07-18">2022-07-18</h2>
+<ul>
+<li>Reading more about nginx&rsquo;s geo/map and doing some tests on DSpace Test, it appears that the <a href="https://stackoverflow.com/questions/47011497/nginx-geo-module-wont-use-variables">geo module cannot do dynamic values</a>
+<ul>
+<li>So this issue with the literal <code>$http_user_agent</code> is due to the geo block I put in place earlier this month</li>
+<li>I reworked the logic so that the geo block sets &ldquo;bot&rdquo; or and empty string when a network matches or not, and then re-use that value in a mapping that passes through the host&rsquo;s user agent in case geo has set it to an empty string</li>
+<li>This allows me to accomplish the original goal while still only using one bot-networks.conf file for the <code>limit_req_zone</code> and the user agent mapping that we pass to Tomcat</li>
+<li>Unfortunately this means I will have hundreds of thousands of requests in Solr with a literal <code>$http_user_agent</code></li>
+<li>I might try to purge some by enumerating all the networks in my block file and running them through <code>check-spider-ip-hits.sh</code></li>
 </ul>
 </li>
 </ul>
