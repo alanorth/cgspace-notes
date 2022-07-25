@@ -19,7 +19,7 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
 <meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
-<meta property="article:modified_time" content="2022-07-22T16:42:06+03:00" />
+<meta property="article:modified_time" content="2022-07-22T22:28:51+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
   "@type": "BlogPosting",
   "headline": "July, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
-  "wordCount": "2835",
+  "wordCount": "3230",
   "datePublished": "2022-07-02T14:07:36+03:00",
-  "dateModified": "2022-07-22T16:42:06+03:00",
+  "dateModified": "2022-07-22T22:28:51+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -602,6 +602,68 @@ Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levens
 <li>I re-synced CGSpace with DSpace Test so I can have a newer snapshot of the production data there for testing the CCAFS MELIAs, OICRs, Policies, and Innovations</li>
 <li>I re-created the tip-submit and tip-approve DSpace user accounts for Alliance&rsquo;s new TIP submit tool and added them to the Alliance submitters and Alliance admins accounts respectively</li>
 <li>Start working on updating the Ansible infrastructure playbooks for DSpace 7 stuff</li>
+</ul>
+<h2 id="2022-07-23">2022-07-23</h2>
+<ul>
+<li>Start a harvest on AReS</li>
+<li>More work on DSpace 7 related issues in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a></li>
+</ul>
+<h2 id="2022-07-24">2022-07-24</h2>
+<ul>
+<li>More work on DSpace 7 related issues in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a></li>
+</ul>
+<h2 id="2022-07-25">2022-07-25</h2>
+<ul>
+<li>More work on DSpace 7 related issues in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a>
+<ul>
+<li>I see that, for Solr, we will need to copy the DSpace configsets to the writable data directory rather than the default home dir</li>
+<li>The <a href="https://solr.apache.org/guide/8_11/taking-solr-to-production.html">Taking Solr to production guide</a> recommends keeping the unzipped code separate from the data, which we do in our Solr role already</li>
+<li>So that means we keep the unzipped code in <code>/opt/solr-8.11.2</code>, but the data directory in <code>/var/solr/data</code>, with the DSpace Solr cores here <code>/var/solr/data/configsets</code></li>
+<li>I&rsquo;m not sure how to integrate that into my playbooks yet</li>
+</ul>
+</li>
+<li>Much to my surprise, Discovery indexing on DSpace 7 was really fast when I did it just now, apparently taking 40 minutes of wall clock time?!:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ /usr/bin/time -v /home/dspace7/bin/dspace index-discovery -b
+</span></span><span style="display:flex;"><span>The script has started
+</span></span><span style="display:flex;"><span>(Re)building index from scratch.
+</span></span><span style="display:flex;"><span>Done with indexing
+</span></span><span style="display:flex;"><span>The script has completed
+</span></span><span style="display:flex;"><span>        Command being timed: &#34;/home/dspace7/bin/dspace index-discovery -b&#34;
+</span></span><span style="display:flex;"><span>        User time (seconds): 588.18
+</span></span><span style="display:flex;"><span>        System time (seconds): 91.26
+</span></span><span style="display:flex;"><span>        Percent of CPU this job got: 28%
+</span></span><span style="display:flex;"><span>        Elapsed (wall clock) time (h:mm:ss or m:ss): 40:05.79
+</span></span><span style="display:flex;"><span>        Average shared text size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Average unshared data size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Average stack size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Average total size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Maximum resident set size (kbytes): 635380
+</span></span><span style="display:flex;"><span>        Average resident set size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Major (requiring I/O) page faults: 1513
+</span></span><span style="display:flex;"><span>        Minor (reclaiming a frame) page faults: 216412
+</span></span><span style="display:flex;"><span>        Voluntary context switches: 1671092
+</span></span><span style="display:flex;"><span>        Involuntary context switches: 744007
+</span></span><span style="display:flex;"><span>        Swaps: 0
+</span></span><span style="display:flex;"><span>        File system inputs: 4396880
+</span></span><span style="display:flex;"><span>        File system outputs: 74312
+</span></span><span style="display:flex;"><span>        Socket messages sent: 0
+</span></span><span style="display:flex;"><span>        Socket messages received: 0
+</span></span><span style="display:flex;"><span>        Signals delivered: 0
+</span></span><span style="display:flex;"><span>        Page size (bytes): 4096
+</span></span><span style="display:flex;"><span>        Exit status: 0
+</span></span></code></pre></div><ul>
+<li>Leroy from the Alliance wrote to say that the CIAT Library is back up so I might be able to download all the PDFs
+<ul>
+<li>It had been shut down for a security reason a few months ago and we were planning to download them all and attach them to their relevant items on CGSpace</li>
+<li>I noticed one item that had the PDF already on CGSpace so I&rsquo;ll need to consider that when I eventually do the import</li>
+</ul>
+</li>
+<li>I had to re-create the tip-submit and tip-approve accounts for Alliance on DSpace Test again
+<ul>
+<li>After I created them last week they somehow got deleted&hellip;?!&hellip; I couldn&rsquo;t find them or the mel-submit account either!</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
