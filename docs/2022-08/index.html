@@ -14,7 +14,7 @@ Our request to add CC-BY-3.0-IGO to SPDX was approved a few weeks ago
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-08/" />
 <meta property="article:published_time" content="2022-08-01T10:22:36+03:00" />
-<meta property="article:modified_time" content="2022-08-05T21:05:13+03:00" />
+<meta property="article:modified_time" content="2022-08-05T21:09:24+03:00" />
 
 
 
@@ -34,9 +34,9 @@ Our request to add CC-BY-3.0-IGO to SPDX was approved a few weeks ago
   "@type": "BlogPosting",
   "headline": "August, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-08/",
-  "wordCount": "666",
+  "wordCount": "799",
   "datePublished": "2022-08-01T10:22:36+03:00",
-  "dateModified": "2022-08-05T21:05:13+03:00",
+  "dateModified": "2022-08-05T21:09:24+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -190,6 +190,24 @@ Our request to add CC-BY-3.0-IGO to SPDX was approved a few weeks ago
 <li>I verified that I see it in the REST API logs, but I don&rsquo;t see any new stats hits for it</li>
 <li>I do see 11,000 hits from that IP last month when I had the incorrect nginx configuration that was sending a literal <code>$http_user_agent</code> so I purged those</li>
 <li>It is lucky that we have <code>harvest</code> in the DSpace spider agent example file so Solr doesn&rsquo;t log these hits, nothing needed to be done in nginx</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-08-13">2022-08-13</h2>
+<ul>
+<li>I noticed there was high load on CGSpace, around 9 or 10
+<ul>
+<li>Looking at the Munin graphs it seems to just be the last two hours or so, with a slight increase in PostgreSQL connections, firewall traffic, and a more noticeable increase in CPU</li>
+<li>DSpace sessions are normal</li>
+<li>The number of unique hosts making requests to nginx is pretty low, though it&rsquo;s only 6AM in the server&rsquo;s time</li>
+</ul>
+</li>
+<li>I see one IP in Sweden making a lot of requests with a normal user agent: 80.248.237.167
+<ul>
+<li>This host is on Internet Vikings (INTERNETBOLAGET), and I see 140,000 requests from them in Solr</li>
+<li>I see reports of excessive scraping on AbuseIPDB.com</li>
+<li>I&rsquo;m gonna add their 80.248.224.0/20 to the bot-networks.conf in nginx</li>
+<li>I will also purge all the hits from this IP in Solr statistics</li>
 </ul>
 </li>
 </ul>
