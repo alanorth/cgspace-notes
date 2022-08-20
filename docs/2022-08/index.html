@@ -14,7 +14,7 @@ Our request to add CC-BY-3.0-IGO to SPDX was approved a few weeks ago
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-08/" />
 <meta property="article:published_time" content="2022-08-01T10:22:36+03:00" />
-<meta property="article:modified_time" content="2022-08-18T13:45:48-07:00" />
+<meta property="article:modified_time" content="2022-08-18T22:43:37-07:00" />
 
 
 
@@ -34,9 +34,9 @@ Our request to add CC-BY-3.0-IGO to SPDX was approved a few weeks ago
   "@type": "BlogPosting",
   "headline": "August, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-08/",
-  "wordCount": "1122",
+  "wordCount": "1446",
   "datePublished": "2022-08-01T10:22:36+03:00",
-  "dateModified": "2022-08-18T13:45:48-07:00",
+  "dateModified": "2022-08-18T22:43:37-07:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -256,6 +256,43 @@ Our request to add CC-BY-3.0-IGO to SPDX was approved a few weeks ago
 <li>Sort the controlled vocabularies before writing them (we don&rsquo;t do this for value pairs because some are added in specific order, like CRPs)</li>
 </ul>
 </li>
+</ul>
+<h2 id="2022-08-19">2022-08-19</h2>
+<ul>
+<li>Peter Ballantyne sent me metadata for 311 Gender items that need to be duplicate checked on CGSpace before uploading
+<ul>
+<li>I spent a half an hour in OpenRefine to fix the dates because they only had YYYY, but most abstracts and titles had more specific information about the date</li>
+<li>Then I checked for duplicates:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-duplicates.py -i ~/Downloads/gender-ppts-xlsx.csv -u dspace -db dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -o /tmp/gender-duplicates.csv
+</span></span></code></pre></div><ul>
+<li>I sent the list of ~130 possible duplicates to Peter to check</li>
+<li>Jose sent new versions of the MARLO Innovation/MELIA/OICR/Policy PDFs
+<ul>
+<li>The idea was to replace tinyurl links pointing to MARLO, but I still see many tinyurl links, some of which point to CGIAR Sharepoint and require a login</li>
+<li>I asked them why they don&rsquo;t just use the original links in the first place in case tinyurl.com disappears</li>
+</ul>
+</li>
+<li>I continued working on the MARLO MELIA v2 UTF-8 metadata
+<ul>
+<li>I did the same metadata enrichment exercise to extract countries and AGROVOC subjects from the abstract field that I did earlier this month, using a Jython expression to match terms in copies of the abstract field</li>
+<li>It helps to replace some characters with spaces first with this GREL: <code>value.replace(/[.\/;(),]/, &quot; &quot;)</code></li>
+<li>This caught some extra AGROVOC terms, but unfortunately we only check for single-word terms</li>
+<li>Then I checked for existing items on CGSpace matching these MELIA using my duplicate checker:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-duplicates.py -i ~/Downloads/2022-08-18-MELIAs-UTF-8-With-Files.csv -u dspace -db dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -o /tmp/melia-matches.csv
+</span></span></code></pre></div><ul>
+<li>Then I did some minor processing and checking of the duplicates file (for example, some titles appear more than once in both files), and joined with the other file (left join):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ xsv join --left id ~/Downloads/2022-08-18-MELIAs-UTF-8-With-Files.csv id ~/Downloads/melia-matches-csv.csv &gt; /tmp/melias-with-relations.csv
+</span></span></code></pre></div><ul>
+<li>I had to use <code>xsv</code> because <code>csvcut</code> was throwing an error detecting the dialect of the input CSVs (?)</li>
+<li>I created a SAF bundle and imported the 749 MELIAs to DSpace Test</li>
+<li>I found thirteen items on CGSpace with dates in format &ldquo;DD/MM/YYYY&rdquo; so I fixed those</li>
 </ul>
 <!-- raw HTML omitted -->
 
