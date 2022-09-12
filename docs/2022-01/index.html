@@ -25,7 +25,7 @@ I also fixed a few bugs and improved the region-matching logic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-01/" />
 <meta property="article:published_time" content="2022-01-01T09:41:36+03:00" />
-<meta property="article:modified_time" content="2022-09-09T17:29:51+03:00" />
+<meta property="article:modified_time" content="2022-09-12T11:35:57+03:00" />
 
 
 
@@ -56,9 +56,9 @@ I also fixed a few bugs and improved the region-matching logic
   "@type": "BlogPosting",
   "headline": "September, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-01/",
-  "wordCount": "1259",
+  "wordCount": "1373",
   "datePublished": "2022-01-01T09:41:36+03:00",
-  "dateModified": "2022-09-09T17:29:51+03:00",
+  "dateModified": "2022-09-12T11:35:57+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -355,7 +355,33 @@ I also fixed a few bugs and improved the region-matching logic
 </ul>
 <h2 id="2022-09-12">2022-09-12</h2>
 <ul>
-<li>I am testing harvesting DSpace Test via AReS with the nginx proxy cache enabled</li>
+<li>I am testing harvesting DSpace Test via AReS with the nginx proxy cache enabled
+<ul>
+<li>I had to tune the regular expression in nginx a bit because the REST requests OpenRXV uses weren&rsquo;t matching</li>
+<li>Now I&rsquo;m trying this one: <code>/rest/(handle|items|collections|communities)/?</code></li>
+<li>Testing in <a href="https://regex101.com/r/vPz11y/1">regex101.com</a> with this test string:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>/rest/handle/10568/27611
+/rest/items?expand=metadata,parentCommunityList,parentCollectionList,bitstreams&amp;limit=10&amp;offset=36270
+/rest/handle/10568/110310?expand=all
+/rest/rest/bitstreams/28926633-c7c2-49c2-afa8-6d81cadc2316/retrieve
+/rest/bitstreams/15412/retrieve
+/rest/items/083dbb0d-11e2-4dfe-902b-eb48e4640d04/metadata
+/rest/items/083dbb0d-11e2-4dfe-902b-eb48e4640d04/bitstreams
+/rest/collections/edea23c0-0ebd-4525-90b0-0b401f997704/items
+/rest/items/14507941-aff2-4d57-90bd-03a0733ad859/metadata
+/rest/communities/b38ea726-475f-4247-a961-0d0b76e67f85/collections
+/rest/collections/e994c450-6ff7-41c6-98df-51e5c424049e/items?limit=10000
+</code></pre><ul>
+<li>I estimate that it will take about 1GB of cache to harvest 100,000 items from CGSpace with OpenRXV (10,000 pages)</li>
+<li>Basically all but 4 and 5 (bitstreams) should match</li>
+<li>Upload 682 OICRs from MARLO to CGSpace
+<ul>
+<li>We had tested these on DSpace Test last month along with the MELIAs, Policies, and Innovations, but we decided to upload the OICRs first so that other things can link against them as related items</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
