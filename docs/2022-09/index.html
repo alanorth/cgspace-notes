@@ -25,7 +25,7 @@ I also fixed a few bugs and improved the region-matching logic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-09/" />
 <meta property="article:published_time" content="2022-09-01T09:41:36+03:00" />
-<meta property="article:modified_time" content="2022-09-16T17:09:32+03:00" />
+<meta property="article:modified_time" content="2022-09-18T21:04:01+03:00" />
 
 
 
@@ -56,9 +56,9 @@ I also fixed a few bugs and improved the region-matching logic
   "@type": "BlogPosting",
   "headline": "September, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-09/",
-  "wordCount": "1450",
+  "wordCount": "1660",
   "datePublished": "2022-09-01T09:41:36+03:00",
-  "dateModified": "2022-09-16T17:09:32+03:00",
+  "dateModified": "2022-09-18T21:04:01+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -400,6 +400,28 @@ I also fixed a few bugs and improved the region-matching logic
 <ul>
 <li>Deploy the <code>org.apache.cocoon.uploads.autosave=false</code> change on CGSpace</li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-09-19">2022-09-19</h2>
+<ul>
+<li>Deploy the nginx proxy cache for /rest requests on CGSpace
+<ul>
+<li>I had tested this last week on DSpace Test</li>
+<li>By my counts on CGSpace yesterday (Sunday, a busy day for the REST API), we had 5,654 URLs that were requested more than twice, and it tails off after that towards two, three, four, etc:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $7}&#39;</span> /var/log/nginx/rest.log.1 | grep -v retrieve | sort | uniq -c | awk <span style="color:#e6db74">&#39;$1 &gt; 1&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>5654
+</span></span><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $7}&#39;</span> /var/log/nginx/rest.log.1 | grep -v retrieve | sort | uniq -c | awk <span style="color:#e6db74">&#39;$1 == 2&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>4710
+</span></span><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $7}&#39;</span> /var/log/nginx/rest.log.1 | grep -v retrieve | sort | uniq -c | awk <span style="color:#e6db74">&#39;$1 == 3&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>814
+</span></span><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $7}&#39;</span> /var/log/nginx/rest.log.1 | grep -v retrieve | sort | uniq -c | awk <span style="color:#e6db74">&#39;$1 == 4&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>86
+</span></span><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $7}&#39;</span> /var/log/nginx/rest.log.1 | grep -v retrieve | sort | uniq -c | awk <span style="color:#e6db74">&#39;$1 == 5&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>39
+</span></span></code></pre></div><ul>
+<li>For now I guess requests that were done two or three times by different clients will be cached and that&rsquo;s a win, and I expect more and more REST API activity soon when initiatives and One CGIAR stuff picks up</li>
 </ul>
 <!-- raw HTML omitted -->
 
