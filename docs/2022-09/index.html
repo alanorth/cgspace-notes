@@ -25,7 +25,7 @@ I also fixed a few bugs and improved the region-matching logic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-09/" />
 <meta property="article:published_time" content="2022-09-01T09:41:36+03:00" />
-<meta property="article:modified_time" content="2022-09-18T21:04:01+03:00" />
+<meta property="article:modified_time" content="2022-09-19T15:58:41+03:00" />
 
 
 
@@ -56,9 +56,9 @@ I also fixed a few bugs and improved the region-matching logic
   "@type": "BlogPosting",
   "headline": "September, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-09/",
-  "wordCount": "1660",
+  "wordCount": "1942",
   "datePublished": "2022-09-01T09:41:36+03:00",
-  "dateModified": "2022-09-18T21:04:01+03:00",
+  "dateModified": "2022-09-19T15:58:41+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -422,6 +422,62 @@ I also fixed a few bugs and improved the region-matching logic
 </span></span><span style="display:flex;"><span>39
 </span></span></code></pre></div><ul>
 <li>For now I guess requests that were done two or three times by different clients will be cached and that&rsquo;s a win, and I expect more and more REST API activity soon when initiatives and One CGIAR stuff picks up</li>
+</ul>
+<h2 id="2022-09-20">2022-09-20</h2>
+<ul>
+<li>I checked the status of the nginx REST API cache on CGSpace and it was stuck at 7,083 items for hours:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># find /var/cache/nginx/rest_cache/ -type f | wc -l
+</span></span><span style="display:flex;"><span>7083
+</span></span></code></pre></div><ul>
+<li>The proxy cache key zone is currently 1m, which can store ~8,000 keys, so that could be what we&rsquo;re running into
+<ul>
+<li>I increased it to 2m and will keep monitoring it</li>
+</ul>
+</li>
+<li>CIP webmaster contacted me to say they are having problems harvesting CGSpace from their WordPress
+<ul>
+<li>I am not sure if there are issues due to the REST API caching I enabled&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-09-21">2022-09-21</h2>
+<ul>
+<li>Planning the Nairobi DSpace Users meeting with Abenet</li>
+<li>Planning to have a call about MEL submitting to CGSpace on Monday with Mohammed Salem
+<ul>
+<li>I created two collections on DSpace Test: one with a workflow, and one without</li>
+<li>According to my notes from <a href="/cgspace-notes/2020-10/">2020-10</a> the account must be in the admin group in order to submit via the REST API, so I added it to the admin group of each collection</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-09-22">2022-09-22</h2>
+<ul>
+<li>Nairobi DSpace users meeting at ILRI</li>
+<li>I found a few users that didn&rsquo;t have ORCID iDs and were missing tags on CGSpace so I tagged them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2022-09-22-add-orcids.csv
+</span></span><span style="display:flex;"><span>dc.contributor.author,cg.creator.identifier
+</span></span><span style="display:flex;"><span>&#34;Alonso, Silvia&#34;,&#34;Silvia Alonso: 0000-0002-0565-536X&#34;
+</span></span><span style="display:flex;"><span>&#34;Goopy, John P.&#34;,&#34;John Goopy: 0000-0001-7177-1310&#34;
+</span></span><span style="display:flex;"><span>&#34;Korir, Daniel&#34;,&#34;Daniel Korir: 0000-0002-1356-8039&#34;
+</span></span><span style="display:flex;"><span>&#34;Leitner, Sonja&#34;,&#34;Sonja Leitner: 0000-0002-1276-8071&#34;
+</span></span><span style="display:flex;"><span>&#34;Fèvre, Eric M.&#34;,&#34;Eric M. Fèvre: 0000-0001-8931-4986&#34;
+</span></span><span style="display:flex;"><span>&#34;Galiè, Alessandra&#34;,&#34;Alessandra Galie: 0000-0001-9868-7733&#34;
+</span></span><span style="display:flex;"><span>&#34;Baltenweck, Isabelle&#34;,&#34;Isabelle Baltenweck: 0000-0002-4147-5921&#34;
+</span></span><span style="display:flex;"><span>&#34;Robinson, Timothy P.&#34;,&#34;Timothy Robinson: 0000-0002-4266-963X&#34;
+</span></span><span style="display:flex;"><span>&#34;Lannerstad, Mats&#34;,&#34;Mats Lannerstad: 0000-0002-5116-3198&#34;
+</span></span><span style="display:flex;"><span>&#34;Graham, Michael&#34;,&#34;Michael Graham: 0000-0002-1189-8640&#34;
+</span></span><span style="display:flex;"><span>&#34;Merbold, Lutz&#34;,&#34;Lutz Merbold: 0000-0003-4974-170X&#34;
+</span></span><span style="display:flex;"><span>&#34;Rufino, Mariana C.&#34;,&#34;Mariana Rufino: 0000-0003-4293-3290&#34;
+</span></span><span style="display:flex;"><span>&#34;Wilkes, Andreas&#34;,&#34;Andreas Wilkes: 0000-0001-7546-991X&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2022-09-22-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</span></span></code></pre></div><ul>
+<li>This adds almost 800 ORCID tags!
+<ul>
+<li>Some of these authors were not in the controlled vocabulary so I added them</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
