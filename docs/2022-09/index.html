@@ -25,7 +25,7 @@ I also fixed a few bugs and improved the region-matching logic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-09/" />
 <meta property="article:published_time" content="2022-09-01T09:41:36+03:00" />
-<meta property="article:modified_time" content="2022-09-24T09:26:29+03:00" />
+<meta property="article:modified_time" content="2022-09-25T14:32:38+03:00" />
 
 
 
@@ -56,9 +56,9 @@ I also fixed a few bugs and improved the region-matching logic
   "@type": "BlogPosting",
   "headline": "September, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-09/",
-  "wordCount": "2369",
+  "wordCount": "2482",
   "datePublished": "2022-09-01T09:41:36+03:00",
-  "dateModified": "2022-09-24T09:26:29+03:00",
+  "dateModified": "2022-09-25T14:32:38+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -565,6 +565,34 @@ I also fixed a few bugs and improved the region-matching logic
 <li>UptimeRobot says it&rsquo;s down sigh&hellip;</li>
 </ul>
 </li>
+<li>I had an idea to include the HTTP Accept header in the nginx proxy cache key to fix the issue we had with CIP last week
+<ul>
+<li>It seems to work:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ http --print Hh &#39;https://dspacetest.cgiar.org/rest/items?expand=metadata,parentCommunityList,parentCollectionList,bitstreams&amp;limit=10&amp;offset=60&#39;
+...
+Content-Type: application/json
+X-Cache-Status: MISS
+
+$ http --print Hh &#39;https://dspacetest.cgiar.org/rest/items?expand=metadata,parentCommunityList,parentCollectionList,bitstreams&amp;limit=10&amp;offset=60&#39;
+...
+Content-Type: application/json
+X-Cache-Status: HIT
+
+$ http --print Hh &#39;https://dspacetest.cgiar.org/rest/items?expand=metadata,parentCommunityList,parentCollectionList,bitstreams&amp;limit=10&amp;offset=60&#39; Accept:application/xml
+...
+Content-Type: application/xml
+X-Cache-Status: MISS
+
+$ http --print Hh &#39;https://dspacetest.cgiar.org/rest/items?expand=metadata,parentCommunityList,parentCollectionList,bitstreams&amp;limit=10&amp;offset=60&#39; Accept:application/xml
+...
+Content-Type: application/xml
+X-Cache-Status: HIT
+</code></pre><ul>
+<li>This effectively makes our cache half as effective, but hopefully as more people start harvesting the number of requests handled by it will go up</li>
+<li>I will enable this on CGSpace and email CIP to check if their harvester is working</li>
 </ul>
 <!-- raw HTML omitted -->
 
