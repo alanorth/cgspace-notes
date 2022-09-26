@@ -25,7 +25,7 @@ I also fixed a few bugs and improved the region-matching logic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-09/" />
 <meta property="article:published_time" content="2022-09-01T09:41:36+03:00" />
-<meta property="article:modified_time" content="2022-09-25T14:32:38+03:00" />
+<meta property="article:modified_time" content="2022-09-25T21:02:46+03:00" />
 
 
 
@@ -56,9 +56,9 @@ I also fixed a few bugs and improved the region-matching logic
   "@type": "BlogPosting",
   "headline": "September, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-09/",
-  "wordCount": "2482",
+  "wordCount": "2677",
   "datePublished": "2022-09-01T09:41:36+03:00",
-  "dateModified": "2022-09-25T14:32:38+03:00",
+  "dateModified": "2022-09-25T21:02:46+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -592,7 +592,35 @@ Content-Type: application/xml
 X-Cache-Status: HIT
 </code></pre><ul>
 <li>This effectively makes our cache half as effective, but hopefully as more people start harvesting the number of requests handled by it will go up</li>
-<li>I will enable this on CGSpace and email CIP to check if their harvester is working</li>
+<li>I will enable this on CGSpace and email Moises from CIP to check if their harvester is working</li>
+</ul>
+<h2 id="2022-09-26">2022-09-26</h2>
+<ul>
+<li>Update welcome text on CGSpace after our meeting last week</li>
+<li>I found another dozen or so ORCIDs for top authors on ILRI&rsquo;s community on CGSpace and tagged them (~1,100 more metadata fields)</li>
+<li>Last week we discussed moving <code>cg.identifier.googleurl</code> to <code>cg.identifier.url</code> since there is no need to treat Google Books URLs specially anymore as far as we know
+<ul>
+<li>I made the changes to the submission form and the XMLUI item displays, then moved all existing metadata in PostgreSQL:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace= ☘ UPDATE metadatavalue SET metadata_field_id=219 WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=222;
+</span></span><span style="display:flex;"><span>UPDATE 1137
+</span></span></code></pre></div><ul>
+<li>Then I deleted <code>cg.identifier.googleurl</code> from the metadata registry</li>
+<li>Meeting with Salem, Svetlana, Valentina, and Abenet about MEL depositing to CGSpace for the initiatives
+<ul>
+<li>Submitting to a collection without a workflow works as expected, and we can even select another collection (with a workflow) to map the item to from the MEL submission</li>
+<li>The three minor issues we found were:
+<ul>
+<li>MEL still doesn&rsquo;t send the bitstream</li>
+<li>MEL sends metadata with a download URL on mel.cgiar.org</li>
+<li>MEL sends a JPEG that says &ldquo;no thumbnail&rdquo; when an item doesn&rsquo;t have a thumbnail</li>
+</ul>
+</li>
+<li>I still need to send feedback to the group</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
