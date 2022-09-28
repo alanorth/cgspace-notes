@@ -25,7 +25,7 @@ I also fixed a few bugs and improved the region-matching logic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-09/" />
 <meta property="article:published_time" content="2022-09-01T09:41:36+03:00" />
-<meta property="article:modified_time" content="2022-09-25T21:02:46+03:00" />
+<meta property="article:modified_time" content="2022-09-26T17:17:19+03:00" />
 
 
 
@@ -46,7 +46,7 @@ I also fixed a few bugs and improved the region-matching logic
 
 
 "/>
-<meta name="generator" content="Hugo 0.102.3" />
+<meta name="generator" content="Hugo 0.104.1" />
 
 
     
@@ -56,9 +56,9 @@ I also fixed a few bugs and improved the region-matching logic
   "@type": "BlogPosting",
   "headline": "September, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-09/",
-  "wordCount": "2677",
+  "wordCount": "3035",
   "datePublished": "2022-09-01T09:41:36+03:00",
-  "dateModified": "2022-09-25T21:02:46+03:00",
+  "dateModified": "2022-09-26T17:17:19+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -622,7 +622,60 @@ X-Cache-Status: HIT
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2022-09-27">2022-09-27</h2>
+<ul>
+<li>Find a few more ORCID identifiers missing for ILRI authors and add them to the controlled vocabulary and tag the authors on CGSpace</li>
+<li>Moises from CIP says the WordPress importer worked fine with the current nginx proxy cache settings so it seems adding the HTTP Accept header to the cache key worked</li>
+<li>Update my DSpace 7 environments to 7.4-SNAPSHOT
+<ul>
+<li>I see they have added thumbnails in some places now</li>
+<li>Oh nice, they also added the &ldquo;recent submissions&rdquo; to the home page</li>
+</ul>
+</li>
+<li>While talking with Salem about the MEL depositing to CGSpace we discovered an issue with HTTP DELETE on <code>/items/{item id}/bitstreams/{bitstream id}</code> or <code>/bitstreams/{bitstream id}</code>
+<ul>
+<li>DSpace removes the bitstream but keeps the empty <code>THUMBNAIL</code> bundle, which breaks the display in XMLUI</li>
+</ul>
+</li>
+<li>Meeting with Enrico et al about PRMS reporting for the initiatives</li>
+</ul>
+<h2 id="2022-09-28">2022-09-28</h2>
+<ul>
+<li>I was reading the source code for DSpace 6&rsquo;s REST API and found that it&rsquo;s <a href="https://github.com/DSpace/DSpace/blob/dspace-6.4/dspace-rest/src/main/java/org/dspace/rest/ItemsResource.java#L427">not possible to specify a bundle while POSTing a bitstream</a>
+<ul>
+<li>I asked Salem how they do it on MEL and he said they pretend to be a human and do it via XMLUI!</li>
+</ul>
+</li>
+<li>I added a few new ILRI subjects to the input forms on CGSpace
+<ul>
+<li>Both &ldquo;bushmeat&rdquo; and &ldquo;wildlife conservation&rdquo; are AGROVOC terms, but &ldquo;wild meat&rdquo; is not</li>
+<li>The distinction ILRI would like to start making is:</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Meat comes from any animal, and when at ILRI we specifically make
+reference to it in the context of livestock. However the word bushmeat
+refers to illegal harvesting of meat. wild meat is being used as legal
+harvesting of meat from wildlife and not from livestock.</p>
+</blockquote>
+<ul>
+<li>I added a few more CGIAR authors ORCID identifiers to our controlled vocabulary and tagged them on CGSpace (~450 more metadata fields)</li>
+<li>Talking to Salem about ORCID identifiers, we compared list and they have a bunch that we don&rsquo;t have:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml ~/Downloads/MEL_ORCID_2022-09-28.csv | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | \
+</span></span><span style="display:flex;"><span>  sort | \
+</span></span><span style="display:flex;"><span>  uniq &gt; /tmp/2022-09-29-combined-orcids.txt
+</span></span><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1421
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2022-09-29-combined-orcids.txt 
+</span></span><span style="display:flex;"><span>1905 /tmp/2022-09-29-combined-orcids.txt
+</span></span></code></pre></div><ul>
+<li>After combining them I ran them through my <code>resolve-orcids.py</code> script:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/resolve-orcids.py -i /tmp/2022-09-29-combined-orcids.txt -o /tmp/2022-09-29-combined-orcids-names.txt -d
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
