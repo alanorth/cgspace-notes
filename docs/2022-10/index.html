@@ -20,7 +20,7 @@ I filed an issue to ask about Java 11&#43; support
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-10/" />
 <meta property="article:published_time" content="2022-10-01T19:45:36+03:00" />
-<meta property="article:modified_time" content="2022-10-03T16:26:30+03:00" />
+<meta property="article:modified_time" content="2022-10-05T17:22:42+03:00" />
 
 
 
@@ -46,9 +46,9 @@ I filed an issue to ask about Java 11&#43; support
   "@type": "BlogPosting",
   "headline": "October, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-10/",
-  "wordCount": "1009",
+  "wordCount": "1689",
   "datePublished": "2022-10-01T19:45:36+03:00",
-  "dateModified": "2022-10-03T16:26:30+03:00",
+  "dateModified": "2022-10-05T17:22:42+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -502,6 +502,97 @@ I filed an issue to ask about Java 11&#43; support
 <ul>
 <li>I updated the <a href="https://github.com/ilri/cgspace-java-helpers">cgspace-java-helpers</a> to include a new <code>FixLowQualityThumbnails</code> script to detect the low-quality thumbnails I found above</li>
 <li>Add missing ORCID identifier for an Alliance author</li>
+<li>I&rsquo;ve been running the <code>dspace cleanup -v</code> script every few weeks or months on CGSpace and assuming it finished successfully because I didn&rsquo;t get a error on the stdout/stderr, but today I noticed that the script keeps saying it is deleting the same bitstreams
+<ul>
+<li>I looked in dspace.log and found the error I used to see a lot:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Caused by: org.postgresql.util.PSQLException: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+</span></span><span style="display:flex;"><span>  Detail: Key (uuid)=(99b76ee4-15c6-458c-a940-866148bc7dee) is still referenced from table &#34;bundle&#34;.
+</span></span></code></pre></div><ul>
+<li>If I mark the primary bitstream as null manually the cleanup script continues until it finds a few more
+<ul>
+<li>I ended up with a long list of UUIDs to fix before the script would complete:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -d dspace  -c <span style="color:#e6db74">&#34;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (&#39;b76d41c0-0a02-4f53-bfde-a840ccfff903&#39;,&#39;1981efaa-eadb-46cd-9d7b-12d7a8cff4c4&#39;,&#39;97a8b1fa-3c12-4122-9c7b-fc2a3eaf570d&#39;,&#39;99b76ee4-15c6-458c-a940-866148bc7dee&#39;,&#39;f330fc22-a787-46e2-b8d0-64cc3e166124&#39;,&#39;592f4a0d-1ed5-4663-be0e-958c0d3e653b&#39;,&#39;e73b3178-8f29-42bc-bfd1-1a454903343c&#39;,&#39;e3a5f592-ac23-4934-a2b2-26735fac0c4f&#39;,&#39;73f4ff6c-6679-44e8-8cbd-9f28a1df6927&#39;,&#39;11c9a75c-17a6-4966-a4e8-a473010eb34c&#39;,&#39;155faf93-92c5-4c17-866e-1db50b1f9687&#39;,&#39;8e073e9e-ab54-4d99-971a-66de073d51e3&#39;,&#39;76ddd62c-6499-4a8c-beea-3fc8c60200d8&#39;,&#39;2850fcc9-f450-430a-9317-c42def74e813&#39;,&#39;8fef3198-2aea-4bd8-aeab-bf5fccb46e42&#39;,&#39;9e3c3528-e20f-4da3-a0bd-ae9b8515b770&#39;)&#34;</span>
+</span></span></code></pre></div><h2 id="2022-10-06">2022-10-06</h2>
+<ul>
+<li>I finished running the cleanup script on CGSpace and the before and after on the number of bitstreams is interesting:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ find /home/cgspace.cgiar.org/assetstore -type f | wc -l
+</span></span><span style="display:flex;"><span>181094
+</span></span><span style="display:flex;"><span>$ find /home/cgspace.cgiar.org/assetstore -type f | wc -l
+</span></span><span style="display:flex;"><span>178329
+</span></span></code></pre></div><ul>
+<li>So that cleaned up ~2,700 bitstreams!</li>
+<li>Interesting, someone on the DSpace Slack mentioned this as being a known issue with discussion, reproducers, and a pull request: <a href="https://github.com/DSpace/DSpace/issues/7348">https://github.com/DSpace/DSpace/issues/7348</a></li>
+<li>I am having an issue with the new FixLowQualityThumbnails script on some communities like 10568/117865 and 10568/97114
+<ul>
+<li>For some reason it doesn&rsquo;t descend into the collections</li>
+<li>Also, my old FixJpgJpgThumbnails doesn&rsquo;t either&hellip; weird</li>
+<li>I might have to resort to getting a list of collections and doing it that way:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -h localhost -U postgres -d dspacetest -c <span style="color:#e6db74">&#39;SELECT ds6_collection2collectionhandle(uuid) FROM collection WHERE uuid in (SELECT uuid FROM collection);&#39;</span> |
+</span></span><span style="display:flex;"><span>    sed 1,2d |
+</span></span><span style="display:flex;"><span>    tac |
+</span></span><span style="display:flex;"><span>    sed 1,3d &gt; /tmp/collections
+</span></span></code></pre></div><ul>
+<li>Strange, I don&rsquo;t think doing it by collections is actually working because it says it&rsquo;s replacing the bitstreams, but it doesn&rsquo;t actually do it
+<ul>
+<li>I don&rsquo;t have time to figure out what&rsquo;s happening, because I see &ldquo;update_item&rdquo; in dspace.log when the script says it&rsquo;s doing it, but it doesn&rsquo;t do it</li>
+<li>I might just extract a list of items that have .jpg.jpg thumbnails from the database and run the script through item mode</li>
+<li>There might be a problem with the context commit logic&hellip;?</li>
+</ul>
+</li>
+<li>I exported a list of items that have .jpg.jpg thumbnails on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -h localhost -p <span style="color:#ae81ff">5432</span> -U postgres -d dspacetest -c <span style="color:#e6db74">&#34;SELECT ds6_bitstream2itemhandle(dspace_object_id) FROM metadatavalue WHERE text_value ~ &#39;.*\.(jpg|jpeg|JPG|JPEG)\.(jpg|jpeg|JPG|JPEG)&#39; AND dspace_object_id IS NOT NULL;&#34;</span> |
+</span></span><span style="display:flex;"><span>  sed 1,2d |
+</span></span><span style="display:flex;"><span>  tac |
+</span></span><span style="display:flex;"><span>  sed 1,3d |
+</span></span><span style="display:flex;"><span>  grep -v &#39;␀&#39; |
+</span></span><span style="display:flex;"><span>  sort -u |
+</span></span><span style="display:flex;"><span>  sed &#39;s/ //&#39; &gt; /tmp/jpgjpg-handles.txt
+</span></span></code></pre></div><ul>
+<li>I restarted DSpace Test because it had high load since yesterday and I don&rsquo;t know why</li>
+<li>Run <code>check-duplicates.py</code> on the 1642 MARLO Innovations to try to include matches from the OICRs we uploaded last month
+<ul>
+<li>Then I processed those matches like I did with the OICRs themselves last month, and then cleaned them one last time with csv-metadata-quality, created a SAF bundle, and uploaded them to CGSpace</li>
+<li>BTW this bumps CGSpace over 100,000 items&hellip;</li>
+<li>Then I did the same for the 749 MARLO MELIAs and imported them to CGSpace</li>
+</ul>
+</li>
+<li>Meeting about CG Core types with Abenet, Marie-Angelique, Sara, Margarita, and Valentina</li>
+<li>I made some minor logic changes to the FixJpgJpgThumbnails script in cgspace-java-helpers
+<ul>
+<li>Now it checks to make sure the bitstream description is not empty or null, and also excludes Maps (in addition to Infographics) since those are likely to be JPEG files in the ORIGINAL bundle on purpose</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-10-07">2022-10-07</h2>
+<ul>
+<li>I did the matching and cleaning on the 512 MARLO Policies and uploaded them to CGSpace</li>
+<li>I sent a list of the IDs and Handles for all four groups of MARLO items to Jose so he can do the redirects on their server:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wc -l /tmp/*mappings.csv
+</span></span><span style="display:flex;"><span>  1643 /tmp/crp-innovation-mappings.csv
+</span></span><span style="display:flex;"><span>   750 /tmp/crp-melia-mappings.csv
+</span></span><span style="display:flex;"><span>   683 /tmp/crp-oicr-mappings.csv
+</span></span><span style="display:flex;"><span>   513 /tmp/crp-policy-mappings.csv
+</span></span><span style="display:flex;"><span>  3589 total
+</span></span></code></pre></div><ul>
+<li>I fixed the mysterious issue with my cgspace-java-helpers scripts not working on communities and collections
+<ul>
+<li>It was because the code wasn&rsquo;t committing the context!</li>
+<li>I ran both <code>FixJpgJpgThumbnails</code> and <code>FixLowQualityThumbnails</code> on a dozen or so large collections on CGSpace and processed about 1,200 low-quality thumbnails</li>
+</ul>
+</li>
+<li>I did a complete re-sync of CGSpace to DSpace Test</li>
 </ul>
 <!-- raw HTML omitted -->
 
