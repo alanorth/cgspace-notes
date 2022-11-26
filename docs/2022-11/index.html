@@ -24,7 +24,7 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-11/" />
 <meta property="article:published_time" content="2022-11-01T09:11:36+03:00" />
-<meta property="article:modified_time" content="2022-11-23T17:10:47+03:00" />
+<meta property="article:modified_time" content="2022-11-24T17:41:34+03:00" />
 
 
 
@@ -54,9 +54,9 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
   "@type": "BlogPosting",
   "headline": "November, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-11/",
-  "wordCount": "1785",
+  "wordCount": "2221",
   "datePublished": "2022-11-01T09:11:36+03:00",
-  "dateModified": "2022-11-23T17:10:47+03:00",
+  "dateModified": "2022-11-24T17:41:34+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -424,6 +424,107 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
 <li>Then I ran the script on CGSpace, uploading ~1,500 PDFs to to existing items</li>
 </ul>
 </li>
+</ul>
+<h2 id="2022-11-25">2022-11-25</h2>
+<ul>
+<li>Tony Murray, who is working on IFPRI&rsquo;s CGSpace integration, emailed me to ask some questions about the REST API</li>
+<li>Oh no, I realized there is a logic issue with the PDFbox cropbox code I added a few weeks ago:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34;</span> dspace filter-media -p <span style="color:#e6db74">&#34;ImageMagick PDF Thumbnail&#34;</span> -v -f -i 10568/77010
+</span></span><span style="display:flex;"><span>The following MediaFilters are enabled:
+</span></span><span style="display:flex;"><span>Full Filter Name: org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter
+</span></span><span style="display:flex;"><span>org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter
+</span></span><span style="display:flex;"><span>Loading @mire database changes for module MQM
+</span></span><span style="display:flex;"><span>Changes have been processed
+</span></span><span style="display:flex;"><span>IM Thumbnail tropentag2016_marshall.pdf is replacable.
+</span></span><span style="display:flex;"><span>File: tropentag2016_marshall.pdf.jpg
+</span></span><span style="display:flex;"><span>ERROR filtering, skipping bitstream:
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>        Item Handle: 10568/77010
+</span></span><span style="display:flex;"><span>        Bundle Name: ORIGINAL
+</span></span><span style="display:flex;"><span>        File Size: 1486580
+</span></span><span style="display:flex;"><span>        Checksum: 1ad66d918a56a5e84667386e1a32e352 (MD5)
+</span></span><span style="display:flex;"><span>        Asset Store: 0
+</span></span><span style="display:flex;"><span>java.lang.IndexOutOfBoundsException: 1-based index out of bounds: 2
+</span></span><span style="display:flex;"><span>java.lang.IndexOutOfBoundsException: 1-based index out of bounds: 2
+</span></span><span style="display:flex;"><span>        at org.apache.pdfbox.pdmodel.PDPageTree.get(PDPageTree.java:325)
+</span></span><span style="display:flex;"><span>        at org.apache.pdfbox.pdmodel.PDPageTree.get(PDPageTree.java:248)
+</span></span><span style="display:flex;"><span>        at org.apache.pdfbox.pdmodel.PDDocument.getPage(PDDocument.java:1543)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.mediafilter.ImageMagickThumbnailFilter.getImageFile(ImageMagickThumbnailFilter.java:167)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.getDestinationStream(ImageMagickPdfThumbnailFilter.java:27)
+</span></span><span style="display:flex;"><span>        at com.atmire.dspace.app.mediafilter.AtmireMediaFilter.processBitstream(AtmireMediaFilter.java:103)
+</span></span><span style="display:flex;"><span>        at com.atmire.dspace.app.mediafilter.AtmireMediaFilterServiceImpl.filterBitstream(AtmireMediaFilterServiceImpl.java:61)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.mediafilter.MediaFilterServiceImpl.filterItem(MediaFilterServiceImpl.java:181)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.mediafilter.MediaFilterServiceImpl.applyFiltersItem(MediaFilterServiceImpl.java:159)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.mediafilter.MediaFilterCLITool.main(MediaFilterCLITool.java:232)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.lang.reflect.Method.invoke(Method.java:498)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</span></span></code></pre></div><ul>
+<li>Salem gave me a list of CGSpace collections that have double spaces in the names
+<ul>
+<li>Normally this would only be a minor annoyance, but he discovered that the REST API seems to trim the spaces, which causes an issue when trying to reference them!</li>
+<li>He sent me a list of about ten collection UUIDs so I fixed them</li>
+</ul>
+</li>
+<li>I found a bunch of LIVES presentations on CGSpace that have presentations on SlideShare with incorrect licenses&hellip; I updated about fifty of them</li>
+</ul>
+<h2 id="2022-11-26">2022-11-26</h2>
+<ul>
+<li>Sync DSpace Test with CGSpace</li>
+<li>I increased the session timeout in Tomcat from thirty minutes to sixty, as requested by Maria a few weeks ago
+<ul>
+<li>See: <a href="https://gitlab.inf.unibz.it/commul/docker/clarin-dspace/-/issues/44">https://gitlab.inf.unibz.it/commul/docker/clarin-dspace/-/issues/44</a></li>
+</ul>
+</li>
+<li>I re-built DSpace on CGSpace, ran all updates, and rebooted the machine
+<ul>
+<li>Then after coming back up the handle server won&rsquo;t start</li>
+<li>The <code>handle-server.log</code> file shows:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Shutting down...
+</span></span><span style="display:flex;"><span>&#34;2022/11/26 02:12:17 CET&#34; 25 Rotating log files
+</span></span><span style="display:flex;"><span>Error: null
+</span></span><span style="display:flex;"><span>       (see the error log for details.)
+</span></span></code></pre></div><ul>
+<li>In the <code>error.log</code> file I see:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>&#34;2022/11/26 02:12:18 CET&#34; 25 Started new run.
+</span></span><span style="display:flex;"><span>java.lang.UnsupportedOperationException
+</span></span><span style="display:flex;"><span>        at java.lang.Runtime.runFinalizersOnExit(Runtime.java:287)
+</span></span><span style="display:flex;"><span>        at java.lang.System.runFinalizersOnExit(System.java:1059)
+</span></span><span style="display:flex;"><span>        at net.handle.server.Main.initialize(Main.java:124)
+</span></span><span style="display:flex;"><span>        at net.handle.server.Main.main(Main.java:75)
+</span></span><span style="display:flex;"><span>Shutting down...
+</span></span></code></pre></div><ul>
+<li>Ah, it seems to be due to an <a href="https://groups.google.com/g/dspace-tech/c/PqjfA5mqG4w/m/FhxI5oXhFwAJ?pli=1">issue in OpenJDK 1.8.0_352</a></li>
+<li>I see the server upgraded to the new JDK version on 2022-11-10:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Upgrade: openjdk-8-jdk-headless:amd64 (8u342-b07-0ubuntu1~20.04, 8u352-ga-1~20.04), openjdk-8-jre-headless:amd64 (8u342-b07-0ubuntu1~20.04, 8u352-ga-1~20.04)
+</span></span><span style="display:flex;"><span>End-Date: 2022-11-10  04:10:45
+</span></span></code></pre></div><ul>
+<li>As highlighted in the dspace-tech mailing list thread above, <a href="https://mail.openjdk.org/pipermail/jdk8u-dev/2022-October/015706.html">this OpenJDK release deprecated <code>Runtime.runFinalizersOnExit</code></a>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>  - JDK-8287132: Retire Runtime.runFinalizersOnExit so that it always throws UOE
+</span></span></code></pre></div><ul>
+<li>I downloaded the previous versions of the packages from Launchpad:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># wget https://launchpad.net/~openjdk-security/+archive/ubuntu/ppa/+build/24195357/+files/openjdk-8-jdk-headless_8u342-b07-0ubuntu1~20.04_amd64.deb
+</span></span><span style="display:flex;"><span># wget https://launchpad.net/~openjdk-security/+archive/ubuntu/ppa/+build/24195357/+files/openjdk-8-jre-headless_8u342-b07-0ubuntu1~20.04_amd64.deb
+</span></span><span style="display:flex;"><span># dpkg -i openjdk-8-j*8u342-b07*.deb
+</span></span></code></pre></div><ul>
+<li>Then the handle-server process starts up fine, so I held these OpenJDK versions for now:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># apt-mark hold openjdk-8-jdk-headless:amd64 apt-mark hold openjdk-8-jre-headless:amd64 
+</span></span><span style="display:flex;"><span>openjdk-8-jdk-headless set on hold.
+</span></span><span style="display:flex;"><span>openjdk-8-jre-headless set on hold.
+</span></span></code></pre></div><ul>
+<li>Start a harvest on AReS</li>
 </ul>
 <!-- raw HTML omitted -->
 
