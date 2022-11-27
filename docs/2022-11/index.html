@@ -24,7 +24,7 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-11/" />
 <meta property="article:published_time" content="2022-11-01T09:11:36+03:00" />
-<meta property="article:modified_time" content="2022-11-24T17:41:34+03:00" />
+<meta property="article:modified_time" content="2022-11-27T12:38:48+03:00" />
 
 
 
@@ -54,9 +54,9 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
   "@type": "BlogPosting",
   "headline": "November, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-11/",
-  "wordCount": "2221",
+  "wordCount": "2297",
   "datePublished": "2022-11-01T09:11:36+03:00",
-  "dateModified": "2022-11-24T17:41:34+03:00",
+  "dateModified": "2022-11-27T12:38:48+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -520,11 +520,29 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
 </span></span></code></pre></div><ul>
 <li>Then the handle-server process starts up fine, so I held these OpenJDK versions for now:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># apt-mark hold openjdk-8-jdk-headless:amd64 apt-mark hold openjdk-8-jre-headless:amd64 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># apt-mark hold openjdk-8-jdk-headless:amd64 openjdk-8-jre-headless:amd64
 </span></span><span style="display:flex;"><span>openjdk-8-jdk-headless set on hold.
 </span></span><span style="display:flex;"><span>openjdk-8-jre-headless set on hold.
 </span></span></code></pre></div><ul>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-11-27">2022-11-27</h2>
+<ul>
+<li>I realized I made a mistake in the PDF CropBox code I wrote for dspace-api a few weeks ago
+<ul>
+<li>For PDFs with only one page I was seeing this in the filter-media output:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>java.lang.IndexOutOfBoundsException: 1-based index out of bounds: 2
+</span></span></code></pre></div><ul>
+<li>It turns out that <a href="https://javadoc.io/static/org.apache.pdfbox/pdfbox/2.0.27/org/apache/pdfbox/pdmodel/PDDocument.html#getPage-int-">PDDocument&rsquo;s getPage() is zero-based</a></li>
+<li>I also updated PDFBox from 2.0.24 to 2.0.27</li>
+<li>I synced DSpace 7 Test with CGSpace
+<ul>
+<li>I had to follow my notes from 2022-03 to delete the missing Atmire migrations</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
