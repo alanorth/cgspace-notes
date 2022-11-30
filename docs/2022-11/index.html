@@ -24,7 +24,7 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-11/" />
 <meta property="article:published_time" content="2022-11-01T09:11:36+03:00" />
-<meta property="article:modified_time" content="2022-11-28T17:42:46+03:00" />
+<meta property="article:modified_time" content="2022-11-28T23:19:19+03:00" />
 
 
 
@@ -54,9 +54,9 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
   "@type": "BlogPosting",
   "headline": "November, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-11/",
-  "wordCount": "2853",
+  "wordCount": "3206",
   "datePublished": "2022-11-01T09:11:36+03:00",
-  "dateModified": "2022-11-28T17:42:46+03:00",
+  "dateModified": "2022-11-28T23:19:19+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -654,6 +654,57 @@ I reverted the Cocoon autosave change because it was more of a nuissance that Pe
 <ul>
 <li>It&rsquo;s apparently the only CRP with an Oxford comma&hellip;?</li>
 <li>I updated them all on CGSpace</li>
+</ul>
+</li>
+<li>Also, I ran an <code>index-discovery</code> without the <code>-b</code> since now my metadata update scripts update the <code>last_modified</code> timestamp as well and it finished in fifteen minutes, and I see the changes in the Discovery search and facets</li>
+</ul>
+<h2 id="2022-11-29">2022-11-29</h2>
+<ul>
+<li>Meeting with Marie-Angelique, Abenet, Sara, Valentina, and Margarita about <code>dcterms.type</code> for CG Core
+<ul>
+<li>We discussed some of the feedback from Peter</li>
+</ul>
+</li>
+<li>Peter and Abenet and I agreed to update some of our metadata in response to the PRMS feedback
+<ul>
+<li>I updated Pacific to Oceania, and Central Africa to Middle Africa, and removed the old ones from the submission form</li>
+<li>These are UN M.49 regions</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-11-30">2022-11-30</h2>
+<ul>
+<li>I ran csv-metadata-quality on an export of the ILRI community on CGSpace, but only with title, country, and region fields
+<ul>
+<li>It fixed some whitespace issues and added missing regions to about 1,200 items</li>
+</ul>
+</li>
+<li>I thought of a way to delete duplicate metadata values, since the CSV upload method can&rsquo;t detect them correctly
+<ul>
+<li>First, I wrote a <a href="https://chartio.com/learn/databases/how-to-find-duplicate-values-in-a-sql-table/">SQL query</a> to identify metadata falues with the same <code>text_value</code>, <code>metadata_field_id</code>, and <code>dspace_object_id</code>:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>\COPY (SELECT a.text_value, a.metadata_value_id, a.metadata_field_id, a.dspace_object_id 
+</span></span><span style="display:flex;"><span>    FROM metadatavalue a
+</span></span><span style="display:flex;"><span>    JOIN (
+</span></span><span style="display:flex;"><span>        SELECT dspace_object_id, text_value, metadata_field_id, COUNT(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id NOT IN (11, 12, 28, 136, 159) GROUP BY dspace_object_id, text_value, metadata_field_id HAVING COUNT(*) &gt; 1
+</span></span><span style="display:flex;"><span>    ) b
+</span></span><span style="display:flex;"><span>    ON a.dspace_object_id = b.dspace_object_id
+</span></span><span style="display:flex;"><span>    AND a.text_value = b.text_value
+</span></span><span style="display:flex;"><span>    AND a.metadata_field_id = b.metadata_field_id
+</span></span><span style="display:flex;"><span>    ORDER BY a.text_value) TO /tmp/duplicates.txt
+</span></span></code></pre></div><ul>
+<li>(This query excludes metadata for accession and available dates, provenance, format, etc)</li>
+<li>Then, I sorted the file by fields four and one (<code>dspace_object_id</code> and <code>text_value</code>) so that the duplicate metadata for each item were next to each other, used awk to print the second field (<code>metadata_field_id</code>) from every <em>other</em> line, and created a SQL script to delete the metadata</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ sort -k4,1 /tmp/duplicates.txt    | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    awk -F&#39;\t&#39; &#39;NR%2==0 {print $2}&#39; | \
+</span></span><span style="display:flex;"><span>    sed &#39;s/^\(.*\)$/DELETE FROM metadatavalue WHERE metadata_value_id=\1;/&#39; &gt; /tmp/delete-duplicates.sql
+</span></span></code></pre></div><ul>
+<li>This worked very well, but there were some metadata values that were tripled or quadrupled, so it only deleted the first duplicate
+<ul>
+<li>I just ran it again two more times to find the last duplicates, now we have none!</li>
 </ul>
 </li>
 </ul>
