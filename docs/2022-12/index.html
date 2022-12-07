@@ -20,7 +20,7 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-12/" />
 <meta property="article:published_time" content="2022-12-01T08:52:36+03:00" />
-<meta property="article:modified_time" content="2022-12-03T10:46:29+03:00" />
+<meta property="article:modified_time" content="2022-12-04T03:19:49+03:00" />
 
 
 
@@ -36,7 +36,7 @@ I exported the CCAFS and IITA communities, extracted just the country and region
 Add a few more authors to my CSV with author names and ORCID identifiers and tag 283 items!
 Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpace (UN M.49 region)
 "/>
-<meta name="generator" content="Hugo 0.105.0">
+<meta name="generator" content="Hugo 0.108.0">
 
 
     
@@ -46,9 +46,9 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
   "@type": "BlogPosting",
   "headline": "December, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-12/",
-  "wordCount": "376",
+  "wordCount": "617",
   "datePublished": "2022-12-01T08:52:36+03:00",
-  "dateModified": "2022-12-03T10:46:29+03:00",
+  "dateModified": "2022-12-04T03:19:49+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -164,7 +164,7 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ sed -e <span style="color:#e6db74">&#39;s_ / _\n_&#39;</span> -e <span style="color:#e6db74">&#39;s_/_\n_&#39;</span> -e <span style="color:#e6db74">&#39;s/ \?(.*)$//&#39;</span> ~/Downloads/2022-12-03-CLARISA-institutions.txt &gt; ~/Downloads/2022-12-03-CLARISA-institutions-alan.txt
 </span></span></code></pre></div><ul>
-<li>I checked CGSpace&rsquo;s top 1,000 institutions too, first exporting from PostgreSQL:</li>
+<li>I checked CGSpace&rsquo;s top 1,000 affiliations too, first exporting from PostgreSQL:</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC LIMIT 1000) to /tmp/2022-11-22-affiliations.csv;
 </span></span></code></pre></div><ul>
@@ -175,7 +175,40 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 </span></span><span style="display:flex;"><span>$ csvgrep -c matched -m true /tmp/cgspace-matches.csv | wc -l
 </span></span><span style="display:flex;"><span>542
 </span></span></code></pre></div><ul>
-<li>So that&rsquo;s a 54% match for our top institutions</li>
+<li>So that&rsquo;s a 54% match for our top affiliations</li>
+<li>I realized we should actually check affiliations and sponsors, since those are stored in separate fields
+<ul>
+<li>When I add those the matches go down a bit to 45%</li>
+</ul>
+</li>
+<li>Oh man, I realized institutions like <code>Université d'Abomey Calavi</code> don&rsquo;t match in ROR because they are like this in the JSON:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>&#34;name&#34;: &#34;Universit\u00e9 d&#39;Abomey-Calavi&#34;
+</span></span></code></pre></div><ul>
+<li>So we likely match a bunch more than 50%&hellip;</li>
+<li>I exported a list of affiliations and donors from CGSpace for Peter to look over and send corrections</li>
+</ul>
+<h2 id="2022-12-05">2022-12-05</h2>
+<ul>
+<li>First day of PRMS technical workshop in Rome</li>
+<li>Last night I submitted a CSV import with changes to 1,500 Alliance items (adding regions) and it hadn&rsquo;t completed after twenty-four hours so I canceled it
+<ul>
+<li>Not sure if there is some rollback that will happen or what state the database will be in, so I will wait a few hours to see what happens before trying to modify those items again</li>
+<li>I started it again a few hours later with a subset of the items and 4GB of RAM instead of 2</li>
+<li>It completed successfully&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-12-07">2022-12-07</h2>
+<ul>
+<li>I found a bug in my csv-metadata-quality script regarding the regions
+<ul>
+<li>I was accidentally checking <code>cg.coverage.subregion</code> due to a sloppy regex</li>
+<li>This means I&rsquo;ve added a few thousand UN M.49 regions to the <code>cg.coverage.subregion</code> field in the last few days</li>
+<li>I had to extract them from CGSpace and delete them using <code>delete-metadata-values.py</code></li>
+</ul>
+</li>
+<li>My <a href="https://github.com/DSpace/DSpace/pull/8550">DSpace 7.x pull request to tell ImageMagick about the PDF CropBox</a> was merged</li>
 </ul>
 <!-- raw HTML omitted -->
 
