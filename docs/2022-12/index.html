@@ -20,7 +20,7 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-12/" />
 <meta property="article:published_time" content="2022-12-01T08:52:36+03:00" />
-<meta property="article:modified_time" content="2022-12-04T03:19:49+03:00" />
+<meta property="article:modified_time" content="2022-12-07T22:59:37+01:00" />
 
 
 
@@ -46,9 +46,9 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
   "@type": "BlogPosting",
   "headline": "December, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-12/",
-  "wordCount": "617",
+  "wordCount": "843",
   "datePublished": "2022-12-01T08:52:36+03:00",
-  "dateModified": "2022-12-04T03:19:49+03:00",
+  "dateModified": "2022-12-07T22:59:37+01:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -209,6 +209,44 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 </ul>
 </li>
 <li>My <a href="https://github.com/DSpace/DSpace/pull/8550">DSpace 7.x pull request to tell ImageMagick about the PDF CropBox</a> was merged</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-12-08">2022-12-08</h2>
+<ul>
+<li>While on the plane I decided to fix some ORCID identifiers, as I had seen some poorly formatted ones
+<ul>
+<li>I couldn&rsquo;t remember the XPath syntax so this was kinda ghetto:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ xmllint --xpath <span style="color:#e6db74">&#39;//node/isComposedBy/node()&#39;</span> dspace/config/controlled-vocabularies/cg-creator-identifier.xml | grep -oE <span style="color:#e6db74">&#39;label=&#34;.*&#34;&#39;</span> | sed -e <span style="color:#e6db74">&#39;s/label=&#34;//&#39;</span> -e <span style="color:#e6db74">&#39;s/&#34;$//&#39;</span> &gt; /tmp/orcid-names.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/update-orcids.py -i /tmp/orcid-names.txt -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -m <span style="color:#ae81ff">247</span>
+</span></span></code></pre></div><ul>
+<li>After that there were still some poorly formatted ones that my script didn&rsquo;t fix, so perhaps these are new ones not in our list
+<ul>
+<li>I dumped them and combined with the existing ones to resolve later:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace= ☘ \COPY (SELECT dspace_object_id,text_value FROM metadatavalue WHERE metadata_field_id=247 AND text_value LIKE &#39;%http%&#39;) to /tmp/orcid-formatting.txt;
+</span></span><span style="display:flex;"><span>COPY 36
+</span></span></code></pre></div><ul>
+<li>I think there are really just some new ones&hellip;</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/orcid-formatting.txt| grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u &gt; /tmp/2022-12-08-orcids.txt 
+</span></span><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u | wc -l
+</span></span><span style="display:flex;"><span>1907
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2022-12-08-orcids.txt
+</span></span><span style="display:flex;"><span>1939 /tmp/2022-12-08-orcids.txt
+</span></span></code></pre></div><ul>
+<li>Then I applied these updates on CGSpace</li>
+<li>Maria mentioned that she was getting a lot more items in her daily subscription emails
+<ul>
+<li>I had a hunch it was related to me updating the <code>last_modified</code> timestamp after updating a bunch of countries, regions, etc in items</li>
+<li>Then today I noticed this option in <code>dspace.cfg</code>: <code>eperson.subscription.onlynew</code></li>
+<li>By default DSpace sends notifications for modified items too! I&rsquo;ve disabled it now&hellip;</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
