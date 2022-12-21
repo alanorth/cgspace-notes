@@ -20,7 +20,7 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-12/" />
 <meta property="article:published_time" content="2022-12-01T08:52:36+03:00" />
-<meta property="article:modified_time" content="2022-12-15T16:41:04+03:00" />
+<meta property="article:modified_time" content="2022-12-19T07:03:13+02:00" />
 
 
 
@@ -46,9 +46,9 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
   "@type": "BlogPosting",
   "headline": "December, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-12/",
-  "wordCount": "1588",
+  "wordCount": "1672",
   "datePublished": "2022-12-01T08:52:36+03:00",
-  "dateModified": "2022-12-15T16:41:04+03:00",
+  "dateModified": "2022-12-19T07:03:13+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -383,6 +383,26 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 </code></pre><ul>
 <li>RStudio is already in the ILRI bot overrides for DSpace so it shouldn&rsquo;t be causing any extra hits, but I&rsquo;ll put an HTTP 403 in the nginx config to tell the user to use the REST API</li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-12-21">2022-12-21</h2>
+<ul>
+<li>I saw that load on CGSpace was over 20.0 for several hours
+<ul>
+<li>I saw there were some stuck locks in PostgreSQL:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi|dspaceCli)&#39;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>    948 dspaceApi
+</span></span><span style="display:flex;"><span>     30 dspaceCli
+</span></span><span style="display:flex;"><span>   1237 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>Ah, it&rsquo;s likely there is something stuck because I see the load high since yesterday at 6AM, which is 24 hours now:</li>
+</ul>
+<p><img src="/cgspace-notes/2022/12/cpu-day.png" alt="CPU load day">
+<img src="/cgspace-notes/2022/12/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
+<ul>
+<li>I ran all updates and restarted the server</li>
 </ul>
 <!-- raw HTML omitted -->
 
