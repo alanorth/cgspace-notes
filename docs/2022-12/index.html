@@ -20,7 +20,7 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-12/" />
 <meta property="article:published_time" content="2022-12-01T08:52:36+03:00" />
-<meta property="article:modified_time" content="2022-12-25T16:48:19+02:00" />
+<meta property="article:modified_time" content="2022-12-28T22:55:34+02:00" />
 
 
 
@@ -46,9 +46,9 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
   "@type": "BlogPosting",
   "headline": "December, 2022",
   "url": "https://alanorth.github.io/cgspace-notes/2022-12/",
-  "wordCount": "2257",
+  "wordCount": "2361",
   "datePublished": "2022-12-01T08:52:36+03:00",
-  "dateModified": "2022-12-25T16:48:19+02:00",
+  "dateModified": "2022-12-28T22:55:34+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -500,6 +500,24 @@ Replace &ldquo;East Asia&rdquo; with &ldquo;Eastern Asia&rdquo; region on CGSpac
 <ul>
 <li>And I can access the website just fine, so I guess everything is OK</li>
 <li>I exported the Initiatives collection to tag missing regions&hellip;</li>
+</ul>
+<h2 id="2022-12-29">2022-12-29</h2>
+<ul>
+<li>I exported the Initiatives collection again and I&rsquo;m wondering why we have so many items with <code>text_lang</code> set to NULL and others when I have been periodically resetting them
+<ul>
+<li>It turns out that doing <code>... text_lang IN ('en', '', NULL)</code> doesn&rsquo;t properly check for values with NULL</li>
+<li>We actually need to do:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> metadatavalue <span style="color:#66d9ef">SET</span> text_lang<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;en_US&#39;</span> <span style="color:#66d9ef">WHERE</span> dspace_object_id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> uuid <span style="color:#66d9ef">FROM</span> item) <span style="color:#66d9ef">AND</span> text_lang <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">OR</span> text_lang <span style="color:#66d9ef">IN</span> (<span style="color:#e6db74">&#39;en&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>);
+</span></span></code></pre></div><ul>
+<li>I updated the text lang values on CGSpace and re-exported the community
+<ul>
+<li>I fixed a bunch of invalid licenses in these items</li>
+<li>Then I added mappings for another handful of items</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
