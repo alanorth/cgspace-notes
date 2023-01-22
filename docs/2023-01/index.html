@@ -19,7 +19,7 @@ I see we have some new ones that aren&rsquo;t in our list if I combine with this
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-01/" />
 <meta property="article:published_time" content="2023-01-01T08:44:36+03:00" />
-<meta property="article:modified_time" content="2023-01-15T08:10:16+03:00" />
+<meta property="article:modified_time" content="2023-01-17T22:38:55+03:00" />
 
 
 
@@ -44,9 +44,9 @@ I see we have some new ones that aren&rsquo;t in our list if I combine with this
   "@type": "BlogPosting",
   "headline": "January, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-01/",
-  "wordCount": "2250",
+  "wordCount": "2969",
   "datePublished": "2023-01-01T08:44:36+03:00",
-  "dateModified": "2023-01-15T08:10:16+03:00",
+  "dateModified": "2023-01-17T22:38:55+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -451,6 +451,138 @@ I see we have some new ones that aren&rsquo;t in our list if I combine with this
 </li>
 <li>Export entire CGSpace to check Initiative mappings, and add nineteen&hellip;</li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-01-18">2023-01-18</h2>
+<ul>
+<li>I&rsquo;m looking at all the ORCID identifiers in the database, which seem to be way more than I realized:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ \COPY (SELECT DISTINCT(text_value) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=247) to /tmp/2023-01-18-orcid-identifiers.txt;
+</span></span><span style="display:flex;"><span>COPY 4231
+</span></span><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/2023-01-18-orcid-identifiers.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u &gt; /tmp/2023-01-18-orcids.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2023-01-18-orcids.txt
+</span></span><span style="display:flex;"><span>4518 /tmp/2023-01-18-orcids.txt
+</span></span></code></pre></div><ul>
+<li>Then I resolved them from ORCID and updated them in the database:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/resolve-orcids.py -i /tmp/2023-01-18-orcids.txt -o /tmp/2023-01-18-orcids-names.txt -d
+</span></span><span style="display:flex;"><span>$ ./ilri/update-orcids.py -i /tmp/2023-01-18-orcids-names.txt -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -m <span style="color:#ae81ff">247</span>
+</span></span></code></pre></div><ul>
+<li>Then I updated the controlled vocabulary</li>
+<li>CGSpace became inactive in the afternoon, with a high number of locks, but surprisingly low CPU usage:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi|dspaceCli)&#39;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>     83 dspaceApi
+</span></span><span style="display:flex;"><span>   7829 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>In the DSpace logs I see some weird SQL messages, so I decided to restart PostgreSQL and Tomcat 7&hellip;
+<ul>
+<li>I hope this doesn&rsquo;t cause some issue with in-progress workflows&hellip;</li>
+</ul>
+</li>
+<li>I see another user on Cox in the US (98.186.216.144) crawling and scraping XMLUI with Python
+<ul>
+<li>I will add python to the list of bad bot user agents in nginx</li>
+</ul>
+</li>
+<li>While looking into the locks I see some potential Java heap issues
+<ul>
+<li>Indeed, I see two out of memory errors in Tomcat&rsquo;s journal:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>tomcat7[310996]: java.lang.OutOfMemoryError: Java heap space
+</span></span><span style="display:flex;"><span>tomcat7[310996]: Jan 18, 2023 1:37:03 PM org.apache.tomcat.jdbc.pool.ConnectionPool abandon
+</span></span></code></pre></div><ul>
+<li>Which explains why the locks went down to normal numbers as I was watching&hellip; (because Java crashed)</li>
+</ul>
+<h2 id="2023-01-19">2023-01-19</h2>
+<ul>
+<li>Update a bunch of ORCID identifiers, Initiative mappings, and regions on CGSpace</li>
+<li>So it seems an IFPRI user got caught up in the blocking I did yesterday
+<ul>
+<li>Their ISP is Comcast&hellip;</li>
+<li>I need to re-work the ASN blocking on nginx, but for now I will just get the ASNs again minus Comcast:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wget https://asn.ipinfo.app/api/text/list/AS714 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>     https://asn.ipinfo.app/api/text/list/AS16276 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS15169 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS23576 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS24940 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS13238 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS32934 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS14061 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS12876 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS55286 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS203020 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS204287 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS50245 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS6939 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS16509 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS14618
+</span></span><span style="display:flex;"><span>$ cat AS* | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>18179
+</span></span><span style="display:flex;"><span>$ cat /tmp/AS* | ~/go/bin/mapcidr -a &gt; /tmp/networks.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/networks.txt
+</span></span><span style="display:flex;"><span>5872 /tmp/networks.txt
+</span></span></code></pre></div><h2 id="2023-01-20">2023-01-20</h2>
+<ul>
+<li>A lot of work on CGSpace metadata (ORCID identifiers, regions, and Initiatives)</li>
+<li>I noticed that MEL and CGSpace are using slightly different vocabularies for SDGs so I sent an email to Salem and Sara</li>
+</ul>
+<h2 id="2023-01-21">2023-01-21</h2>
+<ul>
+<li>Export the Initiatives community again to perform collection mappings and country/region fixes</li>
+</ul>
+<h2 id="2023-01-22">2023-01-22</h2>
+<ul>
+<li>There has been a high load on the server for a few days, currently 8.0&hellip; and I&rsquo;ve been seeing some PostgreSQL locks stuck all day:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi|dspaceCli)&#39;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>     11 dspaceApi
+</span></span><span style="display:flex;"><span>     28 dspaceCli
+</span></span><span style="display:flex;"><span>    981 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>Looking at the locks I see they are from this morning at 5:00 AM, which is the <code>dspace checker-email</code> script
+<ul>
+<li>Last week I disabled the one that ones at 4:00 AM, but I guess I will experiment with disabling this too&hellip;</li>
+<li>Then I killed the PIDs of the locks</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#34;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid WHERE application_name=&#39;dspaceCli&#39;;&#34;</span> | less -S
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>$ ps auxw | grep <span style="color:#ae81ff">18986</span>
+</span></span><span style="display:flex;"><span>postgres 1429108  1.9  1.5 3359712 508148 ?      Ss   05:00  13:40 postgres: 12/main: dspace dspace 127.0.0.1(18986) SELECT
+</span></span></code></pre></div><ul>
+<li>Also, I checked the age of the locks and killed anything over 1 day:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql &lt; locks-age.sql | grep days | less -S
+</span></span></code></pre></div><ul>
+<li>Then I ran all updates on the server and restarted it&hellip;</li>
+<li>Salem responded to my question about the SDG mismatch between MEL and CGSpace
+<ul>
+<li>We agreed to use a version based on the text of <a href="http://metadata.un.org/sdg/?lang=en">this site</a></li>
+</ul>
+</li>
+<li>Salem is having issues with some REST API submission / updates
+<ul>
+<li>I updated DSpace Test with a recent CGSpace backup and created a super admin user for him to test</li>
+</ul>
+</li>
+<li>Clean and normalize fifty-eight IFPRI records for batch import to CGSpace
+<ul>
+<li>I did a duplicate check and found six, so that&rsquo;s good!</li>
+</ul>
+</li>
+<li>I exported the entire CGSpace to check for missing Initiative mappings
+<ul>
+<li>Then I exported the Initiatives community to check for missing regions</li>
+<li>Then I ran the script to check for missing ORCID identifiers</li>
+<li>Then <em>finally</em>, I started a harvest on AReS</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
