@@ -19,7 +19,7 @@ I see we have some new ones that aren&rsquo;t in our list if I combine with this
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-01/" />
 <meta property="article:published_time" content="2023-01-01T08:44:36+03:00" />
-<meta property="article:modified_time" content="2023-01-17T22:38:55+03:00" />
+<meta property="article:modified_time" content="2023-01-22T21:53:45+03:00" />
 
 
 
@@ -44,9 +44,9 @@ I see we have some new ones that aren&rsquo;t in our list if I combine with this
   "@type": "BlogPosting",
   "headline": "January, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-01/",
-  "wordCount": "2969",
+  "wordCount": "4065",
   "datePublished": "2023-01-01T08:44:36+03:00",
-  "dateModified": "2023-01-17T22:38:55+03:00",
+  "dateModified": "2023-01-22T21:53:45+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -581,6 +581,166 @@ I see we have some new ones that aren&rsquo;t in our list if I combine with this
 <li>Then I exported the Initiatives community to check for missing regions</li>
 <li>Then I ran the script to check for missing ORCID identifiers</li>
 <li>Then <em>finally</em>, I started a harvest on AReS</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-01-23">2023-01-23</h2>
+<ul>
+<li>Salem found that you can actually harvest everything in DSpace 7 using the <a href="https://dspace7test.ilri.org/server/api/discover/browses/title/items?page=1&amp;size=100"><code>discover/browses</code> endpoint</a></li>
+<li>Exported CGSpace again to examine and clean up a bunch of stuff like ISBNs in the ISSN field, DOIs in the URL field, dataset URLs in the DOI field, normalized a bunch of publisher places, fixed some countries and regions, fixed some licenses, etc
+<ul>
+<li>I noticed that we still have &ldquo;North America&rdquo; as a region, but according to UN M.49 that is the continent, which comprises &ldquo;Northern America&rdquo; the region, so I will update our controlled vocabularies and all existing entries</li>
+<li>I imported changes to 1,800 items</li>
+<li>When it finished five hours later I started a harvest on AReS</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-01-24">2023-01-24</h2>
+<ul>
+<li>Proof and upload seven items for the Rethinking Food Markets Initiative for IFPRI</li>
+<li>Export CGSpace to do some minor cleanups, Initiative collection mappings, and region fixes
+<ul>
+<li>I also added &ldquo;CGIAR Trust Fund&rdquo; to all items with an Initiative in <code>cg.contributor.initiative</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-01-25">2023-01-25</h2>
+<ul>
+<li>Oh shit, the import last night ran for twelve hours and then died:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Error committing changes to database: could not execute statement
+</span></span><span style="display:flex;"><span>Aborting most recent changes.
+</span></span></code></pre></div><ul>
+<li>I re-submitted a smaller version without the CGIAR Trust Fund changes for now just so we get the regions and other fixes</li>
+<li>Do some work on SAPLING issues for CGSpace, sending a large list of issues we found to the MEL team for items they submitted</li>
+<li>Abenet noticed that the number of items in the Initiatives community appears to have dropped by about 2,000 in the XMLUI
+<ul>
+<li>We looked on AReS and all the items are still there</li>
+<li>I looked in the DSpace log and see around 2,000 messages like this:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2023-01-25 07:14:59,529 ERROR com.atmire.versioning.ModificationLogger @ Error while writing item to versioning index: c9fac1f2-6b2b-4941-8077-40b7b5c936b6 message:missing required field: epersonID
+</span></span><span style="display:flex;"><span>org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: missing required field: epersonID
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:116)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:102)
+</span></span><span style="display:flex;"><span>        at com.atmire.versioning.ModificationLogger.indexItem(ModificationLogger.java:263)
+</span></span><span style="display:flex;"><span>        at com.atmire.versioning.ModificationConsumer.end(ModificationConsumer.java:134)
+</span></span><span style="display:flex;"><span>        at org.dspace.event.BasicDispatcher.dispatch(BasicDispatcher.java:157)
+</span></span><span style="display:flex;"><span>        at org.dspace.core.Context.dispatchEvents(Context.java:455)
+</span></span><span style="display:flex;"><span>        at org.dspace.core.Context.commit(Context.java:424)
+</span></span><span style="display:flex;"><span>        at org.dspace.core.Context.complete(Context.java:380)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataImport.main(MetadataImport.java:1399)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.lang.reflect.Method.invoke(Method.java:498)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</span></span></code></pre></div><ul>
+<li>I filed a ticket with Atmire to ask them</li>
+<li>For now I just did a light Discovery reindex (not the full one) and all the items appeared again</li>
+<li>Submit an issue to MEL GitHub regarding the capitalization of CRPs: <a href="https://github.com/CodeObia/MEL/issues/11133">https://github.com/CodeObia/MEL/issues/11133</a>
+<ul>
+<li>I talked to Salem and he said that this is a legacy thing from when CGSpace was using ALL CAPS for most of its metadata. I provided him with <a href="https://ilri.github.io/cgspace-submission-guidelines/cg-contributor-crp/cg-contributor-crp.txt">our current controlled vocabulary for CRPs</a> and he will update it in MEL.</li>
+<li>On that note, Peter and Abenet and I realized that we still have an old field <code>cg.subject.crp</code> with about 450 values in it, but it has not been used for a few years (they are using the old ALL CAPS CRPs)</li>
+<li>I exported this list of values to lowercase them and move them to <code>cg.contributor.crp</code></li>
+<li>Even if some items end up with multiple CRPs, they will get de-duplicated when I remove duplicate values soon</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i /tmp/2023-01-25-fix-crp-subjects.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.subject.crp -t correct
+</span></span><span style="display:flex;"><span>$ ./ilri/move-metadata-values.py -i /tmp/2023-01-25-move-crp-subjects.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.subject.crp -t cg.contributor.crp
+</span></span></code></pre></div><ul>
+<li>After fixing and moving them all, I deleted the <code>cg.subject.crp</code> field from the metadata registry</li>
+<li>I realized a smarter way to update the text lang attributes of metadata would be to restrict the query to items that are in the archive and not withdrawn:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> metadatavalue <span style="color:#66d9ef">SET</span> text_lang<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;en_US&#39;</span> <span style="color:#66d9ef">WHERE</span> dspace_object_id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> uuid <span style="color:#66d9ef">FROM</span> item <span style="color:#66d9ef">WHERE</span> in_archive <span style="color:#66d9ef">AND</span> <span style="color:#66d9ef">NOT</span> withdrawn) <span style="color:#66d9ef">AND</span> text_lang <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">OR</span> text_lang <span style="color:#66d9ef">IN</span> (<span style="color:#e6db74">&#39;en&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>);
+</span></span></code></pre></div><ul>
+<li>
+<p>I tried that in a transaction and it hung, so I canceled it and rolled back</p>
+</li>
+<li>
+<p>I see some PostgreSQL locks attributed to <code>dspaceApi</code> that were started at <code>2023-01-25 13:40:04.529087+01</code> and haven&rsquo;t changed since then (that&rsquo;s eight hours ago)</p>
+<ul>
+<li>I killed the pid&hellip;</li>
+<li>There were also saw some locks owned by <code>dspaceWeb</code> that were nine and four hours old, so I killed those too&hellip;</li>
+<li>Now Maria was able to archive one submission of hers that was hanging all afternoon, but I still can&rsquo;t run the update on the text langs&hellip;</li>
+</ul>
+</li>
+<li>
+<p>Export entire CGSpace to do Initiative mappings again</p>
+</li>
+<li>
+<p>Started a harvest on AReS</p>
+</li>
+</ul>
+<h2 id="2023-01-26">2023-01-26</h2>
+<ul>
+<li>Export entire CGSpace to do some metadata cleanup on various fields
+<ul>
+<li>I also added &ldquo;CGIAR Trust Fund&rdquo; to all items in the Initiatives community</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-01-27">2023-01-27</h2>
+<ul>
+<li>Export a list of affiliations in the Initiatives community for Peter, trying a new method to avoid exporting <em>everything</em> from PostgreSQL:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace metadata-export -i 10568/115087 -f /tmp/2023-01-27-initiatives.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;cg.contributor.affiliation[en_US]&#39;</span> 2023-01-27-initiatives.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | sed -e 1d -e &#39;s/^&#34;//&#39; -e &#39;s/&#34;$//&#39; -e &#39;s/||/\n/g&#39; -e &#39;/^$/d&#39;            \
+</span></span><span style="display:flex;"><span>  | sort | uniq -c | sort -h                                               \
+</span></span><span style="display:flex;"><span>  | awk &#39;BEGIN { FS = &#34;^[[:space:]]+[[:digit:]]+[[:space:]]+&#34; } {print $2}&#39;\
+</span></span><span style="display:flex;"><span>  | sed -e &#39;1i cg.contributor.affiliation&#39; -e &#39;s/^\(.*\)$/&#34;\1&#34;/&#39;           \
+</span></span><span style="display:flex;"><span>  &gt; /tmp/2023-01-27-initiatives-affiliations.csv
+</span></span></code></pre></div><ul>
+<li>The first sed command strips the quotes, deletes empty lines, and splits multiple values on &ldquo;||&rdquo;</li>
+<li>The awk command sets the field separator to something so we can get the second &ldquo;field&rdquo; of the sort command, ie:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    309 International Center for Agricultural Research in the Dry Areas
+</span></span><span style="display:flex;"><span>    412 International Livestock Research Institute
+</span></span></code></pre></div><ul>
+<li>The second sed command adds the CSV header and quotes back</li>
+<li>I did the same for authors and donors and send them to Peter to make corrections</li>
+</ul>
+<h2 id="2023-01-28">2023-01-28</h2>
+<ul>
+<li>Daniel from the Alliance said they are getting an HTTP 401 when trying to submit items to CGSpace via the REST API</li>
+</ul>
+<h2 id="2023-01-29">2023-01-29</h2>
+<ul>
+<li>Export the entire CGSpace to do Initiatives collection mappings</li>
+<li>I was thinking about a way to use Crossref&rsquo;s API to enrich our data, for example checking registered DOIs for license information, publishers, etc
+<ul>
+<li>Turns out I had already written <code>crossref-doi-lookup.py</code> last year, and it works</li>
+<li>I exported a list of all DOIs without licenses from CGSpace, minus the CIFOR ones because I know they aren&rsquo;t registered on Crossref, which is about 11,800 DOIs</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;cg.identifier.doi[en_US]&#39;</span> ~/Downloads/2023-01-29-CGSpace-DOIs-without-licenses.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | csvgrep -c &#39;cg.identifier.doi[en_US]&#39; -r &#39;.*cifor.*&#39; -i \
+</span></span><span style="display:flex;"><span>  | sed 1d &gt; /tmp/2023-01-29-dois.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2023-01-29-dois.txt
+</span></span><span style="display:flex;"><span>11819 /tmp/2023-01-29-dois.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/crossref-doi-lookup.py -e a.orth@cgiar.org -i /tmp/2023-01-29-dois.txt -o /tmp/crossref-results.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,cg.identifier.doi[en_US]&#39;</span> ~/Downloads/2023-01-29-CGSpace-DOIs-without-licenses.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | sed -e &#39;s_https://doi.org/__g&#39; -e &#39;s_https://dx.doi.org/__g&#39; -e &#39;s/cg.identifier.doi\[en_US\]/doi/&#39; \
+</span></span><span style="display:flex;"><span>  &gt; /tmp/cgspace-temp.csv
+</span></span><span style="display:flex;"><span>$ csvjoin -c doi /tmp/cgspace-temp.csv /tmp/crossref-results.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | csvgrep -c license -r &#39;creative&#39; \
+</span></span><span style="display:flex;"><span>  | sed &#39;1s/license/dcterms.license[en_US]/&#39; \
+</span></span><span style="display:flex;"><span>  | csvcut -c id,license &gt; /tmp/2023-01-29-new-licenses.csv
+</span></span></code></pre></div><ul>
+<li>The above was done with just 5,000 DOIs because it was taking a long time, but after the last step I imported into OpenRefine to clean up the license URLs
+<ul>
+<li>Then I imported 635 new licenses to CGSpace woooo</li>
+<li>After checking the remaining 6,500 DOIs there were another 852 new licenses, woooo</li>
 </ul>
 </li>
 </ul>
