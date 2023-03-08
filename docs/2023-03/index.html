@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-07T10:05:12+03:00" />
+<meta property="article:modified_time" content="2023-03-07T17:15:26+03:00" />
 
 
 
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "601",
+  "wordCount": "1336",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-07T10:05:12+03:00",
+  "dateModified": "2023-03-07T17:15:26+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -200,12 +200,111 @@ pd.options.mode.nullable_dtypes = True
 <li>Surprisingly some of the DOIs on Altmetric were not working, though we also had some that were not working (specifically the Journal of Agricultural Economics seems to have reassigned DOIs)</li>
 </ul>
 </li>
+<li>For the rest of the ~359 items I extracted their DOIs and looked up the metadata on Crossref using my <code>crossref-doi-lookup.py</code> script
+<ul>
+<li>After spending some time cleaning the data in OpenRefine I realized we don&rsquo;t get access status from Crossref</li>
+<li>We can imply it if the item is Creative Commons, but otherwise I might be able to use <a href="https://unpaywall.org/products/api">Unpaywall&rsquo;s API</a></li>
+<li>I found some false positives in Unpaywall, so I might only use their data when it says the DOI is not OA&hellip;</li>
 </ul>
 </li>
+</ul>
+</li>
+<li>During this process I updated my <code>crossref-doi-lookup.py</code> script to get more information from Crossref like ISSNs, ISBNs, full journal title, and subjects</li>
 <li>An unscientific comparison of duplicate checking Peter&rsquo;s file with ~500 titles on PostgreSQL 12 and PostgreSQL 14:
 <ul>
 <li>PostgreSQL 12: <code>0.11s user 0.04s system 0% cpu 19:24.65 total</code></li>
 <li>PostgreSQL 14: <code>0.12s user 0.04s system 0% cpu 18:13.47 total</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-03-08">2023-03-08</h2>
+<ul>
+<li>I am wondering how to speed up PostgreSQL trgm searches more
+<ul>
+<li>I see my local PostgreSQL is using vanilla configuration and I should update some configs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ SELECT setting, unit FROM pg_settings WHERE name = &#39;shared_buffers&#39;;
+</span></span><span style="display:flex;"><span> setting │ unit 
+</span></span><span style="display:flex;"><span>─────────┼──────
+</span></span><span style="display:flex;"><span> 16384   │ 8kB
+</span></span><span style="display:flex;"><span>(1 row)
+</span></span></code></pre></div><ul>
+<li>I re-created my PostgreSQL 14 container with some extra memory settings:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ podman run --name dspacedb14 -v dspacedb14_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD<span style="color:#f92672">=</span>postgres -p 5432:5432 -d postgres:14-alpine -c shared_buffers<span style="color:#f92672">=</span>1024MB -c random_page_cost<span style="color:#f92672">=</span>1.1
+</span></span></code></pre></div><ul>
+<li>Then I created a GiST <a href="https://alexklibisz.com/2022/02/18/optimizing-postgres-trigram-search">index on the <code>metadatavalue</code> table to try to speed up the trgm similarity operations</a>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ CREATE INDEX metadatavalue_text_value_trgm_gist_idx ON metadatavalue USING gist(text_value gist_trgm_ops(siglen=64)); # \di+ shows index size is 795MB
+</span></span></code></pre></div><ul>
+<li>That took a few minutes to build&hellip; then the duplicate checker ran in 12 minutes: <code>0.07s user 0.02s system 0% cpu 12:43.08 total</code></li>
+<li>On a hunch, I tried with a GIN index:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ CREATE INDEX metadatavalue_text_value_trgm_gin_idx ON metadatavalue USING gin(text_value gin_trgm_ops); # \di+ shows index size is 274MB
+</span></span></code></pre></div><ul>
+<li>This ran in 19 minutes: <code>0.08s user 0.01s system 0% cpu 19:49.73 total</code>
+<ul>
+<li>So clearly the GiST index is better for this task</li>
+<li>I am curious if I increase the signature length in the GiST index from 64 to 256 (which will for sure increase the size taken):</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ CREATE INDEX metadatavalue_text_value_trgm_gist_idx ON metadatavalue USING gist(text_value gist_trgm_ops(siglen=256)); # \di+ shows index size is 716MB, which is less than the previous GiST index...
+</span></span></code></pre></div><ul>
+<li>This one finished in ten minutes: <code>0.07s user 0.02s system 0% cpu 10:04.04 total</code></li>
+<li>I might also want to <a href="https://stackoverflow.com/questions/43008382/postgresql-gin-index-slower-than-gist-for-pg-trgm">increase my <code>work_mem</code></a> (default 4MB):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ SELECT setting, unit FROM pg_settings WHERE name = &#39;work_mem&#39;;
+</span></span><span style="display:flex;"><span> setting │ unit 
+</span></span><span style="display:flex;"><span>─────────┼──────
+</span></span><span style="display:flex;"><span> 4096    │ kB
+</span></span><span style="display:flex;"><span>(1 row)
+</span></span></code></pre></div><ul>
+<li>After updating my Crossref lookup script and checking the remaining ~359 items I found a eight more duplicates already existing on CGSpace</li>
+<li>Wow, I found a <a href="https://programminghistorian.org/en/lessons/fetch-and-parse-data-with-openrefine#example-1-fetching-and-parsing-html">really cool way to fetch URLs in OpenRefine</a>
+<ul>
+<li>I used this to fetch the open access status for each DOI from Unpaywall</li>
+</ul>
+</li>
+<li>First, create a new column called &ldquo;url&rdquo; based on the DOI that builds the request URL. I used a Jython expression:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>unpaywall_baseurl <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://api.unpaywall.org/v2/&#39;</span>
+</span></span><span style="display:flex;"><span>email <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;a.orth+unpaywall@cgiar.org&#34;</span>
+</span></span><span style="display:flex;"><span>doi <span style="color:#f92672">=</span> value<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;https://doi.org/&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>request_url <span style="color:#f92672">=</span> unpaywall_baseurl <span style="color:#f92672">+</span> doi <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;?email=&#39;</span> <span style="color:#f92672">+</span> email
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> request_url
+</span></span></code></pre></div><ul>
+<li>Then create a new column based on fetching the values in that column. I called it &ldquo;unpaywall_status&rdquo;</li>
+<li>Then you get a JSON blob in each and you can extract the Open Access status with a GREL like <code>value.parseJson()['is_oa']</code>
+<ul>
+<li>I checked a handful of results manually and found that the limited access status was more trustworthy from Unpaywall than the open access, so I will just tag the limited access ones</li>
+</ul>
+</li>
+<li>I merged the funders and affiliations from Altmetric into my file, then used the same technique to get Crossref data for open access items directly into OpenRefine and parsed the abstracts
+<ul>
+<li>The syntax was hairy because it&rsquo;s marked up with tags like <code>&lt;jats:p&gt;</code>, but this got me most of the way there:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>value.replace(&#34;jats:p&#34;, &#34;jats-p&#34;).parseHtml().select(&#34;jats-p&#34;)[0].innerHtml()
+</span></span><span style="display:flex;"><span>value.replace(&#34;&lt;jats:italic&gt;&#34;,&#34;&#34;).replace(&#34;&lt;/jats:italic&gt;&#34;, &#34;&#34;)
+</span></span><span style="display:flex;"><span>value.replace(&#34;&lt;jats:sub&gt;&#34;,&#34;&#34;).replace(&#34;&lt;/jats:sub&gt;&#34;, &#34;&#34;).replace(&#34;&lt;jats:sup&gt;&#34;,&#34;&#34;).replace(&#34;&lt;/jats:sup&gt;&#34;, &#34;&#34;)
+</span></span></code></pre></div><ul>
+<li>I uploaded the 350 items to DSpace Test so Peter and Abenet can explore them</li>
+<li>Meeting with FAO AGRIS team about how to detect duplicates
+<ul>
+<li>They are currently using a sha256 hash on titles, which will work, but will only return exact matches</li>
+<li>I told them to try to normalize the string, drop stop words, etc to increase the possibility that the hash matches</li>
+</ul>
+</li>
+<li>Meeting with Abenet to discuss CGSpace issues
+<ul>
+<li>She reminded me about needing a metadata field for first author when the affiliation is ILRI</li>
+<li>I said I prefer to write a small script for her that will check the first author and first affiliation&hellip; I could do it easily in Python, but would need to put a web frontend on it for her</li>
+<li>Unless we could do that in AReS reports somehow</li>
 </ul>
 </li>
 </ul>
