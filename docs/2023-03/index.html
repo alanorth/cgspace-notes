@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-07T17:15:26+03:00" />
+<meta property="article:modified_time" content="2023-03-08T18:53:32+03:00" />
 
 
 
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "1336",
+  "wordCount": "1433",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-07T17:15:26+03:00",
+  "dateModified": "2023-03-08T18:53:32+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -294,6 +294,10 @@ pd.options.mode.nullable_dtypes = True
 </span></span><span style="display:flex;"><span>value.replace(&#34;&lt;jats:sub&gt;&#34;,&#34;&#34;).replace(&#34;&lt;/jats:sub&gt;&#34;, &#34;&#34;).replace(&#34;&lt;jats:sup&gt;&#34;,&#34;&#34;).replace(&#34;&lt;/jats:sup&gt;&#34;, &#34;&#34;)
 </span></span></code></pre></div><ul>
 <li>I uploaded the 350 items to DSpace Test so Peter and Abenet can explore them</li>
+<li>I exported a list of authors, affiliations, and funders from the new items to let Peter correct them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c dc.contributor.author /tmp/new-items.csv | sed -e 1d -e <span style="color:#e6db74">&#39;s/&#34;//g&#39;</span> -e <span style="color:#e6db74">&#39;s/||/\n/g&#39;</span> | sort | uniq -c | sort -nr | awk <span style="color:#e6db74">&#39;{$1=&#34;&#34;; print $0}&#39;</span> | sed -e <span style="color:#e6db74">&#39;s/^ //&#39;</span> &gt; /tmp/new-authors.csv
+</span></span></code></pre></div><ul>
 <li>Meeting with FAO AGRIS team about how to detect duplicates
 <ul>
 <li>They are currently using a sha256 hash on titles, which will work, but will only return exact matches</li>
@@ -305,6 +309,15 @@ pd.options.mode.nullable_dtypes = True
 <li>She reminded me about needing a metadata field for first author when the affiliation is ILRI</li>
 <li>I said I prefer to write a small script for her that will check the first author and first affiliation&hellip; I could do it easily in Python, but would need to put a web frontend on it for her</li>
 <li>Unless we could do that in AReS reports somehow</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-03-09">2023-03-09</h2>
+<ul>
+<li>Apply a bunch of corrections to authors, affiliations, and donors on the new items on DSpace Test</li>
+<li>Meeting with Peter and Abenet about future OpenRXV developments, DSpace 7, etc
+<ul>
+<li>I submitted an <a href="https://github.com/CodeObia/MEL/issues/11173">issue on MEL asking them to add provenance metadata when submitting to CGSpace</a></li>
 </ul>
 </li>
 </ul>
