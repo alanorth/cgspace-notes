@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-18T17:42:40+03:00" />
+<meta property="article:modified_time" content="2023-03-19T19:48:06+03:00" />
 
 
 
@@ -28,7 +28,7 @@ Remove cg.subject.wle and cg.identifier.wletheme from CGSpace input form after c
 iso-codes 4.13.0 was released, which incorporates my changes to the common names for Iran, Laos, and Syria
 I finally got through with porting the input form from DSpace 6 to DSpace 7
 "/>
-<meta name="generator" content="Hugo 0.110.0">
+<meta name="generator" content="Hugo 0.111.3">
 
 
     
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "2810",
+  "wordCount": "3128",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-18T17:42:40+03:00",
+  "dateModified": "2023-03-19T19:48:06+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -555,6 +555,61 @@ pd.options.mode.nullable_dtypes = True
 <h2 id="2023-03-19">2023-03-19</h2>
 <ul>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-03-20">2023-03-20</h2>
+<ul>
+<li>Minor updates to a few of my DSpace Python scripts to fix the logging</li>
+<li>Minor updates to some records for Mazingira reported by Sonja</li>
+<li>Upgrade PostgreSQL on DSpace Test from version 12 to 14, the same way I did from 10 to 12 last year:
+<ul>
+<li>First, I installed the new version of PostgreSQL via the Ansible playbook scripts</li>
+<li>Then I stopped Tomcat and all PostgreSQL clusters and used <code>pg_upgrade</code> to upgrade the old version:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># systemctl stop tomcat7
+</span></span><span style="display:flex;"><span># pg_ctlcluster <span style="color:#ae81ff">12</span> main stop
+</span></span><span style="display:flex;"><span># tar -cvzpf var-lib-postgresql-12.tar.gz /var/lib/postgresql/12
+</span></span><span style="display:flex;"><span># tar -cvzpf etc-postgresql-12.tar.gz /etc/postgresql/12
+</span></span><span style="display:flex;"><span># pg_ctlcluster <span style="color:#ae81ff">14</span> main stop
+</span></span><span style="display:flex;"><span># pg_dropcluster <span style="color:#ae81ff">14</span> main
+</span></span><span style="display:flex;"><span># pg_upgradecluster <span style="color:#ae81ff">12</span> main
+</span></span><span style="display:flex;"><span># pg_ctlcluster <span style="color:#ae81ff">14</span> main start
+</span></span></code></pre></div><ul>
+<li>After that I <a href="https://adamj.eu/tech/2021/04/13/reindexing-all-tables-after-upgrading-to-postgresql-13/">re-indexed the database indexes using a query</a>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ su - postgres
+</span></span><span style="display:flex;"><span>$ cat /tmp/generate-reindex.sql
+</span></span><span style="display:flex;"><span>SELECT &#39;REINDEX TABLE CONCURRENTLY &#39; || quote_ident(relname) || &#39; /*&#39; || pg_size_pretty(pg_total_relation_size(C.oid)) || &#39;*/;&#39;
+</span></span><span style="display:flex;"><span>FROM pg_class C
+</span></span><span style="display:flex;"><span>LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+</span></span><span style="display:flex;"><span>WHERE nspname = &#39;public&#39;
+</span></span><span style="display:flex;"><span>  AND C.relkind = &#39;r&#39;
+</span></span><span style="display:flex;"><span>  AND nspname !~ &#39;^pg_toast&#39;
+</span></span><span style="display:flex;"><span>ORDER BY pg_total_relation_size(C.oid) ASC;
+</span></span><span style="display:flex;"><span>$ psql dspace &lt; /tmp/generate-reindex.sql &gt; /tmp/reindex.sql
+</span></span><span style="display:flex;"><span>$ &lt;trim the extra stuff from /tmp/reindex.sql&gt;
+</span></span><span style="display:flex;"><span>$ psql dspace &lt; /tmp/reindex.sql
+</span></span></code></pre></div><ul>
+<li>The index on <code>metadatavalue</code> shrunk by 90MB, and others a bit less
+<ul>
+<li>This is nice, but not as drastic as I noticed last year when upgrading to PostgreSQL 12</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-03-21">2023-03-21</h2>
+<ul>
+<li>Leigh sent me a list of IFPRI authors with ORCID identifiers so I combined them with our list and resolved all their names with <code>resolve_orcids.py</code>
+<ul>
+<li>It adds 154 new ORCID identifiers</li>
+</ul>
+</li>
+<li>I did a follow up to the publisher names from last week using the list from doi.org
+<ul>
+<li>Last week I only updated items with a DOI that had <em>no</em> publisher, but now I was curious to see how our existing publisher information compared</li>
+<li>I checked a dozen or so manually and, other than CIFOR/ICRAF and CIAT/Alliance, the metadata was better than our existing data, so I overwrote them</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
