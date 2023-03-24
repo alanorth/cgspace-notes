@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-21T16:35:41+03:00" />
+<meta property="article:modified_time" content="2023-03-22T08:28:33+03:00" />
 
 
 
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "3229",
+  "wordCount": "3464",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-21T16:35:41+03:00",
+  "dateModified": "2023-03-22T08:28:33+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -618,6 +618,50 @@ pd.options.mode.nullable_dtypes = True
 <li>Could it just be something with ImageMagick?</li>
 </ul>
 </li>
+</ul>
+<h2 id="2023-03-22">2023-03-22</h2>
+<ul>
+<li>I updated csv-metadata-quality to use pandas 2.0.0rc1 and everything seems to work&hellip;?
+<ul>
+<li>So the issues with nulls (isna) when I tried the first release candidate a few weeks ago were resolved?</li>
+</ul>
+</li>
+<li>Meeting with Jawoo and others about a &ldquo;ChatGPT-like&rdquo; thing for CGIAR data using CGSpace documents and metadata</li>
+</ul>
+<h2 id="2023-03-23">2023-03-23</h2>
+<ul>
+<li>Add a missing IFPRI ORCID identifier to CGSpace and tag his items on CGSpace</li>
+<li>A super unscientific comparison between csv-metadata-quality&rsquo;s pytest regimen using Pandas 1.5.3 and Pandas 2.0.0rc1
+<ul>
+<li>The data was gathered using <a href="https://justine.lol/rusage">rusage</a>, and this is the results of the last of three consecutive runs:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code># Pandas 1.5.3
+RL: took 1,585,999µs wall time
+RL: ballooned to 272,380kb in size
+RL: needed 2,093,947µs cpu (25% kernel)
+RL: caused 55,856 page faults (100% memcpy)
+RL: 699 context switches (1% consensual)
+RL: performed 0 reads and 16 write i/o operations
+
+# Pandas 2.0.0rc1
+RL: took 1,625,718µs wall time
+RL: ballooned to 262,116kb in size
+RL: needed 2,148,425µs cpu (24% kernel)
+RL: caused 63,934 page faults (100% memcpy)
+RL: 461 context switches (2% consensual)
+RL: performed 0 reads and 16 write i/o operations
+</code></pre><ul>
+<li>So it seems that Pandas 2.0.0rc1 took ten megabytes less RAM&hellip; interesting to see that the PyArrow-backed dtypes make a measurable difference even on my small test set
+<ul>
+<li>I should try to compare runs of larger input files</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-03-24">2023-03-24</h2>
+<ul>
+<li>I added a Flyway SQL migration for the PNG bitstream format registry changes on DSpace 7.6</li>
 </ul>
 <!-- raw HTML omitted -->
 
