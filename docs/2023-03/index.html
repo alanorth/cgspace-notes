@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-22T08:28:33+03:00" />
+<meta property="article:modified_time" content="2023-03-24T13:19:13+03:00" />
 
 
 
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "3464",
+  "wordCount": "3600",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-22T08:28:33+03:00",
+  "dateModified": "2023-03-24T13:19:13+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -662,6 +662,30 @@ RL: performed 0 reads and 16 write i/o operations
 <h2 id="2023-03-24">2023-03-24</h2>
 <ul>
 <li>I added a Flyway SQL migration for the PNG bitstream format registry changes on DSpace 7.6</li>
+</ul>
+<h2 id="2023-03-26">2023-03-26</h2>
+<ul>
+<li>There seems to be a slightly high load on CGSpace
+<ul>
+<li>I don&rsquo;t see any locks in PostgreSQL, but there&rsquo;s some new bot I have never heard of:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>92.119.18.13 - - [26/Mar/2023:18:41:47 +0200] &#34;GET /handle/10568/16500/discover?filtertype_0=impactarea&amp;filter_relational_operator_0=equals&amp;filter_0=Climate+adaptation+and+mitigation&amp;filtertype=sdg&amp;filter_relational_operator=equals&amp;filter=SDG+11+-+Sustainable+cities+and+communities HTTP/2.0&#34; 200 7856 &#34;-&#34; &#34;colly - https://github.com/gocolly/colly&#34;
+</span></span></code></pre></div><ul>
+<li>In the last week I see a handful of IPs making requests with this agent:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/access.log.<span style="color:#f92672">{</span>2,3,4,5,6,7<span style="color:#f92672">}</span>.gz | grep go
+</span></span><span style="display:flex;"><span>colly | awk &#39;{print $1}&#39; | sort | uniq -c | sort -h
+</span></span><span style="display:flex;"><span>      2 194.233.95.37
+</span></span><span style="display:flex;"><span>   4304 92.119.18.142
+</span></span><span style="display:flex;"><span>   9496 5.180.208.152
+</span></span><span style="display:flex;"><span>  27477 92.119.18.13
+</span></span></code></pre></div><ul>
+<li>Most of these come from Packethub S.A. / ASN 62240 (CLOUVIDER Clouvider - Global ASN, GB)</li>
+<li>Oh, I&rsquo;ve apparently seen this user agent before, as it is in our ILRI spider user agent overrides</li>
+<li>I exported CGSpace to check for missing Initiative collection mappings</li>
+<li>Start a harvest on AReS</li>
 </ul>
 <!-- raw HTML omitted -->
 
