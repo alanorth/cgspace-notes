@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-27T10:03:45+03:00" />
+<meta property="article:modified_time" content="2023-03-28T17:04:54+03:00" />
 
 
 
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "3988",
+  "wordCount": "4219",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-27T10:03:45+03:00",
+  "dateModified": "2023-03-28T17:04:54+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -733,6 +733,36 @@ RL: performed 0 reads and 16 write i/o operations
 <li>The average file size with <em>the &ldquo;PNG JPG&rdquo; method was only 200 bytes larger</em>.</li>
 </ul>
 </li>
+<li>In my brief testing, the relationship between ImageMagick&rsquo;s <code>-quality</code> setting and WebP&rsquo;s <code>-define webp:lossless=true</code> setting are completely unpredictable:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ magick convert img/10568-103447.pdf.png /tmp/10568-103447.webp
+</span></span><span style="display:flex;"><span>$ magick convert img/10568-103447.pdf.png -define webp:lossless<span style="color:#f92672">=</span>true /tmp/10568-103447-lossless.webp
+</span></span><span style="display:flex;"><span>$ magick convert img/10568-103447.pdf.png -define webp:lossless<span style="color:#f92672">=</span>true -quality <span style="color:#ae81ff">50</span> /tmp/10568-103447-lossless-q50.webp
+</span></span><span style="display:flex;"><span>$ magick convert img/10568-103447.pdf.png -quality <span style="color:#ae81ff">10</span> -define webp:lossless<span style="color:#f92672">=</span>true /tmp/10568-103447-lossless-q10.webp
+</span></span><span style="display:flex;"><span>$ magick convert img/10568-103447.pdf.png -quality <span style="color:#ae81ff">90</span> -define webp:lossless<span style="color:#f92672">=</span>true /tmp/10568-103447-lossless-q90.webp
+</span></span><span style="display:flex;"><span>$ ls -l /tmp/10568-103447*
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 359258 Mar 28 21:16 /tmp/10568-103447-lossless-q10.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 303850 Mar 28 21:15 /tmp/10568-103447-lossless-q50.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 296832 Mar 28 21:16 /tmp/10568-103447-lossless-q90.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 299566 Mar 28 21:13 /tmp/10568-103447-lossless.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 190718 Mar 28 21:13 /tmp/10568-103447.webp
+</span></span></code></pre></div><ul>
+<li>I&rsquo;m curious to see a comparison between the ImageMagick <code>-define webp:emulate-jpeg-size=true</code> (aka <code>-jpeg_like</code> in cwebp) option compared to normal lossy WebP quality:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert img/10568-103447.pdf.png -quality $q -define webp:emulate-jpeg-size<span style="color:#f92672">=</span>true /tmp/10568-103447-lossy-emulate-jpeg-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert /tmp/10568-103447-lossy-emulate-jpeg-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp /tmp/10568-103447-lossy-emulate-jpeg-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp.png; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> ssimulacra2 img/10568-103447.pdf.png /tmp/10568-103447-lossy-emulate-jpeg-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp.png 2&gt;/dev/null; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>81.29082887
+</span></span><span style="display:flex;"><span>84.42134524
+</span></span><span style="display:flex;"><span>85.84458964
+</span></span><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert img/10568-103447.pdf.png -quality $q /tmp/10568-103447-lossy-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert /tmp/10568-103447-lossy-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp /tmp/10568-103447-lossy-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp.png; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> ssimulacra2 img/10568-103447.pdf.png /tmp/10568-103447-lossy-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp.png 2&gt;/dev/null; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>77.25789006
+</span></span><span style="display:flex;"><span>80.79140936
+</span></span><span style="display:flex;"><span>84.79108246
+</span></span></code></pre></div><ul>
+<li>Using <code>-define webp:method=6</code> (versus default 4) gets a ~0.5% increase on ssimulacra2 score</li>
 </ul>
 <!-- raw HTML omitted -->
 
