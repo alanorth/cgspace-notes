@@ -16,7 +16,7 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-03/" />
 <meta property="article:published_time" content="2023-03-01T07:58:36+03:00" />
-<meta property="article:modified_time" content="2023-03-28T17:04:54+03:00" />
+<meta property="article:modified_time" content="2023-03-28T23:38:38+03:00" />
 
 
 
@@ -38,9 +38,9 @@ I finally got through with porting the input form from DSpace 6 to DSpace 7
   "@type": "BlogPosting",
   "headline": "March, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-03/",
-  "wordCount": "4219",
+  "wordCount": "4795",
   "datePublished": "2023-03-01T07:58:36+03:00",
-  "dateModified": "2023-03-28T17:04:54+03:00",
+  "dateModified": "2023-03-28T23:38:38+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -763,6 +763,76 @@ RL: performed 0 reads and 16 write i/o operations
 </span></span><span style="display:flex;"><span>84.79108246
 </span></span></code></pre></div><ul>
 <li>Using <code>-define webp:method=6</code> (versus default 4) gets a ~0.5% increase on ssimulacra2 score</li>
+</ul>
+<h2 id="2023-03-29">2023-03-29</h2>
+<ul>
+<li>Looking at the <code>-define webp:near-lossless=$q</code> option in ImageMagick and I don&rsquo;t think it&rsquo;s working:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">40</span> <span style="color:#ae81ff">60</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert -flatten data/10568-103447.pdf<span style="color:#ae81ff">\[</span>0<span style="color:#ae81ff">\]</span> -define webp:near-lossless<span style="color:#f92672">=</span>$q -verbose /tmp/10568-103447-near-lossless-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp; <span style="color:#66d9ef">done</span> 
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-near-lossless-q20.webp PDF 595x842 595x842+0+0 16-bit sRGB 80440B 0.080u 0:00.043
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-near-lossless-q40.webp PDF 595x842 595x842+0+0 16-bit sRGB 80440B 0.080u 0:00.043
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-near-lossless-q60.webp PDF 595x842 595x842+0+0 16-bit sRGB 80440B 0.090u 0:00.043
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-near-lossless-q80.webp PDF 595x842 595x842+0+0 16-bit sRGB 80440B 0.090u 0:00.043
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-near-lossless-q90.webp PDF 595x842 595x842+0+0 16-bit sRGB 80440B 0.080u 0:00.043
+</span></span></code></pre></div><ul>
+<li>The file sizes are all the same&hellip;</li>
+<li>If I try with <code>-quality $q</code> it works:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">40</span> <span style="color:#ae81ff">60</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert -flatten data/10568-103447.pdf<span style="color:#ae81ff">\[</span>0<span style="color:#ae81ff">\]</span> -quality $q -verbose /tmp/10568-103447-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp; <span style="color:#66d9ef">done</span>     
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-q20.webp PDF 595x842 595x842+0+0 16-bit sRGB 52602B 0.080u 0:00.045
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-q40.webp PDF 595x842 595x842+0+0 16-bit sRGB 64604B 0.090u 0:00.045
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-q60.webp PDF 595x842 595x842+0+0 16-bit sRGB 73584B 0.080u 0:00.045
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-q80.webp PDF 595x842 595x842+0+0 16-bit sRGB 88652B 0.090u 0:00.045
+</span></span><span style="display:flex;"><span>data/10568-103447.pdf[0]=&gt;/tmp/10568-103447-q90.webp PDF 595x842 595x842+0+0 16-bit sRGB 113186B 0.100u 0:00.049
+</span></span></code></pre></div><ul>
+<li>I don&rsquo;t see any issues mentioning this in the ImageMagick GitHub issues, so I guess I have to file a bug
+<ul>
+<li>I first <a href="https://github.com/ImageMagick/ImageMagick/discussions/6204">asked a question on their discussion board</a> because I see that the near-lossless option should have been added to ImageMagick sometime after 2020 according to another discussion</li>
+</ul>
+</li>
+<li>Meeting with Maria about the Alliance metadata on CGSpace
+<ul>
+<li>As the Alliance is not a legal entity they want to reflect that somehow in CGSpace</li>
+<li>We discussed updating all metadata, but so many documents issued in the last few years have the Alliance indicated inside them and as affiliations in journal article acknowledgements, etc, we decided it is not the best option</li>
+<li>Instead, we propose to:
+<ul>
+<li>Remove <code>Alliance of Bioversity International and CIAT</code> from the controlled vocabulary for affiliations ASAP</li>
+<li>Add <code>Bioversity International and the International Center for Tropical Agriculture</code> to the controlled vocabulary for affiliations ASAP</li>
+<li>Add a prominent note to the item page for every item in the Alliance community via a custom XMLUI theme (Maria and the Alliance publishing team to send the text)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-03-30">2023-03-30</h2>
+<ul>
+<li>The ImageMagick developers confirmed <a href="https://github.com/ImageMagick/ImageMagick/discussions/6204">my bug report</a> and created a patch on master
+<ul>
+<li>I&rsquo;m not entirely sure how it works, but the developer seemed to imply we can use lossless mode plus a quality?</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ magick convert -flatten data/10568-103447.pdf<span style="color:#ae81ff">\[</span>0<span style="color:#ae81ff">\]</span> -define webp:lossless<span style="color:#f92672">=</span>true -quality <span style="color:#ae81ff">90</span> /tmp/10568-103447.pdf.webp
+</span></span></code></pre></div><ul>
+<li>Now I see a difference between near-lossless and normal quality mode:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">40</span> <span style="color:#ae81ff">60</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert -flatten data/10568-103447.pdf<span style="color:#ae81ff">\[</span>0<span style="color:#ae81ff">\]</span> -define webp:lossless<span style="color:#f92672">=</span>true -quality $q /tmp/10568-103447-near-lossless-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>$ ls -l /tmp/10568-103447-near-lossless-q*
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 108186 Mar 30 11:36 /tmp/10568-103447-near-lossless-q20.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth  97170 Mar 30 11:36 /tmp/10568-103447-near-lossless-q40.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth  97382 Mar 30 11:36 /tmp/10568-103447-near-lossless-q60.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 106090 Mar 30 11:36 /tmp/10568-103447-near-lossless-q80.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 105926 Mar 30 11:36 /tmp/10568-103447-near-lossless-q90.webp
+</span></span><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> q in <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">40</span> <span style="color:#ae81ff">60</span> <span style="color:#ae81ff">80</span> 90; <span style="color:#66d9ef">do</span> magick convert -flatten data/10568-103447.pdf<span style="color:#ae81ff">\[</span>0<span style="color:#ae81ff">\]</span> -quality $q /tmp/10568-103447-q<span style="color:#e6db74">${</span>q<span style="color:#e6db74">}</span>.webp; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>$ ls -l /tmp/10568-103447-q*
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth  52602 Mar 30 11:37 /tmp/10568-103447-q20.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth  64604 Mar 30 11:37 /tmp/10568-103447-q40.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth  73584 Mar 30 11:37 /tmp/10568-103447-q60.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth  88652 Mar 30 11:37 /tmp/10568-103447-q80.webp
+</span></span><span style="display:flex;"><span>-rw-r--r-- 1 aorth aorth 113186 Mar 30 11:37 /tmp/10568-103447-q90.webp
+</span></span></code></pre></div><ul>
+<li>But after reading the source code in <code>coders/webp.c</code> I am not sure I understand, so I asked for clarification in the discussion</li>
+<li>Both Bosede and Abenet said mapping on CGSpace is taking a long time and I don&rsquo;t see any stuck locks so I decided to quickly restart postgresql</li>
 </ul>
 <!-- raw HTML omitted -->
 
