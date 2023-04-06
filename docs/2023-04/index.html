@@ -20,7 +20,7 @@ Start a harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-04/" />
 <meta property="article:published_time" content="2023-04-02T08:19:36+03:00" />
-<meta property="article:modified_time" content="2023-04-02T08:19:36+03:00" />
+<meta property="article:modified_time" content="2023-04-02T09:16:25+03:00" />
 
 
 
@@ -46,9 +46,9 @@ Start a harvest on AReS
   "@type": "BlogPosting",
   "headline": "April, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-04/",
-  "wordCount": "39",
+  "wordCount": "569",
   "datePublished": "2023-04-02T08:19:36+03:00",
-  "dateModified": "2023-04-02T08:19:36+03:00",
+  "dateModified": "2023-04-02T09:16:25+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -131,6 +131,95 @@ Start a harvest on AReS
 </ul>
 </li>
 <li>Start a harvest on AReS</li>
+</ul>
+<ul>
+<li>I&rsquo;m starting to get annoyed at my shell script for doing ImageMagick tests and looking to re-write it in something object oriented like Python
+<ul>
+<li>There doesn&rsquo;t seem to be an official ImageMagick Python binding on pypi.org, perhaps I can use <a href="https://docs.wand-py.org">Wand</a>?</li>
+</ul>
+</li>
+<li>Testing Wand in Python:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> wand.image <span style="color:#f92672">import</span> Image
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> Image(filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;data/10568-103447.pdf[0]&#39;</span>, resolution<span style="color:#f92672">=</span><span style="color:#ae81ff">144</span>) <span style="color:#66d9ef">as</span> first_page:
+</span></span><span style="display:flex;"><span>    print(first_page<span style="color:#f92672">.</span>height)
+</span></span></code></pre></div><ul>
+<li>I spent more time re-working my thumbnail scripts to compare the resized images and other minor changes
+<ul>
+<li>I am realizing that doing the thumbnails directly from the source improves the ssimulacra2 score by 1-3% points compared to DSpace&rsquo;s method of creating a lossy supersample followed by a lossy resized thumbnail</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-04-03">2023-04-03</h2>
+<ul>
+<li>The harvest on AReS that I started yesterday never finished, and actually seems to have died&hellip;
+<ul>
+<li>Also, Fabio and Patrizio from Alliance emailed me to ask if there is something wrong with the REST API because they are having problems</li>
+<li>I stopped the harvest and started the plugins to get the remaining items via the sitemap&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-04-04">2023-04-04</h2>
+<ul>
+<li>Presentation about CGSpace metadata, controlled vocabularies, and curation to Pooja&rsquo;s communications and development team at UNEP
+<ul>
+<li>I uploaded the presentation to CGSpace here: <a href="https://hdl.handle.net/10568/129896">https://hdl.handle.net/10568/129896</a></li>
+</ul>
+</li>
+<li>Someone from the system organization contacted me to ask how to download a few thousand PDFs from a spreadsheet with DOIs and Handles</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c Handle ~/Downloads/2023-04-04-Donald.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    | sed \
+</span></span><span style="display:flex;"><span>        -e 1d \
+</span></span><span style="display:flex;"><span>        -e &#39;s_https://hdl.handle.net/__&#39; \
+</span></span><span style="display:flex;"><span>        -e &#39;s_https://cgspace.cgiar.org/handle/__&#39; \
+</span></span><span style="display:flex;"><span>        -e &#39;s_http://hdl.handle.net/__&#39; \
+</span></span><span style="display:flex;"><span>    | sort -u &gt; /tmp/handles.txt
+</span></span></code></pre></div><ul>
+<li>Then I used the <code>get_dspace_pdfs.py</code> script to download them</li>
+</ul>
+<h2 id="2023-04-05">2023-04-05</h2>
+<ul>
+<li>After some cleanup on Donald&rsquo;s DOIs I started the <code>get_scihub_pdfs.py</code> script</li>
+</ul>
+<h2 id="2023-04-06">2023-04-06</h2>
+<ul>
+<li>I did some more work to cleanup and streamline my next generation of DSpace thumbnail testing scripts
+<ul>
+<li>I think I found a bug in ImageMagick 7.1.1.5 where CMYK to sRGB conversion fails if we use image operations like <code>-density</code> or <code>-define</code> before reading the input file</li>
+<li>I started <a href="https://github.com/ImageMagick/ImageMagick/discussions/6234">a discussion on the ImageMagick GitHub</a> to ask</li>
+</ul>
+</li>
+<li>Yesterday I started downloading the rest of the PDFs from Donald, those that had DOIs
+<ul>
+<li>As a measure of caution, I extracted the list of DOIs and used my <code>crossref_doi_lookup.py</code> script to get their licenses from Crossref:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/crossref_doi_lookup.py -e xxxx@i.org -i /tmp/dois.txt -o /tmp/donald-crossref-dois.csv -d
+</span></span></code></pre></div><ul>
+<li>Then I did some CSV manipulation to extract the DOIs that were Creative Commons licensed, excluding any that were &ldquo;No Derivatives&rdquo;, and re-formatting the DOIs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c doi,license /tmp/donald-crossref-dois.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | csvgrep -c license -m &#39;creativecommons&#39; \
+</span></span><span style="display:flex;"><span>  | csvgrep -c license -i -r &#39;by-(nd|nc-nd)&#39; \
+</span></span><span style="display:flex;"><span>  | sed -e &#39;s_^10_https://doi.org/10_&#39; \
+</span></span><span style="display:flex;"><span>    -e &#39;s/\(am\|tdm\|unspecified\|vor\): //&#39; \
+</span></span><span style="display:flex;"><span>  | tee /tmp/donald-open-dois.csv \
+</span></span><span style="display:flex;"><span>  | wc -l
+</span></span><span style="display:flex;"><span>4268
+</span></span></code></pre></div><ul>
+<li>From those I filtered for the DOIs for which I had downloaded PDFs, in the <code>filename</code> column of the Sci-Hub script and copied them to a separate directory:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> file in <span style="color:#66d9ef">$(</span>csvjoin -c doi /tmp/donald-doi-pdfs.csv /tmp/donald-open-dois.csv | csvgrep -c filename -i -r <span style="color:#e6db74">&#39;^$&#39;</span> | csvcut -c filename | sed 1d<span style="color:#66d9ef">)</span>; <span style="color:#66d9ef">do</span> cp --reflink<span style="color:#f92672">=</span>always <span style="color:#e6db74">&#34;</span>$file<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;creative-commons-licensed/</span>$file<span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><ul>
+<li>I used BTRFS copy-on-write via reflinks to make sure I didn&rsquo;t duplicate the files :-D</li>
+<li>I ran out of time and had to stop the process around 3,127 PDFs
+<ul>
+<li>I zipped them up and sent them to the others, along with a CSV of the DOIs, PDF filenames, and licenses</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
