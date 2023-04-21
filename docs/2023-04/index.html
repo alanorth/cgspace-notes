@@ -20,7 +20,7 @@ Start a harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-04/" />
 <meta property="article:published_time" content="2023-04-02T08:19:36+03:00" />
-<meta property="article:modified_time" content="2023-04-06T16:13:30+03:00" />
+<meta property="article:modified_time" content="2023-04-18T11:08:15-07:00" />
 
 
 
@@ -46,9 +46,9 @@ Start a harvest on AReS
   "@type": "BlogPosting",
   "headline": "April, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-04/",
-  "wordCount": "1556",
+  "wordCount": "1970",
   "datePublished": "2023-04-02T08:19:36+03:00",
-  "dateModified": "2023-04-06T16:13:30+03:00",
+  "dateModified": "2023-04-18T11:08:15-07:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -573,8 +573,11 @@ Start a harvest on AReS
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -d dspace -c <span style="color:#e6db74">&#34;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (&#39;a7ddf477-1c04-4de0-9c7a-4d3c84a875bc&#39;, &#39;9582b661-9c2d-4c86-be22-c3b0942b646a&#39;, &#39;210a4d5d-3af9-46f0-84cc-682dd1431762&#39;)&#34;</span>
-</span></span></code></pre></div><h2 id="2023-04-18">2023-04-18</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -d dspace -c <span style="color:#e6db74">&#34;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (&#39;a7ddf477-1c04-4de0-9c7a-4d3c84a875bc&#39;, &#39;9582b661-9c2d-4c86-be22-c3b0942b646a&#39;, &#39;210a4d5d-3af9-46f0-84cc-682dd1431762&#39;, &#39;51115f07-0a60-4988-8536-b9ebd2a5e15e&#39;, &#39;0fc5021d-3264-413a-b2e2-74bda38a394e&#39;, &#39;4704fa62-b8ab-4dfe-b7aa-0e4905f8412a&#39;)&#34;</span>
+</span></span></code></pre></div><ul>
+<li>This process ended up taking a few days because each iteration ran for over four hours before failing on the next UUID, sighhhhh</li>
+</ul>
+<h2 id="2023-04-18">2023-04-18</h2>
 <ul>
 <li>Regarding the item Abenet noticed yesterday that has a blank page and a nullPointerException
 <ul>
@@ -583,6 +586,82 @@ Start a harvest on AReS
 <li>According to the DSpace logs it was Francesca who edited the item last week, so I asked her for more information before I troubleshoot more</li>
 </ul>
 </li>
+</ul>
+<h2 id="2023-04-19">2023-04-19</h2>
+<ul>
+<li>I fixed the Bioversity item by deleting the <code>9781138781276.jpg</code> bitstream via the REST API
+<ul>
+<li>I <em>think</em> Francesca might have changed the &ldquo;format&rdquo; of it?</li>
+<li>Anyway, this item has a PDF so we have a proper thumbnail and don&rsquo;t need that other journal cover one</li>
+</ul>
+</li>
+<li>I noticed a URL for this <a href="https://hdl.handle.net/10568/89049">Bioversity item</a> redirects incorrectly
+<ul>
+<li>I had mentioned this to Maria and Francesca a few months ago but it seems to never have been resolved</li>
+</ul>
+</li>
+<li>The <code>dspace cleanup -v</code> finally finished after a few days of running and stopping&hellip;</li>
+<li>I decided to update the thumbnails in the Bioversity books collection because I saw a few old ones suffering from the CropBox issue</li>
+<li>Also, all day there&rsquo;s been a high load on CGSpace, with lots of locks in PostgreSQL
+<ul>
+<li>I had been waiting until the bitstream cleanup finished&hellip; now I might need to restart PostgreSQL to kill some old locks as something needs to give</li>
+<li>I restarted PostgreSQL, but DSpace was still hanging on simple XMLUI options so I ended up restarting Tomcat</li>
+</ul>
+</li>
+<li>Tag 544 ORCID identifiers with my script</li>
+<li>I updated my <code>generation-loss.sh</code> and <code>improved-dspace-thumbnails</code> scripts to include thirty-five PDFs from CGSpace (up from twenty-four) to get a larger sample
+<ul>
+<li>Now starting to get some numbers comparing JPEG, WebP, and AVIF</li>
+<li>First, out of curiousity, I checked the average ssimulacra2 scores at Q75, Q80, and Q92 for each format:</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Q75</th>
+<th>Q80</th>
+<th>Q92</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JPEG</td>
+<td>70</td>
+<td>73</td>
+<td>88</td>
+</tr>
+<tr>
+<td>WebP</td>
+<td>73</td>
+<td>76</td>
+<td>82</td>
+</tr>
+<tr>
+<td>AVIF</td>
+<td>82</td>
+<td>83</td>
+<td>92</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Then I checked the quality and file size (bytes) needed to hit an average ssimulacra2 score of 80 with each format:
+<ul>
+<li><strong>JPEG</strong>: Q89, 124596 bytes</li>
+<li><strong>WebP</strong>: Q88, 84935 bytes (32% smaller than JPEG size)</li>
+<li><strong>AVIF</strong>: Q62, 60347 bytes (52% smaller than JPEG size)</li>
+</ul>
+</li>
+<li><a href="https://developers.google.com/speed/webp/docs/webp_study">Google&rsquo;s original WebP study</a> uses this technique to compare WebP to JPEG too
+<ul>
+<li>As the quality settings are not comparable between formats, we need to compare the formats at matching perceptual scores (ssimulacra2 in this case)</li>
+<li>I used a ssimulacra2 score of 80 because that&rsquo;s the about the highest score I see with WebP using my samples, though JPEG and AVIF do go higher</li>
+<li>Also, according to current ssimulacra2 (v2.1), a score of 70 is &ldquo;high quality&rdquo; and a score of 90 is &ldquo;very high quality&rdquo;, so 80 should be reasonably high enough&hellip;</li>
+</ul>
+</li>
+<li>Export CGSpace to check for missing Initiatives mappings</li>
 </ul>
 <!-- raw HTML omitted -->
 
