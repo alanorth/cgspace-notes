@@ -20,7 +20,7 @@ Start a harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-04/" />
 <meta property="article:published_time" content="2023-04-02T08:19:36+03:00" />
-<meta property="article:modified_time" content="2023-04-20T22:44:18-07:00" />
+<meta property="article:modified_time" content="2023-04-22T16:37:19-07:00" />
 
 
 
@@ -46,9 +46,9 @@ Start a harvest on AReS
   "@type": "BlogPosting",
   "headline": "April, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-04/",
-  "wordCount": "2033",
+  "wordCount": "2400",
   "datePublished": "2023-04-02T08:19:36+03:00",
-  "dateModified": "2023-04-20T22:44:18-07:00",
+  "dateModified": "2023-04-22T16:37:19-07:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -661,6 +661,10 @@ Start a harvest on AReS
 <li>Also, according to current ssimulacra2 (v2.1), a score of 70 is &ldquo;high quality&rdquo; and a score of 90 is &ldquo;very high quality&rdquo;, so 80 should be reasonably high enough&hellip;</li>
 </ul>
 </li>
+<li>Here is a plot of the qualities and ssimulacra2 scores:</li>
+</ul>
+<p><img src="/cgspace-notes/2023/04/quality-vs-score-ssimulacra-v2.1.png" alt="Quality vs Score"></p>
+<ul>
 <li>Export CGSpace to check for missing Initiatives mappings</li>
 </ul>
 <h2 id="2023-04-22">2023-04-22</h2>
@@ -673,6 +677,47 @@ Start a harvest on AReS
 </ul>
 </li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-04-26">2023-04-26</h2>
+<ul>
+<li>Begin working on the list of non-AGROVOC CGSpace subjects for FAO
+<ul>
+<li>The last time I did this was in 2022-06</li>
+<li>I used the following SQL query to dump values from all subject fields, lower case them, and group by counts:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ \COPY (SELECT DISTINCT(lower(text_value)) AS &#34;subject&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (187, 120, 210, 122, 215, 127, 208, 124, 128, 123, 125, 135, 203, 236, 238, 119) GROUP BY &#34;subject&#34; ORDER BY count DESC) to /tmp/2023-04-26-cgspace-subjects.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 26315
+</span></span><span style="display:flex;"><span>Time: 2761.981 ms (00:02.762)
+</span></span></code></pre></div><ul>
+<li>Then I extracted the subjects and looked them up against AGROVOC:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c subject /tmp/2023-04-26-cgspace-subjects.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> &gt; /tmp/2023-04-26-cgspace-subjects.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/agrovoc_lookup.py -i /tmp/2023-04-26-cgspace-subjects.txt -o /tmp/2023-04-26-cgspace-subjects-results.csv
+</span></span></code></pre></div><h2 id="2023-04-27">2023-04-27</h2>
+<ul>
+<li>The AGROVOC lookup from yesterday finished, so I extracted all terms that did not match and joined them with the original CSV so I can see the counts:
+<ul>
+<li>(I also note that the <code>agrovoc_lookup.py</code> script didn&rsquo;t seem to be caching properly, as it had to look up everything again the next time I ran it despite the requests cache being 174MB!)</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>csvgrep -c &#39;number of matches&#39; -r &#39;^0$&#39; /tmp/2023-04-26-cgspace-subjects-results.csv \
+</span></span><span style="display:flex;"><span>  | csvcut -c subject \
+</span></span><span style="display:flex;"><span>  | csvjoin -c subject /tmp/2023-04-26-cgspace-subjects.csv - \
+</span></span><span style="display:flex;"><span>  &gt; /tmp/2023-04-26-cgspace-non-agrovoc.csv
+</span></span></code></pre></div><ul>
+<li>I filtered for only those terms that had counts larger than fifty
+<ul>
+<li>I also removed terms like &ldquo;forages&rdquo;, &ldquo;policy&rdquo;, &ldquo;pests and diseases&rdquo; because those exist as singular or separate terms in AGROVOC</li>
+<li>I also removed ambiguous terms like &ldquo;cocoa&rdquo;, &ldquo;diversity&rdquo;, &ldquo;resistance&rdquo; etc because there are various other preferred terms for those in AGROVOC</li>
+<li>I also removed spelling mistakes like &ldquo;modeling&rdquo; and &ldquo;savanas&rdquo; because those exist in their correct form in AGROVOC</li>
+<li>I also removed internal CGIAR terms like &ldquo;tac&rdquo;, &ldquo;crp&rdquo;, &ldquo;internal review&rdquo; etc (note: these are mostly from CGIAR System Office&rsquo;s subjects&hellip; perhaps I exclude those next time?)</li>
+</ul>
+</li>
+<li>I note that many of <em>our</em> terms would match if they were singular, plural, or split up into separate terms, so perhaps we should pair this with an excercise to review our own terms</li>
+<li>I couldn&rsquo;t finish the work locally yet so I uploaded my list to Google Docs to continue later</li>
 </ul>
 <!-- raw HTML omitted -->
 
