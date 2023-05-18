@@ -25,7 +25,7 @@ Work on cleaning, proofing, and uploading twenty-seven records for IFPRI to CGSp
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-05/" />
 <meta property="article:published_time" content="2023-05-03T08:53:36+03:00" />
-<meta property="article:modified_time" content="2023-05-12T08:33:20+03:00" />
+<meta property="article:modified_time" content="2023-05-12T14:02:55+03:00" />
 
 
 
@@ -56,9 +56,9 @@ Work on cleaning, proofing, and uploading twenty-seven records for IFPRI to CGSp
   "@type": "BlogPosting",
   "headline": "May, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-05/",
-  "wordCount": "352",
+  "wordCount": "562",
   "datePublished": "2023-05-03T08:53:36+03:00",
-  "dateModified": "2023-05-12T08:33:20+03:00",
+  "dateModified": "2023-05-12T14:02:55+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -198,6 +198,42 @@ Work on cleaning, proofing, and uploading twenty-seven records for IFPRI to CGSp
 <li>Export the entire CGSpace to check for missing Initiative collection mappings
 <ul>
 <li>I also adding missing regions</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-05-16">2023-05-16</h2>
+<ul>
+<li>I finally cleaned up and published my latest evaluation of <a href="https://alanorth.github.io/improved-dspace-thumbnails/evaluating-jpeg-webp-avif.html">JPEG, WebP, and AVIF</a>
+<ul>
+<li>I <a href="https://github.com/DSpace/DSpace/issues/8849">filed an issue on DSpace</a> to track this</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-05-17">2023-05-17</h2>
+<ul>
+<li>Re-sync CGSpace to DSpace 7 Test</li>
+<li>I came up with a naive patch to use WebP instead of JPEG in the DSpace ImageMagick filter, and it works, but doesn&rsquo;t replace existing JPEGs&hellip; hmmm
+<ul>
+<li>Also, it does PDF to WebP to WebP haha</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-05-18">2023-05-18</h2>
+<ul>
+<li>I created a <a href="https://github.com/DSpace/DSpace/pull/8850">pull request</a> to improve some minor documentation, typo, and logic issues in the DSpace ImageMagick thumbnail filters</li>
+<li>I realized that there is a quick win to the generation loss issue with ImageMagickThumbnailFilter
+<ul>
+<li>We can use ImageMagick&rsquo;s internal MIFF instead of JPEG when writing the intermediate image</li>
+<li>According to the <a href="https://github.com/libvips/libvips/issues/571">libvips author PNG is very slow</a>!</li>
+<li>I re-ran my <code>generation-loss.sh</code> script using MIFF and found that it had essentially the same results as PNG, which is about 1.1 points higher on the ssimulacra2 (v2.1) scoring scale</li>
+<li>Also, according to my tests with the cosmo rusage.com utility, I see that MIFF is indeed much faster than PNG</li>
+<li>I updated my pull request to add this quick win</li>
+</ul>
+</li>
+<li>Weekly CG Core types meeting
+<ul>
+<li>Low attendance so I just kept working on the spreadsheet</li>
+<li>We are at the stage of voting on definitions</li>
 </ul>
 </li>
 </ul>
