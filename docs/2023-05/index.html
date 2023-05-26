@@ -56,7 +56,7 @@ Work on cleaning, proofing, and uploading twenty-seven records for IFPRI to CGSp
   "@type": "BlogPosting",
   "headline": "May, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-05/",
-  "wordCount": "609",
+  "wordCount": "1121",
   "datePublished": "2023-05-03T08:53:36+03:00",
   "dateModified": "2023-05-20T11:10:05+03:00",
   "author": {
@@ -246,6 +246,86 @@ Work on cleaning, proofing, and uploading twenty-seven records for IFPRI to CGSp
 <li>I deployed the latest thumbnail changes on CGSpace, ran all updates, and rebooted it</li>
 <li>I exported CGSpace to check for missing Initiative mappings</li>
 <li>Then I started a harvest on AReS</li>
+</ul>
+<h2 id="2023-05-23">2023-05-23</h2>
+<ul>
+<li>Help Francesca with an import of a journal article with a few hundred authors
+<ul>
+<li>I used the DSpace 7 live import from PubMed</li>
+</ul>
+</li>
+<li>I also noticed a bug in the CrossRef live import if you change the DOI field, so I <a href="https://github.com/DSpace/DSpace/issues/8865">filed an issue</a></li>
+</ul>
+<h2 id="2023-05-25">2023-05-25</h2>
+<ul>
+<li>Meeting on output types</li>
+<li>Make a <a href="https://github.com/DSpace/DSpace/pull/8866">pull request on DSpace to capture publisher during live import from Crossref</a></li>
+</ul>
+<h2 id="2023-05-26">2023-05-26</h2>
+<ul>
+<li>Make a <a href="https://github.com/DSpace/DSpace/pull/8868">pull request on DSpace to update checkstyle</a></li>
+<li>Make a <a href="https://github.com/DSpace/dspace-angular/pull/2274">pull request on DSpace-angular to fix an incorrect i18n UI string</a></li>
+<li>I&rsquo;m experimenting with replacing old thumbnails
+<ul>
+<li>In the past we used to upload thumbnails for journal covers, but those were low quality and look horrible now</li>
+<li>Using the provenance field I want to identify items with 1 bitstream of type gif or jpg, then extract the item IDs along with DOIs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">COPY</span> (<span style="color:#66d9ef">SELECT</span>
+</span></span><span style="display:flex;"><span>    text_value,
+</span></span><span style="display:flex;"><span>    dspace_object_id
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span>
+</span></span><span style="display:flex;"><span>    metadatavalue
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span>
+</span></span><span style="display:flex;"><span>    dspace_object_id <span style="color:#66d9ef">IN</span> (
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">SELECT</span>
+</span></span><span style="display:flex;"><span>            dspace_object_id
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">FROM</span>
+</span></span><span style="display:flex;"><span>            metadatavalue
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">WHERE</span>
+</span></span><span style="display:flex;"><span>            metadata_field_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">28</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">AND</span> place <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">AND</span> (text_value <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;%No. of bitstreams: 1%&#39;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">AND</span> text_value <span style="color:#66d9ef">SIMILAR</span> <span style="color:#66d9ef">TO</span> <span style="color:#e6db74">&#39;%.(gif|jpg|jpeg)%&#39;</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">AND</span> metadata_field_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">220</span>) <span style="color:#66d9ef">TO</span> <span style="color:#f92672">/</span>tmp<span style="color:#f92672">/</span>items<span style="color:#f92672">-</span><span style="color:#66d9ef">with</span><span style="color:#f92672">-</span><span style="color:#66d9ef">old</span><span style="color:#f92672">-</span>bitstreams.csv <span style="color:#66d9ef">WITH</span> CSV HEADER;
+</span></span></code></pre></div><ul>
+<li>I extract the DOIs and look them up on CrossRef to see which are CC-BY, then extract those:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c text_value /tmp/items-with-old-bitstreams.csv | sed 1d &gt; /tmp/dois.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/crossref_doi_lookup.py -i /tmp/dois.txt -e fuuu@example.com -o /tmp/dois-resolved.csv
+</span></span><span style="display:flex;"><span>$ csvgrep -c license -m <span style="color:#e6db74">&#39;creativecommons&#39;</span> /tmp/dois-resolved.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    | csvgrep -c license -m &#39;by-nc-nd&#39; --invert-match \
+</span></span><span style="display:flex;"><span>    | csvcut -c doi \
+</span></span><span style="display:flex;"><span>    | sed &#39;2,$s_^\(.*\)$_https://doi.org/\1_&#39; \
+</span></span><span style="display:flex;"><span>    | sed 1d &gt; /tmp/dois-for-cc-items-with-old-bitstreams.txt
+</span></span></code></pre></div><ul>
+<li>This results in 262 items that have DOIs that are CC-BY (but not ND)
+<ul>
+<li>This is a good starting point, but misses some that had low-quality thumbnails uploaded after they were added (ie, there&rsquo;s no record of a bitstream in the provenance field)</li>
+</ul>
+</li>
+<li>I ran the list through my Sci-Hub download script and filtered out a few that downloaded invalid PDFs (manually), then generated thumbnails for all of them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ~/src/git/DSpace/ilri/get_scihub_pdfs.py -i /tmp/dois-for-cc-items-with-old-bitstreams.txt -o bitstreams.csv
+</span></span><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> vipsthumbnail *.pdf --export-profile srgb -s 600x600 -o <span style="color:#e6db74">&#39;./%s.pdf.jpg[Q=02,optimize_coding,strip]&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Then I joined the CSVs on the DOI column, filtered out any that we didn&rsquo;t find PDFs for, and formatted the resulting CSV with an id, filename, and bundle column:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvjoin -c doi bitstreams.csv /tmp/items-with-old-bitstreams.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    | csvgrep -c filename --invert-match -r &#39;^$&#39; \
+</span></span><span style="display:flex;"><span>    | sed &#39;1s/dspace_object_id/id/&#39; \
+</span></span><span style="display:flex;"><span>    | csvcut -c id,filename \
+</span></span><span style="display:flex;"><span>    | sed -e &#39;1s/^\(.*\)$/\1,bundle/&#39; -e &#39;2,$s/^\(.*\)$/\1.jpg__description:libvips thumbnail,THUMBNAIL/&#39; &gt; new-thumbnails.csv
+</span></span></code></pre></div><ul>
+<li>I did a dry run with <code>ilri/post_bitstreams.py</code> and it seems that most (all?) already have thumbnails from the last time I did a massive Sci-Hub check
+<ul>
+<li>So relying on the provenance field is not very reliable it seems, and that was a waste of two hours&hellip;</li>
+<li>I did discover, while originally posting WebP thumbnails, that the format doesn&rsquo;t seem to be set correctly when uploading WebP via the REST API, but it does work when uploading via XMLUI—the format is set to Unknown</li>
+<li>POSTing a JPG to the THUMBNAIL bundle sets the format to JPEG&hellip;</li>
+<li>I am guessing that is a bug that I won&rsquo;t bother troubleshooting since the DSpace 6.x REST API is deprecated</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
