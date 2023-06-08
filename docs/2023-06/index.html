@@ -24,7 +24,7 @@ From what I can see we need to upgrade the MODS schema from 3.1 to 3.7 and then 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-06/" />
 <meta property="article:published_time" content="2023-06-02T10:29:36+03:00" />
-<meta property="article:modified_time" content="2023-06-04T11:00:30+03:00" />
+<meta property="article:modified_time" content="2023-06-06T16:54:25+03:00" />
 
 
 
@@ -54,9 +54,9 @@ From what I can see we need to upgrade the MODS schema from 3.1 to 3.7 and then 
   "@type": "BlogPosting",
   "headline": "June, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-06/",
-  "wordCount": "327",
+  "wordCount": "451",
   "datePublished": "2023-06-02T10:29:36+03:00",
-  "dateModified": "2023-06-04T11:00:30+03:00",
+  "dateModified": "2023-06-06T16:54:25+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -178,6 +178,20 @@ From what I can see we need to upgrade the MODS schema from 3.1 to 3.7 and then 
 </span></span><span style="display:flex;"><span>$ ./ilri/update_orcids.py -i /tmp/2023-06-06-orcids-names.txt -db dspacetest -u dspace -p <span style="color:#e6db74">&#39;ffff&#39;</span> -m <span style="color:#ae81ff">247</span>
 </span></span></code></pre></div><ul>
 <li>Start working on updating the MODS schema in CGSpace from 3.1 to 3.8 based on Stefano and Salem&rsquo;s work last year</li>
+</ul>
+<h2 id="2023-06-08">2023-06-08</h2>
+<ul>
+<li>Continue working on the MODS schema mapping</li>
+<li>Export CGSpace to check and update <code>dcterms.extent</code> fields
+<ul>
+<li>I normalized about 1,500 to use either &ldquo;p. 1-6&rdquo; or &ldquo;5 p.&rdquo; format</li>
+<li>Also, I used this GREL expression to extract missing pages from the citation field: <code>cells['dcterms.bibliographicCitation[en_US]'].value.match(/.*(pp?\.\s?\d+[-–]\d+).*/)[0]</code></li>
+<li>This was over 4,000 items with a format like &ldquo;p. 1-6&rdquo; and &ldquo;pp. 1-6&rdquo; in the citation</li>
+<li>I used another GREL expression to extract another 5,000: <code>cells['dcterms.bibliographicCitation[en_US]'].value.match(/.*?(\d+\s+?[Pp]+\.).*/)[0]</code></li>
+<li>This was for the format like &ldquo;1 p.&rdquo; (note we had to protect against the greedy <code>.*</code> in the beginning)</li>
+</ul>
+</li>
+<li>I also did some work to capture a handful of missing DOIs and ISSNs, but it was only about 100 items and I will have to wait until the 10,000+ above finish importing</li>
 </ul>
 <!-- raw HTML omitted -->
 
