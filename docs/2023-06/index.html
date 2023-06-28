@@ -24,7 +24,7 @@ From what I can see we need to upgrade the MODS schema from 3.1 to 3.7 and then 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-06/" />
 <meta property="article:published_time" content="2023-06-02T10:29:36+03:00" />
-<meta property="article:modified_time" content="2023-06-17T23:14:32+03:00" />
+<meta property="article:modified_time" content="2023-06-19T16:26:41+03:00" />
 
 
 
@@ -54,9 +54,9 @@ From what I can see we need to upgrade the MODS schema from 3.1 to 3.7 and then 
   "@type": "BlogPosting",
   "headline": "June, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-06/",
-  "wordCount": "1179",
+  "wordCount": "1766",
   "datePublished": "2023-06-02T10:29:36+03:00",
-  "dateModified": "2023-06-17T23:14:32+03:00",
+  "dateModified": "2023-06-19T16:26:41+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -318,6 +318,88 @@ From what I can see we need to upgrade the MODS schema from 3.1 to 3.7 and then 
 <li>Upload thumbnails for about 42 IITA Journal Articles after resolving their DOIs and making sure they were not CC ND
 <ul>
 <li>I fixed a few bugs in <code>get_scihub_pdfs.py</code> in the process</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-06-21">2023-06-21</h2>
+<ul>
+<li>Stefano got back to me about the MODS OAI-PMH schema test on DSpace Test
+<ul>
+<li>He said that it&rsquo;s fine if we use iso8601 encoding for dates instead of w3cdtf and asked if we can create a custom end point for AGRIS that only includes types like Journal Articles similar to how Salem did it: <a href="https://melspace.loc.codeobia.com/oai/agris?verb=ListRecords&amp;metadataPrefix=mods">https://melspace.loc.codeobia.com/oai/agris?verb=ListRecords&amp;metadataPrefix=mods</a></li>
+<li>I updated DSpace Test with the new date format and said I&rsquo;d work on the custom AGRIS set</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-06-25">2023-06-25</h2>
+<ul>
+<li>Export CGSpace to check for missing Initiative collection mappings</li>
+<li>I wanted to start a harvest on AReS but I&rsquo;ve seen the load on the server high for a few days and I&rsquo;m not sure what it is
+<ul>
+<li>I decided to run all updates and reboot it since it&rsquo;s Sunday anyway</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-06-26">2023-06-26</h2>
+<ul>
+<li>Since the new DSpace 7 will respect newlines in metadata fields I am curious to see how many of our abstracts have poor newlines
+<ul>
+<li>I exported CGSpace and used a custom text facet with this GREL expression in OpenRefine to count the number of newlines in each cell:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>value.split(&#39;\n&#39;).length()
+</span></span></code></pre></div><ul>
+<li>Also useful to check for general length of the text in the cell to make sure it&rsquo;s a reasonably long string
+<ul>
+<li>I spent some time trying to find a pattern that I could use to identify &ldquo;easy&rdquo; targets, but there are so many exceptions that it will have to be done manually</li>
+<li>I fixed a few dozen</li>
+</ul>
+</li>
+<li>Do a bit of work on thumbnails on CGSpace</li>
+<li>I&rsquo;m trying to troubleshoot the Discovery error I get on DSpace 7:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>java.lang.NullPointerException: Cannot invoke &#34;org.dspace.discovery.configuration.DiscoverySearchFilterFacet.getIndexFieldName()&#34; because the return value of &#34;org.dspace.content.authority.DSpaceControlledVocabularyIndex.getFacetConfig()&#34; is null
+</span></span></code></pre></div><ul>
+<li>I reverted to the default <code>submission-forms.xml</code> and the <code>getFacetConfig()</code> error goes away&hellip;</li>
+<li>Kill some long-held locks on CGSpace PostgreSQL, as some users are complaining of slowness in archiving</li>
+<li>I did some testing of the LDAP login issue related to groupmaps
+<ul>
+<li>It does seem to be a regression from the <a href="https://github.com/DSpace/DSpace/pull/8814">LDAP auth patch</a> from last month, so I <a href="https://github.com/DSpace/DSpace/issues/8920">filed an issue</a></li>
+</ul>
+</li>
+<li>I spent some time on working on Angular and I figured out how to add a custom Angular component to show the UN SDG Goal icons on DSpace 7</li>
+</ul>
+<h2 id="2023-06-27">2023-06-27</h2>
+<ul>
+<li>I debugged the NullPointerException and somehow it disappeared
+<ul>
+<li>It seems to be related to the external controlled vocabularies in the submission form</li>
+<li>I removed them all, then added them all back, and now the issue is solved&hellip; hmmmm</li>
+<li>Oh now, now they are gone again, sigh&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-06-28">2023-06-28</h2>
+<ul>
+<li>Spent a lot of time debugging the browse indexes
+<ul>
+<li>Looking at the <a href="https://api7.dspace.org/server/api/discover/browses">DSpace 7 demo API</a> I see the four default browse indexes from <code>dspace.cfg</code> and the one default <code>srsc</code> one that gets automatically enabled from the <code>&lt;vocabulary&gt;srsc&lt;/vocabulary&gt;</code> in the <code>submission-forms.xml</code></li>
+<li>The same API call on my test DSpace 7 configuration results in the HTTP 500 I&rsquo;ve been seeing for some time, and I am pretty sure it&rsquo;s due to the automagic configuration of hierarchical browses based on the submission form</li>
+<li>Yes, if I remove them all from my submission form then this works: http://localhost:8080/server/api/discover/browses</li>
+<li>I went through each of our vocabularies and tested them one by one:
+<ul>
+<li>dcterms-subject: OK</li>
+<li>dc-contributor-author: NO</li>
+<li>cg-creator-identifier: NO</li>
+<li>cg-contributor-affiliation: OK (and with <code>facetType: &quot;affiliation&quot;</code> in API response?!)</li>
+<li>cg-contributor-donor: OK (<code>facetType:	&quot;sponsorship&quot;</code>)</li>
+<li>cg-journal: NO</li>
+<li>cg-coverage-subregion: NO</li>
+<li>cg-species-breed: NO</li>
+</ul>
+</li>
+<li>Now I need to figure out what it is about those five that causes them to not work!</li>
+<li>Ah, after debugging with someone on the DSpace Slack, I realized that DSpace expects these vocabularies to have corresponding indexes configured in <code>discovery.xml</code>, and they must be added as search filters AND sidebar facets.</li>
 </ul>
 </li>
 </ul>
