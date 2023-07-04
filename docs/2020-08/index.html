@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="August, 2020" />
+<meta property="og:description" content="2020-08-02
+
+I spent a few days working on a Java-based curation task to tag items with ISO 3166-1 Alpha2 country codes based on their cg.coverage.country text values
+
+It looks up the names in ISO 3166-1 first, and then in our CGSpace countries mapping (which has five or so of Peter&rsquo;s preferred &ldquo;display&rdquo; country names)
+It implements a &ldquo;force&rdquo; mode too that will clear existing country codes and re-tag everything
+It is class based so I can easily add support for other vocabularies, and the technique could even be used for organizations with mappings to ROR and Clarisa&hellip;
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-08/" />
+<meta property="article:published_time" content="2020-08-02T15:35:54+03:00" />
+<meta property="article:modified_time" content="2020-09-02T13:39:11+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="August, 2020"/>
+<meta name="twitter:description" content="2020-08-02
+
+I spent a few days working on a Java-based curation task to tag items with ISO 3166-1 Alpha2 country codes based on their cg.coverage.country text values
+
+It looks up the names in ISO 3166-1 first, and then in our CGSpace countries mapping (which has five or so of Peter&rsquo;s preferred &ldquo;display&rdquo; country names)
+It implements a &ldquo;force&rdquo; mode too that will clear existing country codes and re-tag everything
+It is class based so I can easily add support for other vocabularies, and the technique could even be used for organizations with mappings to ROR and Clarisa&hellip;
+
+
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "August, 2020",
+  "url": "https://alanorth.github.io/cgspace-notes/2020-08/",
+  "wordCount": "3672",
+  "datePublished": "2020-08-02T15:35:54+03:00",
+  "dateModified": "2020-09-02T13:39:11+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2020-08/">
+
+    <title>August, 2020 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2020-08/">August, 2020</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2020-08-02T15:35:54+03:00">Sun Aug 02, 2020</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2020-08-02">2020-08-02</h2>
+<ul>
+<li>I spent a few days working on a Java-based curation task to tag items with ISO 3166-1 Alpha2 country codes based on their <code>cg.coverage.country</code> text values
+<ul>
+<li>It looks up the names in ISO 3166-1 first, and then in our CGSpace countries mapping (which has five or so of Peter&rsquo;s preferred &ldquo;display&rdquo; country names)</li>
+<li>It implements a &ldquo;force&rdquo; mode too that will clear existing country codes and re-tag everything</li>
+<li>It is class based so I can easily add support for other vocabularies, and the technique could even be used for organizations with mappings to ROR and Clarisa&hellip;</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>The code is currently on my personal GitHub: <a href="https://github.com/alanorth/dspace-curation-tasks">https://github.com/alanorth/dspace-curation-tasks</a>
+<ul>
+<li>I still need to figure out how to integrate this with the DSpace build because currently you have to package it and copy the JAR to the <code>dspace/lib</code> directory (not to mention the config)</li>
+</ul>
+</li>
+<li>I forked the <a href="https://github.com/ilri/dspace-curation-tasks">dspace-curation-tasks to ILRI&rsquo;s GitHub</a> and <a href="https://issues.sonatype.org/browse/OSSRH-59650">submitted the project to Maven Central</a> so I can integrate it more easily with our DSpace build via dependencies</li>
+</ul>
+<h2 id="2020-08-03">2020-08-03</h2>
+<ul>
+<li>Atmire responded to the ticket about the ongoing upgrade issues
+<ul>
+<li>They pushed an RC2 version of the CUA module that fixes the FontAwesome issue so that they now use classes instead of Unicode hex characters so our JS + SVG works!</li>
+<li>They also said they have never experienced the <code>type: 5</code> site statistics issue, so I need to try to purge those and continue with the stats processing</li>
+</ul>
+</li>
+<li>I purged all unmigrated stats in a few cores and then restarted processing:</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics
+</code></pre><ul>
+<li>Andrea from Macaroni Bros emailed me a few days ago to say he&rsquo;s having issues with the CGSpace REST API
+<ul>
+<li>He said he noticed the issues when they were developing the WordPress plugin to harvest CGSpace for the RTB website: <a href="https://www.rtb.cgiar.org/publications/">https://www.rtb.cgiar.org/publications/</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-04">2020-08-04</h2>
+<ul>
+<li>Look into the REST API issues that Macaroni Bros raised last week:
+<ul>
+<li>The first one was about the <code>collections</code> endpoint returning empty items:
+<ul>
+<li><a href="https://cgspace.cgiar.org/rest/collections/1445/items?limit=1&amp;offset=2">https://cgspace.cgiar.org/rest/collections/1445/items?limit=1&amp;offset=2</a> (offset=2 is correct)</li>
+<li><a href="https://cgspace.cgiar.org/rest/collections/1445/items?limit=1&amp;offset=3">https://cgspace.cgiar.org/rest/collections/1445/items?limit=1&amp;offset=3</a> (offset=3 is empty)</li>
+<li><a href="https://cgspace.cgiar.org/rest/collections/1445/items?limit=1&amp;offset=4">https://cgspace.cgiar.org/rest/collections/1445/items?limit=1&amp;offset=4</a> (offset=4 is correct again)</li>
+</ul>
+</li>
+<li>I confirm that the second link returns zero items on CGSpace&hellip;
+<ul>
+<li>I tested on my local development instance and it returns one item correctly&hellip;</li>
+<li>I tested on DSpace Test (currently DSpace 6 with UUIDs) and it returns one item correctly&hellip;</li>
+<li>Perhaps an indexing issue?</li>
+</ul>
+</li>
+<li>The second issue is the <code>collections</code> endpoint returning the wrong number of items:
+<ul>
+<li><a href="https://cgspace.cgiar.org/rest/collections/1445">https://cgspace.cgiar.org/rest/collections/1445</a> (numberItems: 63)</li>
+<li><a href="https://cgspace.cgiar.org/rest/collections/1445/items">https://cgspace.cgiar.org/rest/collections/1445/items</a> (real number of items: 61)</li>
+</ul>
+</li>
+<li>I confirm that it is indeed happening on CGSpace&hellip;
+<ul>
+<li>And actually I can replicate the same issue on my local CGSpace 5.8 instance:</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ http &#39;http://localhost:8080/rest/collections/1445&#39; | json_pp | grep numberItems
+   &#34;numberItems&#34; : 63,
+$ http &#39;http://localhost:8080/rest/collections/1445/items&#39; jq &#39;. | length&#39;
+61
+</code></pre><ul>
+<li>Also on DSpace Test (which is running DSpace 6!), though the issue is slightly different there:</li>
+</ul>
+<pre tabindex="0"><code>$ http &#39;https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-497a18e3b708&#39; | json_pp | grep numberItems
+   &#34;numberItems&#34; : 61,
+$ http &#39;https://dspacetest.cgiar.org/rest/collections/5471c3aa-202e-42f0-96c2-497a18e3b708/items&#39; | jq &#39;. | length&#39;
+59
+</code></pre><ul>
+<li>Ah! I exported that collection&rsquo;s metadata and checked it in OpenRefine, where I noticed that two items are mapped twice
+<ul>
+<li>I dealt with this problem in 2017-01 and the solution is to check the <code>collection2item</code> table:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>dspace=# SELECT * FROM collection2item WHERE item_id = &#39;107687&#39;;
+   id   | collection_id | item_id
+--------+---------------+---------
+ 133698 |           966 |  107687
+ 134685 |          1445 |  107687
+ 134686 |          1445 |  107687
+(3 rows)
+</code></pre><ul>
+<li>So for each id you can delete one duplicate mapping:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# DELETE FROM collection2item WHERE id=&#39;134686&#39;;
+dspace=# DELETE FROM collection2item WHERE id=&#39;128819&#39;;
+</code></pre><ul>
+<li>Update countries on CGSpace to be closer to ISO 3166-1 with some minor differences based on Peter&rsquo;s preferred display names</li>
+</ul>
+<pre tabindex="0"><code>$ cat 2020-08-04-PB-new-countries.csv
+cg.coverage.country,correct
+CAPE VERDE,CABO VERDE
+COCOS ISLANDS,COCOS (KEELING) ISLANDS
+&#34;CONGO, DR&#34;,&#34;CONGO, DEMOCRATIC REPUBLIC OF&#34;
+COTE D&#39;IVOIRE,CÔTE D&#39;IVOIRE
+&#34;KOREA, REPUBLIC&#34;,&#34;KOREA, REPUBLIC OF&#34;
+PALESTINE,&#34;PALESTINE, STATE OF&#34;
+$ ./fix-metadata-values.py -i 2020-08-04-PB-new-countries.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.coverage.country -t &#39;correct&#39; -m 228
+</code></pre><ul>
+<li>I had to restart Tomcat 7 three times before all the Solr statistics cores came up properly
+<ul>
+<li>I started a full Discovery re-indexing</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-05">2020-08-05</h2>
+<ul>
+<li>Port my <a href="https://github.com/ilri/dspace-curation-tasks">dspace-curation-tasks</a> to DSpace 6 and tag version <code>6.0-SNAPSHOT</code></li>
+<li>I downloaded the <a href="https://unstats.un.org/unsd/methodology/m49/overview/">UN M.49</a> CSV file to start working on updating the CGSpace regions
+<ul>
+<li>First issue is they don&rsquo;t version the file so you have no idea when it was released</li>
+<li>Second issue is that three rows have errors due to not using quotes around &ldquo;China, Macao Special Administrative Region&rdquo;</li>
+</ul>
+</li>
+<li>Bizu said she was having problems approving tasks on CGSpace
+<ul>
+<li>I looked at the PostgreSQL locks and they have skyrocketed since yesterday:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/08/postgres_locks_ALL-day.png" alt="PostgreSQL locks day"></p>
+<p><img src="/cgspace-notes/2020/08/postgres_querylength_ALL-day.png" alt="PostgreSQL query length day"></p>
+<ul>
+<li>Seems that something happened yesterday afternoon at around 5PM&hellip;
+<ul>
+<li>For now I will just run all updates on the server and reboot it, as I have no idea what causes this issue</li>
+<li>I had to restart Tomcat 7 three times after the server came back up before all Solr statistics cores came up properly</li>
+</ul>
+</li>
+<li>I checked the nginx logs around 5PM yesterday to see who was accessing the server:</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#39;04/Aug/2020:(17|18)&#39; | goaccess --log-format=COMBINED -
+</code></pre><ul>
+<li>I see the Macaroni Bros are using their new user agent for harvesting: <code>RTB website BOT</code>
+<ul>
+<li>But that pattern doesn&rsquo;t match in the nginx bot list or Tomcat&rsquo;s crawler session manager valve because we&rsquo;re only checking for <code>[Bb]ot</code>!</li>
+<li>So they have created thousands of Tomcat sessions:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace.log.2020-08-04 | grep -E &#34;(63.32.242.35|64.62.202.71)&#34; | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+5693
+</code></pre><ul>
+<li>DSpace itself uses a case-sensitive regex for user agents so there are no hits from those IPs in Solr, but I need to tweak the other regexes so they don&rsquo;t misuse the resources
+<ul>
+<li>Perhaps <code>[Bb][Oo][Tt]</code>&hellip;</li>
+</ul>
+</li>
+<li>I see another IP 104.198.96.245, which is also using the &ldquo;RTB website BOT&rdquo; but there are 70,000 hits in Solr from earlier this year before they started using the user agent
+<ul>
+<li>I purged all the hits from Solr, including a few thousand from 64.62.202.71</li>
+</ul>
+</li>
+<li>A few more IPs causing lots of Tomcat sessions yesterday:</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace.log.2020-08-04 | grep &#34;38.128.66.10&#34; | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+1585
+$ cat dspace.log.2020-08-04 | grep &#34;64.62.202.71&#34; | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+5691
+</code></pre><ul>
+<li>38.128.66.10 isn&rsquo;t creating any Solr statistics due to our DSpace agents pattern, but they are creating lots of sessions so perhaps I need to force them to use one session in Tomcat:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 5.1) brokenlinkcheck.com/1.2
+</code></pre><ul>
+<li>64.62.202.71 is using a user agent I&rsquo;ve never seen before:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)
+</code></pre><ul>
+<li>So now our &ldquo;bot&rdquo; regex can&rsquo;t even match that&hellip;
+<ul>
+<li>Unless we change it to <code>[Bb]\.?[Oo]\.?[Tt]\.?</code>&hellip; which seems to match all variations of &ldquo;bot&rdquo; I can think of right now, according to <a href="https://regexr.com/59lpt">regexr.com</a>:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>RTB website BOT
+Altmetribot
+Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)
+Mozilla/5.0 (compatible; BLEXBot/1.0; +http://webmeup-crawler.com/)
+</code></pre><ul>
+<li>And another IP belonging to Turnitin (the alternate user agent of Turnitinbot):</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace.log.2020-08-04 | grep &#34;199.47.87.145&#34; | grep -E &#39;sessi
+on_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+2777
+</code></pre><ul>
+<li>I will add <code>Turnitin</code> to the Tomcat Crawler Session Manager Valve regex as well&hellip;</li>
+</ul>
+<h2 id="2020-08-06">2020-08-06</h2>
+<ul>
+<li>I have been working on processing the Solr statistics with the Atmire tool on DSpace Test the last few days:
+<ul>
+<li>statistics:
+<ul>
+<li>2,040,385 docs: 2h 28m 49s</li>
+</ul>
+</li>
+<li>statistics-2019:
+<ul>
+<li>8,960,000 docs: 12h 7s</li>
+<li>1,780,575 docs: 2h 7m 29s</li>
+</ul>
+</li>
+<li>statistics-2018:
+<ul>
+<li>1,970,000 docs: 12h 1m 28s</li>
+<li>360,000 docs: 2h 54m 56s (Linode rebooted)</li>
+<li>1,110,000 docs: 7h 1m 44s (Restarted Tomcat, oops)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I decided to start the 2018 core over again, so I re-synced it from CGSpace and started again from the solr-upgrade-statistics-6x tool and now I&rsquo;m having the same issues with Java heap space that I had last month
+<ul>
+<li>The process kept crashing due to memory, so I increased the memory to 3072m and finally 4096m&hellip;</li>
+<li>Also, I decided to try to purge all the <code>-unmigrated</code> docs that it had found so far to see if that helps&hellip;</li>
+<li>There were about 466,000 records unmigrated so far, most of which were <code>type: 5</code> (SITE statistics)</li>
+<li>Now it is processing again&hellip;</li>
+</ul>
+</li>
+<li>I developed a small Java class called <code>FixJpgJpgThumbnails</code> to remove &ldquo;.jpg.jpg&rdquo; thumbnails from the <code>THUMBNAIL</code> bundle and replace them with their originals from the <code>ORIGINAL</code> bundle
+<ul>
+<li>The code is based on <a href="https://github.com/UoW-IRRs/DSpace-Scripts/blob/master/src/main/java/nz/ac/waikato/its/irr/scripts/RemovePNGThumbnailsForPDFs.java">RemovePNGThumbnailsForPDFs.java</a> by Andrea Schweer</li>
+<li>I incorporated it into my dspace-curation-tasks repository, then renamed it to <a href="https://github.com/ilri/cgspace-java-helpers">cgspace-java-helpers</a></li>
+<li>In testing I found that I can replace ~4,000 thumbnails on CGSpace!</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-07">2020-08-07</h2>
+<ul>
+<li>I improved the <code>RemovePNGThumbnailsForPDFs.java</code> a bit more to exclude infographics and original bitstreams larger than 100KiB
+<ul>
+<li>I ran it on CGSpace and it cleaned up 3,769 thumbnails!</li>
+<li>Afterwards I ran <code>dspace cleanup -v</code> to remove the deleted thumbnails</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-08">2020-08-08</h2>
+<ul>
+<li>The Atmire stats processing for the statistics-2018 Solr core keeps stopping with this error:</li>
+</ul>
+<pre tabindex="0"><code>Exception: 50 consecutive records couldn&#39;t be saved. There&#39;s most likely an issue with the connection to the solr server. Shutting down.
+java.lang.RuntimeException: 50 consecutive records couldn&#39;t be saved. There&#39;s most likely an issue with the connection to the solr server. Shutting down.
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.storeOnServer(SourceFile:317)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:177)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</code></pre><ul>
+<li>It lists a few of the records that it is having issues with and they all have integer IDs
+<ul>
+<li>When I checked Solr I see 8,000 of them, some of which have type 0 and some with no type&hellip;</li>
+<li>I purged them and then the process continues:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:/[0-9]+/&lt;/query&gt;&lt;/delete&gt;&#39;
+</code></pre><h2 id="2020-08-09">2020-08-09</h2>
+<ul>
+<li>The Atmire script did something to the server and created 132GB of log files so the root partition ran out of space&hellip;</li>
+<li>I removed the log file and tried to re-run the process but it seems to be looping over 11,000 records and failing, creating millions of lines in the logs again:</li>
+</ul>
+<pre tabindex="0"><code># grep -oE &#34;Record uid: ([a-f0-9\\-]*){1} couldn&#39;t be processed&#34; /home/dspacetest.cgiar.org/log/dspace.log.2020-08-09 &gt; /tmp/not-processed-errors.txt
+# wc -l /tmp/not-processed-errors.txt
+2202973 /tmp/not-processed-errors.txt
+# sort /tmp/not-processed-errors.txt | uniq -c | tail -n 10
+    220 Record uid: ffe52878-ba23-44fb-8df7-a261bb358abc couldn&#39;t be processed
+    220 Record uid: ffecb2b0-944d-4629-afdf-5ad995facaf9 couldn&#39;t be processed
+    220 Record uid: ffedde6b-0782-4d9f-93ff-d1ba1a737585 couldn&#39;t be processed
+    220 Record uid: ffedfb13-e929-4909-b600-a18295520a97 couldn&#39;t be processed
+    220 Record uid: fff116fb-a1a0-40d0-b0fb-b71e9bb898e5 couldn&#39;t be processed
+    221 Record uid: fff1349d-79d5-4ceb-89a1-ce78107d982d couldn&#39;t be processed
+    220 Record uid: fff13ddb-b2a2-410a-9baa-97e333118c74 couldn&#39;t be processed
+    220 Record uid: fff232a6-a008-47d0-ad83-6e209bb6cdf9 couldn&#39;t be processed
+    221 Record uid: fff75243-c3be-48a0-98f8-a656f925cb68 couldn&#39;t be processed
+    221 Record uid: fff88af8-88d4-4f79-ba1a-79853973c872 couldn&#39;t be processed
+</code></pre><ul>
+<li>I looked at some of those records and saw strange objects in their <code>containerCommunity</code>, <code>containerCollection</code>, etc&hellip;</li>
+</ul>
+<pre tabindex="0"><code>{
+  &#34;responseHeader&#34;: {
+    &#34;status&#34;: 0,
+    &#34;QTime&#34;: 0,
+    &#34;params&#34;: {
+      &#34;q&#34;: &#34;uid:fff1349d-79d5-4ceb-89a1-ce78107d982d&#34;,
+      &#34;indent&#34;: &#34;true&#34;,
+      &#34;wt&#34;: &#34;json&#34;,
+      &#34;_&#34;: &#34;1596957629970&#34;
+    }
+  },
+  &#34;response&#34;: {
+    &#34;numFound&#34;: 1,
+    &#34;start&#34;: 0,
+    &#34;docs&#34;: [
+      {
+        &#34;containerCommunity&#34;: [
+          &#34;155&#34;,
+          &#34;155&#34;,
+          &#34;{set=null}&#34;
+        ],
+        &#34;uid&#34;: &#34;fff1349d-79d5-4ceb-89a1-ce78107d982d&#34;,
+        &#34;containerCollection&#34;: [
+          &#34;1099&#34;,
+          &#34;830&#34;,
+          &#34;{set=830}&#34;
+        ],
+        &#34;owningComm&#34;: [
+          &#34;155&#34;,
+          &#34;155&#34;,
+          &#34;{set=null}&#34;
+        ],
+        &#34;isInternal&#34;: false,
+        &#34;isBot&#34;: false,
+        &#34;statistics_type&#34;: &#34;view&#34;,
+        &#34;time&#34;: &#34;2018-05-08T23:17:00.157Z&#34;,
+        &#34;owningColl&#34;: [
+          &#34;1099&#34;,
+          &#34;830&#34;,
+          &#34;{set=830}&#34;
+        ],
+        &#34;_version_&#34;: 1621500445042147300
+      }
+    ]
+  }
+}
+</code></pre><ul>
+<li>I deleted those 11,724 records with the strange &ldquo;set&rdquo; object in the collections and communities, as well as 360,000 records with <code>id: -1</code></li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+$ curl -s &#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:\-1&lt;/query&gt;&lt;/delete&gt;&#39;
+</code></pre><ul>
+<li>I was going to compare the CUA stats for 2018 and 2019 on CGSpace and DSpace Test, but after Linode rebooted CGSpace (linode18) for maintenance yesterday the solr cores didn&rsquo;t all come back up OK
+<ul>
+<li>I had to restart Tomcat five times before they all came up!</li>
+<li>After that I generated a report for 2018 and 2019 on each server and found that the difference is about 10,000–20,000 per month, which is much less than I was expecting</li>
+</ul>
+</li>
+<li>I noticed some authors that should have ORCID identifiers, but didn&rsquo;t (perhaps older items before we were tagging ORCID metadata)
+<ul>
+<li>With the simple list below I added 1,341 identifiers!</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ cat 2020-08-09-add-ILRI-orcids.csv
+dc.contributor.author,cg.creator.id
+&#34;Grace, Delia&#34;,&#34;Delia Grace: 0000-0002-0195-9489&#34;
+&#34;Delia Grace&#34;,&#34;Delia Grace: 0000-0002-0195-9489&#34;
+&#34;Baker, Derek&#34;,&#34;Derek Baker: 0000-0001-6020-6973&#34;
+&#34;Ngan Tran Thi&#34;,&#34;Tran Thi Ngan: 0000-0002-7184-3086&#34;
+&#34;Dang Xuan Sinh&#34;,&#34;Sinh Dang-Xuan: 0000-0002-0522-7808&#34;
+&#34;Hung Nguyen-Viet&#34;,&#34;Hung Nguyen-Viet: 0000-0001-9877-0596&#34;
+&#34;Pham Van Hung&#34;,&#34;Pham Anh Hung: 0000-0001-9366-0259&#34;
+&#34;Lindahl, Johanna F.&#34;,&#34;Johanna Lindahl: 0000-0002-1175-0398&#34;
+&#34;Teufel, Nils&#34;,&#34;Nils Teufel: 0000-0001-5305-6620&#34;
+&#34;Duncan, Alan J.&#34;,Alan Duncan: 0000-0002-3954-3067&#34;
+&#34;Moodley, Arshnee&#34;,&#34;Arshnee Moodley: 0000-0002-6469-3948&#34;
+</code></pre><ul>
+<li>That got me curious, so I generated a list of all the unique ORCID identifiers we have in the database:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=240) TO /tmp/2020-08-09-orcid-identifiers.csv;
+COPY 2095
+dspace=# \q
+$ grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; /tmp/2020-08-09-orcid-identifiers.csv | sort | uniq &gt; /tmp/2020-08-09-orcid-identifiers-uniq.csv
+$ wc -l /tmp/2020-08-09-orcid-identifiers-uniq.csv
+1949 /tmp/2020-08-09-orcid-identifiers-uniq.csv
+</code></pre><ul>
+<li>I looked into the strange Solr record above that had &ldquo;{set=830}&rdquo; in the communities and collections
+<ul>
+<li>There are exactly 11724 records like this in the current CGSpace (DSpace 5.8) statistics-2018 Solr core</li>
+<li>None of them have an <code>id</code> or <code>type</code> field!</li>
+<li>I see 242,000 of them in the statistics-2017 core, 185,063 in the statistics-2016 core&hellip; all the way to 2010, but not in 2019 or the current statistics core</li>
+<li>I decided to purge all of these records from CGSpace right now so they don&rsquo;t even have a chance at being an issue on the real migration:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+...
+$ curl -s &#34;http://localhost:8081/solr/statistics-2010/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;owningColl:/.*set.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+</code></pre><ul>
+<li>I added <code>Googlebot</code> and <code>Twitterbot</code> to the list of explicitly allowed bots
+<ul>
+<li>In Google&rsquo;s case, they were getting lumped in with all the other bad bots and then important links like the sitemaps were returning HTTP 503, but they generally respect <code>robots.txt</code> so we should just allow them (perhaps we can control the crawl rate in the webmaster console)</li>
+<li>In Twitter&rsquo;s case they were also getting lumped in with the bad bots too, but really they only make ~50 or so requests a day when someone posts a CGSpace link on Twitter</li>
+</ul>
+</li>
+<li>I tagged the ISO 3166-1 Alpha2 country codes on all items on CGSpace using my <a href="https://github.com/ilri/cgspace-java-helpers">CountryCodeTagger</a> curation task
+<ul>
+<li>I still need to set up a cron job for it&hellip;</li>
+<li>This tagged 50,000 countries!</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>dspace=# SELECT count(text_value) FROM metadatavalue WHERE metadata_field_id = 243 AND resource_type_id = 2;
+ count
+-------
+ 50812
+(1 row)
+</code></pre><h2 id="2020-08-11">2020-08-11</h2>
+<ul>
+<li>I noticed some more hits from Macaroni&rsquo;s WordPress harvestor that I hadn&rsquo;t caught last week
+<ul>
+<li>104.198.13.34 made many requests without a user agent, with a &ldquo;WordPress&rdquo; user agent, and with their new &ldquo;RTB website BOT&rdquo; user agent, about 100,000 in total in 2020, and maybe another 70,000 in the other years</li>
+<li>I will purge them an add them to the Tomcat Crawler Session Manager and the DSpace bots list so they don&rsquo;t get logged in Solr</li>
+</ul>
+</li>
+<li>I noticed a bunch of user agents with &ldquo;Crawl&rdquo; in the Solr stats, which is strange because the DSpace spider agents file has had &ldquo;crawl&rdquo; for a long time (and it is case insensitive)
+<ul>
+<li>In any case I will purge them and add them to the Tomcat Crawler Session Manager Valve so that at least their sessions get re-used</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-13">2020-08-13</h2>
+<ul>
+<li>Linode keeps sending mails that the load and outgoing bandwidth is above the threshold
+<ul>
+<li>I took a look briefly and found two IPs with the &ldquo;Delphi 2009&rdquo; user agent</li>
+<li>Then there is 88.99.115.53 which made 82,000 requests in 2020 so far with no user agent</li>
+<li>64.62.202.73 has made 7,000 requests with this user agent <code>Mozilla/5.0 (compatible; +centuryb.o.t9[at]gmail.com)</code></li>
+<li>I had added it to the Tomcat Crawler Session Manager Valve last week but never purged the hits from Solr</li>
+<li>195.54.160.163 is making thousands of requests with user agents liket this:</li>
+</ul>
+</li>
+</ul>
+<p><code>(CASE WHEN 2850=9474 THEN 2850 ELSE NULL END)</code></p>
+<ul>
+<li>I purged 150,000 hits from 2020 and 2020 from these user agents and hosts</li>
+</ul>
+<h2 id="2020-08-14">2020-08-14</h2>
+<ul>
+<li>Last night I started the processing of the statistics-2016 core with the Atmire stats util and I see some errors like this:</li>
+</ul>
+<pre tabindex="0"><code>Record uid: f6b288d7-d60d-4df9-b311-1696b88552a0 couldn&#39;t be processed
+com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: f6b288d7-d60d-4df9-b311-1696b88552a0, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: java.lang.NullPointerException
+</code></pre><ul>
+<li>I see it has <code>id: 980-unmigrated</code> and <code>type: 0</code>&hellip;</li>
+<li>The 2016 core has 629,983 unmigrated docs, mostly:
+<ul>
+<li><code>type: 5</code>: 620311</li>
+<li><code>type: 0</code>: 7255</li>
+<li><code>type: 3</code>: 1333</li>
+</ul>
+</li>
+<li>I purged the unmigrated docs and continued processing:</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2016/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
+$ chrt -b 0 dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t 12 -c statistics-2016
+</code></pre><ul>
+<li>Altmetric asked for a dump of CGSpace&rsquo;s OAI &ldquo;sets&rdquo; so they can update their affiliation mappings
+<ul>
+<li>I did it in a kinda ghetto way:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ http &#39;https://cgspace.cgiar.org/oai/request?verb=ListSets&#39; &gt; /tmp/0.xml
+$ for num in {100..1300..100}; do http &#34;https://cgspace.cgiar.org/oai/request?verb=ListSets&amp;resumptionToken=////$num&#34; &gt; /tmp/$num.xml; sleep 2; done
+$ for num in {0..1300..100}; do cat /tmp/$num.xml &gt;&gt; /tmp/cgspace-oai-sets.xml; done
+</code></pre><ul>
+<li>This produces one file that has all the sets, albeit with 14 pages of responses concatenated into one document, but that&rsquo;s how theirs was in the first place&hellip;</li>
+<li>Help Bizu with a restricted item for CIAT</li>
+</ul>
+<h2 id="2020-08-16">2020-08-16</h2>
+<ul>
+<li>The com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI script that was processing 2015 records last night started spitting shit tons of errors and created 120GB of logs&hellip;</li>
+<li>I looked at a few of the UIDs that it was having problems with and they were unmigrated ones&hellip; so I purged them in 2015 and all the rest of the statistics cores</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2015/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+...
+$ curl -s &#34;http://localhost:8081/solr/statistics-2010/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:/.*unmigrated.*/&lt;/query&gt;&lt;/delete&gt;&#39;
+</code></pre><h2 id="2020-08-19">2020-08-19</h2>
+<ul>
+<li>I tested the DSpace 5 and DSpace 6 versions of the <a href="https://github.com/ilri/cgspace-java-helpers">country code tagger curation task</a> and noticed a few things
+<ul>
+<li>The DSpace 5.8 version finishes in 2 hours and 1 minute</li>
+<li>The DSpace 6.3 version ran for over 12 hours and didn&rsquo;t even finish (I killed it)</li>
+<li>Furthermore, it seems that each item is curated once for each collection it appears in, causing about 115,000 items to be processed, even though we only have about 87,000</li>
+</ul>
+</li>
+<li>I had been running the tasks on the entire repository with <code>-i 10568/0</code>, but I think I might need to try again with the special <code>all</code> option before writing to the dspace-tech mailing list for help
+<ul>
+<li>Actually I just tested the <code>all</code> option on DSpace 5.8 and it still does many of the items multiple times, once for each of their mappings</li>
+<li>I sent a message to the dspace-tech mailing list</li>
+</ul>
+</li>
+<li>I finished the Atmire stats processing on all cores on DSpace Test:
+<ul>
+<li>statistics:
+<ul>
+<li>2,040,385 docs: 2h 28m 49s</li>
+</ul>
+</li>
+<li>statistics-2019:
+<ul>
+<li>8,960,000 docs: 12h 7s</li>
+<li>1,780,575 docs: 2h 7m 29s</li>
+</ul>
+</li>
+<li>statistics-2018:
+<ul>
+<li>2,200,000 docs: 12h 1m 11s</li>
+<li>2,100,000 docs: 12h 4m 19s</li>
+<li>?</li>
+</ul>
+</li>
+<li>statistics-2017:
+<ul>
+<li>1,970,000 docs: 12h 5m 45s</li>
+<li>2,000,000 docs: 12h 5m 38s</li>
+<li>1,312,674 docs: 4h 14m 23s</li>
+</ul>
+</li>
+<li>statistics-2016:
+<ul>
+<li>1,669,020 docs: 12h 4m 3s</li>
+<li>1,650,000 docs: 12h 7m 40s</li>
+<li>850,611 docs: 44m 52s</li>
+</ul>
+</li>
+<li>statistics-2014:
+<ul>
+<li>4,832,334 docs: 3h 53m 41s</li>
+</ul>
+</li>
+<li>statistics-2013:
+<ul>
+<li>4,509,891 docs: 3h 18m 44s</li>
+</ul>
+</li>
+<li>statistics-2012:
+<ul>
+<li>3,716,857 docs: 2h 36m 21s</li>
+</ul>
+</li>
+<li>statistics-2011:
+<ul>
+<li>1,645,426 docs: 1h 11m 41s</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>As far as I can tell, the processing became much faster once I purged all the unmigrated records
+<ul>
+<li>It took about six days for the processing according to the times above, though 2015 is missing&hellip; hmm</li>
+</ul>
+</li>
+<li>Now I am testing the Atmire Listings and Reports
+<ul>
+<li>On both my local test and DSpace Test I get no results when searching for &ldquo;Orth, A.&rdquo; and &ldquo;Orth, Alan&rdquo; or even Delia Grace, but the Discovery index is up to date and I have eighteen items&hellip;</li>
+<li>I sent a message to Atmire&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-20">2020-08-20</h2>
+<ul>
+<li>Natalia from CIAT was asking how she can download all the PDFs for the items in a search result
+<ul>
+<li>The search result is for the keyword &ldquo;trade off&rdquo; in the WLE community</li>
+<li>I converted the Discovery search to an open-search query to extract the XML, but we can&rsquo;t get all the results on one page so I had to change the <code>rpp</code> to 100 and request a few times to get them all:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ http &#39;https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=0&#39; User-Agent:&#39;curl&#39; &gt; /tmp/wle-trade-off-page1.xml
+$ http &#39;https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=100&#39; User-Agent:&#39;curl&#39; &gt; /tmp/wle-trade-off-page2.xml
+$ http &#39;https://cgspace.cgiar.org/open-search/discover?scope=10568%2F34494&amp;query=trade+off&amp;rpp=100&amp;start=200&#39; User-Agent:&#39;curl&#39; &gt; /tmp/wle-trade-off-page3.xml
+</code></pre><ul>
+<li>Ugh, and to extract the <code>&lt;id&gt;</code> from each <code>&lt;entry&gt;</code> we have to use an XPath query, but use a <a href="http://blog.powered-up-games.com/wordpress/archives/70">hack to ignore the default namespace by setting each element&rsquo;s local name</a>:</li>
+</ul>
+<pre tabindex="0"><code>$ xmllint --xpath &#39;//*[local-name()=&#34;entry&#34;]/*[local-name()=&#34;id&#34;]/text()&#39; /tmp/wle-trade-off-page1.xml &gt;&gt; /tmp/ids.txt
+$ xmllint --xpath &#39;//*[local-name()=&#34;entry&#34;]/*[local-name()=&#34;id&#34;]/text()&#39; /tmp/wle-trade-off-page2.xml &gt;&gt; /tmp/ids.txt
+$ xmllint --xpath &#39;//*[local-name()=&#34;entry&#34;]/*[local-name()=&#34;id&#34;]/text()&#39; /tmp/wle-trade-off-page3.xml &gt;&gt; /tmp/ids.txt
+$ sort -u /tmp/ids.txt &gt; /tmp/ids-sorted.txt
+$ grep -oE &#39;[0-9]+/[0-9]+&#39; /tmp/ids.txt &gt; /tmp/handles.txt
+</code></pre><ul>
+<li>Now I have all the handles for the matching items and I can use the REST API to get each item&rsquo;s PDFs&hellip;
+<ul>
+<li>I wrote <code>get-wle-pdfs.py</code> to read the handles from a text file and get all PDFs: <a href="https://github.com/ilri/DSpace/blob/5_x-prod/get-wle-pdfs.py">https://github.com/ilri/DSpace/blob/5_x-prod/get-wle-pdfs.py</a></li>
+</ul>
+</li>
+<li>Add <code>Foreign, Commonwealth and Development Office, United Kingdom</code> to the controlled vocabulary for sponsors on CGSpace
+<ul>
+<li>This is the new name for DFID as of 2020-09-01</li>
+<li>We will continue using DFID for older items</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-22">2020-08-22</h2>
+<ul>
+<li>Peter noticed that the AReS data was out dated, and I see in the admin dashboard that it hasn&rsquo;t been updated since 2020-07-21
+<ul>
+<li>I initiated a re-indexing and I see from the CGSpace logs that it is indeed running</li>
+</ul>
+</li>
+<li>Margarita from CCAFS asked for help adding a new user to their submission and approvers groups
+<ul>
+<li>I told them to log in using the LDAP login first so that the e-person gets created</li>
+</ul>
+</li>
+<li>I manually renamed a few dozen of the stupid &ldquo;a-ILRI submitters&rdquo; groups that had the &ldquo;a-&rdquo; prefix on CGSpace
+<ul>
+<li>For what it&rsquo;s worth, we had asked Sisay to do this over a year ago and he never did</li>
+<li>Also, we have two CCAFS approvers groups: <code>CCAFS approvers</code> and <code>CCAFS approvers1</code>, with each added to about half of the CCAFS collections</li>
+<li>The group members are the same so I went through and replaced the <code>CCAFS approvers1</code> group everywhere manually&hellip;</li>
+<li>I also removed some old CCAFS users from the groups</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-08-27">2020-08-27</h2>
+<ul>
+<li>I ran the CountryCodeTagger on CGSpace and it was very fast:</li>
+</ul>
+<pre tabindex="0"><code>$ time chrt -b 0 dspace curate -t countrycodetagger -i all -r - -l 500 -s object | tee /tmp/2020-08-27-countrycodetagger.log
+real    2m7.643s
+user    1m48.740s
+sys     0m14.518s
+$ grep -c added /tmp/2020-08-27-countrycodetagger.log
+46
+</code></pre><ul>
+<li>I still haven&rsquo;t created a cron job for it&hellip; but it&rsquo;s good to know that when it doesn&rsquo;t need to add very many country codes that it is very fast (original run a few weeks ago added 50,000 country codes)
+<ul>
+<li>I wonder how DSpace 6 will perform when it doesn&rsquo;t need to add all the codes, like after the initial run</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

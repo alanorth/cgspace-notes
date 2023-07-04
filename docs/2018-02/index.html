@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="February, 2018" />
+<meta property="og:description" content="2018-02-01
+
+Peter gave feedback on the dc.rights proof of concept that I had sent him last week
+We don&rsquo;t need to distinguish between internal and external works, so that makes it just a simple list
+Yesterday I figured out how to monitor DSpace sessions using JMX
+I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-plugins-java package and used the stuff I discovered about JMX in 2018-01
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-02/" />
+<meta property="article:published_time" content="2018-02-01T16:28:54+02:00" />
+<meta property="article:modified_time" content="2020-11-18T17:15:23+02:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="February, 2018"/>
+<meta name="twitter:description" content="2018-02-01
+
+Peter gave feedback on the dc.rights proof of concept that I had sent him last week
+We don&rsquo;t need to distinguish between internal and external works, so that makes it just a simple list
+Yesterday I figured out how to monitor DSpace sessions using JMX
+I copied the logic in the jmx_tomcat_dbpools provided by Ubuntu&rsquo;s munin-plugins-java package and used the stuff I discovered about JMX in 2018-01
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "February, 2018",
+  "url": "https://alanorth.github.io/cgspace-notes/2018-02/",
+  "wordCount": "6410",
+  "datePublished": "2018-02-01T16:28:54+02:00",
+  "dateModified": "2020-11-18T17:15:23+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2018-02/">
+
+    <title>February, 2018 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-02/">February, 2018</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2018-02-01T16:28:54+02:00">Thu Feb 01, 2018</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2018-02-01">2018-02-01</h2>
+<ul>
+<li>Peter gave feedback on the <code>dc.rights</code> proof of concept that I had sent him last week</li>
+<li>We don&rsquo;t need to distinguish between internal and external works, so that makes it just a simple list</li>
+<li>Yesterday I figured out how to monitor DSpace sessions using JMX</li>
+<li>I copied the logic in the <code>jmx_tomcat_dbpools</code> provided by Ubuntu&rsquo;s <code>munin-plugins-java</code> package and used the stuff I discovered about JMX <a href="/cgspace-notes/2018-01/">in 2018-01</a></li>
+</ul>
+<p><img src="/cgspace-notes/2018/02/jmx_dspace_sessions-day.png" alt="DSpace Sessions"></p>
+<ul>
+<li>Run all system updates and reboot DSpace Test</li>
+<li>Wow, I packaged up the <code>jmx_dspace_sessions</code> stuff in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a> and deployed it on CGSpace and it totally works:</li>
+</ul>
+<pre tabindex="0"><code># munin-run jmx_dspace_sessions
+v_.value 223
+v_jspui.value 1
+v_oai.value 0
+</code></pre><h2 id="2018-02-03">2018-02-03</h2>
+<ul>
+<li>Bram from Atmire responded about the high load caused by the Solr updater script and said it will be fixed with the updates to DSpace 5.8 compatibility: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=566">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=566</a></li>
+<li>We will close that ticket for now and wait for the 5.8 stuff: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560</a></li>
+<li>I finally took a look at the second round of cleanups Peter had sent me for author affiliations in mid January</li>
+<li>After trimming whitespace and quickly scanning for encoding errors I applied them on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./delete-metadata-values.py -i /tmp/2018-02-03-Affiliations-12-deletions.csv -f cg.contributor.affiliation -m 211 -d dspace -u dspace -p &#39;fuuu&#39;
+$ ./fix-metadata-values.py -i /tmp/2018-02-03-Affiliations-1116-corrections.csv -f cg.contributor.affiliation -t correct -m 211 -d dspace -u dspace -p &#39;fuuu&#39;
+</code></pre><ul>
+<li>Then I started a full Discovery reindex:</li>
+</ul>
+<pre tabindex="0"><code>$ time schedtool -D -e ionice -c2 -n7 nice -n19 [dspace]/bin/dspace index-discovery -b
+
+real    96m39.823s
+user    14m10.975s
+sys     2m29.088s
+</code></pre><ul>
+<li>Generate a new list of affiliations for Peter to sort through:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;affiliation&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/affiliations.csv with csv;
+COPY 3723
+</code></pre><ul>
+<li>Oh, and it looks like we processed over 3.1 million requests in January, up from 2.9 million in <a href="/cgspace-notes/2017-12/">December</a>:</li>
+</ul>
+<pre tabindex="0"><code># time zcat --force /var/log/nginx/* | grep -cE &#34;[0-9]{1,2}/Jan/2018&#34;
+3126109
+
+real    0m23.839s
+user    0m27.225s
+sys     0m1.905s
+</code></pre><h2 id="2018-02-05">2018-02-05</h2>
+<ul>
+<li>Toying with correcting authors with trailing spaces via PostgreSQL:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value=REGEXP_REPLACE(text_value, &#39;\s+$&#39; , &#39;&#39;) where resource_type_id=2 and metadata_field_id=3 and text_value ~ &#39;^.*?\s+$&#39;;
+UPDATE 20
+</code></pre><ul>
+<li>I tried the <code>TRIM(TRAILING from text_value)</code> function and it said it changed 20 items but the spaces didn&rsquo;t go away</li>
+<li>This is on a fresh import of the CGSpace database, but when I tried to apply it on CGSpace there were no changes detected. Weird.</li>
+<li>Anyways, Peter wants a new list of authors to clean up, so I exported another CSV:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors-2018-02-05.csv with csv;
+COPY 55630
+</code></pre><h2 id="2018-02-06">2018-02-06</h2>
+<ul>
+<li>UptimeRobot says CGSpace is down this morning around 9:15</li>
+<li>I see 308 PostgreSQL connections in <code>pg_stat_activity</code></li>
+<li>The usage otherwise seemed low for REST/OAI as well as XMLUI in the last hour:</li>
+</ul>
+<pre tabindex="0"><code># date
+Tue Feb  6 09:30:32 UTC 2018
+# cat /var/log/nginx/rest.log /var/log/nginx/rest.log.1 /var/log/nginx/oai.log /var/log/nginx/oai.log.1 | grep -E &#34;6/Feb/2018:(08|09)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+      2 223.185.41.40
+      2 66.249.64.14
+      2 77.246.52.40
+      4 157.55.39.82
+      4 193.205.105.8
+      5 207.46.13.63
+      5 207.46.13.64
+      6 154.68.16.34
+      7 207.46.13.66
+   1548 50.116.102.77
+# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &#34;6/Feb/2018:(08|09)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+     77 213.55.99.121
+     86 66.249.64.14
+    101 104.196.152.243
+    103 207.46.13.64
+    118 157.55.39.82
+    133 207.46.13.66
+    136 207.46.13.63
+    156 68.180.228.157
+    295 197.210.168.174
+    752 144.76.64.79
+</code></pre><ul>
+<li>I did notice in <code>/var/log/tomcat7/catalina.out</code> that Atmire&rsquo;s update thing was running though</li>
+<li>So I restarted Tomcat and now everything is fine</li>
+<li>Next time I see that many database connections I need to save the output so I can analyze it later</li>
+<li>I&rsquo;m going to re-schedule the taskUpdateSolrStatsMetadata task as <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=566">Bram detailed in ticket 566</a> to see if it makes CGSpace stop crashing every morning</li>
+<li>If I move the task from 3AM to 3PM, ideally CGSpace will stop crashing in the morning, or start crashing ~12 hours later</li>
+<li>Eventually Atmire has said that there will be a fix for this high load caused by their script, but it will come with the 5.8 compatability they are already working on</li>
+<li>I re-deployed CGSpace with the new task time of 3PM, ran all system updates, and restarted the server</li>
+<li>Also, I changed the name of the DSpace fallback pool on DSpace Test and CGSpace to be called &lsquo;dspaceCli&rsquo; so that I can distinguish it in <code>pg_stat_activity</code></li>
+<li>I implemented some changes to the pooling in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure scripts</a> so that each DSpace web application can use its own pool (web, api, and solr)</li>
+<li>Each pool uses its own name and hopefully this should help me figure out which one is using too many connections next time CGSpace goes down</li>
+<li>Also, this will mean that when a search bot comes along and hammers the XMLUI, the REST and OAI applications will be fine</li>
+<li>I&rsquo;m not actually sure if the Solr web application uses the database though, so I&rsquo;ll have to check later and remove it if necessary</li>
+<li>I deployed the changes on DSpace Test only for now, so I will monitor and make them on CGSpace later this week</li>
+</ul>
+<h2 id="2018-02-07">2018-02-07</h2>
+<ul>
+<li>Abenet wrote to ask a question about the ORCiD lookup not working for one CIAT user on CGSpace</li>
+<li>I tried on DSpace Test and indeed the lookup just doesn&rsquo;t work!</li>
+<li>The ORCiD code in DSpace appears to be using <code>http://pub.orcid.org/</code>, but when I go there in the browser it redirects me to <code>https://pub.orcid.org/v2.0/</code></li>
+<li>According to <a href="https://groups.google.com/forum/#!topic/orcid-api-users/qfg-HwAB1bk">the announcement</a> the v1 API was moved from <code>http://pub.orcid.org/</code> to <code>https://pub.orcid.org/v1.2</code> until March 1st when it will be discontinued for good</li>
+<li>But the old URL is hard coded in DSpace and it doesn&rsquo;t work anyways, because it currently redirects you to <code>https://pub.orcid.org/v2.0/v1.2</code></li>
+<li>So I guess we have to disable that shit once and for all and switch to a controlled vocabulary</li>
+<li>CGSpace crashed again, this time around <code>Wed Feb  7 11:20:28 UTC 2018</code></li>
+<li>I took a few snapshots of the PostgreSQL activity at the time and as the minutes went on and the connections were very high at first but reduced on their own:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; &gt; /tmp/pg_stat_activity.txt
+$ grep -c &#39;PostgreSQL JDBC&#39; /tmp/pg_stat_activity*
+/tmp/pg_stat_activity1.txt:300
+/tmp/pg_stat_activity2.txt:272
+/tmp/pg_stat_activity3.txt:168
+/tmp/pg_stat_activity4.txt:5
+/tmp/pg_stat_activity5.txt:6
+</code></pre><ul>
+<li>Interestingly, all of those 751 connections were idle!</li>
+</ul>
+<pre tabindex="0"><code>$ grep &#34;PostgreSQL JDBC&#34; /tmp/pg_stat_activity* | grep -c idle
+751
+</code></pre><ul>
+<li>Since I was restarting Tomcat anyways, I decided to deploy the changes to create two different pools for web and API apps</li>
+<li>Looking the Munin graphs, I can see that there were almost double the normal number of DSpace sessions at the time of the crash (and also yesterday!):</li>
+</ul>
+<p><img src="/cgspace-notes/2018/02/jmx_dspace-sessions-day.png" alt="DSpace Sessions"></p>
+<ul>
+<li>Indeed it seems like there were over 1800 sessions today around the hours of 10 and 11 AM:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -E &#39;^2018-02-07 (10|11)&#39; dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+1828
+</code></pre><ul>
+<li>CGSpace went down again a few hours later, and now the connections to the dspaceWeb pool are maxed at 250 (the new limit I imposed with the new separate pool scheme)</li>
+<li>What&rsquo;s interesting is that the DSpace log says the connections are all busy:</li>
+</ul>
+<pre tabindex="0"><code>org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-328] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:250; busy:250; idle:0; lastwait:5000].
+</code></pre><ul>
+<li>&hellip; but in PostgreSQL I see them <code>idle</code> or <code>idle in transaction</code>:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -c dspaceWeb
+250
+$ psql -c &#39;select * from pg_stat_activity&#39; | grep dspaceWeb | grep -c idle
+250
+$ psql -c &#39;select * from pg_stat_activity&#39; | grep dspaceWeb | grep -c &#34;idle in transaction&#34;
+187
+</code></pre><ul>
+<li>What the fuck, does DSpace think all connections are busy?</li>
+<li>I suspect these are issues with abandoned connections or maybe a leak, so I&rsquo;m going to try adding the <code>removeAbandoned='true'</code> parameter which is apparently off by default</li>
+<li>I will try <code>testOnReturn='true'</code> too, just to add more validation, because I&rsquo;m fucking grasping at straws</li>
+<li>Also, WTF, there was a heap space error randomly in catalina.out:</li>
+</ul>
+<pre tabindex="0"><code>Wed Feb 07 15:01:54 UTC 2018 | Query:containerItem:91917 AND type:2
+Exception in thread &#34;http-bio-127.0.0.1-8081-exec-58&#34; java.lang.OutOfMemoryError: Java heap space
+</code></pre><ul>
+<li>I&rsquo;m trying to find a way to determine what was using all those Tomcat sessions, but parsing the DSpace log is hard because some IPs are IPv6, which contain colons!</li>
+<li>Looking at the first crash this morning around 11, I see these IPv4 addresses making requests around 10 and 11AM:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -E &#39;^2018-02-07 (10|11)&#39; dspace.log.2018-02-07 | grep -o -E &#39;ip_addr=[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}&#39; | sort -n | uniq -c | sort -n | tail -n 20
+     34 ip_addr=46.229.168.67
+     34 ip_addr=46.229.168.73
+     37 ip_addr=46.229.168.76
+     40 ip_addr=34.232.65.41
+     41 ip_addr=46.229.168.71
+     44 ip_addr=197.210.168.174
+     55 ip_addr=181.137.2.214
+     55 ip_addr=213.55.99.121
+     58 ip_addr=46.229.168.65
+     64 ip_addr=66.249.66.91
+     67 ip_addr=66.249.66.90
+     71 ip_addr=207.46.13.54
+     78 ip_addr=130.82.1.40
+    104 ip_addr=40.77.167.36
+    151 ip_addr=68.180.228.157
+    174 ip_addr=207.46.13.135
+    194 ip_addr=54.83.138.123
+    198 ip_addr=40.77.167.62
+    210 ip_addr=207.46.13.71
+    214 ip_addr=104.196.152.243
+</code></pre><ul>
+<li>These IPs made thousands of sessions today:</li>
+</ul>
+<pre tabindex="0"><code>$ grep 104.196.152.243 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+530
+$ grep 207.46.13.71 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+859
+$ grep 40.77.167.62 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+610
+$ grep 54.83.138.123 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+8
+$ grep 207.46.13.135 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+826
+$ grep 68.180.228.157 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+727
+$ grep 40.77.167.36 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+181
+$ grep 130.82.1.40 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+24
+$ grep 207.46.13.54 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+166
+$ grep 46.229.168 dspace.log.2018-02-07 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq | wc -l
+992
+</code></pre><ul>
+<li>Let&rsquo;s investigate who these IPs belong to:
+<ul>
+<li>104.196.152.243 is CIAT, which is already marked as a bot via nginx!</li>
+<li>207.46.13.71 is Bing, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+<li>40.77.167.62 is Bing, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+<li>207.46.13.135 is Bing, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+<li>68.180.228.157 is Yahoo, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+<li>40.77.167.36 is Bing, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+<li>207.46.13.54 is Bing, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+<li>46.229.168.x is Semrush, which is already marked as a bot in Tomcat&rsquo;s Crawler Session Manager Valve!</li>
+</ul>
+</li>
+<li>Nice, so these are all known bots that are already crammed into one session by Tomcat&rsquo;s Crawler Session Manager Valve.</li>
+<li>What in the actual fuck, why is our load doing this? It&rsquo;s gotta be something fucked up with the database pool being &ldquo;busy&rdquo; but everything is fucking idle</li>
+<li>One that I should probably add in nginx is 54.83.138.123, which is apparently the following user agent:</li>
+</ul>
+<pre tabindex="0"><code>BUbiNG (+http://law.di.unimi.it/BUbiNG.html)
+</code></pre><ul>
+<li>This one makes two thousand requests per day or so recently:</li>
+</ul>
+<pre tabindex="0"><code># grep -c BUbiNG /var/log/nginx/access.log /var/log/nginx/access.log.1
+/var/log/nginx/access.log:1925
+/var/log/nginx/access.log.1:2029
+</code></pre><ul>
+<li>And they have 30 IPs, so fuck that shit I&rsquo;m going to add them to the Tomcat Crawler Session Manager Valve nowwww</li>
+<li>Lots of discussions on the dspace-tech mailing list over the last few years about leaky transactions being a known problem with DSpace</li>
+<li>Helix84 recommends restarting PostgreSQL instead of Tomcat because it restarts quicker</li>
+<li>This is how the connections looked when it crashed this afternoon:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c
+      5 dspaceApi
+    290 dspaceWeb
+</code></pre><ul>
+<li>This is how it is right now:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c
+      5 dspaceApi
+      5 dspaceWeb
+</code></pre><ul>
+<li>So is this just some fucked up XMLUI database leaking?</li>
+<li>I notice there is an issue (that I&rsquo;ve probably noticed before) on the Jira tracker about this that was fixed in DSpace 5.7: <a href="https://jira.duraspace.org/browse/DS-3551">https://jira.duraspace.org/browse/DS-3551</a></li>
+<li>I seriously doubt this leaking shit is fixed for sure, but I&rsquo;m gonna cherry-pick all those commits and try them on DSpace Test and probably even CGSpace because I&rsquo;m fed up with this shit</li>
+<li>I cherry-picked all the commits for DS-3551 but it won&rsquo;t build on our current DSpace 5.5!</li>
+<li>I sent a message to the dspace-tech mailing list asking why DSpace thinks these connections are busy when PostgreSQL says they are idle</li>
+</ul>
+<h2 id="2018-02-10">2018-02-10</h2>
+<ul>
+<li>I tried to disable ORCID lookups but keep the existing authorities</li>
+<li>This item has an ORCID for Ralf Kiese: http://localhost:8080/handle/10568/89897</li>
+<li>Switch authority.controlled off and change authorLookup to lookup, and the ORCID badge doesn&rsquo;t show up on the item</li>
+<li>Leave all settings but change choices.presentation to lookup and ORCID badge is there and item submission uses LC Name Authority and it breaks with this error:</li>
+</ul>
+<pre tabindex="0"><code>Field dc_contributor_author has choice presentation of type &#34;select&#34;, it may NOT be authority-controlled.
+</code></pre><ul>
+<li>If I change choices.presentation to suggest it give this error:</li>
+</ul>
+<pre tabindex="0"><code>xmlui.mirage2.forms.instancedCompositeFields.noSuggestionError
+</code></pre><ul>
+<li>So I don&rsquo;t think we can disable the ORCID lookup function and keep the ORCID badges</li>
+</ul>
+<h2 id="2018-02-11">2018-02-11</h2>
+<ul>
+<li>Magdalena from CCAFS emailed to ask why one of their items has such a weird thumbnail: <a href="https://cgspace.cgiar.org/handle/10568/90735">10568/90735</a></li>
+</ul>
+<p><img src="/cgspace-notes/2018/02/CCAFS_WP_223.pdf.jpg" alt="Weird thumbnail"></p>
+<ul>
+<li>I downloaded the PDF and manually generated a thumbnail with ImageMagick and it looked better:</li>
+</ul>
+<pre tabindex="0"><code>$ convert CCAFS_WP_223.pdf\[0\] -profile /usr/local/share/ghostscript/9.22/iccprofiles/default_cmyk.icc -thumbnail 600x600 -flatten -profile /usr/local/share/ghostscript/9.22/iccprofiles/default_rgb.icc CCAFS_WP_223.jpg
+</code></pre><p><img src="/cgspace-notes/2018/02/CCAFS_WP_223.jpg" alt="Manual thumbnail"></p>
+<ul>
+<li>Peter sent me corrected author names last week but the file encoding is messed up:</li>
+</ul>
+<pre tabindex="0"><code>$ isutf8 authors-2018-02-05.csv
+authors-2018-02-05.csv: line 100, char 18, byte 4179: After a first byte between E1 and EC, expecting the 2nd byte between 80 and BF.
+</code></pre><ul>
+<li>The <code>isutf8</code> program comes from <code>moreutils</code></li>
+<li>Line 100 contains: Galiè, Alessandra</li>
+<li>In other news, psycopg2 is splitting their package in pip, so to install the binary wheel distribution you need to use <code>pip install psycopg2-binary</code></li>
+<li>See: <a href="http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/">http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/</a></li>
+<li>I updated my <code>fix-metadata-values.py</code> and <code>delete-metadata-values.py</code> scripts on the scripts page: <a href="https://github.com/ilri/DSpace/wiki/Scripts">https://github.com/ilri/DSpace/wiki/Scripts</a></li>
+<li>I ran the 342 author corrections (after trimming whitespace and excluding those with <code>||</code> and other syntax errors) on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i Correct-342-Authors-2018-02-11.csv -f dc.contributor.author -t correct -m 3 -d dspace -u dspace -p &#39;fuuu&#39;
+</code></pre><ul>
+<li>Then I ran a full Discovery re-indexing:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
+$ time schedtool -D -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre><ul>
+<li>That reminds me that Bizu had asked me to fix some of Alan Duncan&rsquo;s names in December</li>
+<li>I see he actually has some variations with &ldquo;Duncan, Alan J.&rdquo;: <a href="https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=">https://cgspace.cgiar.org/discover?filtertype_1=author&amp;filter_relational_operator_1=contains&amp;filter_1=Duncan%2C+Alan&amp;submit_apply_filter=&amp;query=</a></li>
+<li>I will just update those for her too and then restart the indexing:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;%Duncan, Alan%&#39;;
+   text_value    |              authority               | confidence 
+-----------------+--------------------------------------+------------
+ Duncan, Alan J. | 5ff35043-942e-4d0a-b377-4daed6e3c1a3 |        600
+ Duncan, Alan J. | 62298c84-4d9d-4b83-a932-4a9dd4046db7 |         -1
+ Duncan, Alan J. |                                      |         -1
+ Duncan, Alan    | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
+ Duncan, Alan J. | cd0e03bf-92c3-475f-9589-60c5b042ea60 |         -1
+ Duncan, Alan J. | a6486522-b08a-4f7a-84f9-3a73ce56034d |         -1
+ Duncan, Alan J. | 5ff35043-942e-4d0a-b377-4daed6e3c1a3 |         -1
+ Duncan, Alan J. | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
+(8 rows)
+
+dspace=# begin;
+dspace=# update metadatavalue set text_value=&#39;Duncan, Alan&#39;, authority=&#39;a6486522-b08a-4f7a-84f9-3a73ce56034d&#39;, confidence=600 where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;Duncan, Alan%&#39;;
+UPDATE 216
+dspace=# select distinct text_value, authority, confidence from metadatavalue where resource_type_id=2 and metadata_field_id=3 and text_value like &#39;%Duncan, Alan%&#39;;
+  text_value  |              authority               | confidence 
+--------------+--------------------------------------+------------
+ Duncan, Alan | a6486522-b08a-4f7a-84f9-3a73ce56034d |        600
+(1 row)
+dspace=# commit;
+</code></pre><ul>
+<li>Run all system updates on DSpace Test (linode02) and reboot it</li>
+<li>I wrote a Python script (<a href="https://gist.github.com/alanorth/57a88379126d844563c1410bd7b8d12b"><code>resolve-orcids-from-solr.py</code></a>) using SolrClient to parse the Solr authority cache for ORCID IDs</li>
+<li>We currently have 1562 authority records with ORCID IDs, and 624 unique IDs</li>
+<li>We can use this to build a controlled vocabulary of ORCID IDs for new item submissions</li>
+<li>I don&rsquo;t know how to add ORCID IDs to existing items yet&hellip; some more querying of PostgreSQL for authority values perhaps?</li>
+<li>I added the script to the <a href="https://github.com/ilri/DSpace/wiki/Scripts">ILRI DSpace wiki on GitHub</a></li>
+</ul>
+<h2 id="2018-02-12">2018-02-12</h2>
+<ul>
+<li>Follow up with Atmire on the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 Compatibility ticket</a> to ask again if they want me to send them a DSpace 5.8 branch to work on</li>
+<li>Abenet asked if there was a way to get the number of submissions she and Bizuwork did</li>
+<li>I said that the Atmire Workflow Statistics module was supposed to be able to do that</li>
+<li>We had tried it in <a href="/cgspace-notes/2017-06/">June, 2017</a> and found that it didn&rsquo;t work</li>
+<li>Atmire sent us some fixes but they didn&rsquo;t work either</li>
+<li>I just tried the branch with the fixes again and it indeed does not work:</li>
+</ul>
+<p><img src="/cgspace-notes/2018/02/atmire-workflow-statistics.png" alt="Atmire Workflow Statistics No Data Available"></p>
+<ul>
+<li>I see that in <a href="/cgspace-notes/2017-04/">April, 2017</a> I just used a SQL query to get a user&rsquo;s submissions by checking the <code>dc.description.provenance</code> field</li>
+<li>So for Abenet, I can check her submissions in December, 2017 with:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and metadata_field_id=28 and text_value ~ &#39;^Submitted.*yabowork.*2017-12.*&#39;;
+</code></pre><ul>
+<li>I emailed Peter to ask whether we can move DSpace Test to a new Linode server and attach 300 GB of disk space to it</li>
+<li>This would be using <a href="https://www.linode.com/blockstorage">Linode&rsquo;s new block storage volumes</a></li>
+<li>I think our current $40/month Linode has enough CPU and memory capacity, but we need more disk space</li>
+<li>I think I&rsquo;d probably just attach the block storage volume and mount it on /home/dspace</li>
+<li>Ask Peter about <code>dc.rights</code> on DSpace Test again, if he likes it then we should move it to CGSpace soon</li>
+</ul>
+<h2 id="2018-02-13">2018-02-13</h2>
+<ul>
+<li>Peter said he was getting a &ldquo;socket closed&rdquo; error on CGSpace</li>
+<li>I looked in the dspace.log.2018-02-13 and saw one recent one:</li>
+</ul>
+<pre tabindex="0"><code>2018-02-13 12:50:13,656 ERROR org.dspace.storage.rdbms.DatabaseManager @ SQL QueryTable Error - 
+org.postgresql.util.PSQLException: An I/O error occurred while sending to the backend.
+...
+Caused by: java.net.SocketException: Socket closed
+</code></pre><ul>
+<li>Could be because of the <code>removeAbandoned=&quot;true&quot;</code> that I enabled in the JDBC connection pool last week?</li>
+</ul>
+<pre tabindex="0"><code>$ grep -c &#34;java.net.SocketException: Socket closed&#34; dspace.log.2018-02-*
+dspace.log.2018-02-01:0
+dspace.log.2018-02-02:0
+dspace.log.2018-02-03:0
+dspace.log.2018-02-04:0
+dspace.log.2018-02-05:0
+dspace.log.2018-02-06:0
+dspace.log.2018-02-07:0
+dspace.log.2018-02-08:1
+dspace.log.2018-02-09:6
+dspace.log.2018-02-10:0
+dspace.log.2018-02-11:3
+dspace.log.2018-02-12:0
+dspace.log.2018-02-13:4
+</code></pre><ul>
+<li>I apparently added that on 2018-02-07 so it could be, as I don&rsquo;t see any of those socket closed errors in 2018-01&rsquo;s logs!</li>
+<li>I will increase the removeAbandonedTimeout from its default of 60 to 90 and enable logAbandoned</li>
+<li>Peter hit this issue one more time, and this is apparently what Tomcat&rsquo;s catalina.out log says when an abandoned connection is removed:</li>
+</ul>
+<pre tabindex="0"><code>Feb 13, 2018 2:05:42 PM org.apache.tomcat.jdbc.pool.ConnectionPool abandon
+WARNING: Connection has been abandoned PooledConnection[org.postgresql.jdbc.PgConnection@22e107be]:java.lang.Exception
+</code></pre><h2 id="2018-02-14">2018-02-14</h2>
+<ul>
+<li>Skype with Peter and the Addis team to discuss what we need to do for the ORCIDs in the immediate future</li>
+<li>We said we&rsquo;d start with a controlled vocabulary for <code>cg.creator.id</code> on the DSpace Test submission form, where we store the author name and the ORCID in some format like: Alan S. Orth (0000-0002-1735-7458)</li>
+<li>Eventually we need to find a way to print the author names with links to their ORCID profiles</li>
+<li>Abenet will send an email to the partners to give us ORCID IDs for their authors and to stress that they update their name format on ORCID.org if they want it in a special way</li>
+<li>I sent the Codeobia guys a question to ask how they prefer that we store the IDs, ie one of:
+<ul>
+<li>Alan Orth - 0000-0002-1735-7458</li>
+<li>Alan Orth: 0000-0002-1735-7458</li>
+<li>Alan S. Orth (0000-0002-1735-7458)</li>
+</ul>
+</li>
+<li>Atmire responded on the <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=560">DSpace 5.8 compatability ticket</a> and said they will let me know if they they want me to give them a clean 5.8 branch</li>
+<li>I formatted my list of ORCID IDs as a controlled vocabulary, sorted alphabetically, then ran through XML tidy:</li>
+</ul>
+<pre tabindex="0"><code>$ sort cgspace-orcids.txt &gt; dspace/config/controlled-vocabularies/cg-creator-id.xml
+$ add XML formatting...
+$ tidy -xml -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+</code></pre><ul>
+<li>It seems the tidy fucks up accents, for example it turns <code>Adriana Tofiño (0000-0001-7115-7169)</code> into <code>Adriana TofiÃ±o (0000-0001-7115-7169)</code></li>
+<li>We need to force UTF-8:</li>
+</ul>
+<pre tabindex="0"><code>$ tidy -xml -utf8 -iq -m -w 0 dspace/config/controlled-vocabularies/cg-creator-id.xml
+</code></pre><ul>
+<li>This preserves special accent characters</li>
+<li>I tested the display and store of these in the XMLUI and PostgreSQL and it looks good</li>
+<li>Sisay exported all ILRI, CIAT, etc authors from ORCID and sent a list of 600+</li>
+<li>Peter combined it with mine and we have 1204 unique ORCIDs!</li>
+</ul>
+<pre tabindex="0"><code>$ grep -coE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; CGcenter_ORCID_ID_combined.csv
+1204
+$ grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; CGcenter_ORCID_ID_combined.csv | sort | uniq | wc -l
+1204
+</code></pre><ul>
+<li>Also, save that regex for the future because it will be very useful!</li>
+<li>CIAT sent a list of their authors&rsquo; ORCIDs and combined with ours there are now 1227:</li>
+</ul>
+<pre tabindex="0"><code>$ cat CGcenter_ORCID_ID_combined.csv ciat-orcids.txt | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l
+1227
+</code></pre><ul>
+<li>There are some formatting issues with names in Peter&rsquo;s list, so I should remember to re-generate the list of names from ORCID&rsquo;s API once we&rsquo;re done</li>
+<li>The <code>dspace cleanup -v</code> currently fails on CGSpace with the following:</li>
+</ul>
+<pre tabindex="0"><code> - Deleting bitstream record from database (ID: 149473)
+Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(149473) is still referenced from table &#34;bundle&#34;.
+</code></pre><ul>
+<li>The solution is to update the bitstream table, as I&rsquo;ve discovered several other times in 2016 and 2017:</li>
+</ul>
+<pre tabindex="0"><code>$ psql dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (149473);&#39;
+UPDATE 1
+</code></pre><ul>
+<li>Then the cleanup process will continue for awhile and hit another foreign key conflict, and eventually it will complete after you manually resolve them all</li>
+</ul>
+<h2 id="2018-02-15">2018-02-15</h2>
+<ul>
+<li>Altmetric seems to be indexing DSpace Test for some reason:
+<ul>
+<li>See this item on DSpace Test: <a href="https://dspacetest.cgiar.org/handle/10568/78450">https://dspacetest.cgiar.org/handle/10568/78450</a></li>
+<li>See the corresponding page on Altmetric: <a href="https://www.altmetric.com/details/handle/10568/78450">https://www.altmetric.com/details/handle/10568/78450</a></li>
+</ul>
+</li>
+<li>And this item doesn&rsquo;t even exist on CGSpace!</li>
+<li>Start working on XMLUI item display code for ORCIDs</li>
+<li>Send emails to Macaroni Bros and Usman at CIFOR about ORCID metadata</li>
+<li>CGSpace crashed while I was driving to Tel Aviv, and was down for four hours!</li>
+<li>I only looked quickly in the logs but saw a bunch of database errors</li>
+<li>PostgreSQL connections are currently:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | uniq -c
+      2 dspaceApi
+      1 dspaceWeb
+      3 dspaceApi
+</code></pre><ul>
+<li>I see shitloads of memory errors in Tomcat&rsquo;s logs:</li>
+</ul>
+<pre tabindex="0"><code># grep -c &#34;Java heap space&#34; /var/log/tomcat7/catalina.out
+56
+</code></pre><ul>
+<li>And shit tons of database connections abandoned:</li>
+</ul>
+<pre tabindex="0"><code># grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; /var/log/tomcat7/catalina.out
+612
+</code></pre><ul>
+<li>I have no fucking idea why it crashed</li>
+<li>The XMLUI activity looks like:</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 /var/log/nginx/library-access.log /var/log/nginx/library-access.log.1 /var/log/nginx/error.log /var/log/nginx/error.log.1 | grep -E &#34;15/Feb/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    715 63.143.42.244
+    746 213.55.99.121
+    886 68.180.228.157
+    967 66.249.66.90
+   1013 216.244.66.245
+   1177 197.210.168.174
+   1419 207.46.13.159
+   1512 207.46.13.59
+   1554 207.46.13.157
+   2018 104.196.152.243
+</code></pre><h2 id="2018-02-17">2018-02-17</h2>
+<ul>
+<li>Peter pointed out that we had an incorrect sponsor in the controlled vocabulary: <code>U.S. Agency for International Development</code> → <code>United States Agency for International Development</code></li>
+<li>I made a pull request to fix it ((#354)[https://github.com/ilri/DSpace/pull/354])</li>
+<li>I should remember to update existing values in PostgreSQL too:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# update metadatavalue set text_value=&#39;United States Agency for International Development&#39; where resource_type_id=2 and metadata_field_id=29 and text_value like &#39;%U.S. Agency for International Development%&#39;;
+UPDATE 2
+</code></pre><h2 id="2018-02-18">2018-02-18</h2>
+<ul>
+<li>ICARDA&rsquo;s Mohamed Salem pointed out that it would be easiest to format the <code>cg.creator.id</code> field like &ldquo;Alan Orth: 0000-0002-1735-7458&rdquo; because no name will have a &ldquo;:&rdquo; so it&rsquo;s easier to split on</li>
+<li>I finally figured out a few ways to extract ORCID iDs from metadata using XSLT and display them in the XMLUI:</li>
+</ul>
+<p><img src="/cgspace-notes/2018/02/xmlui-orcid-display.png" alt="Displaying ORCID iDs in XMLUI"></p>
+<ul>
+<li>The one on the bottom left uses a similar format to our author display, and the one in the middle uses the format <a href="https://orcid.org/trademark-and-id-display-guidelines">recommended by ORCID&rsquo;s branding guidelines</a></li>
+<li>Also, I realized that the Academicons font icon set we&rsquo;re using includes an ORCID badge so we don&rsquo;t need to use the PNG image anymore</li>
+<li>Run system updates on DSpace Test (linode02) and reboot the server</li>
+<li>Looking back at the system errors on 2018-02-15, I wonder what the fuck caused this:</li>
+</ul>
+<pre tabindex="0"><code>$ wc -l dspace.log.2018-02-1{0..8}
+   383483 dspace.log.2018-02-10
+   275022 dspace.log.2018-02-11
+   249557 dspace.log.2018-02-12
+   280142 dspace.log.2018-02-13
+   615119 dspace.log.2018-02-14
+  4388259 dspace.log.2018-02-15
+   243496 dspace.log.2018-02-16
+   209186 dspace.log.2018-02-17
+   167432 dspace.log.2018-02-18
+</code></pre><ul>
+<li>From an average of a few hundred thousand to over four million lines in DSpace log?</li>
+<li>Using grep&rsquo;s <code>-B1</code> I can see the line before the heap space error, which has the time, ie:</li>
+</ul>
+<pre tabindex="0"><code>2018-02-15 16:02:12,748 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.OutOfMemoryError: Java heap space
+</code></pre><ul>
+<li>So these errors happened at hours 16, 18, 19, and 20</li>
+<li>Let&rsquo;s see what was going on in nginx then:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | wc -l
+168571
+# zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &#34;15/Feb/2018:(16|18|19|20)&#34; | wc -l
+8188
+</code></pre><ul>
+<li>Only 8,000 requests during those four hours, out of 170,000 the whole day!</li>
+<li>And the usage of XMLUI, REST, and OAI looks SUPER boring:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log.{3,4}.gz | grep -E &#34;15/Feb/2018:(16|18|19|20)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    111 95.108.181.88
+    158 45.5.184.221
+    201 104.196.152.243
+    205 68.180.228.157
+    236 40.77.167.131 
+    253 207.46.13.159
+    293 207.46.13.59
+    296 63.143.42.242
+    303 207.46.13.157
+    416 63.143.42.244
+</code></pre><ul>
+<li>63.143.42.244 is Uptime Robot, and 207.46.x.x is Bing!</li>
+<li>The DSpace sessions, PostgreSQL connections, and JVM memory all look normal</li>
+<li>I see a lot of AccessShareLock on February 15th&hellip;?</li>
+</ul>
+<p><img src="/cgspace-notes/2018/02/postgresql-locks-week.png" alt="PostgreSQL locks"></p>
+<ul>
+<li>I have no idea what caused this crash</li>
+<li>In other news, I adjusted the ORCID badge size on the XMLUI item display and sent it back to Peter for feedback</li>
+</ul>
+<h2 id="2018-02-19">2018-02-19</h2>
+<ul>
+<li>Combined list of CGIAR author ORCID iDs is up to 1,500:</li>
+</ul>
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml ORCID_ID_CIAT_IITA_IWMI-csv.csv CGcenter_ORCID_ID_combined.csv | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l  
+1571
+</code></pre><ul>
+<li>I updated my <code>resolve-orcids-from-solr.py</code> script to be able to resolve ORCID identifiers from a text file so I renamed it to <code>resolve-orcids.py</code></li>
+<li>Also, I updated it so it uses several new options:</li>
+</ul>
+<pre tabindex="0"><code>$ ./resolve-orcids.py -i input.txt -o output.txt
+$ cat output.txt 
+Ali Ramadhan: 0000-0001-5019-1368
+Ahmad Maryudi: 0000-0001-5051-7217
+</code></pre><ul>
+<li>I was running this on the new list of 1571 and found an error:</li>
+</ul>
+<pre tabindex="0"><code>Looking up the name associated with ORCID iD: 0000-0001-9634-1958
+Traceback (most recent call last):
+  File &#34;./resolve-orcids.py&#34;, line 111, in &lt;module&gt;
+    read_identifiers_from_file()
+  File &#34;./resolve-orcids.py&#34;, line 37, in read_identifiers_from_file
+    resolve_orcid_identifiers(orcids)
+  File &#34;./resolve-orcids.py&#34;, line 65, in resolve_orcid_identifiers
+    family_name = data[&#39;name&#39;][&#39;family-name&#39;][&#39;value&#39;]
+TypeError: &#39;NoneType&#39; object is not subscriptable
+</code></pre><ul>
+<li>According to ORCID that identifier&rsquo;s family-name is null so that sucks</li>
+<li>I fixed the script so that it checks if the family name is null</li>
+<li>Now another:</li>
+</ul>
+<pre tabindex="0"><code>Looking up the name associated with ORCID iD: 0000-0002-1300-3636
+Traceback (most recent call last):
+  File &#34;./resolve-orcids.py&#34;, line 117, in &lt;module&gt;
+    read_identifiers_from_file()
+  File &#34;./resolve-orcids.py&#34;, line 37, in read_identifiers_from_file
+    resolve_orcid_identifiers(orcids)
+  File &#34;./resolve-orcids.py&#34;, line 65, in resolve_orcid_identifiers
+    if data[&#39;name&#39;][&#39;given-names&#39;]:
+TypeError: &#39;NoneType&#39; object is not subscriptable
+</code></pre><ul>
+<li>According to ORCID that identifier&rsquo;s entire name block is null!</li>
+</ul>
+<h2 id="2018-02-20">2018-02-20</h2>
+<ul>
+<li>Send Abenet an email about getting a purchase requisition for a new DSpace Test server on Linode</li>
+<li>Discuss some of the issues with null values and poor-quality names in some ORCID identifiers with Abenet and I think we&rsquo;ll now only use ORCID iDs that have been sent to use from partners, not those extracted via keyword searches on orcid.org</li>
+<li>This should be the version we use (the existing controlled vocabulary generated from CGSpace&rsquo;s Solr authority core plus the IDs sent to us so far by partners):</li>
+</ul>
+<pre tabindex="0"><code>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-id.xml ORCID_ID_CIAT_IITA_IWMI.csv | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq &gt; 2018-02-20-combined.txt
+</code></pre><ul>
+<li>I updated the <code>resolve-orcids.py</code> to use the &ldquo;credit-name&rdquo; if it exists in a profile, falling back to &ldquo;given-names&rdquo; + &ldquo;family-name&rdquo;</li>
+<li>Also, I added color coded output to the debug messages and added a &ldquo;quiet&rdquo; mode that supresses the normal behavior of printing results to the screen</li>
+<li>I&rsquo;m using this as the test input for <code>resolve-orcids.py</code>:</li>
+</ul>
+<pre tabindex="0"><code>$ cat orcid-test-values.txt 
+# valid identifier with &#39;given-names&#39; and &#39;family-name&#39;
+0000-0001-5019-1368
+
+# duplicate identifier
+0000-0001-5019-1368 
+
+# invalid identifier
+0000-0001-9634-19580
+
+# has a &#39;credit-name&#39; value we should prefer
+0000-0002-1735-7458
+
+# has a blank &#39;credit-name&#39; value
+0000-0001-5199-5528
+
+# has a null &#39;name&#39; object
+0000-0002-1300-3636
+
+# has a null &#39;family-name&#39; value
+0000-0001-9634-1958
+
+# missing ORCID identifier
+0000-0003-4221-3214
+</code></pre><ul>
+<li>Help debug issues with Altmetric badges again, it looks like Altmetric is all kinds of fucked up</li>
+<li>Last week I pointed out that they were tracking Handles from our test server</li>
+<li>Now, their API is responding with content that is marked as content-type JSON but is not valid JSON</li>
+<li>For example, this item: <a href="https://cgspace.cgiar.org/handle/10568/83320">https://cgspace.cgiar.org/handle/10568/83320</a></li>
+<li>The Altmetric JavaScript builds the following API call: <a href="https://api.altmetric.com/v1/handle/10568/83320?callback=_altmetric.embed_callback&amp;domain=cgspace.cgiar.org&amp;key=3c130976ca2b8f2e88f8377633751ba1&amp;cache_until=13-20">https://api.altmetric.com/v1/handle/10568/83320?callback=_altmetric.embed_callback&amp;domain=cgspace.cgiar.org&amp;key=3c130976ca2b8f2e88f8377633751ba1&amp;cache_until=13-20</a></li>
+<li>The response body is <em>not</em> JSON</li>
+<li>To contrast, the following bare API call without query parameters is valid JSON: <a href="https://api.altmetric.com/v1/handle/10568/83320">https://api.altmetric.com/v1/handle/10568/83320</a></li>
+<li>I told them that it&rsquo;s their JavaScript that is fucked up</li>
+<li>Remove CPWF project number and Humidtropics subject from submission form (<a href="https://github.com/alanorth/DSpace/pull/3">#3</a>)</li>
+<li>I accidentally merged it into my own repository, oops</li>
+</ul>
+<h2 id="2018-02-22">2018-02-22</h2>
+<ul>
+<li>CGSpace was apparently down today around 13:00 server time and I didn&rsquo;t get any emails on my phone, but saw them later on the computer</li>
+<li>It looks like Sisay restarted Tomcat because I was offline</li>
+<li>There was absolutely nothing interesting going on at 13:00 on the server, WTF?</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/*.log | grep -E &#34;22/Feb/2018:13&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+     55 192.99.39.235
+     60 207.46.13.26
+     62 40.77.167.38
+     65 207.46.13.23
+    103 41.57.108.208
+    120 104.196.152.243
+    133 104.154.216.0
+    145 68.180.228.117
+    159 54.92.197.82
+    231 5.9.6.51
+</code></pre><ul>
+<li>Otherwise there was pretty normal traffic the rest of the day:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;22/Feb/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    839 216.244.66.245
+   1074 68.180.228.117
+   1114 157.55.39.100
+   1162 207.46.13.26
+   1178 207.46.13.23
+   2749 104.196.152.243
+   3109 50.116.102.77
+   4199 70.32.83.92
+   5208 5.9.6.51
+   8686 45.5.184.196
+</code></pre><ul>
+<li>So I don&rsquo;t see any definite cause for this crash, I see a shit ton of abandoned PostgreSQL connections today around 1PM!</li>
+</ul>
+<pre tabindex="0"><code># grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; /var/log/tomcat7/catalina.out
+729
+# grep &#39;Feb 22, 2018 1&#39; /var/log/tomcat7/catalina.out | grep -c &#39;org.apache.tomcat.jdbc.pool.ConnectionPool abandon&#39; 
+519
+</code></pre><ul>
+<li>I think the <code>removeAbandonedTimeout</code> might still be too low (I increased it from 60 to 90 seconds last week)</li>
+<li>Abandoned connections is not a cause but a symptom, though perhaps something more like a few minutes is better?</li>
+<li>Also, while looking at the logs I see some new bot:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.4.2661.102 Safari/537.36; 360Spider
+</code></pre><ul>
+<li>It seems to re-use its user agent but makes tons of useless requests and I wonder if I should add &ldquo;.<em>spider.</em>&rdquo; to the Tomcat Crawler Session Manager valve?</li>
+</ul>
+<h2 id="2018-02-23">2018-02-23</h2>
+<ul>
+<li>Atmire got back to us with a quote about their DSpace 5.8 upgrade</li>
+</ul>
+<h2 id="2018-02-25">2018-02-25</h2>
+<ul>
+<li>A few days ago Abenet sent me the list of ORCID iDs from CCAFS</li>
+<li>We currently have 988 unique identifiers:</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l          
+988
+</code></pre><ul>
+<li>After adding the ones from CCAFS we now have 1004:</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace/config/controlled-vocabularies/cg-creator-id.xml /tmp/ccafs | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; | sort | uniq | wc -l
+1004
+</code></pre><ul>
+<li>I will add them to DSpace Test but Abenet says she&rsquo;s still waiting to set us ILRI&rsquo;s list</li>
+<li>I will tell her that we should proceed on sharing our work on DSpace Test with the partners this week anyways and we can update the list later</li>
+<li>While regenerating the names for these ORCID identifiers I saw <a href="https://pub.orcid.org/v2.1/0000-0002-2614-426X/person">one that has a weird value for its names</a>:</li>
+</ul>
+<pre tabindex="0"><code>Looking up the names associated with ORCID iD: 0000-0002-2614-426X
+Given Names Deactivated Family Name Deactivated: 0000-0002-2614-426X
+</code></pre><ul>
+<li>I don&rsquo;t know if the user accidentally entered this as their name or if that&rsquo;s how ORCID behaves when the name is private?</li>
+<li>I will remove that one from our list for now</li>
+<li>Remove Dryland Systems subject from submission form because that CRP closed two years ago (<a href="https://github.com/ilri/DSpace/pull/355">#355</a>)</li>
+<li>Run all system updates on DSpace Test</li>
+<li>Email ICT to ask how to proceed with the OCS proforma issue for the new DSpace Test server on Linode</li>
+<li>Thinking about how to preserve ORCID identifiers attached to existing items in CGSpace</li>
+<li>We have over 60,000 unique author + authority combinations on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# select count(distinct (text_value, authority)) from metadatavalue where resource_type_id=2 and metadata_field_id=3;
+ count 
+-------
+ 62464
+(1 row)
+</code></pre><ul>
+<li>I know from earlier this month that there are only 624 unique ORCID identifiers in the Solr authority core, so it&rsquo;s way easier to just fetch the unique ORCID iDs from Solr and then go back to PostgreSQL and do the metadata mapping that way</li>
+<li>The query in Solr would simply be <code>orcid_id:*</code></li>
+<li>Assuming I know that authority record with <code>id:d7ef744b-bbd4-4171-b449-00e37e1b776f</code>, then I could query PostgreSQL for all metadata records using that authority:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# select * from metadatavalue where resource_type_id=2 and authority=&#39;d7ef744b-bbd4-4171-b449-00e37e1b776f&#39;;
+ metadata_value_id | resource_id | metadata_field_id |        text_value         | text_lang | place |              authority               | confidence | resource_type_id 
+-------------------+-------------+-------------------+---------------------------+-----------+-------+--------------------------------------+------------+------------------
+           2726830 |       77710 |                 3 | Rodríguez Chalarca, Jairo |           |     2 | d7ef744b-bbd4-4171-b449-00e37e1b776f |        600 |                2
+(1 row)
+</code></pre><ul>
+<li>Then I suppose I can use the <code>resource_id</code> to identify the item?</li>
+<li>Actually, <code>resource_id</code> is the same id we use in CSV, so I could simply build something like this for a metadata import!</li>
+</ul>
+<pre tabindex="0"><code>id,cg.creator.id
+93848,Alan S. Orth: 0000-0002-1735-7458||Peter G. Ballantyne: 0000-0001-9346-2893
+</code></pre><ul>
+<li>I just discovered that <a href="https://requests-cache.readthedocs.io">requests-cache</a> can transparently cache HTTP requests</li>
+<li>Running <code>resolve-orcids.py</code> with my test input takes 10.5 seconds the first time, and then 3.0 seconds the second time!</li>
+</ul>
+<pre tabindex="0"><code>$ time ./resolve-orcids.py -i orcid-test-values.txt -o /tmp/orcid-names
+Ali Ramadhan: 0000-0001-5019-1368
+Alan S. Orth: 0000-0002-1735-7458
+Ibrahim Mohammed: 0000-0001-5199-5528
+Nor Azwadi: 0000-0001-9634-1958
+./resolve-orcids.py -i orcid-test-values.txt -o /tmp/orcid-names  0.32s user 0.07s system 3% cpu 10.530 total
+$ time ./resolve-orcids.py -i orcid-test-values.txt -o /tmp/orcid-names
+Ali Ramadhan: 0000-0001-5019-1368
+Alan S. Orth: 0000-0002-1735-7458
+Ibrahim Mohammed: 0000-0001-5199-5528
+Nor Azwadi: 0000-0001-9634-1958
+./resolve-orcids.py -i orcid-test-values.txt -o /tmp/orcid-names  0.23s user 0.05s system 8% cpu 3.046 total
+</code></pre><h2 id="2018-02-26">2018-02-26</h2>
+<ul>
+<li>Peter is having problems with &ldquo;Socket closed&rdquo; on his submissions page again</li>
+<li>He says his personal account loads much faster than his CGIAR account, which could be because the CGIAR account has potentially thousands of submissions over the last few years</li>
+<li>I don&rsquo;t know why it would take so long, but this logic kinda makes sense</li>
+<li>I think I should increase the <code>removeAbandonedTimeout</code> from 90 to something like 180 and continue observing</li>
+<li>I also reduced the timeout for the API pool back to 60 because those interfaces are only used by bots</li>
+</ul>
+<h2 id="2018-02-27">2018-02-27</h2>
+<ul>
+<li>Peter is still having problems with &ldquo;Socket closed&rdquo; on his submissions page</li>
+<li>I have disabled <code>removeAbandoned</code> for now because that&rsquo;s the only thing I changed in the last few weeks since he started having issues</li>
+<li>I think the real line of logic to follow here is why the submissions page is so slow for him (presumably because of loading all his submissions?)</li>
+<li>I need to see which SQL queries are run during that time</li>
+<li>And only a few hours after I disabled the <code>removeAbandoned</code> thing CGSpace went down and lo and behold, there were 264 connections, most of which were idle:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -c &#39;select * from pg_stat_activity&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi|dspaceCli)&#39; | sort | uniq -c
+      5 dspaceApi
+    279 dspaceWeb
+$ psql -c &#39;select * from pg_stat_activity&#39; | grep dspaceWeb | grep -c &#34;idle in transaction&#34;
+218
+</code></pre><ul>
+<li>So I&rsquo;m re-enabling the <code>removeAbandoned</code> setting</li>
+<li>I grabbed a snapshot of the active connections in <code>pg_stat_activity</code> for all queries running longer than 2 minutes:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \copy (SELECT now() - query_start as &#34;runtime&#34;, application_name, usename, datname, waiting, state, query
+  FROM  pg_stat_activity
+  WHERE now() - query_start &gt; &#39;2 minutes&#39;::interval
+ ORDER BY runtime DESC) to /tmp/2018-02-27-postgresql.txt
+COPY 263
+</code></pre><ul>
+<li>100 of these idle in transaction connections are the following query:</li>
+</ul>
+<pre tabindex="0"><code>SELECT * FROM resourcepolicy WHERE resource_type_id= $1 AND resource_id= $2 AND action_id= $3
+</code></pre><ul>
+<li>&hellip; but according to the <a href="https://www.postgresql.org/docs/9.5/static/view-pg-locks.html">pg_locks documentation</a> I should have done this to correlate the locks with the activity:</li>
+</ul>
+<pre tabindex="0"><code>SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;
+</code></pre><ul>
+<li>Tom Desair from Atmire shared some extra JDBC pool parameters that might be useful on my thread on the dspace-tech mailing list:
+<ul>
+<li>abandonWhenPercentageFull: Only start cleaning up abandoned connections if the pool is used for more than X %.</li>
+<li>jdbcInterceptors=&lsquo;ResetAbandonedTimer&rsquo;: Make sure the &ldquo;abondoned&rdquo; timer is reset every time there is activity on a connection</li>
+</ul>
+</li>
+<li>I will try with <code>abandonWhenPercentageFull='50'</code></li>
+<li>Also there are some indexes proposed in <a href="https://jira.duraspace.org/browse/DS-3636">DS-3636</a> that he urged me to try</li>
+<li>Finally finished the <a href="https://gist.github.com/alanorth/6d7489b50f06a6a1f04ae1c8b899cb6e">orcid-authority-to-item.py</a> script!</li>
+<li>It successfully mapped 2600 ORCID identifiers to items in my tests</li>
+<li>I will run it on DSpace Test</li>
+</ul>
+<h2 id="2018-02-28">2018-02-28</h2>
+<ul>
+<li>CGSpace crashed today, the first HTTP 499 in nginx&rsquo;s access.log was around 09:12</li>
+<li>There&rsquo;s nothing interesting going on in nginx&rsquo;s logs around that time:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;28/Feb/2018:09:&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+     65 197.210.168.174
+     74 213.55.99.121
+     74 66.249.66.90
+     86 41.204.190.40
+    102 130.225.98.207
+    108 192.0.89.192
+    112 157.55.39.218
+    129 207.46.13.21
+    131 207.46.13.115
+    135 207.46.13.101
+</code></pre><ul>
+<li>Looking in dspace.log-2018-02-28 I see this, though:</li>
+</ul>
+<pre tabindex="0"><code>2018-02-28 09:19:29,692 ERROR org.dspace.app.xmlui.cocoon.DSpaceCocoonServletFilter @ Serious Error Occurred Processing Request!
+org.springframework.web.util.NestedServletException: Handler processing failed; nested exception is java.lang.OutOfMemoryError: Java heap space
+</code></pre><ul>
+<li>Memory issues seem to be common this month:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -c &#39;nested exception is java.lang.OutOfMemoryError: Java heap space&#39; dspace.log.2018-02-* 
+dspace.log.2018-02-01:0
+dspace.log.2018-02-02:0
+dspace.log.2018-02-03:0
+dspace.log.2018-02-04:0
+dspace.log.2018-02-05:0
+dspace.log.2018-02-06:0
+dspace.log.2018-02-07:0
+dspace.log.2018-02-08:0
+dspace.log.2018-02-09:0
+dspace.log.2018-02-10:0
+dspace.log.2018-02-11:0
+dspace.log.2018-02-12:0
+dspace.log.2018-02-13:0
+dspace.log.2018-02-14:0
+dspace.log.2018-02-15:10
+dspace.log.2018-02-16:0
+dspace.log.2018-02-17:0
+dspace.log.2018-02-18:0
+dspace.log.2018-02-19:0
+dspace.log.2018-02-20:0
+dspace.log.2018-02-21:0
+dspace.log.2018-02-22:0
+dspace.log.2018-02-23:0
+dspace.log.2018-02-24:0
+dspace.log.2018-02-25:0
+dspace.log.2018-02-26:0
+dspace.log.2018-02-27:6
+dspace.log.2018-02-28:1
+</code></pre><ul>
+<li>Top ten users by session during the first twenty minutes of 9AM:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -E &#39;2018-02-28 09:(0|1)&#39; dspace.log.2018-02-28 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort -n | uniq -c | sort -n | tail -n 10
+     18 session_id=F2DFF64D3D707CD66AE3A873CEC80C49
+     19 session_id=92E61C64A79F0812BE62A3882DA8F4BA
+     21 session_id=57417F5CB2F9E3871E609CEEBF4E001F
+     25 session_id=C3CD265AB7AA51A49606C57C069A902A
+     26 session_id=E395549F081BA3D7A80F174AE6528750
+     26 session_id=FEE38CF9760E787754E4480069F11CEC
+     33 session_id=C45C2359AE5CD115FABE997179E35257
+     38 session_id=1E9834E918A550C5CD480076BC1B73A4
+     40 session_id=8100883DAD00666A655AE8EC571C95AE
+     66 session_id=01D9932D6E85E90C2BA9FF5563A76D03
+</code></pre><ul>
+<li>According to the log 01D9932D6E85E90C2BA9FF5563A76D03 is an ILRI editor, doing lots of updating and editing of items</li>
+<li>8100883DAD00666A655AE8EC571C95AE is some Indian IP address</li>
+<li>1E9834E918A550C5CD480076BC1B73A4 looks to be a session shared by the bots</li>
+<li>So maybe it was due to the editor&rsquo;s uploading of files, perhaps something that was too big or?</li>
+<li>I think I&rsquo;ll increase the JVM heap size on CGSpace from 6144m to 8192m because I&rsquo;m sick of this random crashing shit and the server has memory and I&rsquo;d rather eliminate this so I can get back to solving PostgreSQL issues and doing other real work</li>
+<li>Run the few corrections from earlier this month for sponsor on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>cgspace=# update metadatavalue set text_value=&#39;United States Agency for International Development&#39; where resource_type_id=2 and metadata_field_id=29 and text_value like &#39;%U.S. Agency for International Development%&#39;;
+UPDATE 3
+</code></pre><ul>
+<li>I finally got a CGIAR account so I logged into CGSpace with it and tried to delete my old unfinished submissions (22 of them)</li>
+<li>Eventually it succeeded, but it took about five minutes and I noticed LOTS of locks happening with this query:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \copy (SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid) to /tmp/locks-aorth.txt;
+</code></pre><ul>
+<li>I took a few snapshots during the process and noticed 500, 800, and even 2000 locks at certain times during the process</li>
+<li>Afterwards I looked a few times and saw only 150 or 200 locks</li>
+<li>On the test server, with the <a href="https://jira.duraspace.org/browse/DS-3636">PostgreSQL indexes from DS-3636</a> applied, it finished instantly</li>
+<li>Run system updates on DSpace Test and reboot the server</li>
+</ul>
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

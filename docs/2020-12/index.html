@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="December, 2020" />
+<meta property="og:description" content="2020-12-01
+
+Atmire responded about the issue with duplicate data in our Solr statistics
+
+They noticed that some records in the statistics-2015 core haven&rsquo;t been migrated with the AtomicStatisticsUpdateCLI tool yet and assumed that I haven&rsquo;t migrated any of the records yet
+That&rsquo;s strange, as I checked all ten cores and 2015 is the only one with some unmigrated documents, as according to the cua_version field
+I started processing those (about 411,000 records):
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-12/" />
+<meta property="article:published_time" content="2020-12-01T11:32:54+02:00" />
+<meta property="article:modified_time" content="2021-01-04T20:09:02+02:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="December, 2020"/>
+<meta name="twitter:description" content="2020-12-01
+
+Atmire responded about the issue with duplicate data in our Solr statistics
+
+They noticed that some records in the statistics-2015 core haven&rsquo;t been migrated with the AtomicStatisticsUpdateCLI tool yet and assumed that I haven&rsquo;t migrated any of the records yet
+That&rsquo;s strange, as I checked all ten cores and 2015 is the only one with some unmigrated documents, as according to the cua_version field
+I started processing those (about 411,000 records):
+
+
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "December, 2020",
+  "url": "https://alanorth.github.io/cgspace-notes/2020-12/",
+  "wordCount": "3772",
+  "datePublished": "2020-12-01T11:32:54+02:00",
+  "dateModified": "2021-01-04T20:09:02+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2020-12/">
+
+    <title>December, 2020 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2020-12/">December, 2020</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2020-12-01T11:32:54+02:00">Tue Dec 01, 2020</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2020-12-01">2020-12-01</h2>
+<ul>
+<li>Atmire responded about the issue with duplicate data in our Solr statistics
+<ul>
+<li>They noticed that some records in the statistics-2015 core haven&rsquo;t been migrated with the AtomicStatisticsUpdateCLI tool yet and assumed that I haven&rsquo;t migrated any of the records yet</li>
+<li>That&rsquo;s strange, as I checked all ten cores and 2015 is the only one with some unmigrated documents, as according to the <code>cua_version</code> field</li>
+<li>I started processing those (about 411,000 records):</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -t <span style="color:#ae81ff">12</span> -c statistics-2015
+</span></span></code></pre></div><ul>
+<li>AReS went down when the <code>renew-letsencrypt</code> service stopped the <code>angular_nginx</code> container in the pre-update hook and failed to bring it back up
+<ul>
+<li>I ran all system updates on the host and rebooted it and AReS came back up OK</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-02">2020-12-02</h2>
+<ul>
+<li>Udana emailed me yesterday to ask why the CGSpace usage statistics were showing &ldquo;No Data&rdquo;
+<ul>
+<li>I noticed a message in the Solr Admin UI that one of the statistics cores failed to load, but it is up and I can query it&hellip;</li>
+<li>Nevertheless, I restarted Tomcat a few times to see if all cores would come up without an error message, but had no success (despite that all cores ARE up and I can query them, <em>sigh</em>)</li>
+<li>I think I will move all the Solr yearly statistics back into the main statistics core</li>
+</ul>
+</li>
+<li>Start testing export/import of yearly Solr statistics data into the main statistics core on DSpace Test, for example:</li>
+</ul>
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o statistics-2010.json -k uid
+$ ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+$ curl -s &#34;http://localhost:8081/solr/statistics-2010/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#34;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&#34;
+</code></pre><ul>
+<li>I deployed Tomcat 7.0.107 on DSpace Test (CGSpace is still Tomcat 7.0.104)</li>
+<li>I finished migrating all the statistics from the yearly shards back to the main core</li>
+</ul>
+<h2 id="2020-12-05">2020-12-05</h2>
+<ul>
+<li>I deleted all the yearly statistics shards and restarted Tomcat on DSpace Test (linode26)</li>
+</ul>
+<h2 id="2020-12-06">2020-12-06</h2>
+<ul>
+<li>Looking into the statistics on DSpace Test after I migrated them back to the main core
+<ul>
+<li>All stats are working as expected&hellip; indexing time for the DSpace Statistics API is the same&hellip; and I don&rsquo;t even see a difference in the JVM or memory stats in Munin other than a minor jump last week when I was processing them</li>
+</ul>
+</li>
+<li>I will migrate them on CGSpace too I think
+<ul>
+<li>First I will start with the statistics-2010 and statistics-2015 cores because they were the ones that were failing to load recently (despite actually being available in Solr WTF)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/solr-statistics-2010-failed.png" alt="Error message in Solr admin UI about the statistics-2010 core failing to load"></p>
+<ul>
+<li>First the 2010 core:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics-2010 -a export -o statistics-2010.json -k uid
+</span></span><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2010/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</span></span></code></pre></div><ul>
+<li>Judging by the DSpace logs all these cores had a problem starting up in the last month:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep -rsI <span style="color:#e6db74">&#34;Unable to create core&#34;</span> <span style="color:#f92672">[</span>dspace<span style="color:#f92672">]</span>/log/dspace.log.2020-* | grep -o -E <span style="color:#e6db74">&#34;statistics-[0-9]+&#34;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>     24 statistics-2010
+</span></span><span style="display:flex;"><span>     24 statistics-2015
+</span></span><span style="display:flex;"><span>     18 statistics-2016
+</span></span><span style="display:flex;"><span>      6 statistics-2018
+</span></span></code></pre></div><ul>
+<li>The message is always this:</li>
+</ul>
+<pre tabindex="0"><code>org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error CREATEing SolrCore &#39;statistics-2016&#39;: Unable to create core [statistics-2016] Caused by: Lock obtain timed out: NativeFSLock@/[dspace]/solr/statistics-2016/data/index/write.lock
+</code></pre><ul>
+<li>I will migrate all these cores and see if it makes a difference, then probably end up migrating all of them
+<ul>
+<li>I removed the statistics-2010, statistics-2015, statistics-2016, and statistics-2018 cores and restarted Tomcat and <em>all the statistics cores came up OK and the CUA statistics are OK</em>!</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-07">2020-12-07</h2>
+<ul>
+<li>Run <code>dspace cleanup -v</code> on CGSpace to clean up deleted bitstreams</li>
+<li>Atmire sent a <a href="https://github.com/ilri/DSpace/pull/457">pull request</a> to address the duplicate owningComm and owningColl
+<ul>
+<li>Built and deployed it on DSpace Test but I am not sure how to run it yet</li>
+<li>I sent feedback to Atmire on their tracker: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839</a></li>
+</ul>
+</li>
+<li>Abenet and Tezira are having issues with committing to the archive in their workflow
+<ul>
+<li>I looked at the server and indeed the locks and transactions are back up:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/postgres_transactions_ALL-day.png" alt="PostgreSQL Transactions day">
+<img src="/cgspace-notes/2020/12/postgres_locks_ALL-day.png" alt="PostgreSQL Locks day">
+<img src="/cgspace-notes/2020/12/postgres_querylength_ALL-day.png" alt="PostgreSQL Locks day">
+<img src="/cgspace-notes/2020/12/postgres_connections_ALL-day.png" alt="PostgreSQL Connections day"></p>
+<ul>
+<li>There are apparently 1,700 locks right now:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | wc -l
+</span></span><span style="display:flex;"><span>1739
+</span></span></code></pre></div><h2 id="2020-12-08">2020-12-08</h2>
+<ul>
+<li>Atmire sent some instructions for using the DeduplicateValuesProcessor
+<ul>
+<li>I modified <code>atmire-cua-update.xml</code> as they instructed, but I get a million errors like this when I run AtomicStatisticsUpdateCLI with that configuration:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>Record uid: 64387815-d9a7-4605-8024-1c0a5c7520e0 couldn&#39;t be processed
+com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: 64387815-d9a7-4605-8024-1c0a5c7520e0, an error occured in the com.atmire.statistics.util.update.atomic.processor.DeduplicateValuesProcessor
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: java.lang.UnsupportedOperationException
+        at org.apache.solr.common.SolrDocument$1.entrySet(SolrDocument.java:256)
+        at java.util.HashMap.putMapEntries(HashMap.java:512)
+        at java.util.HashMap.&lt;init&gt;(HashMap.java:490)
+        at com.atmire.statistics.util.update.atomic.record.Record.getFieldValuesMap(SourceFile:86)
+        at com.atmire.statistics.util.update.atomic.processor.DeduplicateValuesProcessor.process(SourceFile:38)
+        at com.atmire.statistics.util.update.atomic.processor.DeduplicateValuesProcessor.visit(SourceFile:34)
+        at com.atmire.statistics.util.update.atomic.record.UsageRecord.accept(SourceFile:23)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:301)
+        ... 10 more
+</code></pre><ul>
+<li>I sent some feedback to Atmire
+<ul>
+<li>They responded with an updated CUA (6.x-4.1.10-ilri-RC7) that has a fix for the duplicates processor <em>and</em> a possible fix for the database locking issues (a bug in CUASolrLoggerServiceImpl that causes an infinite loop and a Tomcat timeout)</li>
+<li>I deployed the changes on DSpace Test and CGSpace, hopefully it will fix both issues!</li>
+</ul>
+</li>
+<li>In other news, after I restarted Tomcat on CGSpace the statistics-2013 core didn&rsquo;t come back up properly, so I exported it and imported it into the main statistics core like I did for the others a few days ago</li>
+<li>Sync DSpace Test with CGSpace&rsquo;s Solr, PostgreSQL database, and assetstore&hellip;</li>
+</ul>
+<h2 id="2020-12-09">2020-12-09</h2>
+<ul>
+<li>I was running the AtomicStatisticsUpdateCLI to remove duplicates on DSpace Test but it failed near the end of the statistics core (after 20 hours or so) with a memory error:</li>
+</ul>
+<pre tabindex="0"><code>Successfully finished updating Solr Storage Reports | Wed Dec 09 15:25:11 CET 2020
+Run 1 —  67% — 10,000/14,935 docs — 6m 6s — 6m 6s
+Exception: GC overhead limit exceeded
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+        at org.noggit.CharArr.toString(CharArr.java:164)
+</code></pre><ul>
+<li>I increased the JVM heap to 2048m and tried again, but it failed with a memory error again&hellip;</li>
+<li>I increased the JVM heap to 4096m and tried again, but it failed with another error:</li>
+</ul>
+<pre tabindex="0"><code>Successfully finished updating Solr Storage Reports | Wed Dec 09 15:53:40 CET 2020
+Exception: parsing error
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: parsing error
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:530)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+        at org.apache.solr.client.solrj.request.QueryRequest.process(QueryRequest.java:91)
+        at org.apache.solr.client.solrj.SolrServer.query(SolrServer.java:301)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.getNextSetOfSolrDocuments(SourceFile:392)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:157)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: org.apache.solr.common.SolrException: parsing error
+        at org.apache.solr.client.solrj.impl.BinaryResponseParser.processResponse(BinaryResponseParser.java:45)
+        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:528)
+        ... 14 more
+Caused by: org.apache.http.TruncatedChunkException: Truncated chunk ( expected size: 8192; actual size: 2843)
+        at org.apache.http.impl.io.ChunkedInputStream.read(ChunkedInputStream.java:200)
+        at org.apache.http.conn.EofSensorInputStream.read(EofSensorInputStream.java:137)
+        at org.apache.solr.common.util.FastInputStream.readWrappedStream(FastInputStream.java:80)
+        at org.apache.solr.common.util.FastInputStream.refill(FastInputStream.java:89)
+        at org.apache.solr.common.util.FastInputStream.read(FastInputStream.java:125)
+        at org.apache.solr.common.util.FastInputStream.readFully(FastInputStream.java:152)
+...
+</code></pre><h2 id="2020-12-10">2020-12-10</h2>
+<ul>
+<li>The statistics-2019 core finished processing the duplicate removal so I started the statistics-2017 core</li>
+<li>Peter asked me to add ONE HEALTH to ILRI subjects on CGSpace</li>
+<li>A few items that got &ldquo;lost&rdquo; after approval during the database issues earlier this week seem to have gone back into their workflows
+<ul>
+<li>Abenet approved them again and they got new handles, phew</li>
+</ul>
+</li>
+<li>Abenet was having an issue with the date filter on AReS and it turns out that it&rsquo;s the same <code>.keyword</code> issue I had noticed before that causes the filter to stop working
+<ul>
+<li>I fixed the filter to use the correct field name and filed a bug on OpenRXV: <a href="https://github.com/ilri/OpenRXV/issues/63">https://github.com/ilri/OpenRXV/issues/63</a></li>
+</ul>
+</li>
+<li>I checked the Solr statistics on DSpace Test to see if the Atmire duplicates remover was working, but now I see a comical amount of duplicates&hellip;</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/solr-stats-duplicates.png" alt="Solr stats with dozens of duplicates"></p>
+<ul>
+<li>I sent feedback about this to Atmire</li>
+<li>I will re-sync the Solr stats from CGSpace so we can try again&hellip;</li>
+<li>In other news, it has been a few days since we deployed the fix for the database locking issue and things seem much better now:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/postgres_connections_ALL-week.png" alt="PostgreSQL connections all week">
+<img src="/cgspace-notes/2020/12/postgres_locks_ALL-week.png" alt="PostgreSQL locks all week"></p>
+<h2 id="2020-12-13">2020-12-13</h2>
+<ul>
+<li>I tried to harvest a few times on OpenRXV in the last few days and every time it appends all the new records to the items index instead of overwriting it:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/openrxv-duplicates.png" alt="OpenRXV duplicates"></p>
+<ul>
+<li>I can see it in the <code>openrxv-items-final</code> index:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&#39;</span> | json_pp
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>   &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>      &#34;failed&#34; : 0,
+</span></span><span style="display:flex;"><span>      &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>      &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>      &#34;total&#34; : 1
+</span></span><span style="display:flex;"><span>   },
+</span></span><span style="display:flex;"><span>   &#34;count&#34; : 299922
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>I filed a bug on OpenRXV: <a href="https://github.com/ilri/OpenRXV/issues/64">https://github.com/ilri/OpenRXV/issues/64</a></li>
+<li>For now I will try to delete the index and start a re-harvest in the Admin UI:</li>
+</ul>
+<pre tabindex="0"><code>$ curl -XDELETE http://localhost:9200/openrxv-items-final
+{&#34;acknowledged&#34;:true}%
+</code></pre><ul>
+<li>Moayad said he&rsquo;s working on the harvesting so I stopped it for now to re-deploy his latest changes</li>
+<li>I updated Tomcat to version 7.0.107 on CGSpace (linode18), ran all updates, and restarted the server</li>
+<li>I deleted both items indexes and restarted the harvesting:</li>
+</ul>
+<pre tabindex="0"><code>$ curl -XDELETE http://localhost:9200/openrxv-items-final
+$ curl -XDELETE http://localhost:9200/openrxv-items-temp
+</code></pre><ul>
+<li>Peter asked me for a list of all submitters and approvers that were active recently on CGSpace
+<ul>
+<li>I can probably extract that from the <code>dc.description.provenance</code> field, for example any that contains a 2020 date:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; SELECT * FROM metadatavalue WHERE metadata_field_id=28 AND text_value ~ &#39;^.*on 2020-[0-9]{2}-*&#39;;
+</span></span></code></pre></div><h2 id="2020-12-14">2020-12-14</h2>
+<ul>
+<li>The re-harvesting finished last night on AReS but there are no records in the <code>openrxv-items-final</code> index
+<ul>
+<li>Strangely, there are 99,000 items in the temp index:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&#39;</span> | json_pp
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>   &#34;count&#34; : 99992,
+</span></span><span style="display:flex;"><span>   &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>      &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>      &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>      &#34;failed&#34; : 0,
+</span></span><span style="display:flex;"><span>      &#34;successful&#34; : 1
+</span></span><span style="display:flex;"><span>   }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>I&rsquo;m going to try to <a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-clone-index.html">clone</a> the temp index to the final one&hellip;
+<ul>
+<li>First, set the <code>openrxv-items-temp</code> index to block writes (read only) and then clone it to <code>openrxv-items-final</code>:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-final
+</span></span><span style="display:flex;"><span>{&#34;acknowledged&#34;:true,&#34;shards_acknowledged&#34;:true,&#34;index&#34;:&#34;openrxv-items-final&#34;}
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Now I see that the <code>openrxv-items-final</code> index has items, but there are still none in AReS Explorer UI!</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 99992,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>The api logs show this from last night after the harvesting:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>[Nest] 92   - 12/13/2020, 1:58:52 PM   [HarvesterService] Starting Harvest
+</span></span><span style="display:flex;"><span>[Nest] 92   - 12/13/2020, 10:50:20 PM   [FetchConsumer] OnGlobalQueueDrained
+</span></span><span style="display:flex;"><span>[Nest] 92   - 12/13/2020, 11:00:20 PM   [PluginsConsumer] OnGlobalQueueDrained
+</span></span><span style="display:flex;"><span>[Nest] 92   - 12/13/2020, 11:00:20 PM   [HarvesterService] reindex function is called
+</span></span><span style="display:flex;"><span>(node:92) UnhandledPromiseRejectionWarning: ResponseError: index_not_found_exception
+</span></span><span style="display:flex;"><span>    at IncomingMessage.&lt;anonymous&gt; (/backend/node_modules/@elastic/elasticsearch/lib/Transport.js:232:25)
+</span></span><span style="display:flex;"><span>    at IncomingMessage.emit (events.js:326:22)
+</span></span><span style="display:flex;"><span>    at endReadableNT (_stream_readable.js:1223:12)
+</span></span><span style="display:flex;"><span>    at processTicksAndRejections (internal/process/task_queues.js:84:21)
+</span></span></code></pre></div><ul>
+<li>But I&rsquo;m not sure why the frontend doesn&rsquo;t show any data despite there being documents in the index&hellip;</li>
+<li>I talked to Moayad and he reminded me that OpenRXV uses an alias to point to temp and final indexes, but the UI actually uses the <code>openrxv-items</code> index</li>
+<li>I cloned the <code>openrxv-items-final</code> index to <code>openrxv-items</code> index and now I see items in the explorer UI</li>
+<li>The PDF report was broken and I looked in the API logs and saw this:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>(node:94) UnhandledPromiseRejectionWarning: Error: Error: Could not find soffice binary
+</span></span><span style="display:flex;"><span>    at ExportService.downloadFile (/backend/dist/export/services/export/export.service.js:51:19)
+</span></span><span style="display:flex;"><span>    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+</span></span></code></pre></div><ul>
+<li>I installed <code>unoconv</code> in the backend api container and now it works&hellip; but I wonder why this changed&hellip;</li>
+<li>Skype with Abenet and Peter to discuss AReS that will be shown to ILRI scientists this week
+<ul>
+<li>Peter noticed that <a href="https://hdl.handle.net/10568/110133">this item</a> from the <a href="https://cgspace.cgiar.org/handle/10568/24450">ILRI policy and research briefs</a> collection is missing in AReS, despite it being added one month ago in CGSpace and me harvesting on AReS last night
+<ul>
+<li>The item appears fine in the REST API when I check the items in that collection</li>
+</ul>
+</li>
+<li>Peter also noticed that <a href="https://hdl.handle.net/10568/110447">this item</a> appears twice in AReS
+<ul>
+<li>The item is <em>not</em> duplicated on CGSpace or in the REST API</li>
+</ul>
+</li>
+<li>We noticed that there are 136 items in the ILRI policy and research briefs collection according to AReS, yet on CGSpace there are only 132
+<ul>
+<li>This is confirmed in the REST API (using <a href="https://github.com/davesnx/query-json">query-json</a>):</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ http --print b &#39;https://cgspace.cgiar.org/rest/collections/defee001-8cc8-4a6c-8ac8-21bb5adab2db?expand=all&amp;limit=100&amp;offset=0&#39; | json_pp &gt; /tmp/policy1.json
+$ http --print b &#39;https://cgspace.cgiar.org/rest/collections/defee001-8cc8-4a6c-8ac8-21bb5adab2db?expand=all&amp;limit=100&amp;offset=100&#39; | json_pp &gt; /tmp/policy2.json
+$ query-json &#39;.items | length&#39; /tmp/policy1.json
+100
+$ query-json &#39;.items | length&#39; /tmp/policy2.json
+32
+</code></pre><ul>
+<li>I realized that the issue of missing/duplicate items in AReS might be because of this <a href="https://jira.lyrasis.org/browse/DS-3849">REST API bug that causes /items to return items in non-deterministic order</a></li>
+<li>I decided to cherry-pick the following two patches from DSpace 6.4 into our <code>6_x-prod</code> (6.3) branch:
+<ul>
+<li>High CPU usage when calling the collection_id/items REST endpoint
+<ul>
+<li>Jira: <a href="https://jira.lyrasis.org/browse/DS-4342">https://jira.lyrasis.org/browse/DS-4342</a></li>
+<li>c2e6719fa763e291b81b2d61da2f8c758fe38ff3</li>
+</ul>
+</li>
+<li>REST API items resource returns items in non-deterministic order
+<ul>
+<li>Jira: <a href="https://jira.lyrasis.org/browse/DS-3849">https://jira.lyrasis.org/browse/DS-3849</a></li>
+<li>2a2ea0cb5d03e6da9355a2eff12aad667e465433</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>After deploying the REST API fixes I decided to harvest from AReS again to see if the missing and duplicate items get fixed
+<ul>
+<li>I made a backup of the current <code>openrxv-items-temp</code> index just in case:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items-2020-12-14
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><h2 id="2020-12-15">2020-12-15</h2>
+<ul>
+<li>After the re-harvest last night there were 200,000 items in the <code>openrxv-items-temp</code> index again
+<ul>
+<li>I cleared the core and started a re-harvest, but Peter sent me a bunch of author corrections for CGSpace so I decided to cancel it until after I apply them and re-index Discovery</li>
+</ul>
+</li>
+<li>I checked the 1,534 fixes in Open Refine (had to fix a few UTF-8 errors, as always from Peter&rsquo;s CSVs) and then applied them using the <code>fix-metadata-values.py</code> script:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./fix-metadata-values.py -i /tmp/2020-10-28-fix-1534-Authors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>$ ./delete-metadata-values.py -i /tmp/2020-10-28-delete-2-Authors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -m <span style="color:#ae81ff">3</span>
+</span></span></code></pre></div><ul>
+<li>Since I was re-indexing Discovery anyways I decided to check for any uppercase AGROVOC and lowercase them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# BEGIN;
+</span></span><span style="display:flex;"><span>BEGIN
+</span></span><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ &#39;[[:upper:]]&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 406
+</span></span><span style="display:flex;"><span>dspace=# COMMIT;
+</span></span><span style="display:flex;"><span>COMMIT
+</span></span></code></pre></div><ul>
+<li>I also updated the Font Awesome icon classes for version 5 syntax:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# BEGIN;
+</span></span><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;fa fa-rss&#39;,&#39;fas fa-rss&#39;, &#39;g&#39;) WHERE text_value LIKE &#39;%fa fa-rss%&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 74
+</span></span><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;fa fa-at&#39;,&#39;fas fa-at&#39;, &#39;g&#39;) WHERE text_value LIKE &#39;%fa fa-at%&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 74
+</span></span><span style="display:flex;"><span>dspace=# COMMIT;
+</span></span></code></pre></div><ul>
+<li>Then I started a full Discovery re-index:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ export JAVA_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dfile.encoding=UTF-8 -Xmx512m&#34;</span>
+</span></span><span style="display:flex;"><span>$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>real    265m11.224s
+</span></span><span style="display:flex;"><span>user    171m29.141s
+</span></span><span style="display:flex;"><span>sys     2m41.097s
+</span></span></code></pre></div><ul>
+<li>Udana sent a report that the WLE approver is experiencing the same issue Peter highlighted a few weeks ago: they are unable to save metadata edits in the workflow</li>
+<li>Yesterday Atmire responded about the owningComm and owningColl duplicates in Solr saying they didn&rsquo;t see any anymore&hellip;
+<ul>
+<li>Indeed I spent a few minutes looking randomly and I didn&rsquo;t find any either&hellip;</li>
+<li>I did, however, see lots of duplicates in countryCode_search, countryCode_ngram, ip_search, ip_ngram, userAgent_search, userAgent_ngram, referrer_search, referrer_ngram fields</li>
+<li>I sent feedback to them</li>
+</ul>
+</li>
+<li>On the database locking front we haven&rsquo;t had issues in over a week and the Munin graphs look normal:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/12/postgres_connections_ALL-week2.png" alt="PostgreSQL connections all week">
+<img src="/cgspace-notes/2020/12/postgres_locks_ALL-week2.png" alt="PostgreSQL locks all week"></p>
+<ul>
+<li>After the Discovery re-indexing finished on CGSpace I prepared to start re-harvesting AReS by making sure the <code>openrxv-items-temp</code> index was empty and that the backup index I made yesterday was still there:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;acknowledged&#34; : true
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-final/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 0,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2020-12-14/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 99992,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="2020-12-16">2020-12-16</h2>
+<ul>
+<li>The harvesting on AReS finished last night so this morning I manually cloned the <code>openrxv-items-temp</code> index to <code>openrxv-items</code>
+<ul>
+<li>First check the number of items in the temp index, then set it to read only, then delete the items index, then delete the temp index:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 100046,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST <span style="color:#e6db74">&#34;http://localhost:9200/openrxv-items-temp/_clone/openrxv-items?pretty&#34;</span>
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 100046,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Interestingly <a href="https://hdl.handle.net/10568/110447">the item</a> that we noticed was duplicated now only appears once</li>
+<li>The <a href="https://hdl.handle.net/10568/110133">missing item</a> is still missing</li>
+<li>Jane Poole noticed that the &ldquo;previous page&rdquo; and &ldquo;next page&rdquo; buttons are not working on AReS
+<ul>
+<li>I filed a bug on GitHub: <a href="https://github.com/ilri/OpenRXV/issues/65">https://github.com/ilri/OpenRXV/issues/65</a></li>
+</ul>
+</li>
+<li>Generate a list of submitters and approvers active in the last months using the Provenance field on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -h localhost -U postgres dspace -c <span style="color:#e6db74">&#34;SELECT text_value FROM metadatavalue WHERE metadata_field_id=28 AND text_value ~ &#39;^.*on 2020-(06|07|08|09|10|11|12)-*&#39;&#34;</span> &gt; /tmp/provenance.txt
+</span></span><span style="display:flex;"><span>$ grep -o -E <span style="color:#e6db74">&#39;by .*)&#39;</span> /tmp/provenance.txt | grep -v -E <span style="color:#e6db74">&#34;( on |checksum)&#34;</span> | sed -e <span style="color:#e6db74">&#39;s/by //&#39;</span> -e <span style="color:#e6db74">&#39;s/ (/,/&#39;</span> -e <span style="color:#e6db74">&#39;s/)//&#39;</span> | sort | uniq &gt; /tmp/recent-submitters-approvers.csv
+</span></span></code></pre></div><ul>
+<li>Peter wanted it to send some mail to the users&hellip;</li>
+</ul>
+<h2 id="2020-12-17">2020-12-17</h2>
+<ul>
+<li>I see some errors from CUA in our Tomcat logs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Thu Dec 17 07:35:27 CET 2020 | Query:containerItem:b049326a-0e76-45a8-ac0c-d8ec043a50c6
+</span></span><span style="display:flex;"><span>Error while updating
+</span></span><span style="display:flex;"><span>java.lang.UnsupportedOperationException: Multiple update components target the same field:solr_update_time_stamp
+</span></span><span style="display:flex;"><span>        at com.atmire.dspace.cua.CUASolrLoggerServiceImpl$5.visit(SourceFile:1155)
+</span></span><span style="display:flex;"><span>        at com.atmire.dspace.cua.CUASolrLoggerServiceImpl.visitEachStatisticShard(SourceFile:241)
+</span></span><span style="display:flex;"><span>        at com.atmire.dspace.cua.CUASolrLoggerServiceImpl.update(SourceFile:1140)
+</span></span><span style="display:flex;"><span>        at com.atmire.dspace.cua.CUASolrLoggerServiceImpl.update(SourceFile:1129)
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ul>
+<li>I sent the full stack to Atmire to investigate
+<ul>
+<li>I know we&rsquo;ve had this &ldquo;Multiple update components target the same field&rdquo; error in the past with DSpace 5.x and Atmire said it was harmless, but would nevertheless be fixed in a future update</li>
+</ul>
+</li>
+<li>I was trying to export the ILRI community on CGSpace so I could update one of the ILRI author&rsquo;s names, but it throws an error&hellip;</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace metadata-export -i 10568/1 -f /tmp/2020-12-17-ILRI.csv
+</span></span><span style="display:flex;"><span>Loading @mire database changes for module MQM
+</span></span><span style="display:flex;"><span>Changes have been processed
+</span></span><span style="display:flex;"><span>Exporting community &#39;International Livestock Research Institute (ILRI)&#39; (10568/1)
+</span></span><span style="display:flex;"><span>           Exception: null
+</span></span><span style="display:flex;"><span>java.lang.NullPointerException
+</span></span><span style="display:flex;"><span>        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:212)
+</span></span><span style="display:flex;"><span>        at com.google.common.collect.Iterators.concat(Iterators.java:464)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.addItemsToResult(MetadataExport.java:136)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.buildFromCommunity(MetadataExport.java:125)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.&lt;init&gt;(MetadataExport.java:77)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.bulkedit.MetadataExport.main(MetadataExport.java:282)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.lang.reflect.Method.invoke(Method.java:498)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</span></span></code></pre></div><ul>
+<li>I did it via CSV with <code>fix-metadata-values.py</code> instead:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2020-12-17-update-ILRI-author.csv
+</span></span><span style="display:flex;"><span>dc.contributor.author,correct
+</span></span><span style="display:flex;"><span>&#34;Padmakumar, V.P.&#34;,&#34;Varijakshapanicker, Padmakumar&#34;
+</span></span><span style="display:flex;"><span>$ ./fix-metadata-values.py -i 2020-12-17-update-ILRI-author.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">3</span>
+</span></span></code></pre></div><ul>
+<li>Abenet needed a list of all 2020 outputs from the Livestock CRP that were Limited Access
+<ul>
+<li>I exported the community from CGSpace and used <code>csvcut</code> and <code>csvgrep</code> to get a list:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ csvcut -c &#39;dc.identifier.citation[en_US],dc.identifier.uri,dc.identifier.uri[],dc.identifier.uri[en_US],dc.date.issued,dc.date.issued[],dc.date.issued[en_US],cg.identifier.status[en_US]&#39; ~/Downloads/10568-80099.csv | csvgrep -c &#39;cg.identifier.status[en_US]&#39; -m &#39;Limited Access&#39; | csvgrep -c &#39;dc.date.issued&#39; -m 2020 -c &#39;dc.date.issued[]&#39; -m 2020 -c &#39;dc.date.issued[en_US]&#39; -m 2020 &gt; /tmp/limited-2020.csv
+</code></pre><h2 id="2020-12-18">2020-12-18</h2>
+<ul>
+<li>I added support for indexing community views and downloads to <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a>
+<ul>
+<li>I still have to add the API endpoints to make the stats available</li>
+<li>Also, I played a little bit with Swagger via <a href="https://github.com/rdidyk/falcon-swagger-ui">falcon-swagger-ui</a> and I think I can get that working for better API documentation / testing</li>
+</ul>
+</li>
+<li>Atmire sent some feedback on the DeduplicateValuesProcessor
+<ul>
+<li>They confirm that it should process <em>all</em> duplicates, not just those in <code>owningComm</code> and <code>owningColl</code></li>
+<li>They asked me to try it again on DSpace Test now that I&rsquo;ve resync&rsquo;d the Solr statistics cores from production</li>
+<li>I started processing the statistics core on DSpace Test</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-20">2020-12-20</h2>
+<ul>
+<li>The DeduplicateValuesProcessor has been running on DSpace Test since two days ago and it almost completed its second twelve-hour run, but crashed near the end:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Run 1 — 100% — 8,230,000/8,239,228 docs — 39s — 9h 8m 31s
+</span></span><span style="display:flex;"><span>Exception: Java heap space
+</span></span><span style="display:flex;"><span>java.lang.OutOfMemoryError: Java heap space
+</span></span><span style="display:flex;"><span>        at java.util.Arrays.copyOfRange(Arrays.java:3664)
+</span></span><span style="display:flex;"><span>        at java.lang.String.&lt;init&gt;(String.java:207)
+</span></span><span style="display:flex;"><span>        at org.noggit.CharArr.toString(CharArr.java:164)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readStr(JavaBinCodec.java:599)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readVal(JavaBinCodec.java:180)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readArray(JavaBinCodec.java:492)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readVal(JavaBinCodec.java:186)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readSolrDocument(JavaBinCodec.java:360)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readVal(JavaBinCodec.java:219)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readArray(JavaBinCodec.java:492)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readVal(JavaBinCodec.java:186)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readSolrDocumentList(JavaBinCodec.java:374)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readVal(JavaBinCodec.java:221)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readOrderedMap(JavaBinCodec.java:125)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.readVal(JavaBinCodec.java:188)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.common.util.JavaBinCodec.unmarshal(JavaBinCodec.java:116)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.BinaryResponseParser.processResponse(BinaryResponseParser.java:43)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:528)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.request.QueryRequest.process(QueryRequest.java:91)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrServer.query(SolrServer.java:301)
+</span></span><span style="display:flex;"><span>        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.getNextSetOfSolrDocuments(SourceFile:392)
+</span></span><span style="display:flex;"><span>        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:157)
+</span></span><span style="display:flex;"><span>        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+</span></span><span style="display:flex;"><span>        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.lang.reflect.Method.invoke(Method.java:498)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</span></span></code></pre></div><ul>
+<li>That was with a JVM heap of 512m</li>
+<li>I looked in Solr and found dozens of duplicates of each field again&hellip;
+<ul>
+<li>I sent <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=839">feedback to Atmire</a></li>
+</ul>
+</li>
+<li>I finished the technical work on adding community and collection support to the DSpace Statistics API
+<ul>
+<li>I still need to update <del>the tests</del> as well as the documentation</li>
+</ul>
+</li>
+<li>I started a harvesting of AReS</li>
+</ul>
+<h2 id="2020-12-21">2020-12-21</h2>
+<ul>
+<li>The AReS harvest finished this morning and I moved the Elasticsearch index manually</li>
+<li>First, check the number of records in the temp index to make sure it seems complete and not with double data:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 100135,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>Then delete the old backup and clone the current items index as a backup:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2020-12-14?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2020-12-21
+</span></span></code></pre></div><ul>
+<li>Then delete the current items index and clone it from temp:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><h2 id="2020-12-22">2020-12-22</h2>
+<ul>
+<li>I finished getting the Swagger UI integrated into the dspace-statistics-api
+<ul>
+<li>I can&rsquo;t figure out how to get it to work on the server without hard-coding all the paths</li>
+<li>Falcon is smart about its own routes, so I can retrieve the <code>openapi.json</code> file OK, but the paths in the OpenAPI schema are relative to the base URL, which is <code>dspacetest.cgiar.org</code></li>
+</ul>
+</li>
+<li>Abenet told me about a bug with shared links and strange values in the top counters
+<ul>
+<li>I took a video reproducing the issue and filed a bug on the GitHub: <a href="https://github.com/ilri/OpenRXV/issues/66">https://github.com/ilri/OpenRXV/issues/66</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-23">2020-12-23</h2>
+<ul>
+<li>Finalize Swagger UI support in the dspace-statistics-api
+<ul>
+<li>I had to do some last minute changes to get it to work in both production and local development environments</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-27">2020-12-27</h2>
+<ul>
+<li>More finishing touches on paging and versioning of the dspace-statistics-api
+<ul>
+<li>I tagged v1.4.0 and released it on GitHub: <a href="https://github.com/ilri/dspace-statistics-api/releases/tag/v1.4.0">https://github.com/ilri/dspace-statistics-api/releases/tag/v1.4.0</a></li>
+<li>I deployed it on DSpace Test and CGSpace</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-12-28">2020-12-28</h2>
+<ul>
+<li>Peter noticed that the Atmire CUA stats on CGSpace weren&rsquo;t working
+<ul>
+<li>I looked in Solr Admin UI and saw that the statistics-2012 core failed to load:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>statistics-2012: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher
+</code></pre><ul>
+<li>I exported the 2012 stats from the year core and imported them to the main statistics core with solr-import-export-json:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics-2012 -a export -o statistics-2012.json -k uid
+</span></span><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a import -o statistics-2010.json -k uid
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics-2012/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</span></span></code></pre></div><ul>
+<li>I decided to do the same for the remaining 2011, 2014, 2017, and 2019 cores&hellip;</li>
+</ul>
+<h2 id="2020-12-29">2020-12-29</h2>
+<ul>
+<li>Start a fresh re-index on AReS, since it&rsquo;s been over a week since the last time
+<ul>
+<li>Before then I cleared the old <code>openrxv-items-temp</code> index and made a backup of the current <code>openrxv-items</code> index:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items/_count?q=*&amp;pretty&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;count&#34; : 100135,
+</span></span><span style="display:flex;"><span>  &#34;_shards&#34; : {
+</span></span><span style="display:flex;"><span>    &#34;total&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;successful&#34; : 1,
+</span></span><span style="display:flex;"><span>    &#34;skipped&#34; : 0,
+</span></span><span style="display:flex;"><span>    &#34;failed&#34; : 0
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items/_clone/openrxv-items-2020-12-29
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span></code></pre></div><h2 id="2020-12-30">2020-12-30</h2>
+<ul>
+<li>The indexing on AReS finished so I cloned the <code>openrxv-items-temp</code> index to <code>openrxv-items</code> and deleted the backup index:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: true}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -s -X POST http://localhost:9200/openrxv-items-temp/_clone/openrxv-items
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#34;localhost:9200/openrxv-items-temp/_settings?pretty&#34;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d<span style="color:#e6db74">&#39;{&#34;settings&#34;: {&#34;index.blocks.write&#34;: false}}&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-temp?pretty&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl -XDELETE <span style="color:#e6db74">&#39;http://localhost:9200/openrxv-items-2020-12-29?pretty&#39;</span>
+</span></span></code></pre></div><!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

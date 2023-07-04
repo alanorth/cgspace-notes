@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="July, 2022" />
+<meta property="og:description" content="2022-07-02
+
+I learned how to use the Levenshtein functions in PostgreSQL
+
+The thing is that there is a limit of 255 characters for these functions in PostgreSQL so you need to truncate the strings before comparing
+Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levenshtein is not, so you need to make sure to lower case both strings first
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-07/" />
+<meta property="article:published_time" content="2022-07-02T14:07:36+03:00" />
+<meta property="article:modified_time" content="2022-07-31T15:49:35+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="July, 2022"/>
+<meta name="twitter:description" content="2022-07-02
+
+I learned how to use the Levenshtein functions in PostgreSQL
+
+The thing is that there is a limit of 255 characters for these functions in PostgreSQL so you need to truncate the strings before comparing
+Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levenshtein is not, so you need to make sure to lower case both strings first
+
+
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "July, 2022",
+  "url": "https://alanorth.github.io/cgspace-notes/2022-07/",
+  "wordCount": "3564",
+  "datePublished": "2022-07-02T14:07:36+03:00",
+  "dateModified": "2022-07-31T15:49:35+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2022-07/">
+
+    <title>July, 2022 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2022-07/">July, 2022</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2022-07-02T14:07:36+03:00">Sat Jul 02, 2022</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2022-07-02">2022-07-02</h2>
+<ul>
+<li>I learned how to use the Levenshtein functions in PostgreSQL
+<ul>
+<li>The thing is that there is a limit of 255 characters for these functions in PostgreSQL so you need to truncate the strings before comparing</li>
+<li>Also, the trgm functions I&rsquo;ve used before are case insensitive, but Levenshtein is not, so you need to make sure to lower case both strings first</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>A working query checking for duplicates in the recent AfricaRice items is:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace= ☘ SELECT text_value FROM metadatavalue WHERE  dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=64 AND levenshtein_less_equal(LOWER(&#39;International Trade and Exotic Pests: The Risks for Biodiversity and African Economies&#39;), LEFT(LOWER(text_value), 255), 3) &lt;= 3;
+</span></span><span style="display:flex;"><span>                                       text_value                                       
+</span></span><span style="display:flex;"><span>────────────────────────────────────────────────────────────────────────────────────────
+</span></span><span style="display:flex;"><span> International trade and exotic pests: the risks for biodiversity and African economies
+</span></span><span style="display:flex;"><span>(1 row)
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Time: 399.751 ms
+</span></span></code></pre></div><ul>
+<li>There is a great <a href="https://www.crunchydata.com/blog/fuzzy-name-matching-in-postgresql">blog post discussing Soundex with Levenshtein</a> and creating indexes to make them faster</li>
+<li>I want to do some proper checks of accuracy and speed against my trigram method</li>
+</ul>
+<h2 id="2022-07-03">2022-07-03</h2>
+<ul>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-07-04">2022-07-04</h2>
+<ul>
+<li>Linode told me that CGSpace had high load yesterday
+<ul>
+<li>I also got some up and down notices from UptimeRobot</li>
+<li>Looking now, I see there was a very high CPU and database pool load, but a mostly normal DSpace session count</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/cpu-day.png" alt="CPU load day">
+<img src="/cgspace-notes/2022/07/jmx_tomcat_dbpools-day.png" alt="JDBC pool day"></p>
+<ul>
+<li>Seems we have some old database transactions since 2022-06-27:</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/postgres_locks_ALL-week.png" alt="PostgreSQL locks week">
+<img src="/cgspace-notes/2022/07/postgres_querylength_ALL-week.png" alt="PostgreSQL query length week"></p>
+<ul>
+<li>Looking at the top connections to nginx yesterday:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log.1 | sort | uniq -c | sort -h | tail
+</span></span><span style="display:flex;"><span>   1132 64.124.8.34
+</span></span><span style="display:flex;"><span>   1146 2a01:4f8:1c17:5550::1
+</span></span><span style="display:flex;"><span>   1380 137.184.159.211
+</span></span><span style="display:flex;"><span>   1533 64.124.8.59
+</span></span><span style="display:flex;"><span>   4013 80.248.237.167
+</span></span><span style="display:flex;"><span>   4776 54.195.118.125
+</span></span><span style="display:flex;"><span>  10482 45.5.186.2
+</span></span><span style="display:flex;"><span>  11177 172.104.229.92
+</span></span><span style="display:flex;"><span>  15855 2a01:7e00::f03c:91ff:fe9a:3a37
+</span></span><span style="display:flex;"><span>  22179 64.39.98.251
+</span></span></code></pre></div><ul>
+<li>And the total number of unique IPs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log.1 | sort -u | wc -l
+</span></span><span style="display:flex;"><span>6952
+</span></span></code></pre></div><ul>
+<li>This seems low, so it must have been from the request patterns by certain visitors
+<ul>
+<li>64.39.98.251 is Qualys, and I&rsquo;m debating blocking <a href="https://pci.qualys.com/static/help/merchant/getting_started/check_scanner_ip_addresses.htm">all their IPs</a> using a geo block in nginx (need to test)</li>
+<li>The top few are known ILRI and other CGIAR scrapers, but 80.248.237.167 is on InternetVikings in Sweden, using a normal user agentand scraping Discover</li>
+<li>64.124.8.59 is making requests with a normal user agent and belongs to Castle Global or Zayo</li>
+</ul>
+</li>
+<li>I ran all system updates and rebooted the server (could have just restarted PostgreSQL but I thought I might as well do everything)</li>
+<li>I implemented a geo mapping for the user agent mapping AND the nginx <code>limit_req_zone</code> by extracting the networks into an external file and including it in two different geo mapping blocks
+<ul>
+<li>This is clever and relies on the fact that we can use defaults in both cases</li>
+<li>First, we map the user agent of requests from these networks to &ldquo;bot&rdquo; so that Tomcat and Solr handle them accordingly</li>
+<li>Second, we use this as a key in a <code>limit_req_zone</code>, which relies on a default mapping of &rsquo;&rsquo; (and nginx doesn&rsquo;t evaluate empty cache keys)</li>
+</ul>
+</li>
+<li>I noticed that CIP uploaded a number of Georgian presentations with <code>dcterms.language</code> set to English and Other so I changed them to &ldquo;ka&rdquo;
+<ul>
+<li>Perhaps we need to update our list of languages to include all instead of the most common ones</li>
+</ul>
+</li>
+<li>I wrote a script <code>ilri/iso-639-value-pairs.py</code> to extract the names and Alpha 2 codes for all ISO 639-1 languages from pycountry and added them to <code>input-forms.xml</code></li>
+</ul>
+<h2 id="2022-07-06">2022-07-06</h2>
+<ul>
+<li>CGSpace went down and up a few times due to high load
+<ul>
+<li>I found one host in Romania making very high speed requests with a normal user agent (<code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64; Trident/7.0; .NET4.0E; .NET4.0C</code>):</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | sort | uniq -c | sort -h | tail -n <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>    516 142.132.248.90
+</span></span><span style="display:flex;"><span>    525 157.55.39.234
+</span></span><span style="display:flex;"><span>    587 66.249.66.21
+</span></span><span style="display:flex;"><span>    593 95.108.213.59
+</span></span><span style="display:flex;"><span>   1372 137.184.159.211
+</span></span><span style="display:flex;"><span>   4776 54.195.118.125
+</span></span><span style="display:flex;"><span>   5441 205.186.128.185
+</span></span><span style="display:flex;"><span>   6267 45.5.186.2
+</span></span><span style="display:flex;"><span>  15839 2a01:7e00::f03c:91ff:fe9a:3a37
+</span></span><span style="display:flex;"><span>  36114 146.19.75.141
+</span></span></code></pre></div><ul>
+<li>I added 146.19.75.141 to the list of bot networks in nginx</li>
+<li>While looking at the logs I started thinking about Bing again
+<ul>
+<li>They apparently <a href="https://www.bing.com/toolbox/bingbot.json">publish a list of all their networks</a></li>
+<li>I wrote a script to use <code>prips</code> to <a href="https://stackoverflow.com/a/52501093/1996540">print the IPs for each network</a></li>
+<li>The script is <code>bing-networks-to-ips.sh</code></li>
+<li>From Bing&rsquo;s IPs alone I purged 145,403 hits&hellip; sheesh</li>
+</ul>
+</li>
+<li>Delete two items on CGSpace for Margarita because she was getting the &ldquo;Authorization denied for action OBSOLETE (DELETE) on BITSTREAM:0b26875a-&hellip;&rdquo; error
+<ul>
+<li>This is the same DSpace 6 bug I noticed in 2021-03, 2021-04, and 2021-05</li>
+</ul>
+</li>
+<li>Update some <code>cg.audience</code> metadata to use &ldquo;Academics&rdquo; instead of &ldquo;Academicians&rdquo;:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value=&#39;Academics&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=144 AND text_value=&#39;Academicians&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 104
+</span></span></code></pre></div><ul>
+<li>I will also have to remove &ldquo;Academicians&rdquo; from input-forms.xml</li>
+</ul>
+<h2 id="2022-07-07">2022-07-07</h2>
+<ul>
+<li>Finalize lists of non-AGROVOC subjects in CGSpace that I started last week
+<ul>
+<li>I used the <a href="https://wiki.lyrasis.org/display/DSPACE/Helper+SQL+functions+for+DSpace+6">SQL helper functions</a> to find the collections where each term was used:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace= ☘ SELECT DISTINCT(ds6_item2collectionhandle(dspace_object_id)) AS collection, COUNT(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND LOWER(text_value) = &#39;water demand&#39; GROUP BY collection ORDER BY count DESC LIMIT 5;
+</span></span><span style="display:flex;"><span> collection  │ count 
+</span></span><span style="display:flex;"><span>─────────────┼───────
+</span></span><span style="display:flex;"><span> 10568/36178 │    56
+</span></span><span style="display:flex;"><span> 10568/36185 │    46
+</span></span><span style="display:flex;"><span> 10568/36181 │    35
+</span></span><span style="display:flex;"><span> 10568/36188 │    28
+</span></span><span style="display:flex;"><span> 10568/36179 │    21
+</span></span><span style="display:flex;"><span>(5 rows)
+</span></span></code></pre></div><ul>
+<li>For now I only did terms from my list that had 100 or more occurrences in CGSpace
+<ul>
+<li>This leaves us with thirty-six terms that I will send to Sara Jani and Elizabeth Arnaud for evaluating possible inclusion to AGROVOC</li>
+</ul>
+</li>
+<li>Write to some submitters from CIAT, Bioversity, and CCAFS to ask if they are still uploading new items with their legacy subject fields on CGSpace
+<ul>
+<li>We want to remove them from the submission form to create space for new fields</li>
+</ul>
+</li>
+<li>Update one term I noticed people using that was close to AGROVOC:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# UPDATE metadatavalue SET text_value=&#39;development policies&#39; WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=187 AND text_value=&#39;development policy&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 108
+</span></span></code></pre></div><ul>
+<li>After contacting some editors I removed some old metadata fields from the submission form and browse indexes:
+<ul>
+<li>Bioversity subject (<code>cg.subject.bioversity</code>)</li>
+<li>CCAFS phase 1 project tag (<code>cg.identifier.ccafsproject</code>)</li>
+<li>CIAT project tag (<code>cg.identifier.ciatproject</code>)</li>
+<li>CIAT subject (<code>cg.subject.ciat</code>)</li>
+</ul>
+</li>
+<li>Work on cleaning and proofing forty-six AfricaRice items for CGSpace
+<ul>
+<li>Last week we identified some duplicates so I removed those</li>
+<li>The data is of mediocre quality</li>
+<li>I&rsquo;ve been fixing citations (nitpick), adding licenses, adding volume/issue/extent, fixing DOIs, and adding some AGROVOC subjects</li>
+<li>I even found titles that have typos, looking something like OCR errors&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-07-08">2022-07-08</h2>
+<ul>
+<li>Finalize the cleaning and proofing of AfricaRice records
+<ul>
+<li>I found two suspicious items that claim to have been published but I can&rsquo;t find in the respective journals, so I removed those</li>
+<li>I uploaded the forty-four items to <a href="https://dspacetest.cgiar.org/handle/10568/119135">DSpace Test</a></li>
+</ul>
+</li>
+<li>Margarita from CCAFS said they are no longer using the CCAFS subject or CCAFS phase 2 project tag
+<ul>
+<li>I removed these from the input-form.xml and Discovery facets:
+<ul>
+<li>cg.identifier.ccafsprojectpii</li>
+<li>cg.subject.cifor</li>
+</ul>
+</li>
+<li>For now we will keep them in the search filters</li>
+</ul>
+</li>
+<li>I modified my <code>check-duplicates.py</code> script a bit to fix a logic error for deleted items and add similarity scores from spacy (see: <a href="https://stackoverflow.com/questions/8897593/how-to-compute-the-similarity-between-two-text-documents">https://stackoverflow.com/questions/8897593/how-to-compute-the-similarity-between-two-text-documents</a>)
+<ul>
+<li>I want to use this with the MARLO innovation reports, to find related publications and working papers on CGSpace</li>
+<li>I am curious to see how the similarity scores compare to those from trgm&hellip; perhaps we don&rsquo;t need them actually</li>
+</ul>
+</li>
+<li>Deploy latest changes to submission form, Discovery, and browse on CGSpace
+<ul>
+<li>Also run all system updates and reboot the host</li>
+</ul>
+</li>
+<li>Fix 152 <code>dcterms.relation</code> that are using &ldquo;cgspace.cgiar.org&rdquo; links instead of handles:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>UPDATE metadatavalue SET text_value = REGEXP_REPLACE(text_value, &#39;.*cgspace\.cgiar\.org/handle/(\d+/\d+)$&#39;, &#39;https://hdl.handle.net/\1&#39;) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=180 AND text_value ~ &#39;cgspace\.cgiar\.org/handle/\d+/\d+$&#39;;
+</span></span></code></pre></div><h2 id="2022-07-10">2022-07-10</h2>
+<ul>
+<li>UptimeRobot says that CGSpace is down
+<ul>
+<li>I see high load around 22, high CPU around 800%</li>
+<li>Doesn&rsquo;t seem to be a lot of unique IPs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | sort -u | wc -l
+</span></span><span style="display:flex;"><span>2243
+</span></span></code></pre></div><p>Looking at the top twenty I see some usual IPs, but some new ones on Hetzner that are using many DSpace sessions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ grep 65.109.2.97 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1613
+</span></span><span style="display:flex;"><span>$ grep 95.216.174.97 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1696
+</span></span><span style="display:flex;"><span>$ grep 65.109.15.213 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1708
+</span></span><span style="display:flex;"><span>$ grep 65.108.80.78 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1830
+</span></span><span style="display:flex;"><span>$ grep 65.108.95.23 dspace.log.2022-07-10 | grep -oE <span style="color:#e6db74">&#39;session_id=[A-Z0-9]{32}:ip_addr=&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>1811
+</span></span></code></pre></div><p><img src="/cgspace-notes/2022/07/jmx_dspace_sessions-week.png" alt="DSpace sessions week"></p>
+<ul>
+<li>
+<p>These IPs are using normal-looking user agents:</p>
+<ul>
+<li><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.9) Gecko/20100101 Goanna/4.1 Firefox/52.9 PaleMoon/28.0.0.1</code></li>
+<li><code>Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/45.0&quot;</code></li>
+<li><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:56.0) Gecko/20100101 Firefox/56.0.1 Waterfox/56.0.1</code></li>
+<li><code>Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.85 Safari/537.36</code></li>
+</ul>
+</li>
+<li>
+<p>I will add networks I&rsquo;m seeing now to nginx&rsquo;s bot-networks.conf for now (not all of Hetzner) and purge the hits later:</p>
+<ul>
+<li>65.108.0.0/16</li>
+<li>65.21.0.0/16</li>
+<li>95.216.0.0/16</li>
+<li>135.181.0.0/16</li>
+<li>138.201.0.0/16</li>
+</ul>
+</li>
+<li>
+<p>I think I&rsquo;m going to get to a point where I categorize all commercial subnets as bots by default and then whitelist those we need</p>
+</li>
+<li>
+<p>Sheesh, there are a bunch more IPv6 addresses also on Hetzner:</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access<span style="color:#f92672">}</span>.log | sort | grep 2a01:4f9 | uniq -c | sort -h
+</span></span><span style="display:flex;"><span>      1 2a01:4f9:6a:1c2b::2
+</span></span><span style="display:flex;"><span>      2 2a01:4f9:2b:5a8::2
+</span></span><span style="display:flex;"><span>      2 2a01:4f9:4b:4495::2
+</span></span><span style="display:flex;"><span>     96 2a01:4f9:c010:518c::1
+</span></span><span style="display:flex;"><span>    137 2a01:4f9:c010:a9bc::1
+</span></span><span style="display:flex;"><span>    142 2a01:4f9:c010:58c9::1
+</span></span><span style="display:flex;"><span>    142 2a01:4f9:c010:58ea::1
+</span></span><span style="display:flex;"><span>    144 2a01:4f9:c010:58eb::1
+</span></span><span style="display:flex;"><span>    145 2a01:4f9:c010:6ff8::1
+</span></span><span style="display:flex;"><span>    148 2a01:4f9:c010:5190::1
+</span></span><span style="display:flex;"><span>    149 2a01:4f9:c010:7d6d::1
+</span></span><span style="display:flex;"><span>    153 2a01:4f9:c010:5226::1
+</span></span><span style="display:flex;"><span>    156 2a01:4f9:c010:7f74::1
+</span></span><span style="display:flex;"><span>    160 2a01:4f9:c010:5188::1
+</span></span><span style="display:flex;"><span>    161 2a01:4f9:c010:58e5::1
+</span></span><span style="display:flex;"><span>    168 2a01:4f9:c010:58ed::1
+</span></span><span style="display:flex;"><span>    170 2a01:4f9:c010:548e::1
+</span></span><span style="display:flex;"><span>    170 2a01:4f9:c010:8c97::1
+</span></span><span style="display:flex;"><span>    175 2a01:4f9:c010:58c8::1
+</span></span><span style="display:flex;"><span>    175 2a01:4f9:c010:aada::1
+</span></span><span style="display:flex;"><span>    182 2a01:4f9:c010:58ec::1
+</span></span><span style="display:flex;"><span>    182 2a01:4f9:c010:ae8c::1
+</span></span><span style="display:flex;"><span>    502 2a01:4f9:c010:ee57::1
+</span></span><span style="display:flex;"><span>    530 2a01:4f9:c011:567a::1
+</span></span><span style="display:flex;"><span>    535 2a01:4f9:c010:d04e::1
+</span></span><span style="display:flex;"><span>    539 2a01:4f9:c010:3d9a::1
+</span></span><span style="display:flex;"><span>    586 2a01:4f9:c010:93db::1
+</span></span><span style="display:flex;"><span>    593 2a01:4f9:c010:a04a::1
+</span></span><span style="display:flex;"><span>    601 2a01:4f9:c011:4166::1
+</span></span><span style="display:flex;"><span>    607 2a01:4f9:c010:9881::1
+</span></span><span style="display:flex;"><span>    640 2a01:4f9:c010:87fb::1
+</span></span><span style="display:flex;"><span>    648 2a01:4f9:c010:e680::1
+</span></span><span style="display:flex;"><span>   1141 2a01:4f9:3a:2696::2
+</span></span><span style="display:flex;"><span>   1146 2a01:4f9:3a:2555::2
+</span></span><span style="display:flex;"><span>   3207 2a01:4f9:3a:2c19::2
+</span></span></code></pre></div><ul>
+<li>Maybe it&rsquo;s time I ban all of Hetzner&hellip; sheesh.</li>
+<li>I left for a few hours and the server was going up and down the whole time, still very high CPU and database when I got back</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/cpu-day.png" alt="CPU day"></p>
+<ul>
+<li>I am not sure what&rsquo;s going on
+<ul>
+<li>I extracted all the IPs and used <code>resolve-addresses-geoip2.py</code> to analyze them and extract all the Hetzner networks and block them</li>
+<li>It&rsquo;s 181 IPs on Hetzner&hellip;</li>
+</ul>
+</li>
+<li>I rebooted the server to see if it was just some stuck locks in PostgreSQL&hellip;</li>
+<li>The load is still higher than I would expect, and after a few more hours I see more Hetzner IPs coming through? Two more subnets to block</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2022-07-12">2022-07-12</h2>
+<ul>
+<li>Update an incorrect ORCID identifier for Alliance</li>
+<li>Adjust collection permissions on CIFOR publications collection so Vika can submit without approval</li>
+</ul>
+<h2 id="2022-07-14">2022-07-14</h2>
+<ul>
+<li>Someone on the DSpace Slack mentioned having issues with the database configuration in DSpace 7.3
+<ul>
+<li>The reason is apparently that the default <code>db.dialect</code> changed from &ldquo;org.dspace.storage.rdbms.hibernate.postgres.DSpacePostgreSQL82Dialect&rdquo; to &ldquo;org.hibernate.dialect.PostgreSQL94Dialect&rdquo; as a result of a Hibernate update</li>
+</ul>
+</li>
+<li>Then I was getting more errors starting the backend server in Tomcat, but the issue was that the backend server needs Solr to be up first!</li>
+</ul>
+<h2 id="2022-07-17">2022-07-17</h2>
+<ul>
+<li>Start a harvest on AReS around 3:30PM</li>
+<li>Later in the evening I see CGSpace was going down and up (not as bad as last Sunday) with around 18.0 load&hellip;</li>
+<li>I see very high CPU usage:</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/cpu-day2.png" alt="CPU day"></p>
+<ul>
+<li>But DSpace sessions are normal (not like last weekend):</li>
+</ul>
+<p><img src="/cgspace-notes/2022/07/jmx_dspace_sessions-week2.png" alt="DSpace sessions week"></p>
+<ul>
+<li>I see some Hetzner IPs in the top users today, but most of the requests are getting HTTP 503 because of the changes I made last week</li>
+<li>I see 137.184.159.211, which is on Digital Ocean, and the DNS is apparently iitawpsite.iita.org
+<ul>
+<li>I&rsquo;ve seen their user agent before, but I don&rsquo;t think I knew it was IITA: &ldquo;GuzzleHttp/6.3.3 curl/7.84.0 PHP/7.4.30&rdquo;</li>
+<li>I already have something in nginx to mark Guzzle as a bot, but interestingly it shows up in Solr as <code>$http_user_agent</code> so there is a logic error in my nginx config</li>
+</ul>
+</li>
+<li>Ouch, the logic error seems to be this:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>geo $ua {
+</span></span><span style="display:flex;"><span>    default          $http_user_agent;
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>    include /etc/nginx/bot-networks.conf;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>After some testing on DSpace Test I see that this is actually setting the default user agent to a literal <code>$http_user_agent</code></li>
+<li>The <a href="http://nginx.org/en/docs/http/ngx_http_map_module.html">nginx map docs</a> say:</li>
+</ul>
+<blockquote>
+<p>The resulting value can contain text, variable (0.9.0), and their combination (1.11.0).</p>
+</blockquote>
+<ul>
+<li>But I can&rsquo;t get it to work, neither for the default value or for matching my IP&hellip;
+<ul>
+<li>I will have to ask on the nginx mailing list</li>
+</ul>
+</li>
+<li>The total number of requests and unique hosts was not even very high (below here around midnight so is almost all day):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | sort -u | wc -l
+</span></span><span style="display:flex;"><span>2776
+</span></span><span style="display:flex;"><span># awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> /var/log/nginx/<span style="color:#f92672">{</span>access,library-access,oai,rest<span style="color:#f92672">}</span>.log | wc -l
+</span></span><span style="display:flex;"><span>40325
+</span></span></code></pre></div><h2 id="2022-07-18">2022-07-18</h2>
+<ul>
+<li>Reading more about nginx&rsquo;s geo/map and doing some tests on DSpace Test, it appears that the <a href="https://stackoverflow.com/questions/47011497/nginx-geo-module-wont-use-variables">geo module cannot do dynamic values</a>
+<ul>
+<li>So this issue with the literal <code>$http_user_agent</code> is due to the geo block I put in place earlier this month</li>
+<li>I reworked the logic so that the geo block sets &ldquo;bot&rdquo; or and empty string when a network matches or not, and then re-use that value in a mapping that passes through the host&rsquo;s user agent in case geo has set it to an empty string</li>
+<li>This allows me to accomplish the original goal while still only using one bot-networks.conf file for the <code>limit_req_zone</code> and the user agent mapping that we pass to Tomcat</li>
+<li>Unfortunately this means I will have hundreds of thousands of requests in Solr with a literal <code>$http_user_agent</code></li>
+<li>I might try to purge some by enumerating all the networks in my block file and running them through <code>check-spider-ip-hits.sh</code></li>
+</ul>
+</li>
+<li>I extracted all the IPs/subnets from <code>bot-networks.conf</code> and prepared them so I could enumerate their IPs
+<ul>
+<li>I had to add <code>/32</code> to all single IPs, which I did with this crazy vim invocation:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>:g!/\/\d\+$/s/^\(\d\+\.\d\+\.\d\+\.\d\+\)$/\1\/32/
+</span></span></code></pre></div><ul>
+<li>Explanation:
+<ul>
+<li><code>g!</code>: global, lines <em>not</em> matching (the opposite of <code>g</code>)</li>
+<li><code>/\/\d\+$/</code>, pattern matching <code>/</code> with one or more digits at the end of the line</li>
+<li><code>s/^\(\d\+\.\d\+\.\d\+\.\d\+\)$/\1\/32/</code>, for lines not matching above, capture the IPv4 address and add <code>/32</code> at the end</li>
+</ul>
+</li>
+<li>Then I ran the list through prips to enumerate the IPs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">while</span> read -r line; <span style="color:#66d9ef">do</span> prips <span style="color:#e6db74">&#34;</span>$line<span style="color:#e6db74">&#34;</span> | sed -e <span style="color:#e6db74">&#39;1d; $d&#39;</span>; <span style="color:#66d9ef">done</span> &lt; /tmp/bot-networks.conf &gt; /tmp/bot-ips.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/bot-ips.txt                                                                                        
+</span></span><span style="display:flex;"><span>1946968 /tmp/bot-ips.txt
+</span></span></code></pre></div><ul>
+<li>I started running <code>check-spider-ip-hits.sh</code> with the 1946968 IPs and left it running in dry run mode</li>
+</ul>
+<h2 id="2022-07-19">2022-07-19</h2>
+<ul>
+<li>Patrizio and Fabio emailed me to ask if their IP was banned from CGSpace
+<ul>
+<li>It&rsquo;s one of the Hetzner ones so I said yes definitely, and asked more about how they are using the API</li>
+</ul>
+</li>
+<li>Add ORCID identifer for Ram Dhulipala, Lilian Wambua, and Dan Masiga to CGSpace and tag them and some other existing items:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dc.contributor.author,cg.creator.identifier
+</span></span><span style="display:flex;"><span>&#34;Dhulipala, Ram K&#34;,&#34;Ram Dhulipala: 0000-0002-9720-3247&#34;
+</span></span><span style="display:flex;"><span>&#34;Dhulipala, Ram&#34;,&#34;Ram Dhulipala: 0000-0002-9720-3247&#34;
+</span></span><span style="display:flex;"><span>&#34;Dhulipala, R.&#34;,&#34;Ram Dhulipala: 0000-0002-9720-3247&#34;
+</span></span><span style="display:flex;"><span>&#34;Wambua, Lillian&#34;,&#34;Lillian Wambua: 0000-0003-3632-7411&#34;
+</span></span><span style="display:flex;"><span>&#34;Wambua, Lilian&#34;,&#34;Lillian Wambua: 0000-0003-3632-7411&#34;
+</span></span><span style="display:flex;"><span>&#34;Masiga, D.K.&#34;,&#34;Daniel Masiga: 0000-0001-7513-0887&#34;
+</span></span><span style="display:flex;"><span>&#34;Masiga, Daniel K.&#34;,&#34;Daniel Masiga: 0000-0001-7513-0887&#34;
+</span></span><span style="display:flex;"><span>&#34;Jores, Joerg&#34;,&#34;Joerg Jores: 0000-0003-3790-5746&#34;
+</span></span><span style="display:flex;"><span>&#34;Schieck, Elise&#34;,&#34;Elise Schieck: 0000-0003-1756-6337&#34;
+</span></span><span style="display:flex;"><span>&#34;Schieck, Elise G.&#34;,&#34;Elise Schieck: 0000-0003-1756-6337&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i /tmp/2022-07-19-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Review the AfricaRice records from earlier this month again
+<ul>
+<li>I found one more duplicate and one more suspicious item, so the total after removing those is now forty-two</li>
+</ul>
+</li>
+<li>I took all the ~560 IPs that had hits so far in <code>check-spider-ip-hits.sh</code> above (about 270,000 into the list of 1946968 above) and ran them directly on CGSpace
+<ul>
+<li>This purged 199,032 hits from Solr, very many of which were from Qualys, but also that Chinese bot on 124.17.34.0/24 that was grabbing PDFs a few years ago which I blocked in nginx, but never purged the hits from</li>
+<li>Then I deleted all IPs up to the last one where I found hits in the large file of 1946968 IPs and re-started the script</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-07-20">2022-07-20</h2>
+<ul>
+<li>Did a few more minor edits to the forty-two AfricaRice records (including generating thumbnails for the handful that are Creative Commons licensed) then did a test import on my local instance
+<ul>
+<li>Once it worked well I did an import to CGSpace:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace import -a -e fuuu@example.com -m 2022-07-20-africarice.map -s /tmp/SimpleArchiveFormat
+</span></span></code></pre></div><ul>
+<li>Also make edits to ~62 affiliations on CGSpace because I noticed they were messed up</li>
+<li>Extract another ~1,600 IPs that had hits since I started the second round of <code>check-spider-ip-hits.sh</code> yesterday and purge another 303,594 hits
+<ul>
+<li>This is about 999846 into the original list of 1946968 from yesterday</li>
+<li>A metric fuck ton of the IPs in this batch were from Hetzner</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-07-21">2022-07-21</h2>
+<ul>
+<li>Extract another ~2,100 IPs that had hits since I started the third round of <code>check-spider-ip-hits.sh</code> last night and purge another 763,843 hits
+<ul>
+<li>This is about 1441221 into the original list of 1946968 from two days ago</li>
+<li>Again these are overwhelmingly Hetzner (not surprising since my bot-networks.conf file in nginx is mostly Hetzner)</li>
+</ul>
+</li>
+<li>I responded to my original request to Atmire about the log4j to reload4j migration in DSpace 6.4
+<ul>
+<li>I had initially requested a comment from them in 2022-05</li>
+</ul>
+</li>
+<li>Extract another ~1,200 IPs that had hits from the fourth round of <code>check-spider-ip-hits.sh</code> earlier today and purge another 74,591 hits
+<ul>
+<li>Now the list of IPs I enumerated from the nginx <code>bot-networks.conf</code> is finished</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-07-22">2022-07-22</h2>
+<ul>
+<li>I created a new Linode instance for testing DSpace 7</li>
+<li>Jose from the CCAFS team sent me the final versions of 3,500+ Innovations, Policies, MELIAs, and OICRs from MARLO</li>
+<li>I re-synced CGSpace with DSpace Test so I can have a newer snapshot of the production data there for testing the CCAFS MELIAs, OICRs, Policies, and Innovations</li>
+<li>I re-created the tip-submit and tip-approve DSpace user accounts for Alliance&rsquo;s new TIP submit tool and added them to the Alliance submitters and Alliance admins accounts respectively</li>
+<li>Start working on updating the Ansible infrastructure playbooks for DSpace 7 stuff</li>
+</ul>
+<h2 id="2022-07-23">2022-07-23</h2>
+<ul>
+<li>Start a harvest on AReS</li>
+<li>More work on DSpace 7 related issues in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a></li>
+</ul>
+<h2 id="2022-07-24">2022-07-24</h2>
+<ul>
+<li>More work on DSpace 7 related issues in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a></li>
+</ul>
+<h2 id="2022-07-25">2022-07-25</h2>
+<ul>
+<li>More work on DSpace 7 related issues in the <a href="https://github.com/ilri/rmg-ansible-public">Ansible infrastructure playbooks</a>
+<ul>
+<li>I see that, for Solr, we will need to copy the DSpace configsets to the writable data directory rather than the default home dir</li>
+<li>The <a href="https://solr.apache.org/guide/8_11/taking-solr-to-production.html">Taking Solr to production guide</a> recommends keeping the unzipped code separate from the data, which we do in our Solr role already</li>
+<li>So that means we keep the unzipped code in <code>/opt/solr-8.11.2</code>, but the data directory in <code>/var/solr/data</code>, with the DSpace Solr cores here <code>/var/solr/data/configsets</code></li>
+<li>I&rsquo;m not sure how to integrate that into my playbooks yet</li>
+</ul>
+</li>
+<li>Much to my surprise, Discovery indexing on DSpace 7 was really fast when I did it just now, apparently taking 40 minutes of wall clock time?!:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ /usr/bin/time -v /home/dspace7/bin/dspace index-discovery -b
+</span></span><span style="display:flex;"><span>The script has started
+</span></span><span style="display:flex;"><span>(Re)building index from scratch.
+</span></span><span style="display:flex;"><span>Done with indexing
+</span></span><span style="display:flex;"><span>The script has completed
+</span></span><span style="display:flex;"><span>        Command being timed: &#34;/home/dspace7/bin/dspace index-discovery -b&#34;
+</span></span><span style="display:flex;"><span>        User time (seconds): 588.18
+</span></span><span style="display:flex;"><span>        System time (seconds): 91.26
+</span></span><span style="display:flex;"><span>        Percent of CPU this job got: 28%
+</span></span><span style="display:flex;"><span>        Elapsed (wall clock) time (h:mm:ss or m:ss): 40:05.79
+</span></span><span style="display:flex;"><span>        Average shared text size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Average unshared data size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Average stack size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Average total size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Maximum resident set size (kbytes): 635380
+</span></span><span style="display:flex;"><span>        Average resident set size (kbytes): 0
+</span></span><span style="display:flex;"><span>        Major (requiring I/O) page faults: 1513
+</span></span><span style="display:flex;"><span>        Minor (reclaiming a frame) page faults: 216412
+</span></span><span style="display:flex;"><span>        Voluntary context switches: 1671092
+</span></span><span style="display:flex;"><span>        Involuntary context switches: 744007
+</span></span><span style="display:flex;"><span>        Swaps: 0
+</span></span><span style="display:flex;"><span>        File system inputs: 4396880
+</span></span><span style="display:flex;"><span>        File system outputs: 74312
+</span></span><span style="display:flex;"><span>        Socket messages sent: 0
+</span></span><span style="display:flex;"><span>        Socket messages received: 0
+</span></span><span style="display:flex;"><span>        Signals delivered: 0
+</span></span><span style="display:flex;"><span>        Page size (bytes): 4096
+</span></span><span style="display:flex;"><span>        Exit status: 0
+</span></span></code></pre></div><ul>
+<li>Leroy from the Alliance wrote to say that the CIAT Library is back up so I might be able to download all the PDFs
+<ul>
+<li>It had been shut down for a security reason a few months ago and we were planning to download them all and attach them to their relevant items on CGSpace</li>
+<li>I noticed one item that had the PDF already on CGSpace so I&rsquo;ll need to consider that when I eventually do the import</li>
+</ul>
+</li>
+<li>I had to re-create the tip-submit and tip-approve accounts for Alliance on DSpace Test again
+<ul>
+<li>After I created them last week they somehow got deleted&hellip;?!&hellip; I couldn&rsquo;t find them or the mel-submit account either!</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-07-26">2022-07-26</h2>
+<ul>
+<li>Rafael from Alliance wrote to say that the tip-submit account wasn&rsquo;t working on DSpace Test
+<ul>
+<li>I think I need to have the submit account in the <em>Alliance admin</em> group in order for it to be able to submit via the REST API, but yesterday I had added it to the submitters group</li>
+</ul>
+</li>
+<li>Meeting with Peter and Abenet about CGSpace issues
+<ul>
+<li>We want to do a training with IFPRI ASAP</li>
+<li>Then we want to start bringing the comms people from the Initiatives in</li>
+<li>We also want to revive the Metadata Working Group to have discussions about metadata standards, governance, etc</li>
+<li>We walked through DSpace 7.3 to get an idea of what vanilla looks like and start thinking about UI, item display, etc (perhaps we solicit help from some CG centers on Angular?)</li>
+</ul>
+</li>
+<li>Start looking at the metadata for the 1,637 Innovations that Jose sent last week
+<ul>
+<li>There are still issues with the citation formatting, but I will just fix it instead of asking him again</li>
+<li>I can use these GREL to fix the spacing around &ldquo;Annual Report2017&rdquo; and the periods:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>value.replace(/Annual Report(\d{4})/, &#34;Annual Report $1&#34;)
+</span></span><span style="display:flex;"><span>value.replace(/ \./, &#34;.&#34;)
+</span></span></code></pre></div><ul>
+<li>Then there are also some other issues with the metadata that I sent to him for comments</li>
+<li>I managed to get DSpace 7 running behind nginx, and figured out how to change the logo to CGIAR and run a local instance using the remote API</li>
+</ul>
+<h2 id="2022-07-27">2022-07-27</h2>
+<ul>
+<li>Work on the MARLO Innovations and MELIA
+<ul>
+<li>I had to ask Jose for some clarifications and correct some encoding issues (for example in Côte d&rsquo;Ivoire all over the place, and weird periods everywhere)</li>
+</ul>
+</li>
+<li>Work on the DSpace 7.3 theme, mimicking CGSpace&rsquo;s DSpace 6 them pretty well for now</li>
+</ul>
+<h2 id="2022-07-28">2022-07-28</h2>
+<ul>
+<li>Work on the MARLO Innovations
+<ul>
+<li>I had to ask Jose more questions about character encoding and duplicates</li>
+</ul>
+</li>
+<li>I added a new feature to <a href="https://github.com/ilri/csv-metadata-quality">csv-metadata-quality</a> to add missing regions to the region column when it is detected that there is a country with missing regions</li>
+</ul>
+<h2 id="2022-07-30">2022-07-30</h2>
+<ul>
+<li>Start a full harvest on AReS</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

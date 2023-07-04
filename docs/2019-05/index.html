@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="May, 2019" />
+<meta property="og:description" content="2019-05-01
+
+Help CCAFS with regenerating some item thumbnails after they uploaded new PDFs to some items on CGSpace
+A user on the dspace-tech mailing list offered some suggestions for troubleshooting the problem with the inability to delete certain items
+
+Apparently if the item is in the workflowitem table it is submitted to a workflow
+And if it is in the workspaceitem table it is in the pre-submitted state
+
+
+The item seems to be in a pre-submitted state, so I tried to delete it from there:
+
+dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+DELETE 1
+
+But after this I tried to delete the item from the XMLUI and it is still present&hellip;
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2019-05/" />
+<meta property="article:published_time" content="2019-05-01T07:37:43+03:00" />
+<meta property="article:modified_time" content="2020-04-13T15:30:24+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="May, 2019"/>
+<meta name="twitter:description" content="2019-05-01
+
+Help CCAFS with regenerating some item thumbnails after they uploaded new PDFs to some items on CGSpace
+A user on the dspace-tech mailing list offered some suggestions for troubleshooting the problem with the inability to delete certain items
+
+Apparently if the item is in the workflowitem table it is submitted to a workflow
+And if it is in the workspaceitem table it is in the pre-submitted state
+
+
+The item seems to be in a pre-submitted state, so I tried to delete it from there:
+
+dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+DELETE 1
+
+But after this I tried to delete the item from the XMLUI and it is still present&hellip;
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "May, 2019",
+  "url": "https://alanorth.github.io/cgspace-notes/2019-05/",
+  "wordCount": "3190",
+  "datePublished": "2019-05-01T07:37:43+03:00",
+  "dateModified": "2020-04-13T15:30:24+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2019-05/">
+
+    <title>May, 2019 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2019-05/">May, 2019</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2019-05-01T07:37:43+03:00">Wed May 01, 2019</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2019-05-01">2019-05-01</h2>
+<ul>
+<li>Help CCAFS with regenerating some item thumbnails after they uploaded new PDFs to some items on CGSpace</li>
+<li>A user on the dspace-tech mailing list offered some suggestions for troubleshooting the problem with the inability to delete certain items
+<ul>
+<li>Apparently if the item is in the <code>workflowitem</code> table it is submitted to a workflow</li>
+<li>And if it is in the <code>workspaceitem</code> table it is in the pre-submitted state</li>
+</ul>
+</li>
+<li>The item seems to be in a pre-submitted state, so I tried to delete it from there:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+DELETE 1
+</code></pre><ul>
+<li>But after this I tried to delete the item from the XMLUI and it is <em>still</em> present&hellip;</li>
+</ul>
+<ul>
+<li>I managed to delete the problematic item from the database
+<ul>
+<li>First I deleted the item&rsquo;s bitstream in XMLUI and then ran <code>dspace cleanup -v</code> to remove it from the assetstore</li>
+<li>Then I ran the following SQL:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>dspace=# DELETE FROM metadatavalue WHERE resource_id=74648;
+dspace=# DELETE FROM workspaceitem WHERE item_id=74648;
+dspace=# DELETE FROM item WHERE item_id=74648;
+</code></pre><ul>
+<li>Now the item is (hopefully) really gone and I can continue to troubleshoot the issue with REST API&rsquo;s <code>/items/find-by-metadata-value</code> endpoint
+<ul>
+<li>Of course I run into another HTTP 401 error when I continue trying the LandPortal search from last month:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ curl -f -H &#34;Content-Type: application/json&#34; -X POST &#34;http://localhost:8080/rest/items/find-by-metadata-field&#34; -d &#39;{&#34;key&#34;:&#34;cg.subject.cpwf&#34;, &#34;value&#34;:&#34;WATER MANAGEMENT&#34;,&#34;language&#34;: &#34;en_US&#34;}&#39;
+curl: (22) The requested URL returned error: 401 Unauthorized
+</code></pre><ul>
+<li>The DSpace log shows the item ID (because I modified the error text):</li>
+</ul>
+<pre tabindex="0"><code>2019-05-01 11:41:11,069 ERROR org.dspace.rest.ItemsResource @ User(anonymous) has not permission to read item(id=77708)!
+</code></pre><ul>
+<li>If I delete that one I get another, making the list of item IDs so far:
+<ul>
+<li>74648</li>
+<li>77708</li>
+<li>85079</li>
+</ul>
+</li>
+<li>Some are in the <code>workspaceitem</code> table (pre-submission), others are in the <code>workflowitem</code> table (submitted), and others are actually approved, but withdrawn&hellip;
+<ul>
+<li>This is actually a worthless exercise because the real issue is that the <code>/items/find-by-metadata-value</code> endpoint is simply designed flawed and shouldn&rsquo;t be fatally erroring when the search returns items the user doesn&rsquo;t have permission to access</li>
+<li>It would take way too much time to try to fix the fucked up items that are in limbo by deleting them in SQL, but also, it doesn&rsquo;t actually fix the problem because some items are <em>submitted</em> but <em>withdrawn</em>, so they actually have handles and everything</li>
+<li>I think the solution is to recommend people don&rsquo;t use the <code>/items/find-by-metadata-value</code> endpoint</li>
+</ul>
+</li>
+<li>CIP is asking about embedding PDF thumbnail images in their RSS feeds again
+<ul>
+<li>They asked in 2018-09 as well and I told them it wasn&rsquo;t possible</li>
+<li>To make sure, I looked at <a href="https://wiki.lyrasis.org/display/DSPACE/Enable+Media+RSS+Feeds">the documentation for RSS media feeds</a> and tried it, but couldn&rsquo;t get it to work</li>
+<li>It seems to be geared towards iTunes and Podcasts&hellip; I dunno</li>
+</ul>
+</li>
+<li>CIP also asked for a way to get an XML file of all their RTB journal articles on CGSpace
+<ul>
+<li>I told them to use the REST API like (where <code>1179</code> is the id of the RTB journal articles collection):</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>https://cgspace.cgiar.org/rest/collections/1179/items?limit=812&amp;expand=metadata
+</code></pre><h2 id="2019-05-03">2019-05-03</h2>
+<ul>
+<li>A user from CIAT emailed to say that CGSpace submission emails have not been working the last few weeks
+<ul>
+<li>I checked the <code>dspace test-email</code> script on CGSpace and they are indeed failing:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ dspace test-email
+
+About to send test email:
+ - To: woohoo@cgiar.org
+ - Subject: DSpace test email
+ - Server: smtp.office365.com
+
+Error sending email:
+ - Error: javax.mail.AuthenticationFailedException
+
+Please see the DSpace documentation for assistance.
+</code></pre><ul>
+<li>I will ask ILRI ICT to reset the password
+<ul>
+<li>They reset the password and I tested it on CGSpace</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-05">2019-05-05</h2>
+<ul>
+<li>Run all system updates on DSpace Test (linode19) and reboot it</li>
+<li>Merge changes into the <code>5_x-prod</code> branch of CGSpace:
+<ul>
+<li>Updates to remove deprecated social media websites (Google+ and Delicious), update Twitter share intent, and add item title to Twitter and email links (<a href="https://github.com/ilri/DSpace/pull/421">#421</a>)</li>
+<li>Add new CCAFS Phase II project tags (<a href="https://github.com/ilri/DSpace/pull/420">#420</a>)</li>
+<li>Add item ID to REST API error logging (<a href="https://github.com/ilri/DSpace/pull/422">#422</a>)</li>
+</ul>
+</li>
+<li>Re-deploy CGSpace from <code>5_x-prod</code> branch</li>
+<li>Run all system updates on CGSpace (linode18) and reboot it</li>
+<li>Tag version 1.1.0 of the <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a> (with Falcon 2.0.0)
+<ul>
+<li>Deploy on DSpace Test</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-06">2019-05-06</h2>
+<ul>
+<li>Peter pointed out that Solr stats are only showing 2019 stats
+<ul>
+<li>I looked at the Solr Admin UI and I see:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>statistics-2018: org.apache.solr.common.SolrException:org.apache.solr.common.SolrException: Error opening new searcher 
+</code></pre><ul>
+<li>As well as this error in the logs:</li>
+</ul>
+<pre tabindex="0"><code>Caused by: org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock@/home/cgspace.cgiar.org/solr/statistics-2018/data/index/write.lock
+</code></pre><ul>
+<li>Strangely enough, I <em>do</em> see the statistics-2018, statistics-2017, etc cores in the Admin UI&hellip;</li>
+<li>I restarted Tomcat a few times (and even deleted all the Solr write locks) and at least five times there were issues loading one statistics core, causing the Atmire stats to be incomplete
+<ul>
+<li>Also, I tried to increase the <code>writeLockTimeout</code> in <code>solrconfig.xml</code> from the default of 1000ms to 10000ms</li>
+<li>Eventually the Atmire stats started working, despite errors about &ldquo;Error opening new searcher&rdquo; in the Solr Admin UI</li>
+<li>I wrote to the dspace-tech mailing list again on the thread from March, 2019</li>
+</ul>
+</li>
+<li>There were a few alerts from UptimeRobot about CGSpace going up and down this morning, along with an alert from Linode about 596% load
+<ul>
+<li>Looking at the Munin stats I see an exponential rise in DSpace XMLUI sessions, firewall activity, and PostgreSQL connections this morning:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2019/05/2019-05-06-jmx_dspace_sessions-day.png" alt="CGSpace XMLUI sessions day"></p>
+<p><img src="/cgspace-notes/2019/05/2019-05-06-fw_conntrack-day.png" alt="linode18 firewall connections day"></p>
+<p><img src="/cgspace-notes/2019/05/2019-05-06-postgres_connections_db-day.png" alt="linode18 postgres connections day"></p>
+<p><img src="/cgspace-notes/2019/05/2019-05-06-cpu-day.png" alt="linode18 CPU day"></p>
+<ul>
+<li>The number of unique sessions today is <em>ridiculously</em> high compared to the last few days considering it&rsquo;s only 12:30PM right now:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; dspace.log.2019-05-06 | sort | uniq | wc -l
+101108
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; dspace.log.2019-05-05 | sort | uniq | wc -l
+14618
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; dspace.log.2019-05-04 | sort | uniq | wc -l
+14946
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; dspace.log.2019-05-03 | sort | uniq | wc -l
+6410
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; dspace.log.2019-05-02 | sort | uniq | wc -l
+7758
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; dspace.log.2019-05-01 | sort | uniq | wc -l
+20528
+</code></pre><ul>
+<li>The number of unique IP addresses from 2 to 6 AM this morning is already several times higher than the average for that time of the morning this past week:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &#39;06/May/2019:(02|03|04|05|06)&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+7127
+# zcat --force /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep -E &#39;05/May/2019:(02|03|04|05|06)&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+1231
+# zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E &#39;04/May/2019:(02|03|04|05|06)&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+1255
+# zcat --force /var/log/nginx/access.log.3.gz /var/log/nginx/access.log.4.gz | grep -E &#39;03/May/2019:(02|03|04|05|06)&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+1736
+# zcat --force /var/log/nginx/access.log.4.gz /var/log/nginx/access.log.5.gz | grep -E &#39;02/May/2019:(02|03|04|05|06)&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+1573
+# zcat --force /var/log/nginx/access.log.5.gz /var/log/nginx/access.log.6.gz | grep -E &#39;01/May/2019:(02|03|04|05|06)&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+1410
+</code></pre><ul>
+<li>Just this morning between the hours of 2 and 6 the number of unique sessions was <em>very</em> high compared to previous mornings:</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace.log.2019-05-06 | grep -E &#39;2019-05-06 (02|03|04|05|06):&#39; | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+83650
+$ cat dspace.log.2019-05-05 | grep -E &#39;2019-05-05 (02|03|04|05|06):&#39; | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+2547
+$ cat dspace.log.2019-05-04 | grep -E &#39;2019-05-04 (02|03|04|05|06):&#39; | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+2574
+$ cat dspace.log.2019-05-03 | grep -E &#39;2019-05-03 (02|03|04|05|06):&#39; | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+2911
+$ cat dspace.log.2019-05-02 | grep -E &#39;2019-05-02 (02|03|04|05|06):&#39; | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+2704
+$ cat dspace.log.2019-05-01 | grep -E &#39;2019-05-01 (02|03|04|05|06):&#39; | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+3699
+</code></pre><ul>
+<li>Most of the requests were GETs:</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/{access,library-access}.log /var/log/nginx/{access,library-access}.log.1 | grep -E &#39;06/May/2019:(02|03|04|05|06)&#39; | grep -o -E &#34;(GET|HEAD|POST|PUT)&#34; | sort | uniq -c | sort -n
+      1 PUT
+     98 POST
+   2845 HEAD
+  98121 GET
+</code></pre><ul>
+<li>I&rsquo;m not exactly sure what happened this morning, but it looks like some legitimate user traffic—perhaps someone launched a new publication and it got a bunch of hits?</li>
+<li>Looking again, I see 84,000 requests to <code>/handle</code> this morning (not including logs for library.cgiar.org because those get HTTP 301 redirect to CGSpace and appear here in <code>access.log</code>):</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &#39;06/May/2019:(02|03|04|05|06)&#39; | grep -c -o -E &#34; /handle/[0-9]+/[0-9]+&#34;
+84350
+</code></pre><ul>
+<li>But it would be difficult to find a pattern for those requests because they cover 78,000 <em>unique</em> Handles (ie direct browsing of items, collections, or communities) and only 2,492 discover/browse (total, not unique):</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &#39;06/May/2019:(02|03|04|05|06)&#39; | grep -o -E &#34; /handle/[0-9]+/[0-9]+ HTTP&#34; | sort | uniq | wc -l
+78104
+# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | grep -E &#39;06/May/2019:(02|03|04|05|06)&#39; | grep -o -E &#34; /handle/[0-9]+/[0-9]+/(discover|browse)&#34; | wc -l
+2492
+</code></pre><ul>
+<li>In other news, I see some IP is making several requests per second to the exact same REST API endpoints, for example:</li>
+</ul>
+<pre tabindex="0"><code># grep /rest/handle/10568/3703?expand=all rest.log | awk &#39;{print $1}&#39; | sort | uniq -c
+      3 2a01:7e00::f03c:91ff:fe0a:d645
+    113 63.32.242.35
+</code></pre><ul>
+<li>According to <a href="https://viewdns.info/reverseip/?host=63.32.242.35&amp;t=1">viewdns.info</a> that server belongs to Macaroni Brothers
+<ul>
+<li>The user agent of their non-REST API requests from the same IP is Drupal</li>
+<li>This is one very good reason to limit REST API requests, and perhaps to enable caching via nginx</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-07">2019-05-07</h2>
+<ul>
+<li>The total number of unique IPs on CGSpace yesterday was almost 14,000, which is several thousand higher than previous day totals:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/access.log.1 /var/log/nginx/access.log.2.gz | grep -E &#39;06/May/2019&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+13969
+# zcat --force /var/log/nginx/access.log.2.gz /var/log/nginx/access.log.3.gz | grep -E &#39;05/May/2019&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+5936
+# zcat --force /var/log/nginx/access.log.3.gz /var/log/nginx/access.log.4.gz | grep -E &#39;04/May/2019&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+6229
+# zcat --force /var/log/nginx/access.log.4.gz /var/log/nginx/access.log.5.gz | grep -E &#39;03/May/2019&#39; | awk &#39;{print $1}&#39; | sort | uniq | wc -l
+8051
+</code></pre><ul>
+<li>Total number of sessions yesterday was <em>much</em> higher compared to days last week:</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace.log.2019-05-06 | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+144160
+$ cat dspace.log.2019-05-05 | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+57269
+$ cat dspace.log.2019-05-04 | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+58648
+$ cat dspace.log.2019-05-03 | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+27883
+$ cat dspace.log.2019-05-02 | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+26996
+$ cat dspace.log.2019-05-01 | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+61866
+</code></pre><ul>
+<li>The usage statistics seem to agree that yesterday was crazy:</li>
+</ul>
+<p><img src="/cgspace-notes/2019/05/2019-05-07-atmire-usage-week.png" alt="Atmire Usage statistics spike 2019-05-06"></p>
+<ul>
+<li>Sarah from RTB asked me about the RSS / XML link for the the CGIAR.org website again
+<ul>
+<li>Apparently Sam Stacey is trying to add an RSS feed so the items get automatically syndicated to the CGIAR website</li>
+<li>I send her the link to the collection RSS feed</li>
+</ul>
+</li>
+<li>Add requests cache to <code>resolve-addresses.py</code> script</li>
+</ul>
+<h2 id="2019-05-08">2019-05-08</h2>
+<ul>
+<li>A user said that CGSpace emails have stopped sending again
+<ul>
+<li>Indeed, the <code>dspace test-email</code> script is showing an authentication failure:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ dspace test-email
+
+About to send test email:
+ - To: wooooo@cgiar.org
+ - Subject: DSpace test email
+ - Server: smtp.office365.com
+
+Error sending email:
+ - Error: javax.mail.AuthenticationFailedException
+
+Please see the DSpace documentation for assistance.
+</code></pre><ul>
+<li>I checked the settings and apparently I had updated it incorrectly last week after ICT reset the password</li>
+<li>Help Moayad with certbot-auto for Let&rsquo;s Encrypt scripts on the new AReS server (linode20)</li>
+<li>Normalize all <code>text_lang</code> values for metadata on CGSpace and DSpace Test (as I had tested last month):</li>
+</ul>
+<pre tabindex="0"><code>UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN (&#39;ethnob&#39;, &#39;en&#39;, &#39;*&#39;, &#39;E.&#39;, &#39;&#39;);
+UPDATE metadatavalue SET text_lang=&#39;en_US&#39; WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IS NULL;
+UPDATE metadatavalue SET text_lang=&#39;es_ES&#39; WHERE resource_type_id=2 AND metadata_field_id != 28 AND text_lang IN (&#39;es&#39;, &#39;spa&#39;);
+</code></pre><ul>
+<li>Send Francesca Giampieri from Bioversity a CSV export of all their items issued in 2018
+<ul>
+<li>They will be doing a migration of 1500 items from their TYPO3 database into CGSpace soon and want an example CSV with all required metadata columns</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-10">2019-05-10</h2>
+<ul>
+<li>I finally had time to analyze the 7,000 IPs from the major traffic spike on 2019-05-06 after several runs of my <code>resolve-addresses.py</code> script (ipapi.co has a limit of 1,000 requests per day)</li>
+<li>Resolving the unique IP addresses to organization and AS names reveals some pretty big abusers:
+<ul>
+<li>1213 from Region40 LLC (AS200557)</li>
+<li>697 from Trusov Ilya Igorevych (AS50896)</li>
+<li>687 from UGB Hosting OU (AS206485)</li>
+<li>620 from UAB Rakrejus (AS62282)</li>
+<li>491 from Dedipath (AS35913)</li>
+<li>476 from Global Layer B.V. (AS49453)</li>
+<li>333 from QuadraNet Enterprises LLC (AS8100)</li>
+<li>278 from GigeNET (AS32181)</li>
+<li>261 from Psychz Networks (AS40676)</li>
+<li>196 from Cogent Communications (AS174)</li>
+<li>125 from Blockchain Network Solutions Ltd (AS43444)</li>
+<li>118 from Silverstar Invest Limited (AS35624)</li>
+</ul>
+</li>
+<li>All of the IPs from these networks are using generic user agents like this, but MANY more, and they change many times:</li>
+</ul>
+<pre tabindex="0"><code>&#34;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2703.0 Safari/537.36&#34;
+</code></pre><ul>
+<li>I found a <a href="https://www.qurium.org/alerts/azerbaijan/azerbaijan-and-the-region40-ddos-service/">blog post from 2018 detailing an attack from a DDoS service</a> that matches our pattern exactly</li>
+<li>They specifically mention:</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>So this was definitely an attack of some sort&hellip; only God knows why</li>
+<li>I noticed a few new bots that don&rsquo;t use the word &ldquo;bot&rdquo; in their user agent and therefore don&rsquo;t match Tomcat&rsquo;s Crawler Session Manager Valve:
+<ul>
+<li><code>Blackboard Safeassign</code></li>
+<li><code>Unpaywall</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-12">2019-05-12</h2>
+<ul>
+<li>I see that the Unpaywall bot is resonsible for a few thousand XMLUI sessions every day (IP addresses come from nginx access.log):</li>
+</ul>
+<pre tabindex="0"><code>$ cat dspace.log.2019-05-11 | grep -E &#39;ip_addr=(100.26.206.188|100.27.19.233|107.22.98.199|174.129.156.41|18.205.243.110|18.205.245.200|18.207.176.164|18.207.209.186|18.212.126.89|18.212.5.59|18.213.4.150|18.232.120.6|18.234.180.224|18.234.81.13|3.208.23.222|34.201.121.183|34.201.241.214|34.201.39.122|34.203.188.39|34.207.197.154|34.207.232.63|34.207.91.147|34.224.86.47|34.227.205.181|34.228.220.218|34.229.223.120|35.171.160.166|35.175.175.202|3.80.201.39|3.81.120.70|3.81.43.53|3.84.152.19|3.85.113.253|3.85.237.139|3.85.56.100|3.87.23.95|3.87.248.240|3.87.250.3|3.87.62.129|3.88.13.9|3.88.57.237|3.89.71.15|3.90.17.242|3.90.68.247|3.91.44.91|3.92.138.47|3.94.250.180|52.200.78.128|52.201.223.200|52.90.114.186|52.90.48.73|54.145.91.243|54.160.246.228|54.165.66.180|54.166.219.216|54.166.238.172|54.167.89.152|54.174.94.223|54.196.18.211|54.198.234.175|54.208.8.172|54.224.146.147|54.234.169.91|54.235.29.216|54.237.196.147|54.242.68.231|54.82.6.96|54.87.12.181|54.89.217.141|54.89.234.182|54.90.81.216|54.91.104.162)&#39; | grep -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l   
+2206
+</code></pre><ul>
+<li>I added &ldquo;Unpaywall&rdquo; to the list of bots in the Tomcat Crawler Session Manager Valve</li>
+<li>Set up nginx to use TLS and proxy pass to NodeJS on the AReS development server (linode20)</li>
+<li>Run all system updates on linode20 and reboot it</li>
+<li>Also, there is 10 to 20% CPU steal on that VM, so I will ask Linode to move it to another host</li>
+<li>Commit changes to the <code>resolve-addresses.py</code> script to add proper CSV output support</li>
+</ul>
+<h2 id="2019-05-14">2019-05-14</h2>
+<ul>
+<li>Skype with Peter and AgroKnow about CTA story telling modification they want to do on the CTA ICT Update collection on CGSpace
+<ul>
+<li>I told them they should aim for modifying the collection theme and insert some custom HTML / JS</li>
+<li>I need to send Panagis some documentation about Mirage 2 and the DSpace build process, as well as the Maven settings for build</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-15">2019-05-15</h2>
+<ul>
+<li>Tezira says she&rsquo;s having issues with email reports for approved submissions, but I received an email about collection subscriptions this morning, and I tested with <code>dspace test-email</code> and it&rsquo;s also working&hellip;</li>
+<li>Send a list of DSpace build tips to Panagis from AgroKnow</li>
+<li>Finally fix the AReS v2 to work via DSpace Test and send it to Peter et al to give their feedback
+<ul>
+<li>We had issues with CORS due to Moayad using a hard-coded domain name rather than a relative URL</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-16">2019-05-16</h2>
+<ul>
+<li>Export a list of all investors (<code>dc.description.sponsorship</code>) for Peter to look through and correct:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 29 GROUP BY text_value ORDER BY count DESC LIMIT 1500) to /tmp/2019-05-16-investors.csv WITH CSV HEADER;
+COPY 995
+</code></pre><ul>
+<li>Fork the <a href="https://github.com/icarda-git/AReS">ICARDA AReS v1 repository</a> to <a href="https://github.com/ilri/AReS">ILRI&rsquo;s GitHub</a> and give access to CodeObia guys
+<ul>
+<li>The plan is that we develop the v2 code here</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-17">2019-05-17</h2>
+<ul>
+<li>Peter sent me a bunch of fixes for investors from yesterday</li>
+<li>I did a quick check in Open Refine (trim and collapse whitespace, clean smart quotes, etc) and then applied them on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-05-16-fix-306-Investors.csv -db dspace-u dspace-p &#39;fuuu&#39; -f dc.description.sponsorship -m 29 -t correct -d
+$ ./delete-metadata-values.py -i /tmp/2019-05-16-delete-297-Investors.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 29 -f dc.description.sponsorship -d
+</code></pre><ul>
+<li>Then I started a full Discovery re-indexing:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
+$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre><ul>
+<li>I was going to make a new controlled vocabulary of the top 100 terms after these corrections, but I noticed a bunch of duplicates and variations when I sorted them alphabetically</li>
+<li>Instead, I exported a new list and asked Peter to look at it again</li>
+<li>Apply Peter&rsquo;s new corrections on DSpace Test and CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-05-17-fix-25-Investors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -m 29 -t correct -d
+$ ./delete-metadata-values.py -i /tmp/2019-05-17-delete-14-Investors.csv -db dspace -u dspace -p &#39;fuuu&#39; -m 29 -f dc.description.sponsorship -d
+</code></pre><ul>
+<li>Then I re-exported the sponsors and took the top 100 to update the existing controlled vocabulary (<a href="https://github.com/ilri/DSpace/pull/423">#423</a>)
+<ul>
+<li>I will deploy the changes on CGSpace the next time we re-deploy</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-19">2019-05-19</h2>
+<ul>
+<li>Add &ldquo;ISI journal&rdquo; to item view sidebar at the request of Maria Garruccio</li>
+<li>Update <code>fix-metadata-values.py</code> and <code>delete-metadata-values.py</code> scripts to add some basic checking of CSV fields and colorize shell output using Colorama</li>
+</ul>
+<h2 id="2019-05-24">2019-05-24</h2>
+<ul>
+<li>Update AReS README.md on GitHub repository to add a proper introduction, credits, requirements, installation instructions, and legal information</li>
+<li>Update CIP subjects in input forms on CGSpace (<a href="https://github.com/ilri/DSpace/pull/424">#424</a>)</li>
+</ul>
+<h2 id="2019-05-25">2019-05-25</h2>
+<ul>
+<li>Help Abenet proof ten Africa Rice publications
+<ul>
+<li>Convert some dates to string (from number in Excel)</li>
+<li>Trim whitespace on all fields</li>
+<li>Correct and standardize affiliations</li>
+<li>Validate subject terms against AGROVOC</li>
+<li>Add rights information to all items</li>
+<li>Correct and standardize sponsors</li>
+</ul>
+</li>
+<li>Generate Simple Archive Format bundle with SAFBuilder and import into the <a href="https://cgspace.cgiar.org/handle/10568/101106">AfricaRice Articles in Journals</a> collection on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ dspace import -a -e me@cgiar.org -m 2019-05-25-AfricaRice.map -s /tmp/SimpleArchiveFormat
+</code></pre><h2 id="2019-05-27">2019-05-27</h2>
+<ul>
+<li>Peter sent me over two thousand corrections for the authors on CGSpace that I had dumped last month
+<ul>
+<li>I proofed them for whitespace and invalid special characters in OpenRefine and then applied them on CGSpace and DSpace Test:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2019-05-27-fix-2472-Authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -m 3 -t corrections -d
+</code></pre><ul>
+<li>Then start a full Discovery re-indexing on each server:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;                                   
+$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</code></pre><ul>
+<li>Export new list of all authors from CGSpace database to send to Peter:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/2019-05-27-all-authors.csv with csv header;
+COPY 64871
+</code></pre><ul>
+<li>Run all system updates on DSpace Test (linode19) and reboot it</li>
+<li>Paola from CIAT asked for a way to generate a report of the top keywords for each year of their articles and journals
+<ul>
+<li>I told them that the best way (even though it&rsquo;s low tech) is to work on a CSV dump of the collection</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-29">2019-05-29</h2>
+<ul>
+<li>A CIMMYT user was having problems registering or logging into CGSpace
+<ul>
+<li>I tried to register her and it gave an error, then I remembered for CGIAR LDAP users we actually need to just log in and it will automatically create an eperson</li>
+<li>I told her to try to log in with the LDAP login method and let me know what happens (then I can look in the logs too)</li>
+</ul>
+</li>
+</ul>
+<h2 id="2019-05-30">2019-05-30</h2>
+<ul>
+<li>I see the following error in the DSpace log when the user tries to log in with her CGIAR email and password on the LDAP login:</li>
+</ul>
+<pre tabindex="0"><code>2019-05-30 07:19:35,166 INFO  org.dspace.authenticate.LDAPAuthentication @ anonymous:session_id=A5E0C836AF8F3ABB769FE47107AE1CFF:ip_addr=185.71.4.34:failed_login:no DN found for user sa.saini@cgiar.org
+</code></pre><ul>
+<li>For now I just created an eperson with her personal email address until I have time to check LDAP to see what&rsquo;s up with her CGIAR account:</li>
+</ul>
+<pre tabindex="0"><code>$ dspace user -a -m blah@blah.com -g Sakshi -s Saini -p &#39;sknflksnfksnfdls&#39;
+</code></pre><!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

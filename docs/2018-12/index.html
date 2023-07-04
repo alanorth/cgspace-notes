@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="December, 2018" />
+<meta property="og:description" content="2018-12-01
+
+Switch CGSpace (linode18) to use OpenJDK instead of Oracle JDK
+I manually installed OpenJDK, then removed Oracle JDK, then re-ran the Ansible playbook to update all configuration files, etc
+Then I ran all system updates and restarted the server
+
+2018-12-02
+
+I noticed that there is another issue with PDF thumbnails on CGSpace, and I see there was another Ghostscript vulnerability last week
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2018-12/" />
+<meta property="article:published_time" content="2018-12-02T02:09:30+02:00" />
+<meta property="article:modified_time" content="2019-10-28T13:39:25+02:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="December, 2018"/>
+<meta name="twitter:description" content="2018-12-01
+
+Switch CGSpace (linode18) to use OpenJDK instead of Oracle JDK
+I manually installed OpenJDK, then removed Oracle JDK, then re-ran the Ansible playbook to update all configuration files, etc
+Then I ran all system updates and restarted the server
+
+2018-12-02
+
+I noticed that there is another issue with PDF thumbnails on CGSpace, and I see there was another Ghostscript vulnerability last week
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "December, 2018",
+  "url": "https://alanorth.github.io/cgspace-notes/2018-12/",
+  "wordCount": "3096",
+  "datePublished": "2018-12-02T02:09:30+02:00",
+  "dateModified": "2019-10-28T13:39:25+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2018-12/">
+
+    <title>December, 2018 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-12/">December, 2018</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2018-12-02T02:09:30+02:00">Sun Dec 02, 2018</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2018-12-01">2018-12-01</h2>
+<ul>
+<li>Switch CGSpace (linode18) to use OpenJDK instead of Oracle JDK</li>
+<li>I manually installed OpenJDK, then removed Oracle JDK, then re-ran the <a href="http://github.com/ilri/rmg-ansible-public">Ansible playbook</a> to update all configuration files, etc</li>
+<li>Then I ran all system updates and restarted the server</li>
+</ul>
+<h2 id="2018-12-02">2018-12-02</h2>
+<ul>
+<li>I noticed that there is another issue with PDF thumbnails on CGSpace, and I see there was another <a href="https://usn.ubuntu.com/3831-1/">Ghostscript vulnerability last week</a></li>
+</ul>
+<ul>
+<li>The error when I try to manually run the media filter for one item from the command line:</li>
+</ul>
+<pre tabindex="0"><code>org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&#34;gs&#34; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &#34;-sDEVICE=pngalpha&#34; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &#34;-r72x72&#34; -dFirstPage=1 -dLastPage=1 &#34;-sOutputFile=/tmp/magick-12989PcFN0DnJOej7%d&#34; &#34;-f/tmp/magick-129895Bmp44lvUfxo&#34; &#34;-f/tmp/magick-12989C0QFG51fktLF&#34;&#39; (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&#34;gs&#34; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &#34;-sDEVICE=pngalpha&#34; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &#34;-r72x72&#34; -dFirstPage=1 -dLastPage=1 &#34;-sOutputFile=/tmp/magick-12989PcFN0DnJOej7%d&#34; &#34;-f/tmp/magick-129895Bmp44lvUfxo&#34; &#34;-f/tmp/magick-12989C0QFG51fktLF&#34;&#39; (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.Info.getBaseInfo(Info.java:360)
+        at org.im4java.core.Info.&lt;init&gt;(Info.java:151)
+        at org.dspace.app.mediafilter.ImageMagickThumbnailFilter.getImageFile(ImageMagickThumbnailFilter.java:142)
+        at org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.getDestinationStream(ImageMagickPdfThumbnailFilter.java:24)
+        at org.dspace.app.mediafilter.FormatFilter.processBitstream(FormatFilter.java:170)
+        at org.dspace.app.mediafilter.MediaFilterManager.filterBitstream(MediaFilterManager.java:475)
+        at org.dspace.app.mediafilter.MediaFilterManager.filterItem(MediaFilterManager.java:429)
+        at org.dspace.app.mediafilter.MediaFilterManager.applyFiltersItem(MediaFilterManager.java:401)
+        at org.dspace.app.mediafilter.MediaFilterManager.main(MediaFilterManager.java:237)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+</code></pre><ul>
+<li>A comment on <a href="https://stackoverflow.com/questions/53560755/ghostscript-9-26-update-breaks-imagick-readimage-for-multipage-pdf">StackOverflow question</a> from yesterday suggests it might be a bug with the <code>pngalpha</code> device in Ghostscript and <a href="https://bugs.ghostscript.com/show_bug.cgi?id=699815">links to an upstream bug</a></li>
+<li>I think we need to wait for a fix from Ubuntu</li>
+<li>For what it&rsquo;s worth, I get the same error on my local Arch Linux environment with Ghostscript 9.26:</li>
+</ul>
+<pre tabindex="0"><code>$ gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=pngalpha -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r72x72 -dFirstPage=1 -dLastPage=1 -sOutputFile=/tmp/out%d -f/home/aorth/Desktop/Food\ safety\ Kenya\ fruits.pdf
+DEBUG: FC_WEIGHT didn&#39;t match
+zsh: segmentation fault (core dumped)  gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000
+</code></pre><ul>
+<li>When I replace the <code>pngalpha</code> device with <code>png16m</code> as suggested in the StackOverflow comments it works:</li>
+</ul>
+<pre tabindex="0"><code>$ gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=png16m -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r72x72 -dFirstPage=1 -dLastPage=1 -sOutputFile=/tmp/out%d -f/home/aorth/Desktop/Food\ safety\ Kenya\ fruits.pdf
+DEBUG: FC_WEIGHT didn&#39;t match
+</code></pre><ul>
+<li>Start proofing the latest round of 226 IITA archive records that Bosede sent last week and Sisay uploaded to DSpace Test this weekend (<a href="https://dspacetest.cgiar.org/handle/10568/108298">IITA_Dec_1_1997 aka Daniel1807</a>)
+<ul>
+<li>One item missing the authorship type</li>
+<li>Some invalid countries (smart quotes, mispellings)</li>
+<li>Added countries to some items that mentioned research in particular countries in their abstracts</li>
+<li>One item had &ldquo;MADAGASCAR&rdquo; for ISI Journal</li>
+<li>Minor corrections in IITA subject (LIVELIHOOD→LIVELIHOODS)</li>
+<li>Trim whitespace in abstract field</li>
+<li>Fix some sponsors (though some with &ldquo;Governments of Canada&rdquo; etc I&rsquo;m not sure why those are plural)</li>
+<li>Eighteen items had <code>en||fr</code> for the language, but the content was only in French so changed them to just <code>fr</code></li>
+<li>Six items had encoding errors in French text so I will ask Bosede to re-do them carefully</li>
+<li>Correct and normalize a few AGROVOC subjects</li>
+</ul>
+</li>
+<li>Expand my &ldquo;encoding error&rdquo; detection GREL to include <code>~</code> as I saw a lot of that in some copy pasted French text recently:</li>
+</ul>
+<pre tabindex="0"><code>or(
+  isNotNull(value.match(/.*\uFFFD.*/)),
+  isNotNull(value.match(/.*\u00A0.*/)),
+  isNotNull(value.match(/.*\u200A.*/)),
+  isNotNull(value.match(/.*\u2019.*/)),
+  isNotNull(value.match(/.*\u00b4.*/)),
+  isNotNull(value.match(/.*\u007e.*/))
+)
+</code></pre><h2 id="2018-12-03">2018-12-03</h2>
+<ul>
+<li>I looked at the DSpace Ghostscript issue more and it seems to only affect certain PDFs&hellip;</li>
+<li>I can successfully generate a thumbnail for another recent item (<a href="https://hdl.handle.net/10568/98394">10568/98394</a>), but not for <a href="https://hdl.handle.net/10568/98390">10568/98930</a></li>
+<li>Even manually on my Arch Linux desktop with ghostscript 9.26-1 and the <code>pngalpha</code> device, I can generate a thumbnail for the first one (10568/98394):</li>
+</ul>
+<pre tabindex="0"><code>$ gs -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 -sDEVICE=pngalpha -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r72x72 -dFirstPage=1 -dLastPage=1 -sOutputFile=/tmp/out%d -f/home/aorth/Desktop/Info\ Note\ Mainstreaming\ gender\ and\ social\ differentiation\ into\ CCAFS\ research\ activities\ in\ West\ Africa-converted.pdf
+</code></pre><ul>
+<li>So it seems to be something about the PDFs themselves, perhaps related to alpha support?</li>
+<li>The first item (10568/98394) has the following information:</li>
+</ul>
+<pre tabindex="0"><code>$ identify Info\ Note\ Mainstreaming\ gender\ and\ social\ differentiation\ into\ CCAFS\ research\ activities\ in\ West\ Africa-converted.pdf\[0\]
+Info Note Mainstreaming gender and social differentiation into CCAFS research activities in West Africa-converted.pdf[0]=&gt;Info Note Mainstreaming gender and social differentiation into CCAFS research activities in West Africa-converted.pdf PDF 595x841 595x841+0+0 16-bit sRGB 107443B 0.000u 0:00.000
+identify: CorruptImageProfile `xmp&#39; @ warning/profile.c/SetImageProfileInternal/1746.
+</code></pre><ul>
+<li>And wow, I can&rsquo;t even run ImageMagick&rsquo;s <code>identify</code> on the first page of the second item (10568/98930):</li>
+</ul>
+<pre tabindex="0"><code>$ identify Food\ safety\ Kenya\ fruits.pdf\[0\]
+zsh: abort (core dumped)  identify Food\ safety\ Kenya\ fruits.pdf\[0\]
+</code></pre><ul>
+<li>But with GraphicsMagick&rsquo;s <code>identify</code> it works:</li>
+</ul>
+<pre tabindex="0"><code>$ gm identify Food\ safety\ Kenya\ fruits.pdf\[0\]
+DEBUG: FC_WEIGHT didn&#39;t match
+Food safety Kenya fruits.pdf PDF 612x792+0+0 DirectClass 8-bit 1.4Mi 0.000u 0m:0.000002s
+</code></pre><ul>
+<li>Interesting that ImageMagick&rsquo;s <code>identify</code> <em>does</em> work if you do not specify a page, perhaps as <a href="https://bugs.ghostscript.com/show_bug.cgi?id=699815">alluded to in the recent Ghostscript bug report</a>:</li>
+</ul>
+<pre tabindex="0"><code>$ identify Food\ safety\ Kenya\ fruits.pdf
+Food safety Kenya fruits.pdf[0] PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.010u 0:00.009
+Food safety Kenya fruits.pdf[1] PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.010u 0:00.009
+Food safety Kenya fruits.pdf[2] PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.010u 0:00.009
+Food safety Kenya fruits.pdf[3] PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.010u 0:00.009
+Food safety Kenya fruits.pdf[4] PDF 612x792 612x792+0+0 16-bit sRGB 64626B 0.010u 0:00.009
+identify: CorruptImageProfile `xmp&#39; @ warning/profile.c/SetImageProfileInternal/1746.
+</code></pre><ul>
+<li>As I expected, ImageMagick cannot generate a thumbnail, but GraphicsMagick can (though it looks like crap):</li>
+</ul>
+<pre tabindex="0"><code>$ convert Food\ safety\ Kenya\ fruits.pdf\[0\] -thumbnail 600x600 -flatten Food\ safety\ Kenya\ fruits.pdf.jpg
+zsh: abort (core dumped)  convert Food\ safety\ Kenya\ fruits.pdf\[0\] -thumbnail 600x600 -flatten
+$ gm convert Food\ safety\ Kenya\ fruits.pdf\[0\] -thumbnail 600x600 -flatten Food\ safety\ Kenya\ fruits.pdf.jpg
+DEBUG: FC_WEIGHT didn&#39;t match
+</code></pre><ul>
+<li>I inspected the troublesome PDF using <a href="http://jhove.openpreservation.org/">jhove</a> and noticed that it is using <code>ISO PDF/A-1, Level B</code> and the other one doesn&rsquo;t list a profile, though I don&rsquo;t think this is relevant</li>
+<li>I found another item that fails when generating a thumbnail (<a href="https://hdl.handle.net/10568/98391">10568/98391</a>, DSpace complains:</li>
+</ul>
+<pre tabindex="0"><code>org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&#34;gs&#34; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &#34;-sDEVICE=pngalpha&#34; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &#34;-r72x72&#34; -dFirstPage=1 -dLastPage=1 &#34;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&#34; &#34;-f/tmp/magick-14296Q0rJjfCeIj3w&#34; &#34;-f/tmp/magick-14296k_K6MWqwvpDm&#34;&#39; (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+org.im4java.core.InfoException: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&#34;gs&#34; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &#34;-sDEVICE=pngalpha&#34; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &#34;-r72x72&#34; -dFirstPage=1 -dLastPage=1 &#34;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&#34; &#34;-f/tmp/magick-14296Q0rJjfCeIj3w&#34; &#34;-f/tmp/magick-14296k_K6MWqwvpDm&#34;&#39; (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.Info.getBaseInfo(Info.java:360)
+        at org.im4java.core.Info.&lt;init&gt;(Info.java:151)
+        at org.dspace.app.mediafilter.ImageMagickThumbnailFilter.getImageFile(ImageMagickThumbnailFilter.java:142)
+        at org.dspace.app.mediafilter.ImageMagickPdfThumbnailFilter.getDestinationStream(ImageMagickPdfThumbnailFilter.java:24)
+        at org.dspace.app.mediafilter.FormatFilter.processBitstream(FormatFilter.java:170)
+        at org.dspace.app.mediafilter.MediaFilterManager.filterBitstream(MediaFilterManager.java:475)
+        at org.dspace.app.mediafilter.MediaFilterManager.filterItem(MediaFilterManager.java:429)
+        at org.dspace.app.mediafilter.MediaFilterManager.applyFiltersItem(MediaFilterManager.java:401)
+        at org.dspace.app.mediafilter.MediaFilterManager.main(MediaFilterManager.java:237)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:226)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:78)
+Caused by: org.im4java.core.CommandException: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&#34;gs&#34; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &#34;-sDEVICE=pngalpha&#34; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &#34;-r72x72&#34; -dFirstPage=1 -dLastPage=1 &#34;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&#34; &#34;-f/tmp/magick-14296Q0rJjfCeIj3w&#34; &#34;-f/tmp/magick-14296k_K6MWqwvpDm&#34;&#39; (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.ImageCommand.run(ImageCommand.java:219)
+        at org.im4java.core.Info.getBaseInfo(Info.java:342)
+        ... 14 more
+Caused by: org.im4java.core.CommandException: identify: FailedToExecuteCommand `&#34;gs&#34; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &#34;-sDEVICE=pngalpha&#34; -dTextAlphaBits=4 -dGraphicsAlphaBits=4 &#34;-r72x72&#34; -dFirstPage=1 -dLastPage=1 &#34;-sOutputFile=/tmp/magick-142966vQs5Di64ntH%d&#34; &#34;-f/tmp/magick-14296Q0rJjfCeIj3w&#34; &#34;-f/tmp/magick-14296k_K6MWqwvpDm&#34;&#39; (-1) @ error/delegate.c/ExternalDelegateCommand/461.
+        at org.im4java.core.ImageCommand.finished(ImageCommand.java:253)
+        at org.im4java.process.ProcessStarter.run(ProcessStarter.java:314)
+        at org.im4java.core.ImageCommand.run(ImageCommand.java:215)
+        ... 15 more
+</code></pre><ul>
+<li>And on my Arch Linux environment ImageMagick&rsquo;s <code>convert</code> also segfaults:</li>
+</ul>
+<pre tabindex="0"><code>$ convert bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf\[0\] -thumbnail x600 -flatten bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf.jpg
+zsh: abort (core dumped)  convert bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf\[0\]  x60
+</code></pre><ul>
+<li>But GraphicsMagick&rsquo;s <code>convert</code> works:</li>
+</ul>
+<pre tabindex="0"><code>$ gm convert bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf\[0\] -thumbnail x600 -flatten bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf.jpg
+</code></pre><ul>
+<li>So far the only thing that stands out is that the two files that don&rsquo;t work were created with Microsoft Office 2016:</li>
+</ul>
+<pre tabindex="0"><code>$ pdfinfo bnfb_biofortification\ Module_Participants\ Guide\ 2018.pdf | grep -E &#39;^(Creator|Producer)&#39;
+Creator:        Microsoft® Word 2016
+Producer:       Microsoft® Word 2016
+$ pdfinfo Food\ safety\ Kenya\ fruits.pdf | grep -E &#39;^(Creator|Producer)&#39;
+Creator:        Microsoft® Word 2016
+Producer:       Microsoft® Word 2016
+</code></pre><ul>
+<li>And the one that works was created with Office 365:</li>
+</ul>
+<pre tabindex="0"><code>$ pdfinfo Info\ Note\ Mainstreaming\ gender\ and\ social\ differentiation\ into\ CCAFS\ research\ activities\ in\ West\ Africa-converted.pdf | grep -E &#39;^(Creator|Producer)&#39;
+Creator:        Microsoft® Word for Office 365
+Producer:       Microsoft® Word for Office 365
+</code></pre><ul>
+<li>I remembered an old technique I was using to generate thumbnails in 2015 using Inkscape followed by ImageMagick or GraphicsMagick:</li>
+</ul>
+<pre tabindex="0"><code>$ inkscape Food\ safety\ Kenya\ fruits.pdf -z --export-dpi=72 --export-area-drawing --export-png=&#39;cover.png&#39;
+$ gm convert -resize x600 -flatten -quality 85 cover.png cover.jpg
+</code></pre><ul>
+<li>I&rsquo;ve tried a few times this week to register for the <a href="https://www.evisa.gov.et/">Ethiopian eVisa website</a>, but it is never successful</li>
+<li>In the end I tried one last time to just apply without registering and it was apparently successful</li>
+<li>Testing DSpace 5.8 (<code>5_x-prod</code> branch) in an Ubuntu 18.04 VM with Tomcat 8.5 and had some issues:
+<ul>
+<li>JSPUI shows an internal error (log shows something about tag cloud, though, so might be unrelated)</li>
+<li>Atmire Listings and Reports, which use JSPUI, asks you to log in again and then doesn&rsquo;t work</li>
+<li>Content and Usage Analysis doesn&rsquo;t show up in the sidebar after logging in</li>
+<li>I can navigate to <a href="https://dspacetest.cgiar.org/atmire/reporting-suite/usage-graph-editor">/atmire/reporting-suite/usage-graph-editor</a>, but it&rsquo;s only the Atmire theme and a &ldquo;page not found&rdquo; message</li>
+<li>Related messages from dspace.log:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>2018-12-03 15:44:00,030 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-datatables not found
+2018-12-03 15:44:03,390 ERROR com.atmire.app.webui.servlet.ExportServlet @ Error converter plugin not found: interface org.infoCon.ConverterPlugin
+...
+2018-12-03 15:45:01,667 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-listing-and-reports not found
+</code></pre><ul>
+<li>I tested it on my local environment with Tomcat 8.5.34 and the JSPUI application still has an error (again, the logs show something about tag cloud, so be unrelated), and the Listings and Reports still asks you to log in again, despite already being logged in in XMLUI, but does appear to work (I generated a report and exported a PDF)</li>
+<li>I think the errors about missing Atmire components must be important, here on my local machine as well (though not the one about atmire-listings-and-reports):</li>
+</ul>
+<pre tabindex="0"><code>2018-12-03 16:44:00,009 WARN  org.dspace.core.ConfigurationManager @ Requested configuration module: atmire-datatables not found
+</code></pre><ul>
+<li>This has got to be part Ubuntu Tomcat packaging, and part DSpace 5.x Tomcat 8.5 readiness&hellip;?</li>
+</ul>
+<h2 id="2018-12-04">2018-12-04</h2>
+<ul>
+<li>Last night Linode sent a message that the load on CGSpace (linode18) was too high, here&rsquo;s a list of the top users at the time and throughout the day:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;03/Dec/2018:1(5|6|7|8)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    225 40.77.167.142
+    226 66.249.64.63
+    232 46.101.86.248
+    285 45.5.186.2
+    333 54.70.40.11
+    411 193.29.13.85
+    476 34.218.226.147
+    962 66.249.70.27
+   1193 35.237.175.180
+   1450 2a01:4f8:140:3192::2
+# zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;03/Dec/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+   1141 207.46.13.57
+   1299 197.210.168.174
+   1341 54.70.40.11
+   1429 40.77.167.142
+   1528 34.218.226.147
+   1973 66.249.70.27
+   2079 50.116.102.77
+   2494 78.46.79.71
+   3210 2a01:4f8:140:3192::2
+   4190 35.237.175.180
+</code></pre><ul>
+<li><code>35.237.175.180</code> is known to us (CCAFS?), and I&rsquo;ve already added it to the list of bot IPs in nginx, which appears to be working:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=35.237.175.180&#39; dspace.log.2018-12-03
+4772
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}:ip_addr=35.237.175.180&#39; dspace.log.2018-12-03 | sort | uniq | wc -l
+630
+</code></pre><ul>
+<li>I haven&rsquo;t seen <code>2a01:4f8:140:3192::2</code> before. Its user agent is some new bot:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (compatible; BLEXBot/1.0; +http://webmeup-crawler.com/)
+</code></pre><ul>
+<li>At least it seems the Tomcat Crawler Session Manager Valve is working to re-use the common bot XMLUI sessions:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=2a01:4f8:140:3192::2&#39; dspace.log.2018-12-03
+5111
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}:ip_addr=2a01:4f8:140:3192::2&#39; dspace.log.2018-12-03 | sort | uniq | wc -l
+419
+</code></pre><ul>
+<li><code>78.46.79.71</code> is another host on Hetzner with the following user agent:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0
+</code></pre><ul>
+<li>This is not the first time a host on Hetzner has used a &ldquo;normal&rdquo; user agent to make thousands of requests</li>
+<li>At least it is re-using its Tomcat sessions somehow:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=78.46.79.71&#39; dspace.log.2018-12-03
+2044
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}:ip_addr=78.46.79.71&#39; dspace.log.2018-12-03 | sort | uniq | wc -l
+1
+</code></pre><ul>
+<li>In other news, it&rsquo;s good to see my re-work of the database connectivity in the <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a> actually caused a reduction of persistent database connections (from 1 to 0, but still!):</li>
+</ul>
+<p><img src="/cgspace-notes/2018/12/postgres_connections_db-month.png" alt="PostgreSQL connections day"></p>
+<h2 id="2018-12-05">2018-12-05</h2>
+<ul>
+<li>Discuss RSS issues with IWMI and WLE people</li>
+</ul>
+<h2 id="2018-12-06">2018-12-06</h2>
+<ul>
+<li>Linode sent a message that the CPU usage of CGSpace (linode18) is too high last night</li>
+<li>I looked in the logs and there&rsquo;s nothing particular going on:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;05/Dec/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+   1225 157.55.39.177
+   1240 207.46.13.12
+   1261 207.46.13.101
+   1411 207.46.13.157
+   1529 34.218.226.147
+   2085 50.116.102.77
+   3334 2a01:7e00::f03c:91ff:fe0a:d645
+   3733 66.249.70.27
+   3815 35.237.175.180
+   7669 54.70.40.11
+</code></pre><ul>
+<li><code>54.70.40.11</code> is some new bot with the following user agent:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (compatible) SemanticScholarBot (+https://www.semanticscholar.org/crawler)
+</code></pre><ul>
+<li>But Tomcat is forcing them to re-use their Tomcat sessions with the Crawler Session Manager valve:</li>
+</ul>
+<pre tabindex="0"><code>$ grep -c -E &#39;session_id=[A-Z0-9]{32}:ip_addr=54.70.40.11&#39; dspace.log.2018-12-05
+6980
+$ grep -o -E &#39;session_id=[A-Z0-9]{32}:ip_addr=54.70.40.11&#39; dspace.log.2018-12-05 | sort | uniq | wc -l
+1156
+</code></pre><ul>
+<li><code>2a01:7e00::f03c:91ff:fe0a:d645</code> appears to be the CKM dev server where Danny is testing harvesting via Drupal</li>
+<li>It seems they are hitting the XMLUI&rsquo;s OpenSearch a bit, but mostly on the REST API so no issues here yet</li>
+<li><code>Drupal</code> is already in the Tomcat Crawler Session Manager Valve&rsquo;s regex so that&rsquo;s good!</li>
+</ul>
+<h2 id="2018-12-10">2018-12-10</h2>
+<ul>
+<li>I ran into Mia Signs in Addis and we discussed Altmetric as well as RSS feeds again
+<ul>
+<li>We came up with an <a href="https://cgspace.cgiar.org/open-search/discover?query=crpsubject:Water,+Land+and+Ecosystems&amp;sort_by=3&amp;order=DESC">OpenSearch query for all items tagged with the WLE CRP subject</a> (where the <code>sort_by=3</code> parameter is the accession date, as configured in <code>dspace.cfg</code>)</li>
+<li>About Altmetric she was wondering why some low-ranking items of theirs do not have the Handle/DOI relationship, but high-ranking ones do</li>
+<li>It sounds kinda crazy, but she said when she talked to Altmetric about their Twitter harvesting they said their coverage is not perfect, so it might be some kinda prioritization thing where they only do it for popular items?</li>
+<li>I am testing this by <a href="https://twitter.com/mralanorth/status/1072153586342211584">tweeting</a> one <a href="https://cgspace.cgiar.org/handle/10568/98380">WLE item from CGSpace</a> that currently has no Altmetric score</li>
+<li>Interestingly, after about an hour I see it has already been <a href="https://cgspace.altmetric.com/details/50160871/twitter">picked up by Altmetric</a> and has my tweet as well as some other tweet from over a month ago&hellip;</li>
+<li>I <a href="https://twitter.com/mralanorth/status/1072198292182892545">tweeted a link to the item&rsquo;s DOI</a> to see if Altmetric will notice it, hopefully associated with the Handle I tweeted earlier</li>
+</ul>
+</li>
+</ul>
+<h2 id="2018-12-11">2018-12-11</h2>
+<ul>
+<li>I checked the <a href="https://twitter.com/mralanorth/status/1072198292182892545">latest tweet of the IWMI item with a DOI</a> and it was <a href="https://cgspace.altmetric.com/details/50160871/twitter">picked up by Altmetric</a>
+<ul>
+<li>There is one <a href="twitter.com/ArboNews/statuses/1055036747787223042">curious other tweet</a> from another user where they used the NCBI link, and that is also associated with our Handle on Altmetric</li>
+<li>So that means Altmetric is picking up the DOI from the NCBI metadata and making the association properly</li>
+</ul>
+</li>
+</ul>
+<h2 id="2018-12-13">2018-12-13</h2>
+<ul>
+<li>Oh this is very interesting: <a href="https://digitalarchive.worldfishcenter.org">WorldFish&rsquo;s repository is live now</a></li>
+<li>It&rsquo;s running DSpace 5.9-SNAPSHOT running on KnowledgeArc and the OAI and REST interfaces are active at least</li>
+<li>Also, I notice they ended up registering a Handle (they had been considering taking KnowledgeArc&rsquo;s advice to <em>not</em> use Handles!)</li>
+<li>Did some coordination work on the hotel bookings for the January AReS workshop in Amman</li>
+</ul>
+<h2 id="2018-12-17">2018-12-17</h2>
+<ul>
+<li>Linode alerted me twice today that the load on CGSpace (linode18) was very high</li>
+<li>Looking at the nginx logs I see a few new IPs in the top 10:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;17/Dec/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    927 157.55.39.81
+    975 54.70.40.11
+   2090 50.116.102.77
+   2121 66.249.66.219
+   3811 35.237.175.180
+   4590 205.186.128.185
+   4590 70.32.83.92
+   5436 2a01:4f8:173:1e85::2
+   5438 143.233.227.216
+   6706 94.71.244.172
+</code></pre><ul>
+<li><code>94.71.244.172</code> and <code>143.233.227.216</code> are both in Greece and use the following user agent:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/3.0 (compatible; Indy Library)
+</code></pre><ul>
+<li>I see that I added this bot to the Tomcat Crawler Session Manager valve in 2017-12 so its XMLUI sessions are getting re-used</li>
+<li><code>2a01:4f8:173:1e85::2</code> is some new bot called <code>BLEXBot/1.0</code> which should be matching the existing &ldquo;bot&rdquo; pattern in the Tomcat Crawler Session Manager regex</li>
+</ul>
+<h2 id="2018-12-18">2018-12-18</h2>
+<ul>
+<li>Open a <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=657">ticket</a> with Atmire to ask them to prepare the Metadata Quality Module for our DSpace 5.8 code</li>
+</ul>
+<h2 id="2018-12-19">2018-12-19</h2>
+<ul>
+<li>Update Atmire Listings and Reports to add the journal title (<code>dc.source</code>) to bibliography and update example bibliography values (<a href="https://github.com/ilri/DSpace/pull/405">#405</a>)</li>
+</ul>
+<h2 id="2018-12-20">2018-12-20</h2>
+<ul>
+<li>Testing compression of PostgreSQL backups with xz and gzip:</li>
+</ul>
+<pre tabindex="0"><code>$ time xz -c cgspace_2018-12-19.backup &gt; cgspace_2018-12-19.backup.xz
+xz -c cgspace_2018-12-19.backup &gt; cgspace_2018-12-19.backup.xz  48.29s user 0.19s system 99% cpu 48.579 total
+$ time gzip -c cgspace_2018-12-19.backup &gt; cgspace_2018-12-19.backup.gz
+gzip -c cgspace_2018-12-19.backup &gt; cgspace_2018-12-19.backup.gz  2.78s user 0.09s system 99% cpu 2.899 total
+$ ls -lh cgspace_2018-12-19.backup*
+-rw-r--r-- 1 aorth aorth 96M Dec 19 02:15 cgspace_2018-12-19.backup
+-rw-r--r-- 1 aorth aorth 94M Dec 20 11:36 cgspace_2018-12-19.backup.gz
+-rw-r--r-- 1 aorth aorth 93M Dec 20 11:35 cgspace_2018-12-19.backup.xz
+</code></pre><ul>
+<li>Looks like it&rsquo;s really not worth it&hellip;</li>
+<li>Peter pointed out that Discovery filters for CTA subjects on item pages were not working</li>
+<li>It looks like there were some mismatches in the Discovery index names and the XMLUI configuration, so I fixed them (<a href="https://github.com/ilri/DSpace/pull/406">#406</a>)</li>
+<li>Peter asked if we could create a controlled vocabulary for publishers (<code>dc.publisher</code>)</li>
+<li>I see we have about 3500 distinct publishers:</li>
+</ul>
+<pre tabindex="0"><code># SELECT COUNT(DISTINCT(text_value)) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=39;
+ count
+-------
+  3522
+(1 row)
+</code></pre><ul>
+<li>I reverted the metadata changes related to &ldquo;Unrestricted Access&rdquo; and &ldquo;Restricted Access&rdquo; on DSpace Test because we&rsquo;re not pushing forward with the new status terms for now</li>
+<li>Purge remaining Oracle Java 8 stuff from CGSpace (linode18) since we migrated to OpenJDK a few months ago:</li>
+</ul>
+<pre tabindex="0"><code># dpkg -P oracle-java8-installer oracle-java8-set-default
+</code></pre><ul>
+<li>Update usage rights on CGSpace as we agreed with Maria Garruccio and Peter last month:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2018-11-27-update-rights.csv -f dc.rights -t correct -m 53 -db dspace -u dspace -p &#39;fuu&#39; -d
+Connected to database.
+Fixed 466 occurences of: Copyrighted; Any re-use allowed
+</code></pre><ul>
+<li>Upgrade PostgreSQL on CGSpace (linode18) from 9.5 to 9.6:</li>
+</ul>
+<pre tabindex="0"><code># apt install postgresql-9.6 postgresql-client-9.6 postgresql-contrib-9.6 postgresql-server-dev-9.6
+# pg_ctlcluster 9.5 main stop
+# tar -cvzpf var-lib-postgresql-9.5.tar.gz /var/lib/postgresql/9.5
+# tar -cvzpf etc-postgresql-9.5.tar.gz /etc/postgresql/9.5
+# pg_ctlcluster 9.6 main stop
+# pg_dropcluster 9.6 main
+# pg_upgradecluster 9.5 main
+# pg_dropcluster 9.5 main
+# dpkg -l | grep postgresql | grep 9.5 | awk &#39;{print $2}&#39; | xargs dpkg -r
+</code></pre><ul>
+<li>I&rsquo;ve been running PostgreSQL 9.6 for months on my local development and public DSpace Test (linode19) environments</li>
+<li>Run all system updates on CGSpace (linode18) and restart the server</li>
+<li>Try to run the DSpace cleanup script on CGSpace (linode18), but I get some errors about foreign key constraints:</li>
+</ul>
+<pre tabindex="0"><code>$ dspace cleanup -v
+ - Deleting bitstream information (ID: 158227)
+ - Deleting bitstream record from database (ID: 158227)
+Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(158227) is still referenced from table &#34;bundle&#34;.
+...
+</code></pre><ul>
+<li>As always, the solution is to delete those IDs manually in PostgreSQL:</li>
+</ul>
+<pre tabindex="0"><code>$ psql dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (158227, 158251);&#39;
+UPDATE 1
+</code></pre><ul>
+<li>After all that I started a full Discovery reindex to get the index name changes and rights updates</li>
+</ul>
+<h2 id="2018-12-29">2018-12-29</h2>
+<ul>
+<li>CGSpace went down today for a few minutes while I was at dinner and I quickly restarted Tomcat</li>
+<li>The top IP addresses as of this evening are:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep -E &#34;29/Dec/2018&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    963 40.77.167.152
+    987 35.237.175.180
+   1062 40.77.167.55
+   1464 66.249.66.223
+   1660 34.218.226.147
+   1801 70.32.83.92
+   2005 50.116.102.77
+   3218 66.249.66.219
+   4608 205.186.128.185
+   5585 54.70.40.11
+</code></pre><ul>
+<li>And just around the time of the alert:</li>
+</ul>
+<pre tabindex="0"><code># zcat --force /var/log/nginx/*.log.1 /var/log/nginx/*.log.2.gz | grep -E &#34;29/Dec/2018:1(6|7|8)&#34; | awk &#39;{print $1}&#39; | sort | uniq -c | sort -n | tail -n 10
+    115 66.249.66.223
+    118 207.46.13.14
+    123 34.218.226.147
+    133 95.108.181.88
+    137 35.237.175.180
+    164 66.249.66.219
+    260 157.55.39.59
+    291 40.77.167.55
+    312 207.46.13.129
+   1253 54.70.40.11
+</code></pre><ul>
+<li>All these look ok (<code>54.70.40.11</code> is known to us from earlier this month and should be reusing its Tomcat sessions)</li>
+<li>So I&rsquo;m not sure what was going on last night&hellip;</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

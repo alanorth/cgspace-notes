@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="July, 2020" />
+<meta property="og:description" content="2020-07-01
+
+A few users noticed that CGSpace wasn&rsquo;t loading items today, item pages seem blank
+
+I looked at the PostgreSQL locks but they don&rsquo;t seem unusual
+I guess this is the same &ldquo;blank item page&rdquo; issue that we had a few times in 2019 that we never solved
+I restarted Tomcat and PostgreSQL and the issue was gone
+
+
+Since I was restarting Tomcat anyways I decided to redeploy the latest changes from the 5_x-prod branch and I added a note about COVID-19 items to the CGSpace frontpage at Peter&rsquo;s request
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2020-07/" />
+<meta property="article:published_time" content="2020-07-01T10:53:54+03:00" />
+<meta property="article:modified_time" content="2020-08-02T22:14:16+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="July, 2020"/>
+<meta name="twitter:description" content="2020-07-01
+
+A few users noticed that CGSpace wasn&rsquo;t loading items today, item pages seem blank
+
+I looked at the PostgreSQL locks but they don&rsquo;t seem unusual
+I guess this is the same &ldquo;blank item page&rdquo; issue that we had a few times in 2019 that we never solved
+I restarted Tomcat and PostgreSQL and the issue was gone
+
+
+Since I was restarting Tomcat anyways I decided to redeploy the latest changes from the 5_x-prod branch and I added a note about COVID-19 items to the CGSpace frontpage at Peter&rsquo;s request
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "July, 2020",
+  "url": "https://alanorth.github.io/cgspace-notes/2020-07/",
+  "wordCount": "5618",
+  "datePublished": "2020-07-01T10:53:54+03:00",
+  "dateModified": "2020-08-02T22:14:16+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2020-07/">
+
+    <title>July, 2020 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2020-07/">July, 2020</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2020-07-01T10:53:54+03:00">Wed Jul 01, 2020</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2020-07-01">2020-07-01</h2>
+<ul>
+<li>A few users noticed that CGSpace wasn&rsquo;t loading items today, item pages seem blank
+<ul>
+<li>I looked at the PostgreSQL locks but they don&rsquo;t seem unusual</li>
+<li>I guess this is the same &ldquo;blank item page&rdquo; issue that we had a few times in 2019 that we never solved</li>
+<li>I restarted Tomcat and PostgreSQL and the issue was gone</li>
+</ul>
+</li>
+<li>Since I was restarting Tomcat anyways I decided to redeploy the latest changes from the <code>5_x-prod</code> branch and I added a note about COVID-19 items to the CGSpace frontpage at Peter&rsquo;s request</li>
+</ul>
+<ul>
+<li>Also, Linode is alerting that we had high outbound traffic rate early this morning around midnight AND high CPU load later in the morning</li>
+<li>First looking at the traffic in the morning:</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/*.log.1 /var/log/nginx/*.log | grep -E &#34;01/Jul/2020:(00|01|02|03|04)&#34; | goaccess --log-format=COMBINED -
+...
+9659 33.56%    1  0.08% 340.94 MiB 64.39.99.13
+3317 11.53%    1  0.08% 871.71 MiB 199.47.87.140
+2986 10.38%    1  0.08%  17.39 MiB 199.47.87.144
+2286  7.94%    1  0.08%  13.04 MiB 199.47.87.142
+</code></pre><ul>
+<li>64.39.99.13 belongs to Qualys, but I see they are using a normal desktop user agent:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15
+</code></pre><ul>
+<li>I will purge hits from that IP from Solr</li>
+<li>The 199.47.87.x IPs belong to Turnitin, and apparently they are NOT marked as bots and we have 40,000 hits from them in 2020 statistics alone:</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics/select&#34; -d &#34;q=userAgent:/Turnitin.*/&amp;rows=0&#34; | grep -oE &#39;numFound=&#34;[0-9]+&#34;&#39;
+numFound=&#34;41694&#34;
+</code></pre><ul>
+<li>They used to be &ldquo;TurnitinBot&rdquo;&hellip; hhmmmm, seems they use both: <a href="https://turnitin.com/robot/crawlerinfo.html">https://turnitin.com/robot/crawlerinfo.html</a></li>
+<li>I will add Turnitin to the DSpace bot user agent list, but I see they are reqesting <code>robots.txt</code> and only requesting item pages, so that&rsquo;s impressive! I don&rsquo;t need to add them to the &ldquo;bad bot&rdquo; rate limit list in nginx</li>
+<li>While looking at the logs I noticed eighty-one IPs in the range 185.152.250.x making little requests this user agent:</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:76.0) Gecko/20100101 Firefox/76.0
+</code></pre><ul>
+<li>The IPs all belong to HostRoyale:</li>
+</ul>
+<pre tabindex="0"><code># cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep &#39;01/Jul/2020&#39; | awk &#39;{print $1}&#39; | grep 185.152.250. | sort | uniq | wc -l
+81
+# cat /var/log/nginx/*.log /var/log/nginx/*.log.1 | grep &#39;01/Jul/2020&#39; | awk &#39;{print $1}&#39; | grep 185.152.250. | sort | uniq | sort -h
+185.152.250.1
+185.152.250.101
+185.152.250.103
+185.152.250.105
+185.152.250.107
+185.152.250.111
+185.152.250.115
+185.152.250.119
+185.152.250.121
+185.152.250.123
+185.152.250.125
+185.152.250.129
+185.152.250.13
+185.152.250.131
+185.152.250.133
+185.152.250.135
+185.152.250.137
+185.152.250.141
+185.152.250.145
+185.152.250.149
+185.152.250.153
+185.152.250.155
+185.152.250.157
+185.152.250.159
+185.152.250.161
+185.152.250.163
+185.152.250.165
+185.152.250.167
+185.152.250.17
+185.152.250.171
+185.152.250.183
+185.152.250.189
+185.152.250.191
+185.152.250.197
+185.152.250.201
+185.152.250.205
+185.152.250.209
+185.152.250.21
+185.152.250.213
+185.152.250.217
+185.152.250.219
+185.152.250.221
+185.152.250.223
+185.152.250.225
+185.152.250.227
+185.152.250.229
+185.152.250.231
+185.152.250.233
+185.152.250.235
+185.152.250.239
+185.152.250.243
+185.152.250.247
+185.152.250.249
+185.152.250.25
+185.152.250.251
+185.152.250.253
+185.152.250.255
+185.152.250.27
+185.152.250.29
+185.152.250.3
+185.152.250.31
+185.152.250.39
+185.152.250.41
+185.152.250.47
+185.152.250.5
+185.152.250.59
+185.152.250.63
+185.152.250.65
+185.152.250.67
+185.152.250.7
+185.152.250.71
+185.152.250.73
+185.152.250.77
+185.152.250.81
+185.152.250.85
+185.152.250.89
+185.152.250.9
+185.152.250.93
+185.152.250.95
+185.152.250.97
+185.152.250.99
+</code></pre><ul>
+<li>It&rsquo;s only a few hundred requests each, but I am very suspicious so I will record it here and purge their IPs from Solr</li>
+<li>Then I see 185.187.30.14 and 185.187.30.13 making requests also, with several different &ldquo;normal&rdquo; user agents
+<ul>
+<li>They are both apparently in France, belonging to Scalair FR hosting</li>
+<li>I will purge their requests from Solr too</li>
+</ul>
+</li>
+<li>Now I see some other new bots I hadn&rsquo;t noticed before:
+<ul>
+<li><code>Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0) LinkCheck by Siteimprove.com</code></li>
+<li><code>Consilio (WebHare Platform 4.28.2-dev); LinkChecker)</code>, which appears to be a <a href="https://www.utwente.nl/en/websites/webhare/">university CMS</a></li>
+<li>I will add <code>LinkCheck</code>, <code>Consilio</code>, and <code>WebHare</code> to the list of DSpace bot agents and purge them from Solr stats</li>
+<li>COUNTER-Robots list already has <code>link.?check</code> but for some reason DSpace didn&rsquo;t match that and I see hits for some of these&hellip;</li>
+<li>Maybe I should add <code>[Ll]ink.?[Cc]heck.?</code> to a custom list for now?</li>
+<li>For now I added <code>Turnitin</code> to the <a href="https://github.com/atmire/COUNTER-Robots/pull/34">new bots pull request on COUNTER-Robots</a></li>
+</ul>
+</li>
+<li>I purged 20,000 hits from IPs and 45,000 hits from user agents</li>
+<li>I will revert the default &ldquo;example&rdquo; agents file back to the upstream master branch of COUNTER-Robots, and then add all my custom ones that are pending in pull requests they haven&rsquo;t merged yet:</li>
+</ul>
+<pre tabindex="0"><code>$ diff --unchanged-line-format= --old-line-format= --new-line-format=&#39;%L&#39; dspace/config/spiders/agents/example ~/src/git/COUNTER-Robots/COUNTER_Robots_list.txt
+Citoid
+ecointernet
+GigablastOpenSource
+Jersey\/\d
+MarcEdit
+OgScrper
+okhttp
+^Pattern\/\d
+ReactorNetty\/\d
+sqlmap
+Typhoeus
+7siters
+</code></pre><ul>
+<li>Just a note that I <em>still</em> can&rsquo;t deploy the <code>6_x-dev-atmire-modules</code> branch as it fails at ant update:</li>
+</ul>
+<pre tabindex="0"><code>     [java] java.lang.RuntimeException: Failed to startup the DSpace Service Manager: failure starting up spring service manager: Error creating bean with name &#39;DefaultStorageUpdateConfig&#39;: Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire method: public void com.atmire.statistics.util.StorageReportsUpdater.setStorageReportServices(java.util.List); nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;cuaEPersonStorageReportService&#39;: Injection of autowired dependencies failed; nested exception is org.springframework.beans.factory.BeanCreationException: Could not autowire field: private com.atmire.dspace.cua.dao.storage.CUAEPersonStorageReportDAO com.atmire.dspace.cua.CUAStorageReportServiceImpl$CUAEPersonStorageReportServiceImpl.CUAEPersonStorageReportDAO; nested exception is org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type [com.atmire.dspace.cua.dao.storage.CUAEPersonStorageReportDAO] is defined: expected single matching bean but found 2: com.atmire.dspace.cua.dao.impl.CUAStorageReportDAOImpl$CUAEPersonStorageReportDAOImpl#0,com.atmire.dspace.cua.dao.impl.CUAStorageReportDAOImpl$CUAEPersonStorageReportDAOImpl#1
+</code></pre><ul>
+<li>I had told Atmire about this several weeks ago&hellip; but I reminded them again in the ticket
+<ul>
+<li>Atmire says they are able to build fine, so I tried again and noticed that I had been building with <code>-Denv=dspacetest.cgiar.org</code>, which is not necessary for DSpace 6 of course</li>
+<li>Once I removed that it builds fine</li>
+</ul>
+</li>
+<li>I quickly re-applied the Font Awesome 5 changes to use SVG+JS instead of web fonts (from 2020-04) and things are looking good!</li>
+<li>Run all system updates on DSpace Test (linode26), deploy latest <code>6_x-dev-atmire-modules</code> branch, and reboot it</li>
+</ul>
+<h2 id="2020-07-02">2020-07-02</h2>
+<ul>
+<li>I need to export some Solr statistics data from CGSpace to test Salem&rsquo;s modifications to the dspace-statistics-api
+<ul>
+<li>He modified it to query Solr on the fly instead of indexing it, which will be heavier and slower, but allows us to get more granular stats and countries/cities</li>
+<li>Because have so many records I want to use solr-import-export-json to get several months at a time with a date range, but it seems there are first issues with curl (need to disable globbing with <code>-g</code> and URL encode the range)</li>
+<li>For reference, the <a href="https://lucene.apache.org/solr/4_10_2/solr-core/org/apache/solr/schema/DateField.html">Solr 4.10.x DateField docs</a></li>
+<li>This range works in Solr UI: <code>[2019-01-01T00:00:00Z TO 2019-06-30T23:59:59Z]</code></li>
+<li>As well in curl:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ curl -g -s &#39;http://localhost:8081/solr/statistics-2019/select?q=*:*&amp;fq=time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z%5D&amp;rows=0&amp;wt=json&amp;indent=true&#39;
+{
+  &#34;responseHeader&#34;:{
+    &#34;status&#34;:0,
+    &#34;QTime&#34;:0,
+    &#34;params&#34;:{
+      &#34;q&#34;:&#34;*:*&#34;,
+      &#34;indent&#34;:&#34;true&#34;,
+      &#34;fq&#34;:&#34;time:[2019-01-01T00:00:00Z TO 2019-06-30T23:59:59Z]&#34;,
+      &#34;rows&#34;:&#34;0&#34;,
+      &#34;wt&#34;:&#34;json&#34;}},
+  &#34;response&#34;:{&#34;numFound&#34;:7784285,&#34;start&#34;:0,&#34;docs&#34;:[]
+  }}
+</code></pre><ul>
+<li>But not in solr-import-export-json&hellip; hmmm&hellip; seems we need to URL encode <em>only</em> the date range itself, but not the brackets:</li>
+</ul>
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f &#39;time:%5B2019-01-01T00%3A00%3A00Z%20TO%202019-06-30T23%3A59%3A59Z]&#39; -k uid
+$ zstd /tmp/statistics-2019-1.json
+</code></pre><ul>
+<li>Then import it on my local dev environment:</li>
+</ul>
+<pre tabindex="0"><code>$ zstd -d statistics-2019-1.json.zst
+$ ./run.sh -s http://localhost:8080/solr/statistics -a import -o ~/Downloads/statistics-2019-1.json -k uid
+</code></pre><h2 id="2020-07-05">2020-07-05</h2>
+<ul>
+<li>Import twelve items into the <a href="https://hdl.handle.net/10568/97076">CRP Livestock multimedia</a> collection for Peter Ballantyne
+<ul>
+<li>I ran the data through csv-metadata-quality first to validate and fix some common mistakes</li>
+<li>Interesting to check the data with <code>csvstat</code> to see if there are any duplicates</li>
+</ul>
+</li>
+<li>Peter recently asked me to add Target audience (<code>cg.targetaudience</code>) to the CGSpace sidebar facets and AReS filters
+<ul>
+<li>I added it on my local DSpace test instance, but I&rsquo;m waiting for him to tell me what he wants the header to be &ldquo;Audiences&rdquo; or &ldquo;Target audience&rdquo; etc&hellip;</li>
+</ul>
+</li>
+<li>Peter also asked me to increase the size of links in the CGSpace &ldquo;Welcome&rdquo; text
+<ul>
+<li>I suggested using the CSS <code>font-size: larger</code> property to just bump it up one relative to what it already is</li>
+<li>He said it looks good, but that actually now the links seem OK (I told him to refresh, as I had made them bold a few days ago) so we don&rsquo;t need to adjust it actually</li>
+</ul>
+</li>
+<li>Mohammed Salem modified my <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a> to query Solr directly so I started writing a script to benchmark it today
+<ul>
+<li>I will monitor the JVM memory and CPU usage in visualvm, just like I did in 2019-04</li>
+<li>I noticed an issue with his limit parameter so I sent him some feedback on that in the meantime</li>
+</ul>
+</li>
+<li>I noticed that we have 20,000 distinct values for <code>dc.subject</code>, but there are at least 500 that are lower or mixed case that we should simply uppercase without further thought:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# UPDATE metadatavalue SET text_value=UPPER(text_value) WHERE resource_type_id=2 AND metadata_field_id=57 AND text_value ~ &#39;[[:lower:]]&#39;;
+</code></pre><ul>
+<li>DSpace Test needs a different query because it is running DSpace 6 with UUIDs for everything:</li>
+</ul>
+<pre tabindex="0"><code>dspace63=# UPDATE metadatavalue SET text_value=UPPER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=57 AND text_value ~ &#39;[[:lower:]]&#39;;
+</code></pre><ul>
+<li>Note the use of the POSIX character class :)</li>
+<li>I suggest that we generate a list of the top 5,000 values that don&rsquo;t match AGROVOC so that Sisay can correct them
+<ul>
+<li>Start by getting the top 6,500 subjects (assuming that the top ~1,500 are valid from our previous work):</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=57 GROUP BY text_value ORDER BY count DESC) TO /tmp/2020-07-05-subjects.csv WITH CSV;
+COPY 19640
+dspace=# \q
+$ csvcut -c1 /tmp/2020-07-05-subjects-upper.csv | head -n 6500 &gt; 2020-07-05-cgspace-subjects.txt
+</code></pre><ul>
+<li>Then start looking them up using <code>agrovoc-lookup.py</code>:</li>
+</ul>
+<pre tabindex="0"><code>$ ./agrovoc-lookup.py -i 2020-07-05-cgspace-subjects.txt -om 2020-07-05-cgspace-subjects-matched.txt -or 2020-07-05-cgspace-subjects-rejected.txt -d
+</code></pre><h2 id="2020-07-06">2020-07-06</h2>
+<ul>
+<li>I made some optimizations to the suite of Python utility scripts in our DSpace directory as well as the <a href="https://github.com/ilri/csv-metadata-quality">csv-metadata-quality</a> script
+<ul>
+<li>Mostly to make more efficient usage of the requests cache and to use parameterized requests instead of building the request URL by concatenating the URL with query parameters</li>
+</ul>
+</li>
+<li>I modified the <code>agrovoc-lookup.py</code> script to save its results as a CSV, with the subject, language, type of match (preferred, alternate, and total number of matches) rather than save two separate files
+<ul>
+<li>Note that I see <code>prefLabel</code>, <code>matchedPrefLabel</code>, and <code>altLabel</code> in the REST API responses and I&rsquo;m not sure what the second one means</li>
+<li>I emailed FAO&rsquo;s AGROVOC contact to ask them</li>
+<li>They responded to say that <code>matchedPrefLabel</code> is not a property in SKOS/SKOSXL vocabulary, but their SKOSMOS system seems to use it to hint that the search terms matched a <code>prefLabel</code> in another language</li>
+<li>I will treat the <code>matchedPrefLabel</code> values as if they were <code>prefLabel</code> values for the indicated language then</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-07">2020-07-07</h2>
+<ul>
+<li>Peter asked me to send him a list of sponsors on CGSpace</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &#34;dc.description.sponsorship&#34;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &#34;dc.description.sponsorship&#34; ORDER BY count DESC) TO /tmp/2020-07-07-sponsors.csv WITH CSV HEADER;
+COPY 707
+</code></pre><ul>
+<li>I ran it quickly through my <code>csv-metadata-quality</code> tool and found two issues that I will correct with <code>fix-metadata-values.py</code> on CGSpace immediately:</li>
+</ul>
+<pre tabindex="0"><code>$ cat 2020-07-07-fix-sponsors.csv
+dc.description.sponsorship,correct
+&#34;Ministe`re des Affaires Etrange`res et Européennes, France&#34;,&#34;Ministère des Affaires Étrangères et Européennes, France&#34;
+&#34;Global Food Security Programme,  United Kingdom&#34;,&#34;Global Food Security Programme, United Kingdom&#34;
+$ ./fix-metadata-values.py -i 2020-07-07-fix-sponsors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -t correct -m 29
+</code></pre><ul>
+<li>Upload the Capacity Development July newsletter to CGSpace for Ben Hack because Abenet and Bizu usually do it, but they are currently offline due to the Internet being turned off in Ethiopia
+<ul>
+<li>Here: <a href="https://hdl.handle.net/10568/108708">https://hdl.handle.net/10568/108708</a></li>
+</ul>
+</li>
+<li>I implemented the Dimensions.ai badge on DSpace Test for Peter to see, as he&rsquo;s been asking me for awhile:</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/dimensions-badge.png" alt="Dimensions.ai badge"></p>
+<ul>
+<li>It was easy once I figured out how to do the XSLT in the DSpace theme (need to get the DOI link and remove the &ldquo;<a href="https://doi.org/%22">https://doi.org/&quot;</a> from the string)
+<ul>
+<li>Actually this raised an issue that the Altmetric badges weren&rsquo;t enabled in our DSpace 6 branch yet because I had forgotten to copy the config</li>
+<li>Also, I noticed a big issue in both our DSpace 5 and DSpace 6 branches related to the <code>$identifier_doi</code> variable being defined incorrectly and thus never getting set (has to do with DRI)</li>
+<li>I fixed both and now the Altmetric badge and the Dimensions badge both appear&hellip; nice</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/dimensions-badge2.png" alt="Altmetric and Dimensions.ai badge"></p>
+<h2 id="2020-07-08">2020-07-08</h2>
+<ul>
+<li>Generate a CSV of all the AGROVOC subjects that didn&rsquo;t match from the top 6500 I exported earlier this week:</li>
+</ul>
+<pre tabindex="0"><code>$ csvgrep -c &#39;number of matches&#39; -r &#34;^0$&#34; 2020-07-05-cgspace-subjects.csv | csvcut -c 1 &gt; 2020-07-05-cgspace-invalid-subjects.csv
+</code></pre><ul>
+<li>Yesterday Gabriela from CIP emailed to say that she was removing the accents from her authors&rsquo; names because of &ldquo;funny character&rdquo; issues with reports generated from CGSpace
+<ul>
+<li>I told her that it&rsquo;s probably her Windows / Excel that is messing up the data, and she figured out how to open them correctly!</li>
+<li>Now she says she doesn&rsquo;t want to remove the accents after all and she sent me a new list of corrections</li>
+<li>I used csvgrep and found a few where she is still removing accents:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ csvgrep -c 2 -r &#34;^.+$&#34; ~/Downloads/cip-authors-GH-20200706.csv | csvgrep -c 1 -r &#34;^.*[À-ú].*$&#34; | csvgrep -c 2 -r &#34;^.*[À-ú].*$&#34; -i | csvcut -c 1,2
+dc.contributor.author,correction
+&#34;López, G.&#34;,&#34;Lopez, G.&#34;
+&#34;Gómez, R.&#34;,&#34;Gomez, R.&#34;
+&#34;García, M.&#34;,&#34;Garcia, M.&#34;
+&#34;Mejía, A.&#34;,&#34;Mejia, A.&#34;
+&#34;Quiróz, Roberto A.&#34;,&#34;Quiroz, R.&#34;
+</code></pre><ul>
+<li>
+<p>csvgrep from the csvkit suite is <em>so cool</em>:</p>
+<ul>
+<li>Select lines with column two (the correction) having a value</li>
+<li>Select lines with column one (the original author name) having an accent / diacritic</li>
+<li>Select lines with column two (the correction) NOT having an accent (ie, she&rsquo;s not removing an accent)</li>
+<li>Select columns one and two</li>
+</ul>
+</li>
+<li>
+<p>Peter said he liked the work I didn on the badges yesterday so I put some finishing touches on it to detect more DOI URI styles and pushed it to the <code>5_x-prod</code> branch</p>
+<ul>
+<li>I will port it to DSpace 6 soon</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/altmetrics-dimensions-badges.png" alt="Altmetric and Dimensions badges"></p>
+<ul>
+<li>I wrote a quick script to lookup organizations (affiliations) in the Research Organization Repository (ROR) JSON data release v5
+<ul>
+<li>I want to use this to evaluate ROR as a controlled vocabulary for CGSpace and MELSpace</li>
+<li>I exported a list of affiliations from CGSpace:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE resource_type_id = 2 AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2020-07-08-affiliations.csv WITH CSV HEADER;
+</code></pre><ul>
+<li>Then I stripped the CSV header and quotes to make it a plain text file and ran <code>ror-lookup.py</code>:</li>
+</ul>
+<pre tabindex="0"><code>$ ./ror-lookup.py -i /tmp/2020-07-08-affiliations.txt -r ror.json -o 2020-07-08-affiliations-ror.csv -d
+$ wc -l /tmp/2020-07-08-affiliations.txt 
+5866 /tmp/2020-07-08-affiliations.txt
+$ csvgrep -c matched -m true 2020-07-08-affiliations-ror.csv | wc -l 
+1406
+$ csvgrep -c matched -m false 2020-07-08-affiliations-ror.csv | wc -l
+4462
+</code></pre><ul>
+<li>So, minus the CSV header, we have 1405 case-insensitive matches out of 5866 (23.9%)</li>
+</ul>
+<h2 id="2020-07-09">2020-07-09</h2>
+<ul>
+<li>Atmire responded to the ticket about DSpace 6 and Solr yesterday
+<ul>
+<li>They said that the CUA issue is due to the &ldquo;unmigrated&rdquo; Solr records and that we should delete them</li>
+<li>I told them that <a href="https://wiki.lyrasis.org/display/DSDOC6x/SOLR+Statistics+Maintenance">the &ldquo;unmigrated&rdquo; IDs are a known issue in DSpace 6</a> and we should rather figure out why they are unmigrated</li>
+<li>I didn&rsquo;t see any discussion on the dspace-tech mailing list or on DSpace Jira about unmigrated IDs, so I sent a mail to the mailing list to ask</li>
+</ul>
+</li>
+<li>I updated <code>ror-lookup.py</code> to check aliases and acronyms as well and now the results are better for CGSpace&rsquo;s affiliation list:</li>
+</ul>
+<pre tabindex="0"><code>$ wc -l /tmp/2020-07-08-affiliations.txt 
+5866 /tmp/2020-07-08-affiliations.txt
+$ csvgrep -c matched -m true 2020-07-08-affiliations-ror.csv | wc -l 
+1516
+$ csvgrep -c matched -m false 2020-07-08-affiliations-ror.csv | wc -l
+4352
+</code></pre><ul>
+<li>So now our matching improves to 1515 out of 5866 (25.8%)</li>
+<li>Gabriela from CIP said that I should run the author corrections minus those that remove accent characters so I will run it on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-09-fix-90-cip-authors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.contributor.author -t correction -m 3
+</code></pre><ul>
+<li>Apply 110 fixes and 90 deletions to sponsorships that Peter sent me a few days ago:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-07-fix-110-sponsors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -t &#39;correct/action&#39; -m 29
+$ ./delete-metadata-values.py -i /tmp/2020-07-07-delete-90-sponsors.csv -db dspace -u dspace -p &#39;fuuu&#39; -f dc.description.sponsorship -m 29
+</code></pre><ul>
+<li>Start a full Discovery re-index on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ time chrt -b 0 dspace index-discovery -b
+
+real    94m21.413s
+user    9m40.364s
+sys     2m37.246s
+</code></pre><ul>
+<li>I modified <code>crossref-funders-lookup.py</code> to be case insensitive and now CGSpace&rsquo;s sponsors match 173 out of 534 (32.4%):</li>
+</ul>
+<pre tabindex="0"><code>$ ./crossref-funders-lookup.py -i 2020-07-09-cgspace-sponsors.txt -o 2020-07-09-cgspace-sponsors-crossref.csv -d -e a.orth@cgiar.org
+$ wc -l 2020-07-09-cgspace-sponsors.txt
+534 2020-07-09-cgspace-sponsors.txt
+$ csvgrep -c matched -m true 2020-07-09-cgspace-sponsors-crossref.csv | wc -l 
+174
+</code></pre><h2 id="2020-07-12">2020-07-12</h2>
+<ul>
+<li>On 2020-07-10 Macaroni Bros emailed to ask if there are issues with CGSpace because they are getting HTTP 504 on the REST API
+<ul>
+<li>First, I looked in Munin and I see high number of DSpace sessions and threads on Friday evening around midnight, though that was much later than his email:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/jmx_dspace_sessions-day.png" alt="DSpace sessions">
+<img src="/cgspace-notes/2020/07/threads-day.png" alt="Threads">
+<img src="/cgspace-notes/2020/07/postgres_locks_ALL-day.png" alt="PostgreSQL locks">
+<img src="/cgspace-notes/2020/07/postgres_transactions_ALL-day.png" alt="PostgreSQL transactions"></p>
+<ul>
+<li>CPU load and memory were not high then, but there was some load on the database and firewall&hellip;
+<ul>
+<li>Looking in the nginx logs I see a few IPs we&rsquo;ve seen recently, like those 199.47.x.x IPs from Turnitin (which I need to remember to purge from Solr again because I didn&rsquo;t update the spider agents on CGSpace yet) and some new one 186.112.8.167</li>
+<li>Also, the Turnitin bot doesn&rsquo;t re-use its Tomcat JSESSIONID, I see this from today:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code># grep 199.47.87 dspace.log.2020-07-12 | grep -o -E &#39;session_id=[A-Z0-9]{32}&#39; | sort | uniq | wc -l
+2815
+</code></pre><ul>
+<li>So I need to add this alternative user-agent to the Tomcat Crawler Session Manager valve to force it to re-use a common bot session</li>
+<li>There are around 9,000 requests from <code>186.112.8.167</code> in Colombia and has the user agent <code>Java/1.8.0_241</code>, but those were mostly to REST API and I don&rsquo;t see any hits in Solr</li>
+<li>Earlier in the day Linode had alerted that there was high outgoing bandwidth
+<ul>
+<li>I see some new bot from 134.155.96.78 made ~10,000 requests with the user agent&hellip; but it appears to already be in our DSpace user agent list via COUNTER-Robots:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (compatible; heritrix/3.4.0-SNAPSHOT-2019-02-07T13:53:20Z +http://ifm.uni-mannheim.de)
+</code></pre><ul>
+<li>Generate a list of sponsors to update our controlled vocabulary:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value as &#34;dc.description.sponsorship&#34;, count(text_value) FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=29 GROUP BY &#34;dc.description.sponsorship&#34; ORDER BY count DESC LIMIT 125) TO /tmp/2020-07-12-sponsors.csv;
+COPY 125
+dspace=# \q
+$ csvcut -c 1 --tabs /tmp/2020-07-12-sponsors.csv &gt; dspace/config/controlled-vocabularies/dc-description-sponsorship.xml
+# add XML formatting
+$ dspace/config/controlled-vocabularies/dc-description-sponsorship.xml
+$ tidy -xml -utf8 -m -iq -w 0 dspace/config/controlled-vocabularies/dc-description-sponsorship.xml
+</code></pre><ul>
+<li>Deploy latest <code>5_x-prod</code> branch on CGSpace (linode18), run all system updates, and reboot the server
+<ul>
+<li>After rebooting it I had to restart Tomcat 7 once to get all Solr statistics cores to come up properly</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-13">2020-07-13</h2>
+<ul>
+<li>I recommended to Marie–Angelique that we use ROR for CG Core V2 (<a href="https://github.com/AgriculturalSemantics/cg-core/issues/27">#27</a>)</li>
+<li>Purge 2,700 hits from CodeObia IP addresses in CGSpace statistics&hellip; I wonder when they will figure out how to use a bot user agent</li>
+</ul>
+<h2 id="2020-07-14">2020-07-14</h2>
+<ul>
+<li>I ran the <code>dspace cleanup -v</code> process on CGSpace and got an error:</li>
+</ul>
+<pre tabindex="0"><code>Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (bitstream_id)=(189618) is still referenced from table &#34;bundle&#34;.
+</code></pre><ul>
+<li>The solution is, as always:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -d dspace -U dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (189618, 188837);&#39;
+UPDATE 1
+</code></pre><ul>
+<li>Udana from WLE asked me about some items that didn&rsquo;t show Altmetric donuts
+<ul>
+<li>I checked his list and at least three of them actually <em>did</em> show donuts, and for four others I tweeted them manually to see if they would get a donut in a few hours:
+<ul>
+<li><a href="https://hdl.handle.net/10568/108477">https://hdl.handle.net/10568/108477</a></li>
+<li><a href="https://hdl.handle.net/10568/108475">https://hdl.handle.net/10568/108475</a></li>
+<li><a href="https://hdl.handle.net/10568/108361">https://hdl.handle.net/10568/108361</a></li>
+<li><a href="https://hdl.handle.net/10568/108360">https://hdl.handle.net/10568/108360</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-15">2020-07-15</h2>
+<ul>
+<li>All four IWMI items that I tweeted yesterday have Altmetric donuts with a score of 1 now&hellip;</li>
+<li>Export CGSpace countries to check them against ISO 3166-1 and ISO 3166-3 (historic countries):</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT DISTINCT text_value FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=228) TO /tmp/2020-07-15-countries.csv;
+COPY 194
+</code></pre><ul>
+<li>I wrote a script <code>iso3166-lookup.py</code> to check them:</li>
+</ul>
+<pre tabindex="0"><code>$ ./iso3166-1-lookup.py -i /tmp/2020-07-15-countries.csv -o /tmp/2020-07-15-countries-resolved.csv
+$ csvgrep -c matched -m false /tmp/2020-07-15-countries-resolved.csv       
+country,match type,matched
+CAPE VERDE,,false
+&#34;KOREA, REPUBLIC&#34;,,false
+PALESTINE,,false
+&#34;CONGO, DR&#34;,,false
+COTE D&#39;IVOIRE,,false
+RUSSIA,,false
+SYRIA,,false
+&#34;KOREA, DPR&#34;,,false
+SWAZILAND,,false
+MICRONESIA,,false
+TIBET,,false
+ZAIRE,,false
+COCOS ISLANDS,,false
+LAOS,,false
+IRAN,,false
+</code></pre><ul>
+<li>Check the database for DOIs that are not in the preferred &ldquo;<a href="https://doi.org/%22">https://doi.org/&quot;</a> format:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \COPY (SELECT text_value as &#34;cg.identifier.doi&#34; FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=220 AND text_value NOT LIKE &#39;https://doi.org/%&#39;) TO /tmp/2020-07-15-doi.csv WITH CSV HEADER;
+COPY 186
+</code></pre><ul>
+<li>Then I imported them into OpenRefine and replaced them in a new &ldquo;correct&rdquo; column using this GREL transform:</li>
+</ul>
+<pre tabindex="0"><code>value.replace(&#34;dx.doi.org&#34;, &#34;doi.org&#34;).replace(&#34;http://&#34;, &#34;https://&#34;).replace(&#34;https://dx,doi,org&#34;, &#34;https://doi.org&#34;).replace(&#34;https://doi.dx.org&#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx.doi:&#34;, &#34;https://doi.org&#34;).replace(&#34;DOI: &#34;, &#34;https://doi.org/&#34;).replace(&#34;doi: &#34;, &#34;https://doi.org/&#34;).replace(&#34;http:/​/​dx.​doi.​org&#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx. doi.org. &#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx.doi&#34;, &#34;https://doi.org&#34;).replace(&#34;https://dx.doi:&#34;, &#34;https://doi.org/&#34;).replace(&#34;hdl.handle.net&#34;, &#34;doi.org&#34;)
+</code></pre><ul>
+<li>Then I fixed the DOIs on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-15-fix-164-DOIs.csv -db dspace -u dspace -p &#39;fuuu&#39; -f cg.identifier.doi -t &#39;correct&#39; -m 220
+</code></pre><ul>
+<li>I filed <a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/issues/10">an issue on Debian&rsquo;s iso-codes</a> project to ask why &ldquo;Swaziland&rdquo; does not appear in the ISO 3166-3 list of historical country names despite it being changed to &ldquo;Eswatini&rdquo; in 2018.</li>
+<li>Atmire responded about the Solr issue
+<ul>
+<li>They said that it seems like a DSpace issue so that it&rsquo;s not their responsibility, and nobody responded to my question on the dspace-tech mailing list&hellip;</li>
+<li>I said I would try to do a migration on DSpace Test with more of CGSpace&rsquo;s Solr data to try and approximate how much of our data be affected</li>
+<li>I also asked them about the Tomcat 8.5 issue with CUA as well as the CUA group name issue that I had asked originally in April</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-20">2020-07-20</h2>
+<ul>
+<li>Looking at the nginx logs on CGSpace (linode18) last night I see that the Macaroni Bros have started using a unique identifier for at least one of their harvesters:</li>
+</ul>
+<pre tabindex="0"><code>217.64.192.138 - - [20/Jul/2020:01:01:39 +0200] &#34;GET /rest/rest/bitstreams/114779/retrieve HTTP/1.0&#34; 302 138 &#34;-&#34; &#34;ILRI Livestock Website Publications importer BOT&#34;
+</code></pre><ul>
+<li>I still see 12,000 records in Solr from this user agent, though.
+<ul>
+<li>I wonder why the DSpace bot list didn&rsquo;t get those&hellip; because it has &ldquo;bot&rdquo; which should cause Solr to not log the hit</li>
+</ul>
+</li>
+<li>I purged ~30,000 hits from Solr statistics based on the IPs above, but also for some agents like Drupal (which isn&rsquo;t in the list yet) and OgScrper (which is as of 2020-03)</li>
+<li>Some of my user agent patterns had been incorporated into COUNTER-Robots in 2020-07, but not all
+<ul>
+<li>I closed the <a href="https://github.com/atmire/COUNTER-Robots/pull/34">old pull request</a> and created a <a href="https://github.com/atmire/COUNTER-Robots/pull/36">new one</a></li>
+<li>Then I updated the lists in the <code>5_x-prod</code> and 6.x branches</li>
+</ul>
+</li>
+<li>I re-ran the <code>check-spider-hits.sh</code> script with the new lists and purged another 14,000 more stats hits for several years each (2020, 2019, 2018, 2017, 2016), around 70,000 total</li>
+<li>I looked at the <a href="https://clarisa.cgiar.org/">CLARISA</a> institutions list again, since I hadn&rsquo;t looked at it in over six months:</li>
+</ul>
+<pre tabindex="0"><code>$ cat ~/Downloads/response_1595270924560.json | jq &#39;.[] | {name: .name}&#39; | grep name | awk -F: &#39;{print $2}&#39; | sed -e &#39;s/&#34;//g&#39; -e &#39;s/^ //&#39; -e &#39;1iname&#39; | csvcut -l | sed &#39;1s/line_number/id/&#39; &gt; /tmp/clarisa-institutions.csv
+</code></pre><ul>
+<li>The API still needs a key unless you query from Swagger web interface
+<ul>
+<li>They currently have 3,469 institutions&hellip;</li>
+<li>Also, they still combine multiple text names into one string along with acronyms and countries:
+<ul>
+<li>Bundesministerium für wirtschaftliche Zusammen­arbeit und Entwicklung / Federal Ministry of Economic Cooperation and Development (Germany)</li>
+<li>Ministerio del Ambiente / Ministry of Environment (Peru)</li>
+<li>Carthage University / Université de Carthage</li>
+<li>Sweet Potato Research Institute (SPRI) of Chinese Academy of Agricultural Sciences (CAAS)</li>
+</ul>
+</li>
+<li>And I checked the list with my csv-metadata-quality tool and found it still has whitespace and unnecessary Unicode characters in several records:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ csv-metadata-quality -i /tmp/clarisa-institutions.csv -o /tmp/clarisa-institutions-cleaned.csv
+Removing excessive whitespace (name): Comitato Internazionale per lo Sviluppo dei Popoli /  International Committee for the Development of Peoples
+Removing excessive whitespace (name): Deutsche Landwirtschaftsgesellschaft /  German agriculture society
+Removing excessive whitespace (name): Institute of Arid Regions  of Medenine
+Replacing unnecessary Unicode (U+00AD): Bundesministerium für wirtschaftliche Zusammen­arbeit und Entwicklung / Federal Ministry of Economic Cooperation and Development (Germany)
+Removing unnecessary Unicode (U+200B): Agencia de Servicios a la Comercialización​ y Desarrollo de Mercados Agropecuarios
+</code></pre><ul>
+<li>I think the ROR is much better in every possible way</li>
+<li>Re-enabled all the yearly Solr statistics cores on DSpace Test (linode26) because they had been disabled by Atmire when they were testing on the server
+<ul>
+<li>Run system updates on the server and reboot it</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-21">2020-07-21</h2>
+<ul>
+<li>I built the latest 6.x branch on DSpace Test (linode26) and I noticed a few Font Awesome icons are missing in the Atmire CUA statlets
+<ul>
+<li>One was simple to fix by adding it to our font library in <code>fontawesome.js</code>, but there are two more that are printing hex values instead of using HTML elements:</li>
+</ul>
+</li>
+</ul>
+<p><img src="/cgspace-notes/2020/07/cua-font-awesome.png" alt="Atmire CUA missing icons"></p>
+<ul>
+<li>I had previously thought these were fixed by setting the <code>font-family</code> on the elements, but it doesn&rsquo;t appear to be working now
+<ul>
+<li>I filed a ticket with Atmire to ask them to use the HTML elements instead, as their code already uses those elsewhere</li>
+<li>I don&rsquo;t want to go back to using the large webfonts with CSS because the SVG + JS method saves us ~140KiB and causes at least three fewer network requests</li>
+</ul>
+</li>
+<li>I started processing the 2019 stats in a batch of 1 million on DSpace Test:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2019
+...
+        *** Statistics Records with Legacy Id ***
+
+           6,359,966    Bistream View
+           2,204,775    Item View
+             139,266    Community View
+             131,234    Collection View
+             948,529    Community Search
+             593,974    Collection Search
+           1,682,818    Unexpected Type &amp; Full Site
+        --------------------------------------
+          12,060,562    TOTAL
+</code></pre><ul>
+<li>The statistics-2019 finished processing after about 9 hours so I started the 2018 ones:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx2048m&#39;
+$ chrt -b 0 dspace solr-upgrade-statistics-6x -n 1000000 -i statistics-2018
+        *** Statistics Records with Legacy Id ***
+
+           3,684,394    Bistream View
+           2,183,032    Item View
+             131,222    Community View
+              79,348    Collection View
+             345,529    Collection Search
+             322,223    Community Search
+             874,107    Unexpected Type &amp; Full Site
+        --------------------------------------
+           7,619,855    TOTAL
+</code></pre><ul>
+<li>Moayad finally made OpenRXV use a unique user agent:</li>
+</ul>
+<pre tabindex="0"><code>OpenRXV harvesting bot; https://github.com/ilri/OpenRXV
+</code></pre><ul>
+<li>I see nearly 200,000 hits in Solr from the IP address, though, so I need to make sure those are old ones from before today
+<ul>
+<li>I purged the hits for 178.62.93.141 as well as any from the old <code>axios/0.19.2</code> user agent</li>
+<li>I made some requests with and without the new user agent and only the ones without showed up in Solr</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-22">2020-07-22</h2>
+<ul>
+<li>Atmire merged my latest bot suggestions to the COUNTER-Robots project:
+<ul>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/36">Add new bots</a></li>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/35">COUNTER_Robots_list.json: Escape literal dots</a></li>
+<li><a href="https://github.com/atmire/COUNTER-Robots/pull/33">COUNTER_Robots_list.json: Remove anchors from okhttp</a></li>
+</ul>
+</li>
+<li>I will update the agent patterns on the CGSpace <code>5_x-prod</code> and 6.x branches</li>
+<li>Make some changes to the Bootstrap CSS and HTML configuration to improve readability and style on the CG Core v2 metadata reference guide and send a pull request to Marie (<a href="https://github.com/AgriculturalSemantics/cg-core/pull/29">#29</a>)</li>
+<li>The <code>solr-upgrade-statistics-6x</code> tool keeps crashing due to memory issues when processing 2018 stats
+<ul>
+<li>I reduced the number of records per batch from 10,000 to 5,000 and increased the memory to 3072 and it still crashes&hellip;</li>
+<li>I reduced the number of records per batch to 1,000 and it works, but still took like twenty minutes before it even started!</li>
+<li>Eventually after processing a few million records it crashed with this error:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>Exception: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
+org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: Error while creating field &#39;p_group_id{type=uuid,properties=indexed,stored,multiValued}&#39; from value &#39;10&#39;
+</code></pre><ul>
+<li>There were four records so I deleted them:</li>
+</ul>
+<pre tabindex="0"><code>$ curl -s &#34;http://localhost:8081/solr/statistics-2018/update?softCommit=true&#34; -H &#34;Content-Type: text/xml&#34; --data-binary &#39;&lt;delete&gt;&lt;query&gt;id:10&lt;/query&gt;&lt;/delete&gt;&#39;
+</code></pre><ul>
+<li>Meeting with Moayad and Peter and Abenet to discuss the latest AReS changes</li>
+</ul>
+<h2 id="2020-07-23">2020-07-23</h2>
+<ul>
+<li>I closed all issues in the <a href="https://github.com/ilri/OpenRXV/issues">OpenRXV</a> and <a href="https://github.com/ilri/AReS/issues">AReS</a> GitHub repositories with screenshots so that Moayad can use them for his invoice</li>
+<li>The statistics-2018 core always crashes with the same error even after I deleted the &ldquo;id:10&rdquo; records&hellip;
+<ul>
+<li>I started the statistics-2017 core and it finished in 3:44:15</li>
+<li>I started the statistics-2016 core and it finished in 2:27:08</li>
+<li>I started the statistics-2015 core and it finished in 1:07:38</li>
+<li>I started the statistics-2014 core and it finished in 1:45:44</li>
+<li>I started the statistics-2013 core and it finished in 1:41:50</li>
+<li>I started the statistics-2012 core and it finished in 1:23:36</li>
+<li>I started the statistics-2011 core and it finished in 0:39:37</li>
+<li>I started the statistics-2010 core and it finished in 0:01:46</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-24">2020-07-24</h2>
+<ul>
+<li>Looking at the statistics-2019 Solr stats and see some interesting user agents and IPs
+<ul>
+<li>For example, I see 568,000 requests from 66.109.27.x in 2019-10, all with the same exact user agent:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1
+</code></pre><ul>
+<li>Also, in the same month with the same <em>exact</em> user agent, I see 300,000 from 192.157.89.x
+<ul>
+<li>The 66.109.27.x IPs belong to galaxyvisions.com</li>
+<li>The 192.157.89.x IPs belong to cologuard.com</li>
+<li>All these hosts were reported in late 2019 on abuseipdb.com</li>
+</ul>
+</li>
+<li>Then I see another one 163.172.71.23 that made 215,000 requests in 2019-09 and 2019-08
+<ul>
+<li>It belongs to poneytelecom.eu and is also in abuseipdb.com for PHP injection and directory traversal</li>
+<li>It uses this user agent:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 ((Windows; U; Windows NT 6.1; fr; rv:1.9.2) Gecko/20100115 Firefox/3.6)
+</code></pre><ul>
+<li>In statistics-2018 I see more weird IPs
+<ul>
+<li>54.214.112.202 made 839,000 requests with no user agent&hellip;
+<ul>
+<li>It is on Amazon Web Services (AWS) and made 100% <code>statistics_type:view</code> so I guess it was harvesting via the REST API</li>
+</ul>
+</li>
+<li>A few IPs owned by perfectip.net made 400,000 requests in 2018-01
+<ul>
+<li>They are 2607:fa98:40:9:26b6:fdff:feff:195d and 2607:fa98:40:9:26b6:fdff:feff:1888 and 2607:fa98:40:9:26b6:fdff:feff:1c96 and 70.36.107.49</li>
+<li>All the requests used this user agent:</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36
+</code></pre><ul>
+<li>Then there is 213.139.53.62 in 2018, which is on Orange Telecom Jordan, so it&rsquo;s definitely CodeObia / ICARDA and I will purge them</li>
+<li>Jesus, and then there are 100,000 from the ILRI harvestor on Linode on 2a01:7e00::f03c:91ff:fe0a:d645</li>
+<li>Jesus fuck there is 46.101.86.248 making 15,000 requests per month in 2018 with no user agent&hellip;</li>
+<li>Jesus fuck there is 84.38.130.177 in Latvia that was making 75,000 requests in 2018-11 and 2018-10</li>
+<li>Jesus fuck there is 104.198.9.108 on Google Cloud that was making 30,000 requests with no user agent</li>
+<li>I will purge the hits from all the following IPs:</li>
+</ul>
+<pre tabindex="0"><code>192.157.89.4
+192.157.89.5
+192.157.89.6
+192.157.89.7
+66.109.27.142
+66.109.27.139
+66.109.27.138
+66.109.27.140
+66.109.27.141
+2607:fa98:40:9:26b6:fdff:feff:1888
+2607:fa98:40:9:26b6:fdff:feff:195d
+2607:fa98:40:9:26b6:fdff:feff:1c96
+213.139.53.62
+2a01:7e00::f03c:91ff:fe0a:d645
+46.101.86.248
+54.214.112.202
+84.38.130.177
+104.198.9.108
+70.36.107.49
+</code></pre><ul>
+<li>In total these accounted for the following amount of requests in each year:
+<ul>
+<li>2020: 1436</li>
+<li>2019: 960274</li>
+<li>2018: 1588149</li>
+</ul>
+</li>
+<li>I noticed a few other user agents that should be purged too:</li>
+</ul>
+<pre tabindex="0"><code>^Java\/\d{1,2}.\d
+FlipboardProxy\/\d
+API scraper
+RebelMouse\/\d
+Iframely\/\d
+Python\/\d
+Ruby
+NING\/\d
+ubermetrics-technologies\.com
+Jetty\/\d
+scalaj-http\/\d
+mailto\:team@impactstory\.org
+</code></pre><ul>
+<li>I purged them from the stats too:
+<ul>
+<li>2020: 19553</li>
+<li>2019: 29745</li>
+<li>2018: 18083</li>
+<li>2017: 19399</li>
+<li>2016: 16283</li>
+<li>2015: 16659</li>
+<li>2014: 713</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-26">2020-07-26</h2>
+<ul>
+<li>I continued with the Solr ID to UUID migrations (solr-upgrade-statistics-6x) from last week and updated my notes for each core above
+<ul>
+<li>After all cores finished migrating I optimized them to delete old documents</li>
+</ul>
+</li>
+<li>Export some of the CGSpace Solr stats minus the Atmire CUA schema additions for Salem to play with:</li>
+</ul>
+<pre tabindex="0"><code>$ chrt -b 0 ./run.sh -s http://localhost:8081/solr/statistics-2019 -a export -o /tmp/statistics-2019-1.json -f &#39;time:[2019-01-01T00\:00\:00Z TO 2019-06-30T23\:59\:59Z]&#39; -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId
+</code></pre><ul>
+<li>
+<p>Run system updates on DSpace Test (linode26) and reboot it</p>
+</li>
+<li>
+<p>I looked into the umigrated Solr records more and they are overwhelmingly <code>type: 5</code> (which means &ldquo;Site&rdquo; according to the DSpace constants):</p>
+<ul>
+<li>statistics
+<ul>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 167316</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 32581</li>
+</ul>
+</li>
+<li>id: -1
+<ul>
+<li>type 5: 10198</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>statistics-2019
+<ul>
+<li>id: -1
+<ul>
+<li>type 5: 2690500</li>
+</ul>
+</li>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 1348202</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 141576</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>statistics-2018
+<ul>
+<li>id: -1
+<ul>
+<li>type 5: 365466</li>
+</ul>
+</li>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 254680</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 204854</li>
+</ul>
+</li>
+<li>145870-unmigrated
+<ul>
+<li>type 0: 83235</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>statistics-2017</li>
+<li>id: -1
+<ul>
+<li>type 5: 808346</li>
+</ul>
+</li>
+<li>id: -1-unmigrated
+<ul>
+<li>type 5: 598022</li>
+</ul>
+</li>
+<li>id: 0-unmigrated
+<ul>
+<li>type 5: 254014</li>
+</ul>
+</li>
+<li>145870-unmigrated
+<ul>
+<li>type 0: 28168</li>
+<li>bundleName THUMBNAIL: 28168</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>There is another one appears in 2018 and 2017 at least of type 0, which would be download</p>
+<ul>
+<li>In that case the id is of a bitstream that no longer exists&hellip;?</li>
+</ul>
+</li>
+<li>
+<p>I started processing Solr stats with the Atmire tool now:</p>
+</li>
+</ul>
+<pre tabindex="0"><code>$ dspace dsrun com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI -c statistics -f -t 12
+</code></pre><ul>
+<li>This one failed after a few hours:</li>
+</ul>
+<pre tabindex="0"><code>Record uid: c4b5974a-025d-4adc-b6c3-c8846048b62b couldn&#39;t be processed
+com.atmire.statistics.util.update.atomic.ProcessingException: something went wrong while processing record uid: c4b5974a-025d-4adc-b6c3-c8846048b62b, an error occured in the com.atmire.statistics.util.update.atomic.processor.ContainerOwnerDBProcessor
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.applyProcessors(SourceFile:304)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.processRecords(SourceFile:176)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.performRun(SourceFile:161)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdater.update(SourceFile:128)
+        at com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI.main(SourceFile:78)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+Caused by: java.lang.NullPointerException
+
+Run 2 — 100% — 2,237,670/2,239,523 docs — 12s — 2h 25m 41s
+Run 2 took 2h 25m 41s
+179,310 docs failed to process
+If run the update again with the resume option (-r) they will be reattempted
+</code></pre><ul>
+<li>I started the same script for the statistics-2019 core (12 million records&hellip;)</li>
+<li>Update an ILRI author&rsquo;s name on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/2020-07-27-fix-ILRI-author.csv -db dspace -u cgspace -p &#39;fuuu&#39; -f dc.contributor.author -t &#39;correct&#39; -m 3
+Fixed 13 occurences of: Muloi, D.
+Fixed 4 occurences of: Muloi, D.M.
+</code></pre><h2 id="2020-07-28">2020-07-28</h2>
+<ul>
+<li>I started analyzing the situation with the cases I&rsquo;ve seen where a Solr record fails to be migrated:
+<ul>
+<li><code>id: 0-unmigrated</code> are mostly (all?) <code>type: 5</code> aka site view</li>
+<li><code>id: -1-unmigrated</code> are mostly (all?) <code>type: 5</code> aka site view</li>
+<li><code>id: -1</code> are mostly (all?) <code>type: 5</code> aka site view</li>
+<li><code>id: 59184-unmigrated</code> where &ldquo;59184&rdquo; is the id of an item or bitstream that no longer exists</li>
+</ul>
+</li>
+<li>Why doesn&rsquo;t Atmire&rsquo;s code ignore any id with &ldquo;-unmigrated&rdquo;?</li>
+<li>I sent feedback to Atmire since they had responded to my previous question yesterday
+<ul>
+<li>They said that the DSpace 6 version of CUA does not work with Tomcat 8.5&hellip;</li>
+</ul>
+</li>
+<li>I spent a few hours trying to write a <a href="https://wiki.lyrasis.org/display/DSDOC5x/Curation+tasks+in+Jython">Jython-based curation task</a> to update ISO 3166-1 Alpha2 country codes based on each item&rsquo;s ISO 3166-1 country
+<ul>
+<li>Peter doesn&rsquo;t want to use the ISO 3166-1 list because he objects to a few names, so I thought we might be able to use country codes or numeric codes and update the names with a curation task</li>
+<li>The work is very rough but kinda works: <a href="https://gist.github.com/alanorth/6a31af592b3467f7b63ac8aea7c75d52">mytask.py</a></li>
+<li>What is nice is that the <code>dso.update()</code> method updates the data the &ldquo;DSpace way&rdquo; so we don&rsquo;t need to re-index Solr</li>
+<li>I had a clever idea to &ldquo;vendor&rdquo; the pycountry code using <code>pip install pycountry -t</code>, but pycountry dropped support for Python 2 in 2019 so we can only use an outdated version</li>
+<li>In the end it&rsquo;s really limiting to this particular task in Jython because we are stuck with Python 2, we can&rsquo;t use virtual environments, and there is a lot of code we&rsquo;d need to write to be able to handle the ISO 3166 country lists</li>
+<li>Python 2 is no longer supported by the Python community anyways so it&rsquo;s probably better to figure out how to do this in Java</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-29">2020-07-29</h2>
+<ul>
+<li>The Atmire stats tool (com.atmire.statistics.util.update.atomic.AtomicStatisticsUpdateCLI) created 150GB of log files due to errors and the disk got full on DSpace Test (linode26)
+<ul>
+<li>This morning I had noticed that the run I started last night said that 54,000,000 (54 million!) records failed to process, but the core only had 6 million or so documents to process&hellip;!</li>
+<li>I removed the large log files and optimized the Solr core</li>
+</ul>
+</li>
+</ul>
+<h2 id="2020-07-30">2020-07-30</h2>
+<ul>
+<li>Looking into ISO 3166-1 from the iso-codes package
+<ul>
+<li>I see that all current 249 countries have names, 173 have official names, and 6 have common names:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code># grep -c numeric /usr/share/iso-codes/json/iso_3166-1.json
+249
+# grep -c -E &#39;&#34;name&#34;:&#39; /usr/share/iso-codes/json/iso_3166-1.json
+249
+# grep -c -E &#39;&#34;official_name&#34;:&#39; /usr/share/iso-codes/json/iso_3166-1.json
+173
+# grep -c -E &#39;&#34;common_name&#34;:&#39; /usr/share/iso-codes/json/iso_3166-1.json
+6
+</code></pre><ul>
+<li>Wow, the <code>CC-BY-NC-ND-3.0-IGO</code> license that I had <a href="https://github.com/spdx/license-list-XML/issues/767">requested in 2019-02</a> was finally merged into SPDX&hellip;</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

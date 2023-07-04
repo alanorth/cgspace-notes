@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="February, 2023" />
+<meta property="og:description" content="2023-02-01
+
+Export CGSpace to cross check the DOI metadata with Crossref
+
+I want to try to expand my use of their data to journals, publishers, volumes, issues, etc&hellip;
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-02/" />
+<meta property="article:published_time" content="2023-02-01T10:57:36+03:00" />
+<meta property="article:modified_time" content="2023-03-01T08:30:25+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="February, 2023"/>
+<meta name="twitter:description" content="2023-02-01
+
+Export CGSpace to cross check the DOI metadata with Crossref
+
+I want to try to expand my use of their data to journals, publishers, volumes, issues, etc&hellip;
+
+
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "February, 2023",
+  "url": "https://alanorth.github.io/cgspace-notes/2023-02/",
+  "wordCount": "3087",
+  "datePublished": "2023-02-01T10:57:36+03:00",
+  "dateModified": "2023-03-01T08:30:25+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2023-02/">
+
+    <title>February, 2023 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2023-02/">February, 2023</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2023-02-01T10:57:36+03:00">Wed Feb 01, 2023</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2023-02-01">2023-02-01</h2>
+<ul>
+<li>Export CGSpace to cross check the DOI metadata with Crossref
+<ul>
+<li>I want to try to expand my use of their data to journals, publishers, volumes, issues, etc&hellip;</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>First, extract a list of DOIs for use with <code>crossref-doi-lookup.py</code>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;cg.identifier.doi[en_US]&#39;</span> ~/Downloads/2023-02-01-cgspace.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | csvgrep -c 1 -m &#39;doi.org&#39; \
+</span></span><span style="display:flex;"><span>  | csvgrep -c 1 -m &#39; &#39; -i \
+</span></span><span style="display:flex;"><span>  | csvgrep -c 1 -r &#39;.*cifor.*&#39; -i \
+</span></span><span style="display:flex;"><span>  | sed 1d &gt; /tmp/2023-02-01-dois.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/crossref-doi-lookup.py -e a.orth@cgiar.org -i /tmp/2023-02-01-dois.txt -o ~/Downloads/2023-01-31-crossref-results.csv -d
+</span></span></code></pre></div><ul>
+<li>Then extract the ID, DOI, journal, volume, issue, publisher, etc from the CGSpace dump and rename the <code>cg.identifier.doi[en_US]</code> to <code>doi</code> so we can join on it with the Crossref results file:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,cg.identifier.doi[en_US],cg.journal[en_US],cg.volume[en_US],cg.issue[en_US],dcterms.publisher[en_US],cg.number[en_US],dcterms.license[en_US]&#39;</span> ~/Downloads/2023-02-01-cgspace.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | csvgrep -c &#39;cg.identifier.doi[en_US]&#39; -r &#39;.*cifor.*&#39; -i \
+</span></span><span style="display:flex;"><span>  | sed -e &#39;1s/cg.identifier.doi\[en_US\]/doi/&#39; \
+</span></span><span style="display:flex;"><span>    -e &#39;s_https://doi.org/__g&#39; \
+</span></span><span style="display:flex;"><span>    -e &#39;s_https://dx.doi.org/__g&#39; \
+</span></span><span style="display:flex;"><span>  &gt; /tmp/2023-02-01-cgspace-doi-metadata.csv
+</span></span><span style="display:flex;"><span>$ csvjoin -c doi /tmp/2023-02-01-cgspace-doi-metadata.csv ~/Downloads/2023-02-01-crossref-results.csv &gt; /tmp/2023-02-01-cgspace-crossref-check.csv
+</span></span></code></pre></div><ul>
+<li>And import into OpenRefine for analysis and cleaning</li>
+<li>I just noticed that Crossref also has types, so we could use that in the future too!</li>
+<li>I got a few corrections after examining manually, but I didn&rsquo;t manage to identify any patterns that I could use to do any automatic matching or cleaning</li>
+</ul>
+<h2 id="2023-02-05">2023-02-05</h2>
+<ul>
+<li>Normalize text lang attributes in PostgreSQL, run a quick Discovery index, and then export CGSpace to check Initiative mappings and countries/regions</li>
+<li>Run all system updates on CGSpace (linode18) and reboot it</li>
+</ul>
+<h2 id="2023-02-06">2023-02-06</h2>
+<ul>
+<li>Peter said that a new Initiative was approved last month so we need to add it to CGSpace: <code>Fragility, Conflict, and Migration</code></li>
+<li>There is lots of discussion about the &ldquo;issue date&rdquo; versus &ldquo;available date&rdquo; with Enrico and IFPRI, after lots of feedback from the PRMS QA
+<ul>
+<li>I filed <a href="https://github.com/AgriculturalSemantics/cg-core/issues/43">an issue on CG Core to propose using <code>dcterms.available</code> as an optional field to indicate the online date</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-07">2023-02-07</h2>
+<ul>
+<li>IFPRI&rsquo;s web developer Tony managed to get his Drupal harvester to have a useful user agent:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>54.x.x.x - - [06/Feb/2023:10:10:32 +0100] &#34;POST /rest/items/find-by-metadata-field?limit=%22100&amp;offset=0 HTTP/1.1&#34; 200 58855 &#34;-&#34; &#34;IFPRI drupal POST harvester&#34;
+</span></span></code></pre></div><ul>
+<li>He also noticed that there is no pagination on POST requests to <code>/rest/items/find-by-metadata-field</code>, and that he needs to increase his timeout for requests that return 100+ results, ie:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>curl -f -H &#34;Content-Type: application/json&#34; -X POST &#34;https://dspacetest.cgiar.org/rest/items/find-by-metadata-field&#34; -d &#39;{&#34;key&#34;:&#34;cg.subject.actionArea&#34;, &#34;value&#34;:&#34;Systems Transformation&#34;, &#34;language&#34;: &#34;en_US&#34;}&#39;
+</span></span></code></pre></div><ul>
+<li>I need to ask on the DSpace Slack about this POST pagination</li>
+<li>Abenet and Udana noticed that the Handle server was not running
+<ul>
+<li>Looking in the <code>error.log</code> file I see that the service is complaining about a lock file being present</li>
+<li>This is because Linode had to do emergency maintenance on the VM host this morning and the Handle server didn&rsquo;t shut down properly</li>
+</ul>
+</li>
+<li>I&rsquo;m having an issue with <code>poetry update</code> so I spent some time debugging and filed <a href="https://github.com/python-poetry/poetry/issues/7482">an issue</a></li>
+<li>Proof and import nine items for the Digital Innovation Inititive for IFPRI
+<ul>
+<li>There were only some minor issues in the metadata</li>
+<li>I also did a duplicate check with <code>check-duplicates.py</code> just in case</li>
+</ul>
+</li>
+<li>I did some minor updates on csv-metadata-quality
+<ul>
+<li>First, to reduce warnings on non-SPDX licenses like &ldquo;Copyrighted; all rights reserved&rdquo; and &ldquo;Other&rdquo; since they are very common for us and I&rsquo;m sick of seeing the warnings</li>
+<li>Second, to skip whitespace and newline fixes on the abstract field since so many times they are intended</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-08">2023-02-08</h2>
+<ul>
+<li>Make some edits to IFPRI records requested by Jawoo and Leigh</li>
+<li>Help Alessandra upload a last minute report for SAPLING</li>
+<li>Proof and upload twenty-seven IFPRI records to CGSpace
+<ul>
+<li>It&rsquo;s a good thing I did a duplicate check because I found three duplicates!</li>
+</ul>
+</li>
+<li>Export CGSpace to update Initiative mappings and country/region mappings
+<ul>
+<li>Then start a harvest on AReS</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-09">2023-02-09</h2>
+<ul>
+<li>Do some minor work on the CSS on the DSpace 7 test</li>
+</ul>
+<h2 id="2023-02-10">2023-02-10</h2>
+<ul>
+<li>I noticed a large number of PostgreSQL locks from dspaceWeb on CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi|dspaceCli)&#39;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>   2033 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>Looking at the lock age, I see some already 1 day old, including this curious query:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>select nextval (&#39;public.registrationdata_seq&#39;)
+</span></span></code></pre></div><ul>
+<li>I killed all locks that were more than a few hours old</li>
+<li>Export CGSpace to update Initiative collection mappings</li>
+<li>Discuss adding <code>dcterms.available</code> to the submission form
+<ul>
+<li>I also looked in the <code>dcterms.description</code> field on CGSpace and found ~1,500 items where the is an indication of an online published date</li>
+<li>Using some facets in OpenRefine I narrowed down the ones mentioning &ldquo;online&rdquo; and then extracted the dates to a new column:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>cells[&#39;dcterms.description[en_US]&#39;].value.replace(/.*?(\d+{2}) ([a-zA-Z]+) (\d+{2}).*/,&#34;$3-$2-$1&#34;)
+</span></span></code></pre></div><ul>
+<li>Then to handle formats like &ldquo;2022-April-26&rdquo; and &ldquo;2021-Nov-11&rdquo; I used some replacement GRELs (note the order so we don&rsquo;t replace short patterns in longer strings prematurely):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>value.replace(&#34;January&#34;,&#34;01&#34;).replace(&#34;February&#34;,&#34;02&#34;).replace(&#34;March&#34;,&#34;03&#34;).replace(&#34;April&#34;,&#34;04&#34;).replace(&#34;May&#34;,&#34;05&#34;).replace(&#34;June&#34;,&#34;06&#34;).replace(&#34;July&#34;,&#34;07&#34;).replace(&#34;August&#34;,&#34;08&#34;).replace(&#34;September&#34;,&#34;09&#34;).replace(&#34;October&#34;,&#34;10&#34;).replace(&#34;November&#34;,&#34;11&#34;).replace(&#34;December&#34;,&#34;12&#34;)
+</span></span><span style="display:flex;"><span>value.replace(&#34;Jan&#34;,&#34;01&#34;).replace(&#34;Feb&#34;,&#34;02&#34;).replace(&#34;Mar&#34;,&#34;03&#34;).replace(&#34;Apr&#34;,&#34;04&#34;).replace(&#34;May&#34;,&#34;05&#34;).replace(&#34;Jun&#34;,&#34;06&#34;).replace(&#34;Jul&#34;,&#34;07&#34;).replace(&#34;Aug&#34;,&#34;08&#34;).replace(&#34;Sep&#34;,&#34;09&#34;).replace(&#34;Oct&#34;,&#34;10&#34;).replace(&#34;Nov&#34;,&#34;11&#34;).replace(&#34;Dec&#34;,&#34;12&#34;)
+</span></span></code></pre></div><ul>
+<li>This covered about 1,300 items, then I did about 100 more messier ones with some more regex wranling
+<ul>
+<li>I removed the <code>dcterms.description[en_US]</code> field from items where I updated the dates</li>
+</ul>
+</li>
+<li>Then I added <code>dcterms.available</code> to the submission form and the item view
+<ul>
+<li>We need to announce this to the editors</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-13">2023-02-13</h2>
+<ul>
+<li>Export CGSpace to do some metadata quality checks
+<ul>
+<li>I added CGIAR Trust Fund as a donor to some new Initiative outputs</li>
+<li>I moved some abstracts from the description field</li>
+<li>I moved some version information to the <code>cg.edition</code> field</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-14">2023-02-14</h2>
+<ul>
+<li>The PRMS team in Colombia sent some questions about countries on CGSpace
+<ul>
+<li>I had to fix some, that were clearly wrong, but there is also a difference between CGSpace and MEL because we use mostly iso-codes, and MEL uses the UN M.49 list</li>
+<li>Then I re-ran the country code tagger from cgspace-java-helpers, forcing the update on all items in the Initiatives community</li>
+</ul>
+</li>
+<li>Remove Alliance research levers from <code>cg.contributor.crp</code> field after discussing with Daniel and Maria
+<ul>
+<li>This was a mistake on TIP&rsquo;s part, and there is no direct mapping between research levers and CRPs</li>
+</ul>
+</li>
+<li>I exported CGSpace to check Initiative collection mappings, regions, and licenses
+<ul>
+<li>Peter told me that all CGIAR blog posts for the Initiatives should be CC-BY-4.0, and I see the logo at the bottom in light gray!</li>
+<li>I had previously missed that and removed some licenses for blog posts</li>
+<li>I checked cgiar.org, ifpri.org, icarda.org, iwmi.cgiar.org, irri.org, etc and corrected a handful</li>
+</ul>
+</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-02-15">2023-02-15</h2>
+<ul>
+<li>Work on rebasing my local DSpace 7 dev branches on top of the latest 7.5-SNAPSHOT
+<ul>
+<li>It seems the issues I had with the <code>dspace submission-forms-migrate</code> tool in <a href="/cgspace-notes/2022-08/">August, 2022</a> were fixed</li>
+</ul>
+</li>
+<li>I imported a fresh PostgreSQL snapshot from CGSpace and then removed the Atmire migrations and ran the new migrations as I originally noted in <a href="/cgspace-notes/2022-03/">March, 2022</a>, and is pointed out in the <a href="https://wiki.lyrasis.org/display/DSDOC7x/Upgrading+DSpace">DSpace 7 upgrade notes</a>
+<ul>
+<li>Now I get a new error:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ DELETE FROM schema_version WHERE version IN (&#39;5.0.2017.09.25&#39;, &#39;6.0.2017.01.30&#39;, &#39;6.0.2017.09.25&#39;);
+</span></span><span style="display:flex;"><span>localhost/dspace7= ☘ DELETE FROM schema_version WHERE description LIKE &#39;%Atmire%&#39; OR description LIKE &#39;%CUA%&#39; OR description LIKE &#39;%cua%&#39;;
+</span></span><span style="display:flex;"><span>localhost/dspace7= \q
+</span></span><span style="display:flex;"><span>$ ./bin/dspace database migrate ignored
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>CREATE INDEX resourcepolicy_action_idx ON resourcepolicy(action_id)
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>        at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.handleException(DefaultSqlScriptExecutor.java:275)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:222)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.execute(DefaultSqlScriptExecutor.java:126)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.executeOnce(SqlMigrationExecutor.java:69)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.lambda$execute$0(SqlMigrationExecutor.java:58)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.database.DefaultExecutionStrategy.execute(DefaultExecutionStrategy.java:27)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:57)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:377)
+</span></span><span style="display:flex;"><span>        ... 24 more
+</span></span><span style="display:flex;"><span>Caused by: org.postgresql.util.PSQLException: ERROR: relation &#34;resourcepolicy_action_idx&#34; already exists
+</span></span><span style="display:flex;"><span>        at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2676)
+</span></span><span style="display:flex;"><span>        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2366)
+</span></span><span style="display:flex;"><span>        at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:356)
+</span></span><span style="display:flex;"><span>        at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:496)
+</span></span><span style="display:flex;"><span>        at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:413)
+</span></span><span style="display:flex;"><span>        at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:333)
+</span></span><span style="display:flex;"><span>        at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:319)
+</span></span><span style="display:flex;"><span>        at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:295)
+</span></span><span style="display:flex;"><span>        at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:290)
+</span></span><span style="display:flex;"><span>        at org.apache.commons.dbcp2.DelegatingStatement.execute(DelegatingStatement.java:193)
+</span></span><span style="display:flex;"><span>        at org.apache.commons.dbcp2.DelegatingStatement.execute(DelegatingStatement.java:193)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.jdbc.JdbcTemplate.executeStatement(JdbcTemplate.java:201)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.sqlscript.ParsedSqlStatement.execute(ParsedSqlStatement.java:95)
+</span></span><span style="display:flex;"><span>        at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:210)
+</span></span><span style="display:flex;"><span>        ... 30 more
+</span></span></code></pre></div><ul>
+<li>I dropped that index and then the migration succeeded:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ DROP INDEX resourcepolicy_action_idx;
+</span></span><span style="display:flex;"><span>localhost/dspace7= ☘ \q
+</span></span><span style="display:flex;"><span>$ ./bin/dspace database migrate ignored
+</span></span><span style="display:flex;"><span>Done.
+</span></span></code></pre></div><ul>
+<li>I think that particular error is because I applied the <a href="https://github.com/DSpace/DSpace/pull/1792">indexes in this unmerged DSpace 6 patch</a>, so I don&rsquo;t need to report this as an error in DSpace 7</li>
+</ul>
+<h2 id="2023-02-16">2023-02-16</h2>
+<ul>
+<li>I found a suspicious number of PostgreSQL locks on CGSpace and decided to investigate:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi|dspaceCli)&#39;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>     44 dspaceApi
+</span></span><span style="display:flex;"><span>    372 dspaceCli
+</span></span><span style="display:flex;"><span>    446 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>This started happening yesterday and I killed a few locks that were several hours old after inspecting the <code>locks-age.sql</code> output</li>
+<li>I also checked the <code>locks.sql</code> output, which helpfully lists the blocked PID and the blocking PID, to find one blocking PID that was idle in transaction
+<ul>
+<li>I killed that process and then all other locks were instantly processed</li>
+</ul>
+</li>
+<li>I filed <a href="https://github.com/DSpace/dspace-angular/issues/2103">a GitHub issue</a> on dspace-angular requesting the item view to use the bitstream description instead of the file name if present</li>
+<li>Weekly CG Core types meeting
+<ul>
+<li>I need to go through the actions and remove those items that are only for CGSpace internal use, ie:
+<ul>
+<li>CD-ROM</li>
+<li>Manuscript-unpublished</li>
+<li>Photo Report</li>
+<li>Questionnaire</li>
+<li>Wiki</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Weekly CGIAR Repository Working Group meeting</li>
+<li>I did some experiments with Crossref dates for about 20,000 DOIs in CGSpace using my <code>crossref-doi-lookup.py</code> script</li>
+<li>Some things I noted from reading the <a href="https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md">Crossref API docs</a> and inspecting the records for a few dozen DOIs manually:
+<ul>
+<li><code>[&quot;created&quot;][&quot;date-parts&quot;]</code> → Date on which the DOI was first registered (not useful for us)</li>
+<li><code>[&quot;published-print&quot;][&quot;date-parts&quot;]</code> → Date on which the work was published in print</li>
+<li><code>[&quot;journal-issue&quot;][&quot;published-print&quot;][&quot;date-parts&quot;]</code> → When present, is 99% the same as the above</li>
+<li><code>[&quot;published-online&quot;][&quot;date-parts&quot;]</code> → Date on which the work was published online</li>
+<li><code>[&quot;journal-issue&quot;][&quot;published-online&quot;][&quot;date-parts&quot;]</code> → Much more rare, and only 50% the same as the above, so unreliable</li>
+<li><code>[&quot;issued&quot;][&quot;date-parts&quot;]</code> → Earliest of published-print and published-online (not useful to us)</li>
+</ul>
+</li>
+<li>After checking the DOIs manully I decided that when the <code>published-print</code> date exists, it is usually more accurate than our issued dates
+<ul>
+<li>I set 12,300 issue dates to those from Crossref</li>
+</ul>
+</li>
+<li>I also decided that, when <code>published-online</code> exists, it is usually accurate when I check the publisher page (we don&rsquo;t have many online dates to compare)
+<ul>
+<li>I set the available date for ~7,000 items to the published-online date as long as:
+<ul>
+<li>There was no <code>dcterms.available</code> date already</li>
+<li>It was different than the issued date, because for now I only want online dates that are different, in case this is an online only journal in which case that can be the issue date&hellip; maybe I&rsquo;ll re-visit that later</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-17">2023-02-17</h2>
+<ul>
+<li>It seems some (all?) of the changes I applied to dates last night didn&rsquo;t get saved&hellip;
+<ul>
+<li>I don&rsquo;t know what happened, so I will run them again after some investigation</li>
+<li>I submitted the first batch of ~7,600 changes and it took twelve hours!</li>
+<li>I almost cancelled it because after applying the changes there was a lock blocking everything for two hours, and it seemed to be stuck, but I kept checking it and saw that the <code>query_start</code> and <code>state_change</code> were being updated despite it being state &ldquo;idle in transaction&rdquo;:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_stat_activity WHERE pid=1025176&#39;</span> | less -S
+</span></span></code></pre></div><ul>
+<li>I will apply the other changes in smaller batches&hellip;</li>
+<li>Lately I&rsquo;ve noticed a lot of activity from the country code tagger curation task
+<ul>
+<li>Looking in the logs I see items being tagged that are very old and should have already been tagged years ago</li>
+<li>Also, I see a ton of these errors whenever the task is updating an item:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2023-02-17 08:01:00,252 INFO  org.dspace.curate.Curator @ Curation task: countrycodetagger performed on: 10568/89020 with status: 0. Result: &#39;10568/89020: added 1 alpha2 country code(s)&#39;
+</span></span><span style="display:flex;"><span>2023-02-17 08:01:00,467 ERROR com.atmire.versioning.ModificationLogger @ Error while writing item to versioning index: a0fe9d9a-6ac1-4b6a-8fcb-dae07a6bbf58 message:missing required field: epersonID
+</span></span><span style="display:flex;"><span>org.apache.solr.client.solrj.impl.HttpSolrServer$RemoteSolrException: missing required field: epersonID
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.executeMethod(HttpSolrServer.java:552)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:210)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrServer.request(HttpSolrServer.java:206)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.request.AbstractUpdateRequest.process(AbstractUpdateRequest.java:124)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:116)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrServer.add(SolrServer.java:102)
+</span></span><span style="display:flex;"><span>        at com.atmire.versioning.ModificationLogger.indexItem(ModificationLogger.java:263)
+</span></span><span style="display:flex;"><span>        at com.atmire.versioning.ModificationConsumer.end(ModificationConsumer.java:134)
+</span></span><span style="display:flex;"><span>        at org.dspace.event.BasicDispatcher.dispatch(BasicDispatcher.java:157)
+</span></span><span style="display:flex;"><span>        at org.dspace.core.Context.dispatchEvents(Context.java:455)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator.visit(Curator.java:541)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator$TaskRunner.run(Curator.java:568)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator.doCollection(Curator.java:515)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator.doCommunity(Curator.java:487)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator.doSite(Curator.java:451)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator.curate(Curator.java:269)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.Curator.curate(Curator.java:203)
+</span></span><span style="display:flex;"><span>        at org.dspace.curate.CurationCli.main(CurationCli.java:220)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+</span></span><span style="display:flex;"><span>        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.lang.reflect.Method.invoke(Method.java:498)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:229)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:81)
+</span></span></code></pre></div><ul>
+<li>This must be related&hellip;</li>
+</ul>
+<h2 id="2023-02-18">2023-02-18</h2>
+<ul>
+<li>I realized why the country-code-tagger was tagging everything: I had overridden the <code>force</code> parameter last week!</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-02-20">2023-02-20</h2>
+<ul>
+<li>IWMI is concerned that some of their items with top Altmetric attention scores don&rsquo;t show up in the AReS Explorer
+<ul>
+<li>I looked into it for one and found that AReS is using the Handle, but Altmetric hasn&rsquo;t associated the Handle with the DOI</li>
+</ul>
+</li>
+<li>Looking into country and region issues for the PRMS team
+<ul>
+<li>Last week they had some questions about some invalid countries that ended up being typos</li>
+<li>I realized my cgspace-java-helpers country-code-tagger curation task is not using the latest version, so it was missing Türkiye</li>
+<li>I compiled the new version and ran it manually, but I have to upload a new version to Maven Central and then update the dependency in <code>dspace/modules/additions/pom.xml</code> ughhhhhh</li>
+<li>I tagged version 6.2 with the change for Türkiye and uploaded to to Maven Central with <code>mvn clean deploy</code></li>
+</ul>
+</li>
+<li>I&rsquo;m having second thoughts about switching to UN M.49 for countries because there are just too many tradeoffs
+<ul>
+<li>I want to find a way to keep our existing list, and codify some rules for it</li>
+<li>There are several discussions related to the shortcomings of ISO themselves and the iso-codes project, for example:
+<ul>
+<li><a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/issues/33">Inconsistency with articles in ISO-3166-1 English short names</a> (this one was filed by me two years ago!)</li>
+<li><a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/issues/44">ISO 3166-1: What&rsquo;s the policy for <code>common_name</code>?</a></li>
+</ul>
+</li>
+<li>I almost want to say fuck it, let&rsquo;s just use iso-codes and tell everyone to deal with it, but make sure we handle ISO 3166-1 Alpha2 or probably Alpha3 in the future</li>
+<li>Something like:
+<ul>
+<li>Prefer <code>common_name</code> if it exists</li>
+<li>Prefer the shorter of <code>name</code> and <code>official name</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-21">2023-02-21</h2>
+<ul>
+<li>Continue working on my <code>parse-iso-codes.py</code> script to parse the iso-codes JSON for ISO 3166-1
+<ul>
+<li>I also started a spreadsheet to track current CGSpace country names, proposed new names using the compromise above, and UN M.49 names</li>
+<li>I proposed this to Peter but he wasn&rsquo;t happy because there are still some stupidly long and political names there</li>
+</ul>
+</li>
+<li>I bumped the version of cgspace-java-helpers to 6.2-SNAPSHOT and pushed it to Maven Central because I can&rsquo;t figure out how to get non-snapshot releases to go there</li>
+<li>Ouch, grunt 1.6.0 was released a few weeks ago, which relies on Node.js v16, thus breaking the Mirage 2 build in DSpace 6
+<ul>
+<li>I filed <a href="https://github.com/DSpace/DSpace/issues/8676">an issue in DSpace</a></li>
+</ul>
+</li>
+<li>Help Moises from CIP troubleshoot harvesting issues on their WordPress site
+<ul>
+<li>I see 2,000 requests with the user agent &ldquo;RTB website BOT&rdquo; today and they are all HTTP 200</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep <span style="color:#e6db74">&#39;RTB website BOT&#39;</span> /var/log/nginx/rest.log | awk <span style="color:#e6db74">&#39;{print $9}&#39;</span> | sort | uniq -c | sort -h
+</span></span><span style="display:flex;"><span>   2023 200
+</span></span></code></pre></div><ul>
+<li>Start reviewing and fixing metadata for Sam&rsquo;s ~250 CAS publications from last year
+<ul>
+<li>Both Abenet and Peter have already looked at them and Sam has been waiting for months on this</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-22">2023-02-22</h2>
+<ul>
+<li>Continue proofing CAS records for Sam
+<ul>
+<li>I downloaded all the PDFs manually and checked the issue dates for each from the PDF, noting some that had licenses, ISBNs, etc</li>
+<li>I combined the title, abstract, and system subjects into one column to mine them for AGROVOC terms:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>toLowercase(value) + toLowercase(cells[&#34;dcterms.abstract&#34;].value) + toLowercase(cells[&#34;cg.subject.system&#34;].value.replace(&#34;||&#34;, &#34; &#34;))
+</span></span></code></pre></div><ul>
+<li>Then I extracted a list of AGROVOC terms the same way I did in <a href="/cgspace-notes/2022-08/">August, 2022</a> and used this Jython code to extract matching terms:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;/tmp/agrovoc-subjects.txt&#34;</span>,<span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> f : 
+</span></span><span style="display:flex;"><span>    terms <span style="color:#f92672">=</span> [name<span style="color:#f92672">.</span>rstrip()<span style="color:#f92672">.</span>lower() <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> f]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;||&#34;</span><span style="color:#f92672">.</span>join([term <span style="color:#66d9ef">for</span> term <span style="color:#f92672">in</span> terms <span style="color:#66d9ef">if</span> re<span style="color:#f92672">.</span><span style="color:#66d9ef">match</span>(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;.*\b&#34;</span> <span style="color:#f92672">+</span> term <span style="color:#f92672">+</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;\b.*&#34;</span>, value<span style="color:#f92672">.</span>lower())])
+</span></span></code></pre></div><ul>
+<li>Then I used <a href="https://stackoverflow.com/questions/15419080/openrefine-remove-duplicates-from-list-with-jython">this cool Jython to remove duplicate metadata values</a>:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>deduped_list <span style="color:#f92672">=</span> list(set(value<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;||&#34;</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;||&#39;</span><span style="color:#f92672">.</span>join(map(str, deduped_list))
+</span></span></code></pre></div><ul>
+<li>Then I did the same with countries, woooooo!</li>
+<li>I checked for duplicates and found forty-one</li>
+<li>I just stumbled upon UNTERM, which provides the official list of countries for the UN General Assembly, including a downloadable Excel with the short and formal names in all UN languages: <a href="https://unterm.un.org/unterm2/en/country">https://unterm.un.org/unterm2/en/country</a></li>
+<li>I created a <a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/merge_requests/32">pull request to add common names for Iran, Laos, and Syria on the Debian iso-codes package</a>
+<ul>
+<li>These are remarked upon in the ISO.org online browsing platform for ISO 3166-1</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-23">2023-02-23</h2>
+<ul>
+<li>Tag v0.6.1 of csv-metadata-quality</li>
+<li>Weekly meeting about CG Core types
+<ul>
+<li>I need to get some definitions from Peter for some types</li>
+</ul>
+</li>
+<li>Peter sent some of the feedback from Indira to XMLUI
+<ul>
+<li>I removed some old facets, limited others to less values, and adjusted the recent submissions from 5 to 10</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-24">2023-02-24</h2>
+<ul>
+<li>More work on understanding Sam&rsquo;s CAS publications to prepare for uploading them to CGSpace
+<ul>
+<li>I need to reconcile the duplicates and Peter&rsquo;s type re-classifications in the final version of the spreadsheet</li>
+<li>I flagged all the duplicates by creating a custom text facet matching all their titles like:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>or(
+</span></span><span style="display:flex;"><span>  isNotNull(value.match(&#34;Evaluation of the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS)&#34;)),
+</span></span><span style="display:flex;"><span>  isNotNull(value.match(&#34;Report of the IEA Workshop on Development, Use and Assessment of TOC in CGIAR Research, Rome, 12-13 January 2017&#34;)),
+</span></span><span style="display:flex;"><span>  isNotNull(value.match(&#34;Report of the IEA Workshop on Evaluating the Quality of Science, Rome, 10-11 December 2015&#34;)),
+</span></span><span style="display:flex;"><span>  isNotNull(value.match(&#34;Review of CGIAR’s Intellectual Assets Principles&#34;)),
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><ul>
+<li>Annoyingly this seems to miss the ones with parenthesis so I had to do those manually
+<ul>
+<li>This matched thirty-seven items, then I flagged them so I can handle them separately after uploading the others</li>
+<li>Then I used the URL field in the old version of the file to match the items with types <code>Evaluation</code> and <code>Independent Commentary</code> since Peter changed them</li>
+<li>I added extent, volume, issue, number, and affiliation to a few journal articles</li>
+<li>Then I did some last minute checks to make sure we&rsquo;re not uploading files for items marked as having &ldquo;multiple documents&rdquo;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-25">2023-02-25</h2>
+<ul>
+<li>Oh nice, my <a href="https://salsa.debian.org/iso-codes-team/iso-codes/-/merge_requests/32">pull request adding common names for Iran, Laos, and Syria to iso-codes</a> was merged</li>
+<li>I did a test import of the 198 CAS Publications on DSpace Test, then inspected Abenet&rsquo;s file with Gaia&rsquo;s &ldquo;multiple documents&rdquo; field one more time and decided to do the import on CGSpace
+<ul>
+<li>Gaia&rsquo;s &ldquo;multiple documents&rdquo; column had some text like &ldquo;E6&rdquo; and &ldquo;F7&rdquo; that didn&rsquo;t make any sense, and those files were not in the Sharepoint even</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-26">2023-02-26</h2>
+<ul>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-02-27">2023-02-27</h2>
+<ul>
+<li>I found two items for the CAS Publications that were marked as a duplicates, but upon second inspection were not, so I uploaded it to CGSpace
+<ul>
+<li>That makes the total number of items for CAS 200&hellip;</li>
+</ul>
+</li>
+<li>I did some CSV joining and inspections with the remaining thirty-six duplicates with the metadata for their existing items on CGSpace and uploaded them</li>
+<li>Do some work on the new DSpace 7 submission forms
+<ul>
+<li>I ended up reverting to the stock configuration to use some new techniques like the style and type bind</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-02-28">2023-02-28</h2>
+<ul>
+<li>Keep working on the DSpace 7 submission forms
+<ul>
+<li>As part of this I asked Maria and Francesca if they are still using the <code>cg.link.permalink</code> (Bioversity publications permalink) and they said no, so we can remove it from the submission form</li>
+<li>I also removed <code>cg.subject.ccafs</code> since the CRP ended over a year ago and <code>cg.subject.pabra</code> since there have only been a handful of new items in <a href="https://hdl.handle.net/10568/80211">their collection</a> and they seem to be using Alliance subjects instead</li>
+</ul>
+</li>
+<li>I filed <a href="https://github.com/DSpace/DSpace/issues/8686">a bug</a> on DSpace regarding the inability to add freetext values from an input field that uses a vocabulary</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>

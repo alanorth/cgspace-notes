@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="November, 2021" />
+<meta property="og:description" content="2021-11-02
+
+I experimented with manually sharding the Solr statistics on DSpace Test
+First I exported all the 2019 stats from CGSpace:
+
+$ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
+$ zstd statistics-2019.json
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2021-11/" />
+<meta property="article:published_time" content="2021-11-02T22:27:07+02:00" />
+<meta property="article:modified_time" content="2021-11-30T16:44:30+02:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="November, 2021"/>
+<meta name="twitter:description" content="2021-11-02
+
+I experimented with manually sharding the Solr statistics on DSpace Test
+First I exported all the 2019 stats from CGSpace:
+
+$ ./run.sh -s http://localhost:8081/solr/statistics -f &#39;time:2019-*&#39; -a export -o statistics-2019.json -k uid
+$ zstd statistics-2019.json
+"/>
+<meta name="generator" content="Hugo 0.112.3">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "November, 2021",
+  "url": "https://alanorth.github.io/cgspace-notes/2021-11/",
+  "wordCount": "2080",
+  "datePublished": "2021-11-02T22:27:07+02:00",
+  "dateModified": "2021-11-30T16:44:30+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2021-11/">
+
+    <title>November, 2021 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2021-11/">November, 2021</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2021-11-02T22:27:07+02:00">Tue Nov 02, 2021</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2021-11-02">2021-11-02</h2>
+<ul>
+<li>I experimented with manually sharding the Solr statistics on DSpace Test</li>
+<li>First I exported all the 2019 stats from CGSpace:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./run.sh -s http://localhost:8081/solr/statistics -f <span style="color:#e6db74">&#39;time:2019-*&#39;</span> -a export -o statistics-2019.json -k uid
+</span></span><span style="display:flex;"><span>$ zstd statistics-2019.json
+</span></span></code></pre></div><ul>
+<li>Then on DSpace Test I created a <code>statistics-2019</code> core with the same instance dir as the main <code>statistics</code> core (as <a href="https://wiki.lyrasis.org/display/DSDOC6x/Testing+Solr+Shards">illustrated in the DSpace docs</a>)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ mkdir -p /home/dspacetest.cgiar.org/solr/statistics-2019/data
+</span></span><span style="display:flex;"><span># create core in Solr admin
+</span></span><span style="display:flex;"><span>$ curl -s <span style="color:#e6db74">&#34;http://localhost:8081/solr/statistics/update?softCommit=true&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#34;&lt;delete&gt;&lt;query&gt;time:2019-*&lt;/query&gt;&lt;/delete&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>$ ./run.sh -s http://localhost:8081/solr/statistics-2019 -a import -o statistics-2019.json -k uid
+</span></span></code></pre></div><ul>
+<li>The key thing above is that you create the core in the Solr admin UI, but the data directory must already exist so you have to do that first in the file system</li>
+<li>I restarted the server after the import was done to see if the cores would come back up OK
+<ul>
+<li>I remember last time I tried this the manually created statistics cores didn&rsquo;t come back up after I rebooted, but this time they did</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-03">2021-11-03</h2>
+<ul>
+<li>While inspecting the stats for the new statistics-2019 shard on DSpace Test I noticed that I can&rsquo;t find any stats via the DSpace Statistics API for an item that <em>should</em> have some
+<ul>
+<li>I checked on CGSpace&rsquo;s and I can&rsquo;t find them there either, but I see them in Solr when I query in the admin UI</li>
+<li>I need to debug that, but it doesn&rsquo;t seem to be related to the sharding&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-04">2021-11-04</h2>
+<ul>
+<li>I spent a little bit of time debugging the Solr bug with the statistics-2019 shard but couldn&rsquo;t reproduce it for the few items I tested
+<ul>
+<li>So that&rsquo;s good, it seems the sharding worked</li>
+</ul>
+</li>
+<li>Linode alerted me to high CPU usage on CGSpace (linode18) yesterday
+<ul>
+<li>Looking at the Solr hits from yesterday I see 91.213.50.11 making 2,300 requests</li>
+<li>According to AbuseIPDB.com this is owned by Registrarus LLC (registrarus.ru) and it has been reported for malicious activity by several users</li>
+<li>The ASN is 50340 (SELECTEL-MSK, RU)</li>
+<li>They are attempting SQL injection:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>91.213.50.11 - - [03/Nov/2021:06:47:20 +0100] &#34;HEAD /bitstream/handle/10568/106239/U19ArtSimonikovaChromosomeInthomNodev.pdf?sequence=1%60%20WHERE%206158%3D6158%20AND%204894%3D4741--%20kIlq&amp;isAllowed=y HTTP/1.1&#34; 200 0 &#34;https://cgspace.cgiar.org:443/bitstream/handle/10568/106239/U19ArtSimonikovaChromosomeInthomNodev.pdf&#34; &#34;Mozilla/5.0 (X11; U; Linux i686; en-CA; rv:1.8.0.10) Gecko/20070223 Fedora/1.5.0.10-1.fc5 Firefox/1.5.0.10&#34;
+</span></span></code></pre></div><ul>
+<li>Another is in China, and they grabbed 1,200 PDFs from the REST API in under an hour:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zgrep 222.129.53.160 /var/log/nginx/rest.log.2.gz | wc -l
+</span></span><span style="display:flex;"><span>1178
+</span></span></code></pre></div><ul>
+<li>I will continue to split the Solr statistics back into year-shards on DSpace Test (linode26)
+<ul>
+<li>Today I did all 2018 stats&hellip;</li>
+<li>I want to see if there is a noticeable change in JVM memory, Solr response time, etc</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-07">2021-11-07</h2>
+<ul>
+<li>Update all Docker containers on AReS and rebuild OpenRXV:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+</span></span><span style="display:flex;"><span>$ docker-compose build
+</span></span></code></pre></div><ul>
+<li>Then restart the server and start a fresh harvest</li>
+<li>Continue splitting the Solr statistics into yearly shards on DSpace Test (doing 2017, 2016, 2015, and 2014 today)</li>
+<li>Several users wrote to me last week to say that workflow emails haven&rsquo;t been working since 2021-10-21 or so
+<ul>
+<li>I did a test on CGSpace and it&rsquo;s indeed broken:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace test-email
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>About to send test email:
+</span></span><span style="display:flex;"><span> - To: fuuuu
+</span></span><span style="display:flex;"><span> - Subject: DSpace test email
+</span></span><span style="display:flex;"><span> - Server: smtp.office365.com
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Error sending email:
+</span></span><span style="display:flex;"><span> - Error: javax.mail.SendFailedException: Send failure (javax.mail.AuthenticationFailedException: 535 5.7.139 Authentication unsuccessful, the user credentials were incorrect. [AM5PR0701CA0005.eurprd07.prod.outlook.com]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Please see the DSpace documentation for assistance.
+</span></span></code></pre></div><ul>
+<li>I sent a message to ILRI ICT to ask them to check the account/password</li>
+<li>I want to do one last test of the Elasticsearch updates on OpenRXV so I got a snapshot of the latest Elasticsearch volume used on the production AReS instance:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># tar czf openrxv_esData_7.tar.xz /var/lib/docker/volumes/openrxv_esData_7
+</span></span></code></pre></div><ul>
+<li>Then on my local server:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ mv ~/.local/share/containers/storage/volumes/openrxv_esData_7/ ~/.local/share/containers/storage/volumes/openrxv_esData_7.2021-11-07.bak
+</span></span><span style="display:flex;"><span>$ tar xf /tmp/openrxv_esData_7.tar.xz -C ~/.local/share/containers/storage/volumes --strip-components<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>$ find ~/.local/share/containers/storage/volumes/openrxv_esData_7 -type f -exec chmod <span style="color:#ae81ff">660</span> <span style="color:#f92672">{}</span> <span style="color:#ae81ff">\;</span>
+</span></span><span style="display:flex;"><span>$ find ~/.local/share/containers/storage/volumes/openrxv_esData_7 -type d -exec chmod <span style="color:#ae81ff">770</span> <span style="color:#f92672">{}</span> <span style="color:#ae81ff">\;</span>
+</span></span><span style="display:flex;"><span># copy backend/data to /tmp <span style="color:#66d9ef">for</span> the repository setup/layout
+</span></span><span style="display:flex;"><span>$ rsync -av --partial --progress --delete provisioning@ares:/tmp/data/ backend/data
+</span></span></code></pre></div><ul>
+<li>This seems to work: all items, stats, and repository setup/layout are OK</li>
+<li>I merged my <a href="https://github.com/ilri/OpenRXV/pull/126">Elasticsearch pull request</a> from last month into OpenRXV</li>
+</ul>
+<h2 id="2021-11-08">2021-11-08</h2>
+<ul>
+<li>File <a href="https://github.com/DSpace/dspace-angular/issues/1391">an issue for the Angular flash of unstyled content</a> on DSpace 7</li>
+<li>Help Udana from IWMI with a question about CGSpace statistics
+<ul>
+<li>He found conflicting numbers when using the community and collection modes in Content and Usage Analysis</li>
+<li>I sent him more numbers directly from the DSpace Statistics API</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-09">2021-11-09</h2>
+<ul>
+<li>I migrated the 2013, 2012, and 2011 statistics to yearly shards on DSpace Test&rsquo;s Solr to continute my testing of memory / latency impact</li>
+<li>I found out why the CI jobs for the DSpace Statistics API had been failing the past few weeks
+<ul>
+<li>When I reverted to using the original falcon-swagger-ui project after they apparently merged my Falcon 3 changes, it seems that they actually only merged the Swagger UI changes, not the Falcon 3 fix!</li>
+<li>I switched back to using my own fork and now it&rsquo;s working</li>
+<li>Unfortunately now I&rsquo;m getting an error installing my dependencies with Poetry:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>RuntimeError
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Unable to find installation candidates for regex (2021.11.9)
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>at /usr/lib/python3.9/site-packages/poetry/installation/chooser.py:72 in choose_for
+</span></span><span style="display:flex;"><span>     68│
+</span></span><span style="display:flex;"><span>     69│             links.append(link)
+</span></span><span style="display:flex;"><span>     70│
+</span></span><span style="display:flex;"><span>     71│         if not links:
+</span></span><span style="display:flex;"><span>  →  72│             raise RuntimeError(
+</span></span><span style="display:flex;"><span>     73│                 &#34;Unable to find installation candidates for {}&#34;.format(package)
+</span></span><span style="display:flex;"><span>     74│             )
+</span></span><span style="display:flex;"><span>     75│
+</span></span><span style="display:flex;"><span>     76│         # Get the best link
+</span></span></code></pre></div><ul>
+<li>So that&rsquo;s super annoying&hellip; I&rsquo;m going to try using Pipenv again&hellip;</li>
+</ul>
+<h2 id="2021-11-10">2021-11-10</h2>
+<ul>
+<li>93.158.91.62 is scraping us again
+<ul>
+<li>That&rsquo;s an IP in Sweden that is clearly a bot, but pretending to use a normal user agent</li>
+<li>I added them to the &ldquo;bot&rdquo; list in nginx so the requests will share a common DSpace session with other bots and not create Solr hits, but still they are causing high outbound traffic</li>
+<li>I modified the nginx configuration to send them an HTTP 403 and tell them to use a bot user agent</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-14">2021-11-14</h2>
+<ul>
+<li>I decided to update AReS to the latest OpenRXV version with Elasticsearch 7.13
+<ul>
+<li>First I took backups of the Elasticsearch volume and OpenRXV backend data:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker-compose down
+</span></span><span style="display:flex;"><span>$ sudo tar czf openrxv_esData_7-2021-11-14.tar.xz /var/lib/docker/volumes/openrxv_esData_7
+</span></span><span style="display:flex;"><span>$ cp -a backend/data backend/data.2021-11-14
+</span></span></code></pre></div><ul>
+<li>Then I checked out the latest git commit, updated all images, rebuilt the project:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ docker images | grep -v ^REPO | sed <span style="color:#e6db74">&#39;s/ \+/:/g&#39;</span> | cut -d: -f1,2 | xargs -L1 docker pull
+</span></span><span style="display:flex;"><span>$ docker-compose build
+</span></span><span style="display:flex;"><span>$ docker-compose up -d
+</span></span></code></pre></div><ul>
+<li>Then I updated the repository configurations and started a fresh harvest</li>
+<li>Help Francesca from the Alliance with a question about embargos on CGSpace items
+<ul>
+<li>I logged in as a normal user and a CGIAR user, and I was unable to access the PDF or full text of the item</li>
+<li>I was only able to access the PDF when I was logged in as an admin</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-21">2021-11-21</h2>
+<ul>
+<li>Update all Docker images on AReS (linode20) and re-build OpenRXV
+<ul>
+<li>Run all system updates and reboot the server</li>
+<li>Start a full harvest, but I notice that the number of items being harvested is not complete, so I stopped it</li>
+</ul>
+</li>
+<li>Run all system updates on CGSpace (linode18) and DSpace Test (linode26) and reboot them</li>
+<li>ICT finally got back to use about the passwords for SMTP so I updated that and tested it to make sure it&rsquo;s working</li>
+<li>Some bot with IP 87.203.87.141 in Greece is making tons of requests to XMLUI with the user agent <code>Microsoft Internet Explorer</code>
+<ul>
+<li>I added them to the list of IPs in nginx that get an HTTP 403 with a message to use a real user agent</li>
+<li>I will also purge all their requests from Solr:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips -p
+</span></span><span style="display:flex;"><span>Purging 10893 hits from 87.203.87.141 in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 10893
+</span></span></code></pre></div><ul>
+<li>I did a bit more work documenting and tweaking the PostgreSQL configuration for CGSpace and DSpace Test in the Ansible infrastructure playbooks
+<ul>
+<li>I finally deployed the changes on both servers</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-22">2021-11-22</h2>
+<ul>
+<li>Udana asked me about validating on OpenArchives again
+<ul>
+<li>According to my notes we actually completed this in 2021-08, but for some reason we are no longer on the list and I can&rsquo;t validate again</li>
+<li>There seems to be a problem with their website because every link I try to validate says it received an HTTP 500 response from CGSpace</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-23">2021-11-23</h2>
+<ul>
+<li>Help RTB colleagues with thumbnail issues on their <a href="https://hdl.handle.net/10568/114576">2020 Annual Report</a>
+<ul>
+<li>The PDF seems to be in landscape mode or something and the first page is half width, so the thumbnail renders with the left half being white</li>
+<li>I generated a new one manually with libvips and it is better:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ vipsthumbnail AR<span style="color:#ae81ff">\ </span>RTB<span style="color:#ae81ff">\ </span>2020.pdf -s <span style="color:#ae81ff">600</span> -o <span style="color:#e6db74">&#39;%s.jpg[Q=85,optimize_coding,strip]&#39;</span>
+</span></span></code></pre></div><ul>
+<li>I sent an email to the OpenArchives.org contact to ask for help with the OAI validator
+<ul>
+<li>Someone responded to say that there have been a number of complaints about this on the oai-pmh mailing list recently&hellip;</li>
+</ul>
+</li>
+<li>I sent an email to Pythagoras from GARDIAN to ask if they can use a more specific user agent than &ldquo;Microsoft Internet Explorer&rdquo; for their scraper
+<ul>
+<li>He said he will change the user agent</li>
+</ul>
+</li>
+</ul>
+<h2 id="2021-11-24">2021-11-24</h2>
+<ul>
+<li>I had an idea to check our Solr statistics for hits from all the IPs that I have listed in nginx as being bots
+<ul>
+<li>Other than a few that I ruled out that <em>may</em> be humans, these are all making requests within one month or with no user agent, which is highly suspicious:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-ip-hits.sh -f /tmp/ips.txt
+</span></span><span style="display:flex;"><span>Found 8352 hits from 138.201.49.199 in statistics
+</span></span><span style="display:flex;"><span>Found 9374 hits from 78.46.89.18 in statistics
+</span></span><span style="display:flex;"><span>Found 2112 hits from 93.179.69.74 in statistics
+</span></span><span style="display:flex;"><span>Found 1 hits from 31.6.77.23 in statistics
+</span></span><span style="display:flex;"><span>Found 5 hits from 34.209.213.122 in statistics
+</span></span><span style="display:flex;"><span>Found 86772 hits from 163.172.68.99 in statistics
+</span></span><span style="display:flex;"><span>Found 77 hits from 163.172.70.248 in statistics
+</span></span><span style="display:flex;"><span>Found 15842 hits from 163.172.71.24 in statistics
+</span></span><span style="display:flex;"><span>Found 172954 hits from 104.154.216.0 in statistics
+</span></span><span style="display:flex;"><span>Found 3 hits from 188.134.31.88 in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of hits from bots: 295492
+</span></span></code></pre></div><h2 id="2021-11-27">2021-11-27</h2>
+<ul>
+<li>Peter sent me corrections for the authors that I had sent him back in 2021-09
+<ul>
+<li>I did a quick sanity check on them with OpenRefine, filtering out all the metadata with no replacements, then ran through my csv-metadata-quality script</li>
+<li>Then I imported them into my local instance as a test:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i /tmp/authors.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f dc.contributor.author -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">3</span>
+</span></span></code></pre></div><ul>
+<li>Then I imported to CGSpace and started a full Discovery re-index:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ time chrt -b <span style="color:#ae81ff">0</span> ionice -c2 -n7 nice -n19 dspace index-discovery -b
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>real    272m43.818s
+</span></span><span style="display:flex;"><span>user    183m4.543s
+</span></span><span style="display:flex;"><span>sys     2m47.988
+</span></span></code></pre></div><h2 id="2021-11-28">2021-11-28</h2>
+<ul>
+<li>Run system updates on AReS server (linode20) and update all Docker containers and reboot
+<ul>
+<li>Then I started a fresh harvest as I always do on Sunday</li>
+</ul>
+</li>
+<li>I am experimenting with pinning npm version 7 on OpenRXV frontend because of these Angular errors:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>npm WARN EBADENGINE Unsupported engine {
+</span></span><span style="display:flex;"><span>npm WARN EBADENGINE   package: &#39;@angular-devkit/architect@0.901.15&#39;,
+</span></span><span style="display:flex;"><span>npm WARN EBADENGINE   required: { node: &#39;&gt;= 10.13.0&#39;, npm: &#39;^6.11.0 || ^7.5.6&#39;, yarn: &#39;&gt;= 1.13.0&#39; },
+</span></span><span style="display:flex;"><span>npm WARN EBADENGINE   current: { node: &#39;v12.22.7&#39;, npm: &#39;8.1.3&#39; }
+</span></span><span style="display:flex;"><span>npm WARN EBADENGINE }
+</span></span></code></pre></div><h2 id="2021-11-29">2021-11-29</h2>
+<ul>
+<li>Tezira reached out to me to say that submissions on CGSpace are taking forever</li>
+<li>I see a definite increase in locks in the last few days:</li>
+</ul>
+<p><img src="/cgspace-notes/2021/11/postgres_locks_ALL-week.png" alt="PostgreSQL locks week"></p>
+<ul>
+<li>The locks are all held by dspaceWeb (XMLUI):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
+</span></span><span style="display:flex;"><span>      1 
+</span></span><span style="display:flex;"><span>      1 ------------------
+</span></span><span style="display:flex;"><span>      1 (1394 rows)
+</span></span><span style="display:flex;"><span>      1  application_name 
+</span></span><span style="display:flex;"><span>      9  psql
+</span></span><span style="display:flex;"><span>   1385  dspaceWeb
+</span></span></code></pre></div><ul>
+<li>I restarted PostgreSQL and the locks dropped down:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#34;SELECT application_name FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid&#34;</span> | sort | uniq -c | sort -n
+</span></span><span style="display:flex;"><span>      1
+</span></span><span style="display:flex;"><span>      1 ------------------
+</span></span><span style="display:flex;"><span>      1 (103 rows)
+</span></span><span style="display:flex;"><span>      1  application_name
+</span></span><span style="display:flex;"><span>      9  psql
+</span></span><span style="display:flex;"><span>     94  dspaceWeb
+</span></span></code></pre></div><h2 id="2021-11-30">2021-11-30</h2>
+<ul>
+<li>IWMI sent me ORCID identifiers for some new staff
+<ul>
+<li>We currently have 1332 unique identifiers, so this adds sixteen new ones:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/iwmi-orcids.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort | uniq &gt; /tmp/2021-11-30-combined-orcids.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2021-11-30-combined-orcids.txt
+</span></span><span style="display:flex;"><span>1348 /tmp/2021-11-30-combined-orcids.txt
+</span></span></code></pre></div><ul>
+<li>After I combined them and removed duplicates, I resolved all the names using my <code>resolve-orcids.py</code> script:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/resolve-orcids.py -i /tmp/2021-11-30-combined-orcids.txt -o /tmp/2021-11-30-combined-orcids-names.txt
+</span></span></code></pre></div><ul>
+<li>Then I updated some ORCID identifiers that had changed in the XML:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2021-11-30-fix-orcids.csv
+</span></span><span style="display:flex;"><span>cg.creator.identifier,correct
+</span></span><span style="display:flex;"><span>&#34;ADEBOWALE AKANDE: 0000-0002-6521-3272&#34;,&#34;ADEBOWALE AD AKANDE: 0000-0002-6521-3272&#34;
+</span></span><span style="display:flex;"><span>&#34;Daniel Ortiz Gonzalo: 0000-0002-5517-1785&#34;,&#34;Daniel Ortiz-Gonzalo: 0000-0002-5517-1785&#34;
+</span></span><span style="display:flex;"><span>&#34;FRIDAY ANETOR: 0000-0003-3137-1958&#34;,&#34;Friday Osemenshan Anetor: 0000-0003-3137-1958&#34;
+</span></span><span style="display:flex;"><span>&#34;Sander Muilerman: 0000-0001-9103-3294&#34;,&#34;Sander Muilerman-Rodrigo: 0000-0001-9103-3294&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/fix-metadata-values.py -i 2021-11-30-fix-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span> -f cg.creator.identifier -t <span style="color:#e6db74">&#39;correct&#39;</span> -m <span style="color:#ae81ff">247</span>
+</span></span></code></pre></div><ul>
+<li>Tag existing items from the IWMI&rsquo;s new authors with ORCID iDs using <code>add-orcid-identifiers-csv.py</code> (7 new metadata fields added):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat 2021-11-30-add-orcids.csv 
+</span></span><span style="display:flex;"><span>dc.contributor.author,cg.creator.identifier
+</span></span><span style="display:flex;"><span>&#34;Liaqat, U.W.&#34;,&#34;Umar Waqas Liaqat: 0000-0001-9027-5232&#34;
+</span></span><span style="display:flex;"><span>&#34;Liaqat, Umar Waqas&#34;,&#34;Umar Waqas Liaqat: 0000-0001-9027-5232&#34;
+</span></span><span style="display:flex;"><span>&#34;Munyaradzi, M.&#34;,&#34;Munyaradzi Junia Mutenje: 0000-0002-7829-9300&#34;
+</span></span><span style="display:flex;"><span>&#34;Mutenje, Munyaradzi&#34;,&#34;Munyaradzi Junia Mutenje: 0000-0002-7829-9300&#34;
+</span></span><span style="display:flex;"><span>&#34;Rex, William&#34;,&#34;William Rex: 0000-0003-4979-5257&#34;
+</span></span><span style="display:flex;"><span>&#34;Shrestha, Shisher&#34;,&#34;Nirman Shrestha: 0000-0002-0996-8611&#34;
+</span></span><span style="display:flex;"><span>$ ./ilri/add-orcid-identifiers-csv.py -i 2021-11-30-add-orcids.csv -db dspace -u dspace -p <span style="color:#e6db74">&#39;fuuu&#39;</span>
+</span></span></code></pre></div><!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
+
+<li><a href="/cgspace-notes/2023-03/">March, 2023</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>
