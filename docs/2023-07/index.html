@@ -11,14 +11,14 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-07/" />
 <meta property="article:published_time" content="2023-07-01T17:14:36+03:00" />
-<meta property="article:modified_time" content="2023-07-20T16:02:38+03:00" />
+<meta property="article:modified_time" content="2023-07-22T09:19:48+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="July, 2023"/>
 <meta name="twitter:description" content="2023-07-01 Export CGSpace to check for missing Initiative collection mappings Start harvesting on AReS 2023-07-02 Minor edits to the crossref_doi_lookup.py script while running some checks from 22,000 CGSpace DOIs 2023-07-03 I analyzed the licenses declared by Crossref and found with high confidence that ~400 of ours were incorrect I took the more accurate ones from Crossref and updated the items on CGSpace I took a few hundred ISBNs as well for where we were missing them I also tagged ~4,700 items with missing licenses as &ldquo;Copyrighted; all rights reserved&rdquo; based on their Crossref license status being TDM, mostly from Elsevier, Wiley, and Springer Checking a dozen or so manually, I confirmed that if Crossref only has a TDM license then it&rsquo;s usually copyrighted (could still be open access, but we can&rsquo;t tell via Crossref) I would be curious to write a script to check the Unpaywall API for open access status&hellip; In the past I found that their license status was not very accurate, but the open access status might be more reliable More minor work on the DSpace 7 item views I learned some new Angular template syntax I created a custom component to show Creative Commons licenses on the simple item page I also decided that I don&rsquo;t like the Impact Area icons as a component because they don&rsquo;t have any visual meaning 2023-07-04 Focus group meeting with CGSpace partners about DSpace 7 I added a themed file selection component to the CGSpace theme It displays the bistream description instead of the file name, just like we did in DSpace 6 XMLUI I added a custom component to show share icons 2023-07-05 I spent some time trying to update OpenRXV from Angular 9 to 10 to 11 to 12 to 13 Most things work but there are some minor bugs it seems Mishell from CIP emailed me to say she was having problems approving an item on CGSpace Looking at PostgreSQL I saw there were a dozen or so locks that were several hours and even over one day old so I killed those processes and told her to try again 2023-07-06 Types meeting I wrote a Python script to check Unpaywall for some information about DOIs 2023-07-7 Continue exploring Unpaywall data for some of our DOIs In the past I&rsquo;ve found their licensing information to not be very reliable (preferring Crossref), but I think their open access status is more reliable, especially when the provider is listed as being the publisher Even so, sometimes the version can be &ldquo;acceptedVersion&rdquo;, which is presumably the author&rsquo;s version, as opposed to the &ldquo;publishedVersion&rdquo;, which means it&rsquo;s available as open access on the publisher&rsquo;s website I did some quality assurance and found ~100 that were marked as Limited Access, but should have been Open Access, and fixed a handful of licenses Delete duplicate metadata as describe in my DSpace issue from last year: https://github."/>
-<meta name="generator" content="Hugo 0.112.3">
+<meta name="generator" content="Hugo 0.115.4">
 
 
     
@@ -28,9 +28,9 @@
   "@type": "BlogPosting",
   "headline": "July, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-07/",
-  "wordCount": "1177",
+  "wordCount": "1503",
   "datePublished": "2023-07-01T17:14:36+03:00",
-  "dateModified": "2023-07-20T16:02:38+03:00",
+  "dateModified": "2023-07-22T09:19:48+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -278,6 +278,64 @@
 <ul>
 <li>Export CGSpace tp fix missing Initiative collections</li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-07-24">2023-07-24</h2>
+<ul>
+<li>Test Salem&rsquo;s new JavaScript-based DSpace Statistics API and send him some feedback</li>
+<li>I noticed a few times that the Solr service on my DSpace 7 instance is getting OOM killed
+<ul>
+<li>I had been using a 4g Solr heap, but maybe we don&rsquo;t need that much</li>
+<li>Tomcat is also using 4.6GB, and then there&rsquo;s PostgreSQL&hellip; so perhaps it&rsquo;s all a bit much on this system now</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-25">2023-07-25</h2>
+<ul>
+<li>Start testing exporting DSpace 6 Solr cores to import on DSpace 7:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-export-statistics -i statistics
+</span></span></code></pre></div><ul>
+<li>I&rsquo;m curious how long it takes and how much data there will be
+<ul>
+<li>The size of the Solr data directory is currently 82GB</li>
+<li>The export took about 2.5 hours and created 6,000 individual CSVs, one for each day of Solr stats</li>
+<li>The size of the exported CSVs is about 88GB</li>
+<li>I will copy just a few years to import on the DSpace 7 test server</li>
+<li>So importing these is going to require removing the Atmire custom fields:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace solr-import-statistics -i statistics
+</span></span><span style="display:flex;"><span>Exception: Error from server at http://localhost:8983/solr/statistics: ERROR: [doc=1a92472e-e39d-4602-9b4d-da022df8f233] unknown field &#39;containerCommunity&#39;
+</span></span><span style="display:flex;"><span>org.apache.solr.client.solrj.impl.HttpSolrClient$RemoteSolrException: Error from server at http://localhost:8983/solr/statistics: ERROR: [doc=1a92472e-e39d-4602-9b4d-da022df8f233] unknown field &#39;containerCommunity&#39;
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.executeMethod(HttpSolrClient.java:681)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:266)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:248)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.request(SolrClient.java:1290)
+</span></span><span style="display:flex;"><span>        at org.dspace.util.SolrImportExport.importIndex(SolrImportExport.java:465)
+</span></span><span style="display:flex;"><span>        at org.dspace.util.SolrImportExport.main(SolrImportExport.java:148)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:277)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.handleScript(ScriptLauncher.java:133)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:98)
+</span></span></code></pre></div><ul>
+<li>I will try using solr-import-export-json, which I&rsquo;ve used in the past to skip Atmire custom fields in Solr:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2022.json -f <span style="color:#e6db74">&#39;time:[2022-01-01T00\:00\:00Z TO 2022-12-31T23\:59\:59Z]&#39;</span> -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,geoIpCountryCode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId,core_update_run_nb
+</span></span></code></pre></div><ul>
+<li>Some users complained that CGSpace was slow and I found a handful of locks that were hours and days old&hellip;
+<ul>
+<li>I killed those and told them to try again</li>
+</ul>
+</li>
+<li>After importing the Solr statistics into DSpace 7 I realized that my DSpace Statistics API will work fine
+<ul>
+<li>I made some minor modifications to the Ansible infrastructure scripts to make sure it is enabled and then activated it on DSpace 7 Test</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
