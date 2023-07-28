@@ -11,7 +11,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-07/" />
 <meta property="article:published_time" content="2023-07-01T17:14:36+03:00" />
-<meta property="article:modified_time" content="2023-07-22T09:19:48+03:00" />
+<meta property="article:modified_time" content="2023-07-25T23:54:53+03:00" />
 
 
 
@@ -28,9 +28,9 @@
   "@type": "BlogPosting",
   "headline": "July, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-07/",
-  "wordCount": "1503",
+  "wordCount": "2096",
   "datePublished": "2023-07-01T17:14:36+03:00",
-  "dateModified": "2023-07-22T09:19:48+03:00",
+  "dateModified": "2023-07-25T23:54:53+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -337,7 +337,100 @@
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2023-07-26">2023-07-26</h2>
+<ul>
+<li>Debugging lock issues on CGSpace
+<ul>
+<li>I see the blocking PIDs for some long-held locks are &ldquo;idle in transaction&rdquo;:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ps auxw | grep -E <span style="color:#e6db74">&#34;(1864132|1659487)&#34;</span>
+</span></span><span style="display:flex;"><span>postgres 1659487  0.0  0.5 3269900 197120 ?      Ss   Jul25   0:03 postgres: 14/main: cgspace cgspace 127.0.0.1(61648) idle in transaction
+</span></span><span style="display:flex;"><span>postgres 1864132  0.1  0.7 3275704 254528 ?      Ss   07:27   0:08 postgres: 14/main: cgspace cgspace 127.0.0.1(36998) idle in transaction
+</span></span><span style="display:flex;"><span>postgres 1880388  0.0  0.0   9208  2432 pts/3    S+   08:48   0:00 grep -E (1864132|1659487)
+</span></span></code></pre></div><ul>
+<li>I used some other scripts and found that those processes were executing the following statement:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>select nextval (&#39;public.tasklistitem_seq&#39;)
+</span></span></code></pre></div><ul>
+<li>I don&rsquo;t know why these can get blocked for hours without resolution, but for now I just killed them
+<ul>
+<li>For what it&rsquo;s worth <a href="https://github.com/DSpace/DSpace/commit/16ae96b4c3d833c2a4acd1f05985d424c3a52bd7">these sequences were removed in DSpace 7.0</a> along with the &ldquo;traditional&rdquo; item workflow—maybe that means we won&rsquo;t have such contention issues in DSpace 7!</li>
+</ul>
+</li>
+<li>I wrote a slightly longer regex to match locks that have been stuck for more than 1 hour based on the output of the <code>locks-age.sql</code> script and killed them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql &lt; locks-age.sql | awk -F<span style="color:#e6db74">&#34;|&#34;</span> <span style="color:#e6db74">&#39;/ [[:digit:]][1-9]:[[:digit:]]{2}:[[:digit:]]{2}\./ {print $10}&#39;</span> | sort -u | xargs kill
+</span></span></code></pre></div><ul>
+<li>I filed <a href="https://github.com/DSpace/dspace-angular/issues/2400">an issue for missing Altmetric badges on DSpace 7 Angular</a></li>
+</ul>
+<h2 id="2023-07-27">2023-07-27</h2>
+<ul>
+<li>Export CGSpace to check countries, regions, types, and Initiatives
+<ul>
+<li>There were a few minor issues in countries and regions, and I noticed 186 items without types!</li>
+<li>Then I ran the file through csv-metadata-quality to make sure items with countries have appropriate regions</li>
+</ul>
+</li>
+<li>Brief discussion about OpenRXV bugs and fixes with Moayad</li>
+<li>I was toying with the idea of using an expanded whitespace check/fix based on <a href="https://eslint.org/docs/latest/rules/no-irregular-whitespace">ESLint&rsquo;s no-irregular-whitespace</a> rule in csv-metadata-quality
+<ul>
+<li>I found 176 items in CGSpace with such whitespace in their titles alone</li>
+<li>I compared the results of removing these characters and replacing them with a space</li>
+<li>In <em>most</em> cases removing it is the correct thing to do, for example &ldquo;Pesticides : une arme à double tranchant&rdquo; → &ldquo;Pesticides: une arme à double tranchant&rdquo;</li>
+<li>But in some items it is tricky, for example &ldquo;L&rsquo;environnement juridique est-il propice à la gestion&rdquo; → &ldquo;L&rsquo;environnement juridique est-il propice àla gestion&rdquo;</li>
+<li>I guess it would really need some good heuristics or a human to verify&hellip;</li>
+</ul>
+</li>
+<li>I upgraded OpenRXV to Angular v14</li>
+</ul>
+<h2 id="2023-07-28">2023-07-28</h2>
+<ul>
+<li>After a bit more testing I merged the <a href="https://github.com/ilri/OpenRXV/pull/184">Angular v14 changes to OpenRXV master</a></li>
+<li>I am getting an error trying to import the 2020 Solr statistics from CGSpace to DSpace 7:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Exception in thread &#34;main&#34; org.apache.solr.client.solrj.impl.BaseHttpSolrClient$RemoteSolrException: Error from server at http://localhost:8983/solr/statistics: ERROR: [doc=0008a7c1-e552-4a4e-93e4-4d23bf39964b] Error adding field &#39;workflowItemId&#39;=&#39;0812be47-1bfe-45e2-9208-5bf10ee46f81&#39; msg=For input string: &#34;0812be47-1bfe-45e2-9208-5bf10ee46f81&#34;
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.executeMethod(HttpSolrClient.java:745)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:259)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:240)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrRequest.process(SolrRequest.java:234)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.add(SolrClient.java:102)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.add(SolrClient.java:69)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.add(SolrClient.java:82)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.insertBatch(App.java:295)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.lambda$writeAllDocuments$10(App.java:276)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.BatchCollector.lambda$accumulator$0(BatchCollector.java:71)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.ReduceOps$3ReducingSink.accept(ReduceOps.java:169)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1845)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.writeAllDocuments(App.java:252)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.main(App.java:150)
+</span></span></code></pre></div><ul>
+<li>Ahhhh, in DSpace 6 this field was a string in the Solr statistics schema, but in DSpace 7 it is an integer&hellip;?
+<ul>
+<li>Oh, it seems to be an Atmire change in our DSpace 6&hellip; hmmm, so we need to ignore the <code>workflowItemId</code> field when exporting
+<ul>
+<li>Upstream: <a href="https://github.com/DSpace/DSpace/blob/dspace-6_x/dspace/solr/statistics/conf/schema.xml#L328">https://github.com/DSpace/DSpace/blob/dspace-6_x/dspace/solr/statistics/conf/schema.xml#L328</a></li>
+<li>ILRI: <a href="https://github.com/ilri/DSpace/blob/6_x-prod/dspace/solr/statistics/conf/schema.xml#L344">https://github.com/ilri/DSpace/blob/6_x-prod/dspace/solr/statistics/conf/schema.xml#L344</a></li>
+</ul>
+</li>
+<li>I am wondering if we can skip all these workflow fields since I don&rsquo;t think we are using any aspects of statistics related to workflows</li>
+<li>I diffed our Solr statistics schema with the one from vanilla DSpace 6 and got a list of all the fields that were different:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>isInternal,workflowItemId,containerCommunity,containerCollection,containerItem,containerBitstream,dateYear,dateYearMonth,filterquery,complete_query,simple_query,complete_query_search,simple_query_search,ngram_query_search,ngram_simplequery_search,text,storage_statistics_type,storage_size,storage_nb_of_bitstreams,name,first_name,last_name,p_communities_id,p_communities_name,p_communities_map,p_group_id,p_group_name,p_group_map,group_id,group_name,group_map,parent_count,bitstreamId,bitstreamCount,actingGroupId,actorMemberGroupId,actingGroupParentId,rangeDescription,range,version_id,file_id,cua_version,core_update_run_nb,orphaned
+</code></pre><ul>
+<li>I will combine it with the other fields I was skipping above and try the export again:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2020.json -f <span style="color:#e6db74">&#39;time:[2020-01-01T00\:00\:00Z TO 2020-12-31T23\:59\:59Z]&#39;</span> -k uid -S actingGroupId,actingGroupParentId,actorMemberGroupId,author_mtdt,author_mtdt_search,bitstreamCount,bitstreamId,complete_query,complete_query_search,containerBitstream,containerCollection,containerCommunity,containerItem,core_update_run_nb,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,file_id,filterquery,first_name,geoipcountrycode,geoIpCountryCode,group_id,group_map,group_name,ip_ngram,ip_search,isArchived,isInternal,iso_mtdt,iso_mtdt_search,isWithdrawn,last_name,name,ngram_query_search,ngram_simplequery_search,orphaned,parent_count,p_communities_id,p_communities_map,p_communities_name,p_group_id,p_group_map,p_group_name,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,referrer_ngram,referrer_search,simple_query,simple_query_search,solr_update_time_stamp,storage_nb_of_bitstreams,storage_size,storage_statistics_type,subject_mtdt,subject_mtdt_search,text,userAgent_ngram,userAgent_search,version_id,workflowItemId
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
 
   
