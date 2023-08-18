@@ -19,7 +19,7 @@ Start working on some batch uploads for IFPRI
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-08/" />
 <meta property="article:published_time" content="2023-08-03T11:18:36+03:00" />
-<meta property="article:modified_time" content="2023-08-13T05:54:16+02:00" />
+<meta property="article:modified_time" content="2023-08-14T18:38:03+02:00" />
 
 
 
@@ -44,9 +44,9 @@ Start working on some batch uploads for IFPRI
   "@type": "BlogPosting",
   "headline": "August, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-08/",
-  "wordCount": "497",
+  "wordCount": "1057",
   "datePublished": "2023-08-03T11:18:36+03:00",
-  "dateModified": "2023-08-13T05:54:16+02:00",
+  "dateModified": "2023-08-14T18:38:03+02:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -211,6 +211,87 @@ Start working on some batch uploads for IFPRI
 <h2 id="2023-08-14">2023-08-14</h2>
 <ul>
 <li>I ported the DSpace 6.x REST API patch to allow specifying a bundle name when POSTing a bitstream to the legacy REST API in DSpace 7.6</li>
+</ul>
+<h2 id="2023-08-16">2023-08-16</h2>
+<ul>
+<li>I noticed that the DSpace statistics pages don&rsquo;t seem to work on communities or collections
+<ul>
+<li>I finally took time to look in the DSpace log file and found this for one:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2023-08-16 14:30:31,873 WARN  dace8f96-f034-488e-b38c-9f2eb5d0e002 6cbd0b18-6852-4294-99a5-02dfcab0a469 org.dspace.app.rest.exception.DSpaceApiExceptionControllerAdvice @ Request is invalid or incorrect (status:400 exception: Invalid UUID string: -1 at: java.base/java.util.UUID.fromString1(UUID.java:280))
+</span></span></code></pre></div><ul>
+<li>I&rsquo;m surprised to see this because those should have been dealt with when we upgraded to DSpace 6
+<ul>
+<li>Looking in the Solr statistics core I see ~1,000,000 documents with the ID <code>-1</code>, and about 57,000,000 that don&rsquo;t</li>
+<li>Also interesting, faceting by <code>dateYear</code> I see:
+<ul>
+<li>2023: 209566</li>
+<li>2022: 403871</li>
+<li>2021: 336548</li>
+<li>2020: 31659</li>
+<li>&hellip; none before 2020</li>
+</ul>
+</li>
+<li>They are all type 5, which is &ldquo;Site&rdquo; aka the home page, according to <code>dspace-api/src/main/java/org/dspace/core/Constants.java</code></li>
+<li>Ah hah, and I can see in my DSpace 7 test Solr there are a bunch of hits with <code>type: 5</code> that have &ldquo;-1&rdquo; of course, but also newer ones that have an actual UUID</li>
+<li>I used the <code>/server/api/dso/find?uuid=3945ec23-2426-4fce-a2ea-48b38b91547f</code> endpoint to find out that there is a new <code>/server/api/core/sites</code> endpoint listing exactly one site (the home page) with this ID</li>
+<li>So for now I can replace all the &ldquo;-1&rdquo; documents with this ID on the test server at least, then I will have to remember to do that during the migration of the production instance</li>
+<li>I did a new export from DSpace 6 using solr-import-export-json with a query limiting it to documents of type 5 and negative 1 ID:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-fix-uuid.json -f <span style="color:#e6db74">&#39;id:\-1 AND type:5 AND time:[2020-01-01T00\:00\:00Z TO 2023-12-31T23\:59\:59Z]&#39;</span> -k uid -S actingGroupId,actingGroupParentId,actorMemberGroupId,author_mtdt,author_mtdt_search,bitstreamCount,bitstreamId,complete_query,complete_query_search,containerBitstream,containerCollection,containerCommunity,containerItem,core_update_run_nb,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,file_id,filterquery,first_name,geoipcountrycode,geoIpCountryCode,group_id,group_map,group_name,ip_ngram,ip_search,isArchived,isInternal,iso_mtdt,iso_mtdt_search,isWithdrawn,last_name,name,ngram_query_search,ngram_simplequery_search,orphaned,parent_count,p_communities_id,p_communities_map,p_communities_name,p_group_id,p_group_map,p_group_name,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,referrer_ngram,referrer_search,simple_query,simple_query_search,solr_update_time_stamp,storage_nb_of_bitstreams,storage_size,storage_statistics_type,subject_mtdt,subject_mtdt_search,text,userAgent_ngram,userAgent_search,version_id,workflowItemId
+</span></span></code></pre></div><ul>
+<li>Then I replaced the IDs with the UUID of the site homepage on DSpace 7 Test:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;s/&#34;id&#34;:&#34;-1&#34;/&#34;id&#34;:&#34;3945ec23-2426-4fce-a2ea-48b38b91547f&#34;/&#39;</span> /tmp/statistics-fix-uuid.json
+</span></span></code></pre></div><ul>
+<li>I re-imported those records and I no longer see the &ldquo;-1&rdquo; IDs, but still get the same error in the log
+<ul>
+<li>I don&rsquo;t understand, maybe there is some voodoo, so I rebooted the server</li>
+<li>Hmm, no, it&rsquo;s not a voodoo cache issue, so I really need to debug this:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>2023-08-16 15:44:07,122 WARN  dace8f96-f034-488e-b38c-9f2eb5d0e002 036b88e6-7548-4852-9646-f345ce3bfcc2 org.dspace.app.rest.exception.DSpaceApiExceptionControllerAdvice @ Request is invalid or incorrect (status:400 exception: Invalid UUID string: -1 at: java.base/java.util.UUID.fromString1(UUID.java:280))
+</span></span></code></pre></div><ul>
+<li>On a related note, I figured out that the root site already has a UUID in DSpace 6, and it&rsquo;s exactly the one above (3945ec23-2426-4fce-a2ea-48b38b91547f)
+<ul>
+<li>I noticed it while looking at the <a href="https://cgspace.cgiar.org/rest/hierarchy">DSpace 6 REST API&rsquo;s hierarchy page</a></li>
+<li>So I can update these &ldquo;-1&rdquo; IDs with &ldquo;type:5&rdquo; in our production I think&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-08-17">2023-08-17</h2>
+<ul>
+<li>I decided to update the &ldquo;-1&rdquo; IDs in Solr on DSpace 6
+<ul>
+<li>Unfortunately, in Solr there is no way to update only documents matching a query, so we have to export and re-import</li>
+<li>I exported all documents with &ldquo;type:5&rdquo; (Homepage) and replaced the ID in the JSON:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-fix-uuid.json -f <span style="color:#e6db74">&#39;type:5&#39;</span> -k uid -S actingGroupId,actingGroupParentId,actorMemberGroupId,author_mtdt,author_mtdt_search,bitstreamCount,bitstreamId,complete_query,complete_query_search,containerBitstream,containerCollection,containerCommunity,containerItem,core_update_run_nb,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,file_id,filterquery,first_name,geoipcountrycode,geoIpCountryCode,group_id,group_map,group_name,ip_ngram,ip_search,isArchived,isInternal,iso_mtdt,iso_mtdt_search,isWithdrawn,last_name,name,ngram_query_search,ngram_simplequery_search,orphaned,parent_count,p_communities_id,p_communities_map,p_communities_name,p_group_id,p_group_map,p_group_name,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,referrer_ngram,referrer_search,simple_query,simple_query_search,solr_update_time_stamp,storage_nb_of_bitstreams,storage_size,storage_statistics_type,subject_mtdt,subject_mtdt_search,text,userAgent_ngram,userAgent_search,version_id,workflowItemId
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;s/&#34;id&#34;:&#34;-1&#34;/&#34;id&#34;:&#34;3945ec23-2426-4fce-a2ea-48b38b91547f&#34;/&#39;</span> /tmp/statistics-fix-uuid.json 
+</span></span></code></pre></div><ul>
+<li>(Oops, skipping the fields above was not necessary, since I&rsquo;m importing back into DSpace 6 where those fields exist)</li>
+<li>Then I re-imported:</li>
+</ul>
+<pre tabindex="0"><code>$ ./run.sh -s http://localhost:8081/solr/statistics -a import -o /tmp/statistics-fix-uuid.json -k uid
+</code></pre><ul>
+<li>This worked, but I still see new records coming in that have &ldquo;id:-1&rdquo; so I will need to repeat this during the migration.</li>
+<li>I also notice many stats records that have erroneous cities:
+<ul>
+<li><code>&quot;city&quot;:&quot;com.maxmind.geoip2.record.City [ {} ]&quot;</code></li>
+<li><code>&quot;city&quot;:&quot;com.maxmind.geoip2.record.City [ {\&quot;geoname_id\&quot;:1002145,\&quot;names\&quot;:{\&quot;de\&quot;:\&quot;George\&quot;,\&quot;en\&quot;:\&quot;George\&quot;,\&quot;ru\&quot;:\&quot;Джордж\&quot;,\&quot;fr\&quot;:\&quot;George\&quot;,\&quot;ja\&quot;:\&quot;ジョージ\&quot;}} ]&quot;</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-08-18">2023-08-18</h2>
+<ul>
+<li>Export CGSpace to check for missing Initiative collection mappings</li>
 </ul>
 <!-- raw HTML omitted -->
 
