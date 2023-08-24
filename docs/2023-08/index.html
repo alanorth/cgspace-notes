@@ -19,7 +19,7 @@ Start working on some batch uploads for IFPRI
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-08/" />
 <meta property="article:published_time" content="2023-08-03T11:18:36+03:00" />
-<meta property="article:modified_time" content="2023-08-18T23:54:07+03:00" />
+<meta property="article:modified_time" content="2023-08-22T17:28:49+03:00" />
 
 
 
@@ -44,9 +44,9 @@ Start working on some batch uploads for IFPRI
   "@type": "BlogPosting",
   "headline": "August, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-08/",
-  "wordCount": "1254",
+  "wordCount": "1514",
   "datePublished": "2023-08-03T11:18:36+03:00",
-  "dateModified": "2023-08-18T23:54:07+03:00",
+  "dateModified": "2023-08-22T17:28:49+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -322,6 +322,39 @@ Start working on some batch uploads for IFPRI
 <li>That means we need to make the request before we can even find out!</li>
 </ul>
 </li>
+<li>Tim on DSpace Slack pointed out the DSpace 7 REST API&rsquo;s <a href="https://github.com/DSpace/RestContract/blob/main/projections.md">projections</a>
+<ul>
+<li>This means we can embed resources like thumbnail and owningCollection in the item (and other) requests, for example: <a href="https://dspace7test.ilri.org/server/api/discover/search/objects?dsoType=item&amp;embed=thumbnail,owningCollection">https://dspace7test.ilri.org/server/api/discover/search/objects?dsoType=item&amp;embed=thumbnail,owningCollection</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-08-23">2023-08-23</h2>
+<ul>
+<li>I benchmarked the DSpace 7 REST API with the new embeds and it took four hours and seventeen minutes to get all 106,000 items on DSpace 7 Test
+<ul>
+<li>So this is much slower than the results I saw earlier this week, but maybe slightly faster than DSpace 6?</li>
+</ul>
+</li>
+<li>Maria from Alliance contacted me to say they have agreed to use UN M.49 regions more strictly in TIP, so they want to replace our non-standard &ldquo;Latin America&rdquo; region with &ldquo;Latin America and the Caribbean&rdquo;, &ldquo;Caribbean&rdquo; and &ldquo;Americas&rdquo; on all Alliance outputs
+<ul>
+<li>I exported their community on CGSpace and fixed the metadata in OpenRefine</li>
+</ul>
+</li>
+<li>I tried to run <code>dspace cleanup -v</code> on CGSpace, but got this error:</li>
+</ul>
+<pre tabindex="0"><code>Caused by: org.postgresql.util.PSQLException: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
+  Detail: Key (uuid)=(61bff7da-c8e3-420f-841c-ec5e8238d716) is still referenced from table &#34;bundle&#34;.
+</code></pre><ul>
+<li>The solution, as always, is to delete those IDs manually in PostgreSQL:</li>
+</ul>
+<pre tabindex="0"><code>$ psql -d dspace -c &#34;UPDATE bundle SET primary_bitstream_id=NULL WHERE primary_bitstream_id IN (&#39;61bff7da-c8e3-420f-841c-ec5e8238d716&#39;);&#34;
+UPDATE 1
+</code></pre><ul>
+<li>I also tried to delete all users who haven&rsquo;t logged in since 2017 using the groomer script, but it crashes due to those users still having items or workflows or whatever:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace dsrun org.dspace.eperson.Groomer -a -b 08/23/2017 -d
+</span></span></code></pre></div><ul>
+<li>I see that it is now <a href="https://github.com/DSpace/DSpace/pull/2229">possible in DSpace 7 to delete such users</a> so we will have to wait</li>
 </ul>
 <!-- raw HTML omitted -->
 
