@@ -10,7 +10,7 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/posts/" />
-<meta property="og:updated_time" content="2023-08-31T17:36:25+03:00" />
+<meta property="og:updated_time" content="2023-09-02T17:29:36+03:00" />
 
 
 
@@ -31,7 +31,7 @@
     "@type": "Person",
     "name": "Alan Orth"
   },
-  "dateModified": "2023-08-03T11:18:36+03:00",
+  "dateModified": "2023-09-02T17:29:36+03:00",
   "keywords": "notes, migration, notes",
   "description":"Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."
 }
@@ -90,6 +90,33 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-11/">November, 2018</a></h2>
+    <p class="blog-post-meta"><time datetime="2018-11-01T16:41:30+02:00">Thu Nov 01, 2018</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2018-11-01">2018-11-01</h2>
+<ul>
+<li>Finalize AReS Phase I and Phase II ToRs</li>
+<li>Send a note about my <a href="https://github.com/ilri/dspace-statistics-api">dspace-statistics-api</a> to the dspace-tech mailing list</li>
+</ul>
+<h2 id="2018-11-03">2018-11-03</h2>
+<ul>
+<li>Linode has been sending mails a few times a day recently that CGSpace (linode18) has had high CPU usage</li>
+<li>Today these are the top 10 IPs:</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2018-11/'>Read more →</a>
+</article> 
 
 
 
@@ -333,90 +360,6 @@ sys     2m7.289s
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2018-01/">January, 2018</a></h2>
-    <p class="blog-post-meta"><time datetime="2018-01-02T08:35:54-08:00">Tue Jan 02, 2018</time> by Alan Orth in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
-
-
-</p>
-  </header>
-  <h2 id="2018-01-02">2018-01-02</h2>
-<ul>
-<li>Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time</li>
-<li>I didn&rsquo;t get any load alerts from Linode and the REST and XMLUI logs don&rsquo;t show anything out of the ordinary</li>
-<li>The nginx logs show HTTP 200s until <code>02/Jan/2018:11:27:17 +0000</code> when Uptime Robot got an HTTP 500</li>
-<li>In dspace.log around that time I see many errors like &ldquo;Client closed the connection before file download was complete&rdquo;</li>
-<li>And just before that I see this:</li>
-</ul>
-<pre tabindex="0"><code>Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000].
-</code></pre><ul>
-<li>Ah hah! So the pool was actually empty!</li>
-<li>I need to increase that, let&rsquo;s try to bump it up from 50 to 75</li>
-<li>After that one client got an HTTP 499 but then the rest were HTTP 200, so I don&rsquo;t know what the hell Uptime Robot saw</li>
-<li>I notice this error quite a few times in dspace.log:</li>
-</ul>
-<pre tabindex="0"><code>2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets
-org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse &#39;dateIssued_keyword:[1976+TO+1979]&#39;: Encountered &#34; &#34;]&#34; &#34;] &#34;&#34; at line 1, column 32.
-</code></pre><ul>
-<li>And there are many of these errors every day for the past month:</li>
-</ul>
-<pre tabindex="0"><code>$ grep -c &#34;Error while searching for sidebar facets&#34; dspace.log.*
-dspace.log.2017-11-21:4
-dspace.log.2017-11-22:1
-dspace.log.2017-11-23:4
-dspace.log.2017-11-24:11
-dspace.log.2017-11-25:0
-dspace.log.2017-11-26:1
-dspace.log.2017-11-27:7
-dspace.log.2017-11-28:21
-dspace.log.2017-11-29:31
-dspace.log.2017-11-30:15
-dspace.log.2017-12-01:15
-dspace.log.2017-12-02:20
-dspace.log.2017-12-03:38
-dspace.log.2017-12-04:65
-dspace.log.2017-12-05:43
-dspace.log.2017-12-06:72
-dspace.log.2017-12-07:27
-dspace.log.2017-12-08:15
-dspace.log.2017-12-09:29
-dspace.log.2017-12-10:35
-dspace.log.2017-12-11:20
-dspace.log.2017-12-12:44
-dspace.log.2017-12-13:36
-dspace.log.2017-12-14:59
-dspace.log.2017-12-15:104
-dspace.log.2017-12-16:53
-dspace.log.2017-12-17:66
-dspace.log.2017-12-18:83
-dspace.log.2017-12-19:101
-dspace.log.2017-12-20:74
-dspace.log.2017-12-21:55
-dspace.log.2017-12-22:66
-dspace.log.2017-12-23:50
-dspace.log.2017-12-24:85
-dspace.log.2017-12-25:62
-dspace.log.2017-12-26:49
-dspace.log.2017-12-27:30
-dspace.log.2017-12-28:54
-dspace.log.2017-12-29:68
-dspace.log.2017-12-30:89
-dspace.log.2017-12-31:53
-dspace.log.2018-01-01:45
-dspace.log.2018-01-02:34
-</code></pre><ul>
-<li>Danny wrote to ask for help renewing the wildcard ilri.org certificate and I advised that we should probably use Let&rsquo;s Encrypt if it&rsquo;s just a handful of domains</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2018-01/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/posts/page/6/" rel="prev" role="button">Previous page</a>
@@ -441,6 +384,8 @@ dspace.log.2018-01-02:34
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2023-09/">September, 2023</a></li>
+
 <li><a href="/cgspace-notes/2023-08/">August, 2023</a></li>
 
 <li><a href="/cgspace-notes/2023-07/">July, 2023</a></li>
@@ -448,8 +393,6 @@ dspace.log.2018-01-02:34
 <li><a href="/cgspace-notes/2023-06/">June, 2023</a></li>
 
 <li><a href="/cgspace-notes/2023-05/">May, 2023</a></li>
-
-<li><a href="/cgspace-notes/2023-04/">April, 2023</a></li>
 
     </ol>
   </section>
