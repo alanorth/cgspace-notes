@@ -15,7 +15,7 @@ Start a harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-09/" />
 <meta property="article:published_time" content="2023-09-02T17:29:36+03:00" />
-<meta property="article:modified_time" content="2023-09-02T17:37:15+03:00" />
+<meta property="article:modified_time" content="2023-09-04T09:16:51+03:00" />
 
 
 
@@ -36,9 +36,9 @@ Start a harvest on AReS
   "@type": "BlogPosting",
   "headline": "September, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-09/",
-  "wordCount": "54",
+  "wordCount": "341",
   "datePublished": "2023-09-02T17:29:36+03:00",
-  "dateModified": "2023-09-02T17:37:15+03:00",
+  "dateModified": "2023-09-04T09:16:51+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -123,6 +123,51 @@ Start a harvest on AReS
 <ul>
 <li>It still feels hacky, but using <a href="https://stackoverflow.com/questions/41936631/how-to-trigger-the-function-after-dom-markup-is-loaded-in-angular-style-applicat">AfterViewInit</a>, and importing the Altmetric <code>embed.js</code> in the component works</li>
 <li>The style on mobile also needs work&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-09-06">2023-09-06</h2>
+<ul>
+<li>Discussion with Marie about finalizing the output types list on GitHub
+<ul>
+<li>I did some review and cleanup in preparation for publishing the new list</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-09-07">2023-09-07</h2>
+<ul>
+<li>Export CGSpace to start doing a review of the metadata</li>
+<li>First I will start by extracting all items with DOIs, along with some fields I can compare against Crossref:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvgrep -c <span style="color:#e6db74">&#39;cg.identifier.doi[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;doi.org&#39;</span> ~/Downloads/2023-09-07-cgspace.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    | csvcut -c &#39;id,dc.title[en_US],dcterms.issued[en_US],dcterms.available[en_US],cg.issn[en_US],cg.isbn[en_US],cg.volume[en_US],cg.issue[en_US],cg.number[en_US],dcterms.extent[en_US],cg.identifier.doi[en_US],cg.reviewStatus[en_US],cg.isijournal[en_US],dcterms.license[en_US],dcterms.accessRights[en_US],dcterms.type[en_US],dc.identifier.uri[en_US]&#39; \
+</span></span><span style="display:flex;"><span>    &gt; /tmp/2023-09-07-cgspace-dois.csv
+</span></span><span style="display:flex;"><span>$ csvgrep -c <span style="color:#e6db74">&#39;cg.identifier.doi[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;doi.org&#39;</span> ~/Downloads/2023-09-07-cgspace.csv | csvcut -c <span style="color:#e6db74">&#39;cg.identifier.doi[en_US]&#39;</span> | sed 1d &gt; /tmp/2023-09-07-cgspace-dois.txt
+</span></span></code></pre></div><ul>
+<li>Then I resolved the DOIs from Crossref:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/crossref_doi_lookup.py -i /tmp/2023-09-07-cgspace-dois.txt -o /tmp/2023-09-07-cgspace-dois-results.csv -e a.orth@cgiar.org
+</span></span></code></pre></div><ul>
+<li>A user emailed to ask about uploading a 180MB PDF to CGSpace
+<ul>
+<li>I used GhostScript to try reducing it using the <code>screen</code>, <code>ebook</code> and <code>prepress</code> presets:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ gs -sDEVICE<span style="color:#f92672">=</span>pdfwrite -dCompatibilityLevel<span style="color:#f92672">=</span>1.4 -dPDFSETTINGS<span style="color:#f92672">=</span>/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile<span style="color:#f92672">=</span>primer-screen.pdf Primer<span style="color:#ae81ff">\ \(</span>digital<span style="color:#ae81ff">\)</span>_Climate-<span style="color:#ae81ff">\ </span>smart<span style="color:#ae81ff">\ </span>and<span style="color:#ae81ff">\ </span>regenerative<span style="color:#ae81ff">\ </span>agriculture<span style="color:#ae81ff">\ </span>in<span style="color:#ae81ff">\ </span>climate<span style="color:#ae81ff">\ </span>change<span style="color:#ae81ff">\ </span>adaptation.pdf 
+</span></span><span style="display:flex;"><span>$ gs -sDEVICE<span style="color:#f92672">=</span>pdfwrite -dCompatibilityLevel<span style="color:#f92672">=</span>1.4 -dPDFSETTINGS<span style="color:#f92672">=</span>/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile<span style="color:#f92672">=</span>primer-ebook.pdf Primer<span style="color:#ae81ff">\ \(</span>digital<span style="color:#ae81ff">\)</span>_Climate-<span style="color:#ae81ff">\ </span>smart<span style="color:#ae81ff">\ </span>and<span style="color:#ae81ff">\ </span>regenerative<span style="color:#ae81ff">\ </span>agriculture<span style="color:#ae81ff">\ </span>in<span style="color:#ae81ff">\ </span>climate<span style="color:#ae81ff">\ </span>change<span style="color:#ae81ff">\ </span>adaptation.pdf
+</span></span><span style="display:flex;"><span>$ gs -sDEVICE<span style="color:#f92672">=</span>pdfwrite -dCompatibilityLevel<span style="color:#f92672">=</span>1.4 -dPDFSETTINGS<span style="color:#f92672">=</span>/prepress -dNOPAUSE -dQUIET -dBATCH -sOutputFile<span style="color:#f92672">=</span>primer-prepress.pdf Primer<span style="color:#ae81ff">\ \(</span>digital<span style="color:#ae81ff">\)</span>_Climate-<span style="color:#ae81ff">\ </span>smart<span style="color:#ae81ff">\ </span>and<span style="color:#ae81ff">\ </span>regenerative<span style="color:#ae81ff">\ </span>agriculture<span style="color:#ae81ff">\ </span>in<span style="color:#ae81ff">\ </span>climate<span style="color:#ae81ff">\ </span>change<span style="color:#ae81ff">\ </span>adaptation.pdf
+</span></span></code></pre></div><ul>
+<li>The <code>prepress</code> one is 300DPI and looks visually identical to the original, so I proposed that we use that one</li>
+</ul>
+<h2 id="2023-09-08">2023-09-08</h2>
+<ul>
+<li>I did a review of the metadata for our items with DOIs, comparing with data from Crossref
+<ul>
+<li>I spot checked a handful of issue / online dates and licenses, and saw that Crossref&rsquo;s dates are always more accurate than ours when they differ</li>
+<li>I also filled in some missing volumes, issues, ISSNs, and extents</li>
+<li>This results in 14,000 changes to existing items, which will take several days to import unfortunately</li>
+<li>After eight hours the first file is only about 2/3 finished&hellip; sigh</li>
 </ul>
 </li>
 </ul>
