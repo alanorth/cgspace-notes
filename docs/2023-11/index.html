@@ -23,7 +23,7 @@ Start a harvest on AReS
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-11/" />
 <meta property="article:published_time" content="2023-11-02T12:59:36+03:00" />
-<meta property="article:modified_time" content="2023-11-16T17:25:15+03:00" />
+<meta property="article:modified_time" content="2023-11-19T14:29:52+03:00" />
 
 
 
@@ -52,9 +52,9 @@ Start a harvest on AReS
   "@type": "BlogPosting",
   "headline": "November, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-11/",
-  "wordCount": "889",
+  "wordCount": "1278",
   "datePublished": "2023-11-02T12:59:36+03:00",
-  "dateModified": "2023-11-16T17:25:15+03:00",
+  "dateModified": "2023-11-19T14:29:52+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -284,7 +284,79 @@ tomcat9[732]: [9955.666s][info   ][gc] GC(6292) To-space exhausted
 <li>Export CGSpace to check for missing Initiative collection mappings</li>
 <li>Start a harvest on AReS</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2023-11-22">2023-11-22</h2>
+<ul>
+<li>I was checking out the <a href="https://github.com/DSpace/RestContract/blob/main/statistics-reports.md">DSpace 7 statistics</a> again and found that we have total visits and total downloads for each DSpace object, for example <a href="https://dspace7test.ilri.org/items/3f1b9605-f5ff-4bbb-8c89-d6fe4157f748">this item</a>:
+<ul>
+<li>TotalVisits: <a href="https://dspace7test.ilri.org/server/api/statistics/usagereports/3f1b9605-f5ff-4bbb-8c89-d6fe4157f748_TotalVisits">https://dspace7test.ilri.org/server/api/statistics/usagereports/3f1b9605-f5ff-4bbb-8c89-d6fe4157f748_TotalVisits</a></li>
+<li>TotalDownloads: <a href="https://dspace7test.ilri.org/server/api/statistics/usagereports/3f1b9605-f5ff-4bbb-8c89-d6fe4157f748_TotalDownloads">https://dspace7test.ilri.org/server/api/statistics/usagereports/3f1b9605-f5ff-4bbb-8c89-d6fe4157f748_TotalDownloads</a></li>
+</ul>
+</li>
+<li>And the numbers match those in my dspace-statisitcs-api <em>exactly</em>!</li>
+<li>This can be useful to get an individual DSpace object&rsquo;s stats, but there is no way to iterate over all objects like all items&hellip;
+<ul>
+<li>We can look at using this to draw stats on the community, collection, and item pages</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-11-23">2023-11-23</h2>
+<ul>
+<li>Brian King was asking me how many PDFs we had in CGSpace so I got a rough estimate using this SQL query:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ SELECT COUNT(uuid) FROM bitstream WHERE bitstream_format_id=(SELECT bitstream_format_id FROM bitstreamformatregistry WHERE mimetype=&#39;application/pdf&#39;);
+</span></span><span style="display:flex;"><span> count 
+</span></span><span style="display:flex;"><span>───────
+</span></span><span style="display:flex;"><span> 47818
+</span></span><span style="display:flex;"><span>(1 row)
+</span></span></code></pre></div><ul>
+<li>It&rsquo;s been some time since I looked at our Solr statistics to find new bots
+<ul>
+<li>I found a few new ones that I <a href="https://github.com/atmire/COUNTER-Robots/pull/60">submitted to COUNTER-Robots</a> and added to our local bot list:
+<ul>
+<li>GuzzleHttp/7</li>
+<li><a href="mailto:Owler@ows.eu">Owler@ows.eu</a>/1</li>
+<li>newspaperjs</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I ran my old <code>check-spider-hits.sh</code> script with a list of bots from our local overrides to purge hits from Solr:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
+</span></span><span style="display:flex;"><span>Purging 30 hits from ubermetrics in statistics
+</span></span><span style="display:flex;"><span>Purging 59 hits from curb in statistics
+</span></span><span style="display:flex;"><span>Purging 36 hits from bitdiscovery in statistics
+</span></span><span style="display:flex;"><span>Purging 87 hits from omgili in statistics
+</span></span><span style="display:flex;"><span>Purging 47 hits from Vizzit in statistics
+</span></span><span style="display:flex;"><span>Purging 109 hits from Java\/17-ea in statistics
+</span></span><span style="display:flex;"><span>Purging 40 hits from AdobeUxTechC4-Async in statistics
+</span></span><span style="display:flex;"><span>Purging 21 hits from ZaloPC-win32-24v473 in statistics
+</span></span><span style="display:flex;"><span>Purging 21 hits from nbertaupete95 in statistics
+</span></span><span style="display:flex;"><span>Purging 52 hits from Scoop\.it in statistics
+</span></span><span style="display:flex;"><span>Purging 16 hits from WebAPIClient in statistics
+</span></span><span style="display:flex;"><span>Purging 241 hits from RStudio in statistics
+</span></span><span style="display:flex;"><span>Purging 1255 hits from ^MEL in statistics
+</span></span><span style="display:flex;"><span>Purging 47850 hits from GuzzleHttp in statistics
+</span></span><span style="display:flex;"><span>Purging 8714 hits from Owler in statistics
+</span></span><span style="display:flex;"><span>Purging 1083 hits from newspaperjs in statistics
+</span></span><span style="display:flex;"><span>Purging 369 hits from ^Chrome$ in statistics
+</span></span><span style="display:flex;"><span>Purging 1474 hits from curl in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 61504
+</span></span></code></pre></div><ul>
+<li>I also noticed 35,000 requests over the past few years from lowercase user agents, which is <a href="https://developers.whatismybrowser.com/api/features/user-agent-checks/weird/#all_lower_case">definitely weird</a>, for example:
+<ul>
+<li><code>mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/89.0.4389.90 safari/537.36</code></li>
+<li><code>mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/90.0.4430.93 safari/537.36</code></li>
+</ul>
+</li>
+<li>I&rsquo;m gonna add those to our overrides and purge them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/check-spider-hits.sh -f dspace/config/spiders/agents/ilri -p
+</span></span><span style="display:flex;"><span>Purging 35816 hits from ^mozilla in statistics
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Total number of bot hits purged: 35816
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
