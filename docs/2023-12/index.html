@@ -11,14 +11,14 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-12/" />
 <meta property="article:published_time" content="2023-12-01T08:48:36+03:00" />
-<meta property="article:modified_time" content="2023-12-01T08:48:36+03:00" />
+<meta property="article:modified_time" content="2023-12-02T10:38:09+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="December, 2023"/>
 <meta name="twitter:description" content="2023-12-01 There is still high load on CGSpace and I don&rsquo;t know why I don&rsquo;t see a high number of sessions compared to previous days in the last few weeks $ for file in dspace.log.2023-11-[23]*; do echo &#34;$file&#34;; grep -a -oE &#39;session_id=[A-Z0-9]{32}&#39; &#34;$file&#34; | sort | uniq | wc -l; done dspace.log.2023-11-20 22865 dspace.log.2023-11-21 20296 dspace.log.2023-11-22 19688 dspace.log.2023-11-23 17906 dspace.log.2023-11-24 18453 dspace.log.2023-11-25 17513 dspace.log.2023-11-26 19037 dspace.log.2023-11-27 21103 dspace.log.2023-11-28 23023 dspace.log.2023-11-29 23545 dspace."/>
-<meta name="generator" content="Hugo 0.120.4">
+<meta name="generator" content="Hugo 0.121.0">
 
 
     
@@ -28,9 +28,9 @@
   "@type": "BlogPosting",
   "headline": "December, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-12/",
-  "wordCount": "286",
+  "wordCount": "529",
   "datePublished": "2023-12-01T08:48:36+03:00",
-  "dateModified": "2023-12-01T08:48:36+03:00",
+  "dateModified": "2023-12-02T10:38:09+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -173,6 +173,44 @@
 <ul>
 <li>Export CGSpace to check for missing Initiative collection mappings</li>
 <li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-12-04">2023-12-04</h2>
+<ul>
+<li>Send a message to Altmetric support because the item IWMI highlighted last month still doesn&rsquo;t show the attention score for the Handle after I tweeted it several times weeks ago</li>
+<li>Spent some time writing a Python script to fix the literal MaxMind City JSON objects in our Solr statistics
+<ul>
+<li>There are about 1.6 million of these, so I exported them using solr-import-export-json with the query <code>city:com*</code> but ended up finding many that have missing bundles, container bitstreams, etc:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>city:com* AND -bundleName:[* TO *] AND -containerBitstream:[* TO *] AND -file_id:[* TO *] AND -owningItem:[* TO *] AND -version_id:[* TO *]
+</code></pre><ul>
+<li>(Note the negation to find fields that are missing)</li>
+<li>I don&rsquo;t know what I want to do with these yet</li>
+</ul>
+<h2 id="2023-12-05">2023-12-05</h2>
+<ul>
+<li>I finished the <code>fix_maxmind_stats.py</code> script and fixed 1.6 million records and imported them on CGSpace after testing on DSpace 7 Test</li>
+<li>Altmetric said there was a glitch regarding the Handle and DOI linking and they successfully re-scraped the item page and linked them
+<ul>
+<li>They sent me a list of current production IPs and I notice that some of them are in our nginx bot network list:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ <span style="color:#66d9ef">for</span> network in <span style="color:#66d9ef">$(</span>csvcut -c network /tmp/ips.csv | sed 1d | sort -u<span style="color:#66d9ef">)</span>; <span style="color:#66d9ef">do</span> grepcidr $network ~/src/git/rmg-ansible-public/roles/dspace/files/nginx/bot-networks.conf; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>108.128.0.0/13 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>46.137.0.0/16 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>52.208.0.0/13 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>52.48.0.0/13 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>54.194.0.0/15 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>54.216.0.0/14 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>54.220.0.0/15 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>54.228.0.0/15 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>63.32.242.35/32     &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>63.32.0.0/14 &#39;bot&#39;;
+</span></span><span style="display:flex;"><span>99.80.0.0/15 &#39;bot&#39;
+</span></span></code></pre></div><ul>
+<li>I will remove those for now so that Altmetric doesn&rsquo;t have any unexpected issues harvesting</li>
 </ul>
 <!-- raw HTML omitted -->
 
