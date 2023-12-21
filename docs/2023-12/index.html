@@ -11,7 +11,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-12/" />
 <meta property="article:published_time" content="2023-12-01T08:48:36+03:00" />
-<meta property="article:modified_time" content="2023-12-12T14:57:07+03:00" />
+<meta property="article:modified_time" content="2023-12-18T23:15:27+03:00" />
 
 
 
@@ -28,9 +28,9 @@
   "@type": "BlogPosting",
   "headline": "December, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-12/",
-  "wordCount": "832",
+  "wordCount": "980",
   "datePublished": "2023-12-01T08:48:36+03:00",
-  "dateModified": "2023-12-12T14:57:07+03:00",
+  "dateModified": "2023-12-18T23:15:27+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -268,7 +268,35 @@
 <li>Work a bit on the IFPRI-ISNAR archive from Leigh</li>
 <li>More work on the DSpace 7 home page</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2023-12-19">2023-12-19</h2>
+<ul>
+<li>More work on the DSpace 7 home page</li>
+<li>The Alliance TIP team is testing deposits to the DSpace 7 REST API and getting an HTTP 500 error
+<ul>
+<li>In the DSpace logs I see this after they log in, create the item, and update the metadata:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>2023-12-19 17:49:28,022 ERROR unknown unknown org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
+</code></pre><ul>
+<li>I found some messages on the dspace-tech mailing list suggesting this might be an old bug: <a href="https://groups.google.com/g/dspace-tech/c/My1GUFYFGoU/m/tS7-WAJPAwAJ">https://groups.google.com/g/dspace-tech/c/My1GUFYFGoU/m/tS7-WAJPAwAJ</a>
+<ul>
+<li>I restarted Tomcat and told the Alliance TIP team to try again</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-12-20">2023-12-20</h2>
+<ul>
+<li>The Alliance guys said that submitting via REST works now&hellip; sigh, so that&rsquo;s just some old DSpace 5/6 REST API bug</li>
+<li>I lowercased all our AGROVOC keywords in <code>dcterms.subject</code> in SQL:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# BEGIN;
+</span></span><span style="display:flex;"><span>BEGIN
+</span></span><span style="display:flex;"><span>dspace=*# UPDATE metadatavalue SET text_value=LOWER(text_value) WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=187 AND text_value ~ &#39;[[:upper:]]&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 462
+</span></span><span style="display:flex;"><span>dspace=*# COMMIT;
+</span></span><span style="display:flex;"><span>COMMIT
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
 
   
