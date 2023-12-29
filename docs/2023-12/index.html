@@ -11,7 +11,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2023-12/" />
 <meta property="article:published_time" content="2023-12-01T08:48:36+03:00" />
-<meta property="article:modified_time" content="2023-12-18T23:15:27+03:00" />
+<meta property="article:modified_time" content="2023-12-21T10:08:59+03:00" />
 
 
 
@@ -28,9 +28,9 @@
   "@type": "BlogPosting",
   "headline": "December, 2023",
   "url": "https://alanorth.github.io/cgspace-notes/2023-12/",
-  "wordCount": "980",
+  "wordCount": "1323",
   "datePublished": "2023-12-01T08:48:36+03:00",
-  "dateModified": "2023-12-18T23:15:27+03:00",
+  "dateModified": "2023-12-21T10:08:59+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -296,7 +296,97 @@
 </span></span><span style="display:flex;"><span>UPDATE 462
 </span></span><span style="display:flex;"><span>dspace=*# COMMIT;
 </span></span><span style="display:flex;"><span>COMMIT
-</span></span></code></pre></div><!-- raw HTML omitted -->
+</span></span></code></pre></div><h2 id="2023-12-25">2023-12-25</h2>
+<ul>
+<li>Looking into <a href="https://solr.apache.org/guide/8_11/making-and-restoring-backups.html">Solr backups</a>
+<ul>
+<li>Since we are not running in Solr Cloud mode we need to use the replication endpoint for Solr standalone</li>
+<li>This works:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/replication?command=backup&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
+</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
+</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:26},
+</span></span><span style="display:flex;"><span>  &#34;status&#34;:&#34;OK&#34;}
+</span></span></code></pre></div><ul>
+<li>Then I saw the size of the snapshot reach the size of the index&hellip;</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># du -sh /var/solr/data/configsets/statistics/data/*
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/index
+</span></span><span style="display:flex;"><span>16G     /var/solr/data/configsets/statistics/data/snapshot.20231225074111671
+</span></span><span style="display:flex;"><span>4.0K    /var/solr/data/configsets/statistics/data/snapshot_metadata
+</span></span><span style="display:flex;"><span># du -sh /var/solr/data/configsets/statistics/data/*
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/index
+</span></span><span style="display:flex;"><span>20G     /var/solr/data/configsets/statistics/data/snapshot.20231225074111671
+</span></span><span style="display:flex;"><span>4.0K    /var/solr/data/configsets/statistics/data/snapshot_metadata
+</span></span><span style="display:flex;"><span># du -sh /var/solr/data/configsets/statistics/data/*
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/index
+</span></span><span style="display:flex;"><span>21G     /var/solr/data/configsets/statistics/data/snapshot.20231225074111671
+</span></span><span style="display:flex;"><span>4.0K    /var/solr/data/configsets/statistics/data/snapshot_metadata
+</span></span><span style="display:flex;"><span># du -sh /var/solr/data/configsets/statistics/data/*
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/index
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/snapshot.20231225074111671
+</span></span><span style="display:flex;"><span>4.0K    /var/solr/data/configsets/statistics/data/snapshot_metadata
+</span></span></code></pre></div><ul>
+<li>Then I deleted the core and restored from the snapshot backup:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl http://localhost:8983/solr/statistics/update -H <span style="color:#e6db74">&#34;Content-type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#39;&lt;delete&gt;&lt;query&gt;*:*&lt;/query&gt;&lt;/delete&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl http://localhost:8983/solr/statistics/update -H <span style="color:#e6db74">&#34;Content-type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#39;&lt;commit /&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/replication?command=restore&amp;name=statistics&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Interestingly the import worked fine, but created a new data index:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># du -sh /var/solr/data/configsets/statistics/data/*
+</span></span><span style="display:flex;"><span>4.0K    /var/solr/data/configsets/statistics/data/index.properties
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/restore.20231225154626463
+</span></span><span style="display:flex;"><span>4.0K    /var/solr/data/configsets/statistics/data/snapshot_metadata
+</span></span><span style="display:flex;"><span>22G     /var/solr/data/configsets/statistics/data/snapshot.statistics
+</span></span></code></pre></div><ul>
+<li>Not sure the implications of that—Solr uses the data just fine</li>
+<li>I can surely use this for atomic Solr backups</li>
+</ul>
+<h2 id="2023-12-27">2023-12-27</h2>
+<ul>
+<li>Delete duplicate metadata as described in my DSpace issue from last year: <a href="https://github.com/DSpace/DSpace/issues/8253">https://github.com/DSpace/DSpace/issues/8253</a></li>
+<li>Do some other metadata cleanups on CGSpace
+<ul>
+<li>I also looked up our DOIs on Crossref to get some missing abstracts and correct licenses and dates</li>
+</ul>
+</li>
+<li>Some minor work on the CGSpace DSpace 7 theme to fix the navbar on mobile</li>
+<li>Some work on the IFPRI ISNAR archive</li>
+</ul>
+<h2 id="2023-12-28">2023-12-28</h2>
+<ul>
+<li>I started porting the <a href="https://github.com/ilri/cgspace-java-helpers">cgspace-java-helpers</a> to DSpace 7</li>
+<li>Some work on the IFPRI ISNAR archive
+<ul>
+<li>I ended up going through most of the PDFs to get better dates and abstracts</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-12-29">2023-12-29</h2>
+<ul>
+<li>I created a new Hetzner server to replace the current DSpace 6 CGSpace next week when we migrate to DSpace 7</li>
+<li>Interesting, I haven&rsquo;t checked for content pointing to legacy domains in several years (!)
+<ul>
+<li><code>inurl:mahider.cgiar.org</code>: 0 results on Google!</li>
+<li><code>inurl:mahider.ilri.org</code>: 2,100 results on Google</li>
+<li><code>inurl:mahider.ilri.org inurl:https</code>: 2 results on Google (!)</li>
+<li><code>inurl:dspace.ilri.org:</code> 1,390 results on Google</li>
+<li><code>inurl:dspace.ilri.org inurl:https</code>: 0 results on Google (!)</li>
+</ul>
+</li>
+<li>So it seems I can do away with the HTTPS virtual hosts finally
+<ul>
+<li>Well my current certificates expired on 2021-02-13 and nobody noticed&hellip; so&hellip;</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
 
 
   
