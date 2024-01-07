@@ -22,7 +22,7 @@ Work on IFPRI ISNAR archive cleanup
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-01/" />
 <meta property="article:published_time" content="2024-01-02T10:08:00+03:00" />
-<meta property="article:modified_time" content="2024-01-06T17:46:07+03:00" />
+<meta property="article:modified_time" content="2024-01-07T20:43:02+03:00" />
 
 
 
@@ -50,9 +50,9 @@ Work on IFPRI ISNAR archive cleanup
   "@type": "BlogPosting",
   "headline": "January, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-01/",
-  "wordCount": "433",
+  "wordCount": "571",
   "datePublished": "2024-01-02T10:08:00+03:00",
-  "dateModified": "2024-01-06T17:46:07+03:00",
+  "dateModified": "2024-01-07T20:43:02+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -202,8 +202,39 @@ Work on IFPRI ISNAR archive cleanup
 </ul>
 </li>
 <li>I spent a lot of time bringing back the nginx rate limits we used in DSpace 6 and it seems to have helped</li>
+<li>I see some client doing weird HEAD requests to search pages:</li>
 </ul>
-<!-- raw HTML omitted -->
+<pre tabindex="0"><code>47.76.35.19 - - [07/Jan/2024:00:00:02 +0100] &#34;HEAD /search/?f.accessRights=Open+Access%2Cequals&amp;f.actionArea=Resilient+Agrifood+Systems%2Cequals&amp;f.author=Burkart%2C+Stefan%2Cequals&amp;f.country=Kenya%2Cequals&amp;f.impactArea=Climate+adaptation+and+mitigation%2Cequals&amp;f.itemtype=Brief%2Cequals&amp;f.publisher=CGIAR+System+Organization%2Cequals&amp;f.region=Asia%2Cequals&amp;f.sdg=SDG+12+-+Responsible+consumption+and+production%2Cequals&amp;f.sponsorship=CGIAR+Trust+Fund%2Cequals&amp;f.subject=environmental+factors%2Cequals&amp;spc.page=1 HTTP/1.1&#34; 499 0 &#34;-&#34; &#34;Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.2504.63 Safari/537.36&#34;
+</code></pre><ul>
+<li>I will add their network blocks (AS45102) and regenerate my list of bot networks:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wget https://asn.ipinfo.app/api/text/list/AS16276 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>     https://asn.ipinfo.app/api/text/list/AS23576 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS24940 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS13238 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS14061 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS12876 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS55286 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS203020 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS204287 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS50245 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS6939 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS45102 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS21859
+</span></span><span style="display:flex;"><span>$ cat AS* | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>4897
+</span></span><span style="display:flex;"><span>$ cat AS* | ~/go/bin/mapcidr -a &gt; /tmp/networks.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/networks.txt
+</span></span><span style="display:flex;"><span>2017 /tmp/networks.txt
+</span></span></code></pre></div><ul>
+<li>I&rsquo;m surprised to see the number of networks reduced from my current ones&hellip; hmmm.</li>
+<li>I will also update my list of Bing networks:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/bing-networks-to-ips.sh
+</span></span><span style="display:flex;"><span>$ ~/go/bin/mapcidr -a &lt; /tmp/bing-ips.txt &gt; /tmp/bing-networks.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/bing-networks.txt
+</span></span><span style="display:flex;"><span>250 /tmp/bing-networks.txt
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
