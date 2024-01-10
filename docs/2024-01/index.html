@@ -22,7 +22,7 @@ Work on IFPRI ISNAR archive cleanup
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-01/" />
 <meta property="article:published_time" content="2024-01-02T10:08:00+03:00" />
-<meta property="article:modified_time" content="2024-01-07T20:43:02+03:00" />
+<meta property="article:modified_time" content="2024-01-07T22:18:43+03:00" />
 
 
 
@@ -50,9 +50,9 @@ Work on IFPRI ISNAR archive cleanup
   "@type": "BlogPosting",
   "headline": "January, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-01/",
-  "wordCount": "571",
+  "wordCount": "1167",
   "datePublished": "2024-01-02T10:08:00+03:00",
-  "dateModified": "2024-01-07T20:43:02+03:00",
+  "dateModified": "2024-01-07T22:18:43+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -234,7 +234,85 @@ Work on IFPRI ISNAR archive cleanup
 </span></span><span style="display:flex;"><span>$ ~/go/bin/mapcidr -a &lt; /tmp/bing-ips.txt &gt; /tmp/bing-networks.txt
 </span></span><span style="display:flex;"><span>$ wc -l /tmp/bing-networks.txt
 </span></span><span style="display:flex;"><span>250 /tmp/bing-networks.txt
-</span></span></code></pre></div><!-- raw HTML omitted -->
+</span></span></code></pre></div><h2 id="2024-01-08">2024-01-08</h2>
+<ul>
+<li>Export list of publishers for Peter to select some amount to use as a controlled vocabulary:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ \COPY (SELECT DISTINCT text_value AS &#34;dcterms.publisher&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 178 GROUP BY &#34;dcterms.publisher&#34; ORDER BY count DESC) to /tmp/2024-01-publishers.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 4332
+</span></span></code></pre></div><ul>
+<li>Address some feedback on DSpace 7 from users, including fileing some issues on GitHub
+<ul>
+<li><a href="https://github.com/DSpace/dspace-angular/issues/2730">https://github.com/DSpace/dspace-angular/issues/2730</a>: List of available metadata fields is truncated when adding new metadata in &ldquo;Edit Item&rdquo;</li>
+</ul>
+</li>
+<li>The Alliance TIP team was having issues posting to one collection via the legacy DSpace 6 REST API
+<ul>
+<li>In the DSpace logs I see the same issue that they had last month:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>ERROR unknown unknown org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
+</code></pre><h2 id="2024-01-09">2024-01-09</h2>
+<ul>
+<li>I restarted Tomcat to see if it helps the REST issue</li>
+<li>After talking with Peter about publishers we decided to get a clean list of the top ~100 publishers and then make sure all CGIAR centers, Initiatives, and Impact Platforms are there as well
+<ul>
+<li>I exported a list from PostgreSQL and then filtered by count &gt; 40 in OpenRefine and then extracted the metadata values:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>$ csvcut -c dcterms.publisher ~/Downloads/2024-01-09-publishers4.csv | sed -e 1d -e &#39;s/&#34;//g&#39; &gt; /tmp/top-publishers.txt
+</code></pre><ul>
+<li>Export a list of ORCID identifiers from PostgreSQL to look them up on ORCID and update our controlled vocabulary:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ \COPY (SELECT DISTINCT(text_value) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=247) to /tmp/2024-01-09-orcid-identifiers.txt;
+</span></span><span style="display:flex;"><span>localhost/dspace7= ☘ \q
+</span></span><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/2024-01-09-orcid-identifiers.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u &gt; /tmp/2024-01-09-orcids.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/resolve_orcids.py -i /tmp/2024-01-09-orcids.txt -o /tmp/2024-01-09-orcids-names.txt -d
+</span></span></code></pre></div><ul>
+<li>Then I updated existing ORCID identifiers in CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./ilri/update_orcids.py -i /tmp/2024-01-09-orcids-names.txt -db dspace -u dspace -p bahhhh
+</code></pre><ul>
+<li>Bizu seems to be having issues due to belonging to too many groups
+<ul>
+<li>I see some messages from Solr in the DSpace log:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>2024-01-09 06:23:35,893 ERROR unknown unknown org.dspace.authorize.AuthorizeServiceImpl @ Failed getting getting community/collection admin status for bahhhhh@cgiar.org The search error is: Error from server at http://localhost:8983/solr/search: org.apache.solr.search.SyntaxError: Cannot parse &#39;search.resourcetype:Community AND (admin:eef481147-daf3-4fd2-bb8d-e18af8131d8c OR admin:g80199ef9-bcd6-4961-9512-501dea076607 OR admin:g4ac29263-cf0c-48d0-8be7-7f09317d50ec OR admin:g0e594148-a0f6-4f00-970d-6b7812f89540 OR admin:g0265b87a-2183-4357-a971-7a5b0c7add3a OR admin:g371ae807-f014-4305-b4ec-f2a8f6f0dcfa OR admin:gdc5cb27c-4a5a-45c2-b656-a399fded70de OR admin:ge36d0ece-7a52-4925-afeb-6641d6a348cc OR admin:g15dc1173-7ddf-43cf-a89a-77a7f81c4cfc OR admin:gc3a599d3-c758-46cd-9855-c98f6ab58ae4 OR admin:g3d648c3e-58c3-4342-b500-07cba10ba52d OR admin:g82bf5168-65c1-4627-8eb4-724fa0ea51a7 OR admin:ge751e973-697d-419c-b59b-5a5644702874 OR admin:g44dd0a80-c1e6-4274-9be4-9f342d74928c OR admin:g4842f9c2-73ed-476a-a81a-7167d8aa7946 OR admin:g5f279b3f-c2ce-4c75-b151-1de52c1a540e OR admin:ga6df8adc-2e1d-40f2-8f1e-f77796d0eecd OR admin:gfdfc1621-382e-437a-8674-c9007627565c OR admin:g15cd114a-0b89-442b-a1b4-1febb6959571 OR admin:g12aede99-d018-4c00-b4d4-a732541d0017 OR admin:gc59529d7-002a-4216-b2e1-d909afd2d4a9 OR admin:gd0806714-bc13-460d-bedd-121bdd5436a4 OR admin:gce70739a-8820-4d56-b19c-f191855479e4 OR admin:g7d3409eb-81e3-4156-afb1-7f02de22065f OR admin:g54bc009e-2954-4dad-8c30-be6a09dc5093 OR admin:gc5e1d6b7-4603-40d7-852f-6654c159dec9 OR admin:g0046214d-c85b-4f12-a5e6-2f57a2c3abb0 OR admin:g4c7b4fd0-938f-40e9-ab3e-447c317296c1 OR admin:gcfae9b69-d8dd-4cf3-9a4e-d6e31ff68731 OR ... admin:g20f366c0-96c0-4416-ad0b-46884010925f)&#39;: too many boolean clauses The search resourceType filter was: search.resourcetype:Community
+</code></pre><ul>
+<li>There are 1,805 OR clauses in the full log!
+<ul>
+<li>We previous had this issue in 2020-01 and 2020-02 with DSpace 5 and DSpace 6</li>
+<li>At the time the solution was to increase the <code>maxBooleanClauses</code> in Solr and to disable access rights awareness, but I don&rsquo;t think we want to do the second one now</li>
+<li>I saw many users of Solr in other applications increasing this to obscenely high numbers, so I think we should be OK to increase it from 1024 to 2048</li>
+</ul>
+</li>
+<li>Re-visiting the DSpace user groomer to delete inactive users
+<ul>
+<li>In 2023-08 I noticed that this was now <a href="https://github.com/DSpace/DSpace/pull/2928">possible in DSpace 7</a></li>
+<li>As a test I tried to delete all users who have been inactive since six years ago (Janury 9, 2018):</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace dsrun org.dspace.eperson.Groomer -a -b 01/09/2018 -d
+</span></span></code></pre></div><ul>
+<li>I tested it on DSpace 7 Test and it worked&hellip; I am debating running it on CGSpace&hellip;
+<ul>
+<li>I see we have almost 9,000 users:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace user -L &gt; /tmp/users-before.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/users-before.txt
+</span></span><span style="display:flex;"><span>8943 /tmp/users-before.txt
+</span></span></code></pre></div><ul>
+<li>I decided to do the same on CGSpace and it worked without errors</li>
+<li>I finished working on the controlled vocabulary for publishers</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
