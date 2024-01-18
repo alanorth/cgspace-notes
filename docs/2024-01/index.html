@@ -22,7 +22,7 @@ Work on IFPRI ISNAR archive cleanup
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-01/" />
 <meta property="article:published_time" content="2024-01-02T10:08:00+03:00" />
-<meta property="article:modified_time" content="2024-01-10T08:34:16+03:00" />
+<meta property="article:modified_time" content="2024-01-10T17:21:12+03:00" />
 
 
 
@@ -50,9 +50,9 @@ Work on IFPRI ISNAR archive cleanup
   "@type": "BlogPosting",
   "headline": "January, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-01/",
-  "wordCount": "1306",
+  "wordCount": "1847",
   "datePublished": "2024-01-02T10:08:00+03:00",
-  "dateModified": "2024-01-10T08:34:16+03:00",
+  "dateModified": "2024-01-10T17:21:12+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -339,6 +339,177 @@ Work on IFPRI ISNAR archive cleanup
 </span></span></code></pre></div><ul>
 <li>I think we can move those to a new <code>cg.identifier.project</code> if we create one</li>
 <li>The <code>cg.identifier.cpwfproject</code> field is similarly sparse, but the CCAFS ones are widely used</li>
+</ul>
+<h2 id="2024-01-12">2024-01-12</h2>
+<ul>
+<li>Export a list of affiliations to do some cleanup:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ \COPY (SELECT DISTINCT text_value AS &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 211 GROUP BY &#34;cg.contributor.affiliation&#34; ORDER BY count DESC) to /tmp/2024-01-affiliations.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 11719
+</span></span></code></pre></div><ul>
+<li>I first did some clustering and editing in OpenRefine, then I&rsquo;ll import those back into CGSpace and then do another export</li>
+<li>Troubleshooting the statistics pages that aren&rsquo;t working on DSpace 7
+<ul>
+<li>On a hunch, I queried for for Solr statistics documents that <strong>did not have an <code>id</code> matching the 36-character UUID pattern</strong>:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/select?q=-id%3A%2F.\{36\}%2F&amp;rows=0&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
+</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
+</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:0,
+</span></span><span style="display:flex;"><span>    &#34;params&#34;:{
+</span></span><span style="display:flex;"><span>      &#34;q&#34;:&#34;-id:/.{36}/&#34;,
+</span></span><span style="display:flex;"><span>      &#34;rows&#34;:&#34;0&#34;}},
+</span></span><span style="display:flex;"><span>  &#34;response&#34;:{&#34;numFound&#34;:800167,&#34;start&#34;:0,&#34;numFoundExact&#34;:true,&#34;docs&#34;:[]
+</span></span><span style="display:flex;"><span>  }}
+</span></span></code></pre></div><ul>
+<li>They seem to come mostly from 2020, 2023, and 2024:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/select?q=-id%3A%2F.\{36\}%2F&amp;facet.range=time&amp;facet=true&amp;facet.range.start=2010-01-01T00:00:00Z&amp;facet.range.end=NOW&amp;facet.range.gap=%2B1YEAR&amp;rows=0&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
+</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
+</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:13,
+</span></span><span style="display:flex;"><span>    &#34;params&#34;:{
+</span></span><span style="display:flex;"><span>      &#34;facet.range&#34;:&#34;time&#34;,
+</span></span><span style="display:flex;"><span>      &#34;q&#34;:&#34;-id:/.{36}/&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet.range.gap&#34;:&#34;+1YEAR&#34;,
+</span></span><span style="display:flex;"><span>      &#34;rows&#34;:&#34;0&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet&#34;:&#34;true&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet.range.start&#34;:&#34;2010-01-01T00:00:00Z&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet.range.end&#34;:&#34;NOW&#34;}},
+</span></span><span style="display:flex;"><span>  &#34;response&#34;:{&#34;numFound&#34;:800168,&#34;start&#34;:0,&#34;numFoundExact&#34;:true,&#34;docs&#34;:[]
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  &#34;facet_counts&#34;:{
+</span></span><span style="display:flex;"><span>    &#34;facet_queries&#34;:{},
+</span></span><span style="display:flex;"><span>    &#34;facet_fields&#34;:{},
+</span></span><span style="display:flex;"><span>    &#34;facet_ranges&#34;:{
+</span></span><span style="display:flex;"><span>      &#34;time&#34;:{
+</span></span><span style="display:flex;"><span>        &#34;counts&#34;:[
+</span></span><span style="display:flex;"><span>          &#34;2010-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2011-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2012-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2013-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2014-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2015-01-01T00:00:00Z&#34;,89,
+</span></span><span style="display:flex;"><span>          &#34;2016-01-01T00:00:00Z&#34;,11,
+</span></span><span style="display:flex;"><span>          &#34;2017-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2018-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2019-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2020-01-01T00:00:00Z&#34;,1339,
+</span></span><span style="display:flex;"><span>          &#34;2021-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2022-01-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-01-01T00:00:00Z&#34;,653736,
+</span></span><span style="display:flex;"><span>          &#34;2024-01-01T00:00:00Z&#34;,144993],
+</span></span><span style="display:flex;"><span>        &#34;gap&#34;:&#34;+1YEAR&#34;,
+</span></span><span style="display:flex;"><span>        &#34;start&#34;:&#34;2010-01-01T00:00:00Z&#34;,
+</span></span><span style="display:flex;"><span>        &#34;end&#34;:&#34;2025-01-01T00:00:00Z&#34;}},
+</span></span><span style="display:flex;"><span>    &#34;facet_intervals&#34;:{},
+</span></span><span style="display:flex;"><span>    &#34;facet_heatmaps&#34;:{}}}
+</span></span></code></pre></div><ul>
+<li>They seem to come from 2023-08 until now (so way before we migrated to DSpace 7):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/select?q=-id%3A%2F.\{36\}%2F&amp;facet.range=time&amp;facet=true&amp;facet.range.start=2023-01-01T00:00:00Z&amp;facet.range.end=NOW&amp;facet.range.gap=%2B1MONTH&amp;rows=0&#39;</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
+</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
+</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:196,
+</span></span><span style="display:flex;"><span>    &#34;params&#34;:{
+</span></span><span style="display:flex;"><span>      &#34;facet.range&#34;:&#34;time&#34;,
+</span></span><span style="display:flex;"><span>      &#34;q&#34;:&#34;-id:/.{36}/&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet.range.gap&#34;:&#34;+1MONTH&#34;,
+</span></span><span style="display:flex;"><span>      &#34;rows&#34;:&#34;0&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet&#34;:&#34;true&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet.range.start&#34;:&#34;2023-01-01T00:00:00Z&#34;,
+</span></span><span style="display:flex;"><span>      &#34;facet.range.end&#34;:&#34;NOW&#34;}},
+</span></span><span style="display:flex;"><span>  &#34;response&#34;:{&#34;numFound&#34;:800168,&#34;start&#34;:0,&#34;numFoundExact&#34;:true,&#34;docs&#34;:[]
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  &#34;facet_counts&#34;:{
+</span></span><span style="display:flex;"><span>    &#34;facet_queries&#34;:{},
+</span></span><span style="display:flex;"><span>    &#34;facet_fields&#34;:{},
+</span></span><span style="display:flex;"><span>    &#34;facet_ranges&#34;:{
+</span></span><span style="display:flex;"><span>      &#34;time&#34;:{
+</span></span><span style="display:flex;"><span>        &#34;counts&#34;:[
+</span></span><span style="display:flex;"><span>          &#34;2023-01-01T00:00:00Z&#34;,1,
+</span></span><span style="display:flex;"><span>          &#34;2023-02-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-03-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-04-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-05-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-06-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-07-01T00:00:00Z&#34;,0,
+</span></span><span style="display:flex;"><span>          &#34;2023-08-01T00:00:00Z&#34;,27621,
+</span></span><span style="display:flex;"><span>          &#34;2023-09-01T00:00:00Z&#34;,59165,
+</span></span><span style="display:flex;"><span>          &#34;2023-10-01T00:00:00Z&#34;,115338,
+</span></span><span style="display:flex;"><span>          &#34;2023-11-01T00:00:00Z&#34;,96147,
+</span></span><span style="display:flex;"><span>          &#34;2023-12-01T00:00:00Z&#34;,355464,
+</span></span><span style="display:flex;"><span>          &#34;2024-01-01T00:00:00Z&#34;,125429],
+</span></span><span style="display:flex;"><span>        &#34;gap&#34;:&#34;+1MONTH&#34;,
+</span></span><span style="display:flex;"><span>        &#34;start&#34;:&#34;2023-01-01T00:00:00Z&#34;,
+</span></span><span style="display:flex;"><span>        &#34;end&#34;:&#34;2024-02-01T00:00:00Z&#34;}},
+</span></span><span style="display:flex;"><span>    &#34;facet_intervals&#34;:{},
+</span></span><span style="display:flex;"><span>    &#34;facet_heatmaps&#34;:{}}}
+</span></span></code></pre></div><ul>
+<li>I see that we had 31,744 statistic events yesterday, and 799 have no <code>id</code>!</li>
+<li>I asked about this on Slack and will file an issue on GitHub if someone else also finds such records
+<ul>
+<li>Several people said they have them, so it&rsquo;s a bug of some sort in DSpace, not our configuration</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-01-13">2024-01-13</h2>
+<ul>
+<li>Yesterday alone we had 37,000 unique IPs making requests to nginx
+<ul>
+<li>I looked up the ASNs and found 6,000 IPs from this network in Amazon Singapore: 47.128.0.0/14</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-01-15">2024-01-15</h2>
+<ul>
+<li>Investigating the CSS selector warning that I&rsquo;ve seen in PM2 logs:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>0|dspace-ui  | 1 rules skipped due to selector errors:
+</span></span><span style="display:flex;"><span>0|dspace-ui  |   .custom-file-input:lang(en)~.custom-file-label -&gt; unmatched pseudo-class :lang
+</span></span></code></pre></div><ul>
+<li>It seems to be a bug in Angular, as this selector comes from Bootstrap 4.6.x and is not invalid
+<ul>
+<li>But that led me to a more interesting issue with <code>inlineCritical</code> optimization for styles in Angular SSR that might be responsible for causing high load in the frontend</li>
+<li>See: <a href="https://github.com/angular/angular/issues/42098">https://github.com/angular/angular/issues/42098</a></li>
+<li>See: <a href="https://github.com/angular/universal/issues/2106">https://github.com/angular/universal/issues/2106</a></li>
+<li>See: <a href="https://github.com/GoogleChromeLabs/critters/issues/78">https://github.com/GoogleChromeLabs/critters/issues/78</a></li>
+</ul>
+</li>
+<li>Since the production site was flapping a lot I decided to try disabling inlineCriticalCss</li>
+<li>There have been on and off load issues with the Angular frontend today
+<ul>
+<li>I think I will just block all data center network blocks for now</li>
+<li>In the last week I see almost 200,000 unique IPs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat -f /var/log/nginx/*access.log  /var/log/nginx/*access.log.1 /var/log/nginx/*access.log.2.gz /var/log/nginx/*access.log.3.gz /var/log/nginx/*access.log.4.gz /var/log/nginx/*access.log.5.gz /var/log/nginx/*access.log.6.gz | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort -u |
+</span></span><span style="display:flex;"><span>tee /tmp/ips.txt | wc -l
+</span></span><span style="display:flex;"><span>196493
+</span></span></code></pre></div><ul>
+<li>Looking these IPs up I see there are 18,000 coming from Comcast, 10,000 from AT&amp;T, 4110 from Charter, 3500 from Cox and dozens of other residential IPs
+<ul>
+<li>I highly doubt these are home users browsing CGSpace&hellip; seems super fishy</li>
+<li>Also, over 1,000 IPs from SpaceX Starlink in the last week. RIGHT</li>
+<li>I will temporarily add a few new datacenter ISP network blocks to our rate limit:
+<ul>
+<li>16509 Amazon-02</li>
+<li>701   UUNET</li>
+<li>8075  Microsoft</li>
+<li>15169 Google</li>
+<li>14618 Amazon-AES</li>
+<li>396982 Google Cloud</li>
+</ul>
+</li>
+<li>The load on the server <em>immediately</em> dropped</li>
+</ul>
+</li>
 </ul>
 <!-- raw HTML omitted -->
 
