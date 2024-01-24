@@ -22,7 +22,7 @@ Work on IFPRI ISNAR archive cleanup
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-01/" />
 <meta property="article:published_time" content="2024-01-02T10:08:00+03:00" />
-<meta property="article:modified_time" content="2024-01-10T17:21:12+03:00" />
+<meta property="article:modified_time" content="2024-01-18T15:59:49+03:00" />
 
 
 
@@ -50,9 +50,9 @@ Work on IFPRI ISNAR archive cleanup
   "@type": "BlogPosting",
   "headline": "January, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-01/",
-  "wordCount": "1847",
+  "wordCount": "2164",
   "datePublished": "2024-01-02T10:08:00+03:00",
-  "dateModified": "2024-01-10T17:21:12+03:00",
+  "dateModified": "2024-01-18T15:59:49+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -510,6 +510,62 @@ Work on IFPRI ISNAR archive cleanup
 <li>The load on the server <em>immediately</em> dropped</li>
 </ul>
 </li>
+</ul>
+<h2 id="2024-01-17">2024-01-17</h2>
+<ul>
+<li>It turns out AS701 (UUNET) is Verizon Business, which is used as an ISP for many staff at IFPRI
+<ul>
+<li>This was causing them to see HTTP 429 &ldquo;too many requests&rdquo; errors on CGSpace</li>
+<li>I removed this ASN from the rate limiting</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-01-18">2024-01-18</h2>
+<ul>
+<li>Start looking at Solr stats again
+<ul>
+<li>I found one statistics record that has 22,000 of the same collection in <code>owningColl</code> and 22,000 of the same community in <code>owningComm</code></li>
+<li>The record is from 2015 and think it would be easier to delete it than fix it:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl http://localhost:8983/solr/statistics/update -H <span style="color:#e6db74">&#34;Content-type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#39;&lt;delete&gt;&lt;query&gt;uid:3b4eefba-a302-4172-a286-dcb25d70129e&lt;/query&gt;&lt;/delete&gt;&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Looking again, there are at least 1,000 of these so I will need to come up with an actual solution to fix these</li>
+<li>I&rsquo;m noticing we have 1,800+ links to defunct resources on bioversityinternational.org in the <code>cg.link.permalink</code> field
+<ul>
+<li>I should ask Alliance if they have any plans to fix those, or upload them to CGSpace</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-01-22">2024-01-22</h2>
+<ul>
+<li>Meeting with IWMI about ORCID integration on CGSpace now that we&rsquo;ve migrated to DSpace 7</li>
+<li>File an issue for the inaccurate DSpace statistics: <a href="https://github.com/DSpace/DSpace/issues/9275">https://github.com/DSpace/DSpace/issues/9275</a></li>
+</ul>
+<h2 id="2024-01-23">2024-01-23</h2>
+<ul>
+<li>Meeting with IWMI about ORCID integration and the DSpace API for use with WordPress</li>
+<li>IFPRI sent me an list of their author ORCIDs to add to our controlled vocabulary
+<ul>
+<li>I joined them with our current list and resolved their names on ORCID and updated them in our database:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml ~/Downloads/IFPRI<span style="color:#ae81ff">\ </span>ORCiD<span style="color:#ae81ff">\ </span>All.csv | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u &gt; /tmp/2024-01-23-orcids.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/resolve_orcids.py -i /tmp/2024-01-23-orcids.txt -o /tmp/2024-01-23-orcids-names.txt -d
+</span></span><span style="display:flex;"><span>$ ./ilri/update_orcids.py -i /tmp/2024-01-23-orcids-names.txt -db dspace -u dspace -p fuuu
+</span></span></code></pre></div><ul>
+<li>This adds about 400 new identifiers to the controlled vocabulary</li>
+<li>I consolidated our various project identifier fields for closed programs into one <code>cg.identifer.project</code>:
+<ul>
+<li><code>cg.identifier.ccafsproject</code></li>
+<li><code>cg.identifier.ccafsprojectpii</code></li>
+<li><code>cg.identifier.ciatproject</code></li>
+<li><code>cg.identifier.cpwfproject</code></li>
+</ul>
+</li>
+<li>I prefixed the existing 2,644 metadata values with &ldquo;CCAFS&rdquo;, &ldquo;CIAT&rdquo;, or &ldquo;CPWF&rdquo; so we can figure out where they came from if need be, and deleted the old fields from the metadata registry</li>
 </ul>
 <!-- raw HTML omitted -->
 
