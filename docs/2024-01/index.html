@@ -6,41 +6,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 
-<meta property="og:title" content="January, 2024" />
-<meta property="og:description" content="2024-01-02
+<meta property="og:title" content="February, 2024" />
+<meta property="og:description" content="2024-02-05
 
-Work on preparation of new server for DSpace 7 migration
-
-I&rsquo;m not quite sure what we need to do for the Handle server
-For now I just ran the dspace make-handle-config script and diffed it with the one from DSpace 6
-I sent the bundle to the Handle admins to make sure it&rsquo;s OK before we do the migration
-
-
-Continue testing and debugging the cgspace-java-helpers on DSpace 7
-Work on IFPRI ISNAR archive cleanup
+Delete duplicate metadata as described in my DSpace issue from last year: https://github.com/DSpace/DSpace/issues/8253
+Lower case all the AGROVOC subjects on CGSpace
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-01/" />
-<meta property="article:published_time" content="2024-01-02T10:08:00+03:00" />
-<meta property="article:modified_time" content="2024-02-05T11:09:40+03:00" />
+<meta property="article:published_time" content="2024-01-05T11:10:00+03:00" />
+<meta property="article:modified_time" content="2024-02-20T22:55:09+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="January, 2024"/>
-<meta name="twitter:description" content="2024-01-02
+<meta name="twitter:title" content="February, 2024"/>
+<meta name="twitter:description" content="2024-02-05
 
-Work on preparation of new server for DSpace 7 migration
-
-I&rsquo;m not quite sure what we need to do for the Handle server
-For now I just ran the dspace make-handle-config script and diffed it with the one from DSpace 6
-I sent the bundle to the Handle admins to make sure it&rsquo;s OK before we do the migration
-
-
-Continue testing and debugging the cgspace-java-helpers on DSpace 7
-Work on IFPRI ISNAR archive cleanup
+Delete duplicate metadata as described in my DSpace issue from last year: https://github.com/DSpace/DSpace/issues/8253
+Lower case all the AGROVOC subjects on CGSpace
 "/>
-<meta name="generator" content="Hugo 0.123.0">
+<meta name="generator" content="Hugo 0.123.3">
 
 
     
@@ -48,11 +34,11 @@ Work on IFPRI ISNAR archive cleanup
 {
   "@context": "http://schema.org",
   "@type": "BlogPosting",
-  "headline": "January, 2024",
+  "headline": "February, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-01/",
-  "wordCount": "2215",
-  "datePublished": "2024-01-02T10:08:00+03:00",
-  "dateModified": "2024-02-05T11:09:40+03:00",
+  "wordCount": "422",
+  "datePublished": "2024-01-05T11:10:00+03:00",
+  "dateModified": "2024-02-20T22:55:09+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -65,7 +51,7 @@ Work on IFPRI ISNAR archive cleanup
 
     <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2024-01/">
 
-    <title>January, 2024 | CGSpace Notes</title>
+    <title>February, 2024 | CGSpace Notes</title>
 
     
     <!-- combined, minified CSS -->
@@ -117,466 +103,98 @@ Work on IFPRI ISNAR archive cleanup
 
 <article class="blog-post">
   <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2024-01/">January, 2024</a></h2>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2024-01/">February, 2024</a></h2>
     <p class="blog-post-meta">
-<time datetime="2024-01-02T10:08:00+03:00">Tue Jan 02, 2024</time>
+<time datetime="2024-01-05T11:10:00+03:00">Fri Jan 05, 2024</time>
  in 
 <span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
 
 
 </p>
   </header>
-  <h2 id="2024-01-02">2024-01-02</h2>
+  <h2 id="2024-02-05">2024-02-05</h2>
 <ul>
-<li>Work on preparation of new server for DSpace 7 migration
+<li>Delete duplicate metadata as described in my DSpace issue from last year: <a href="https://github.com/DSpace/DSpace/issues/8253">https://github.com/DSpace/DSpace/issues/8253</a></li>
+<li>Lower case all the AGROVOC subjects on CGSpace</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>dspace<span style="color:#f92672">=#</span> <span style="color:#66d9ef">BEGIN</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">BEGIN</span>
+</span></span><span style="display:flex;"><span>dspace<span style="color:#f92672">=*#</span> <span style="color:#66d9ef">UPDATE</span> metadatavalue <span style="color:#66d9ef">SET</span> text_value<span style="color:#f92672">=</span><span style="color:#66d9ef">LOWER</span>(text_value) <span style="color:#66d9ef">WHERE</span> dspace_object_id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> uuid <span style="color:#66d9ef">FROM</span> item) <span style="color:#66d9ef">AND</span> metadata_field_id<span style="color:#f92672">=</span><span style="color:#ae81ff">187</span> <span style="color:#66d9ef">AND</span> text_value <span style="color:#f92672">~</span> <span style="color:#e6db74">&#39;[[:upper:]]&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> <span style="color:#ae81ff">180</span>
+</span></span><span style="display:flex;"><span>dspace<span style="color:#f92672">=*#</span> <span style="color:#66d9ef">COMMIT</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">COMMIT</span>
+</span></span></code></pre></div><h2 id="2024-02-06">2024-02-06</h2>
 <ul>
-<li>I&rsquo;m not quite sure what we need to do for the Handle server</li>
-<li>For now I just ran the <code>dspace make-handle-config</code> script and diffed it with the one from DSpace 6</li>
-<li>I sent the bundle to the Handle admins to make sure it&rsquo;s OK before we do the migration</li>
+<li>Discuss IWMI using the CGSpace REST API for their new website</li>
+<li>Export the IWMI community to extract their ORCID identifiers:</li>
 </ul>
-</li>
-<li>Continue testing and debugging the cgspace-java-helpers on DSpace 7</li>
-<li>Work on IFPRI ISNAR archive cleanup</li>
-</ul>
-<h2 id="2024-01-03">2024-01-03</h2>
-<ul>
-<li>I haven&rsquo;t heard from the Handle admins so I&rsquo;m preparing a backup solution using nginx streams</li>
-<li>This seems to work in my simple tests (this must be outside the <code>http {}</code> block):</li>
-</ul>
-<pre tabindex="0"><code>stream {
-    upstream handle_tcp_9000 {
-       server 188.34.177.10:9000;
-    }
-
-    server {
-        listen 9000;
-        proxy_connect_timeout 1s;
-        proxy_timeout 3s;
-        proxy_pass handle_tcp_9000;
-    }
-}
-</code></pre><ul>
-<li>Here I forwarded a test TCP port 9000 from one server to another and was able to retrieve a test HTML that was running on the target
-<ul>
-<li>I will have to do TCP and UDP on port 2641, and TCP/HTTP on port 8000.</li>
-</ul>
-</li>
-<li>I did some more minor work on the IFPRI ISNAR archive
-<ul>
-<li>I got some PDFs from the UMN AgEcon search and fixed some metadata</li>
-<li>Then I did some duplicate checking and found five items already on CGSpace</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-04">2024-01-04</h2>
-<ul>
-<li>Upload 692 items for the ISNAR archive to CGSpace: <a href="https://cgspace.cgiar.org/handle/10568/136192">https://cgspace.cgiar.org/handle/10568/136192</a></li>
-<li>Help Peter proof and upload 252 items from the 2023 Gender conference to CGSpace</li>
-<li>Meeting with IFPRI to discuss their migration to CGSpace
-<ul>
-<li>We agreed to add two new fields, one for IFPRI project and one for IFPRI publication ranking</li>
-<li>Most likely we will use <code>cg.identifier.project</code> as a general field and consolidate other project fields there</li>
-<li>Not sure which field to use for the publication rank&hellip;</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-05">2024-01-05</h2>
-<ul>
-<li>Proof and upload 51 items in bulk for IFPRI</li>
-<li>I did a big cleanup of user groups in anticipation of complaints about slow workflow tasks etc in DSpace 7
-<ul>
-<li>I removed ILRI editors from all the dozens of CCAFS community and collection groups, and I should do the same for other CRPs since they are closed for two years now</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-06">2024-01-06</h2>
-<ul>
-<li>Migrate CGSpace to DSpace 7</li>
-</ul>
-<h2 id="2024-01-07">2024-01-07</h2>
-<ul>
-<li>High load on the server and UptimeRobot saying the frontend is flapping
-<ul>
-<li>I noticed tons of logs from pm2 in the systemd journal, so I disabled those in the systemd unit because they are available from pm2&rsquo;s log directory anyway</li>
-<li>I also noticed the same for Solr, so I disabled stdout for that systemd unit as well</li>
-</ul>
-</li>
-<li>I spent a lot of time bringing back the nginx rate limits we used in DSpace 6 and it seems to have helped</li>
-<li>I see some client doing weird HEAD requests to search pages:</li>
-</ul>
-<pre tabindex="0"><code>47.76.35.19 - - [07/Jan/2024:00:00:02 +0100] &#34;HEAD /search/?f.accessRights=Open+Access%2Cequals&amp;f.actionArea=Resilient+Agrifood+Systems%2Cequals&amp;f.author=Burkart%2C+Stefan%2Cequals&amp;f.country=Kenya%2Cequals&amp;f.impactArea=Climate+adaptation+and+mitigation%2Cequals&amp;f.itemtype=Brief%2Cequals&amp;f.publisher=CGIAR+System+Organization%2Cequals&amp;f.region=Asia%2Cequals&amp;f.sdg=SDG+12+-+Responsible+consumption+and+production%2Cequals&amp;f.sponsorship=CGIAR+Trust+Fund%2Cequals&amp;f.subject=environmental+factors%2Cequals&amp;spc.page=1 HTTP/1.1&#34; 499 0 &#34;-&#34; &#34;Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.2504.63 Safari/537.36&#34;
-</code></pre><ul>
-<li>I will add their network blocks (AS45102) and regenerate my list of bot networks:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wget https://asn.ipinfo.app/api/text/list/AS16276 <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>     https://asn.ipinfo.app/api/text/list/AS23576 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS24940 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS13238 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS14061 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS12876 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS55286 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS203020 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS204287 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS50245 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS6939 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS45102 \
-</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS21859
-</span></span><span style="display:flex;"><span>$ cat AS* | sort | uniq | wc -l
-</span></span><span style="display:flex;"><span>4897
-</span></span><span style="display:flex;"><span>$ cat AS* | ~/go/bin/mapcidr -a &gt; /tmp/networks.txt
-</span></span><span style="display:flex;"><span>$ wc -l /tmp/networks.txt
-</span></span><span style="display:flex;"><span>2017 /tmp/networks.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace metadata-export -i 10568/16814 -f /tmp/iwmi.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;cg.creator.identifier,cg.creator.identifier[en_US]&#39;</span> ~/Downloads/2024-02-06-iwmi.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | grep -oE &#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39; \
+</span></span><span style="display:flex;"><span>  | sort -u \
+</span></span><span style="display:flex;"><span>  | tee /tmp/iwmi-orcids.txt \
+</span></span><span style="display:flex;"><span>  | wc -l
+</span></span><span style="display:flex;"><span>353
+</span></span><span style="display:flex;"><span>$ ./ilri/resolve_orcids.py -i /tmp/iwmi-orcids.txt -o /tmp/iwmi-orcids-names.csv -d
 </span></span></code></pre></div><ul>
-<li>I&rsquo;m surprised to see the number of networks reduced from my current ones&hellip; hmmm.</li>
-<li>I will also update my list of Bing networks:</li>
+<li>I noticed some similar looking names in our list so I clustered them in OpenRefine and manually checked a dozen or so to update our list</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ./ilri/bing-networks-to-ips.sh
-</span></span><span style="display:flex;"><span>$ ~/go/bin/mapcidr -a &lt; /tmp/bing-ips.txt &gt; /tmp/bing-networks.txt
-</span></span><span style="display:flex;"><span>$ wc -l /tmp/bing-networks.txt
-</span></span><span style="display:flex;"><span>250 /tmp/bing-networks.txt
-</span></span></code></pre></div><h2 id="2024-01-08">2024-01-08</h2>
+<h2 id="2024-02-07">2024-02-07</h2>
 <ul>
-<li>Export list of publishers for Peter to select some amount to use as a controlled vocabulary:</li>
+<li>Maria asked me about the &ldquo;missing&rdquo; item from last week again
+<ul>
+<li>I can see it when I used the Admin search, but not in her workflow</li>
+<li>It was submitted by TIP so I checked that user&rsquo;s workspace and found it there</li>
+<li>After depositing, it went into the workflow so Maria should be able to see it now</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ \COPY (SELECT DISTINCT text_value AS &#34;dcterms.publisher&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 178 GROUP BY &#34;dcterms.publisher&#34; ORDER BY count DESC) to /tmp/2024-01-publishers.csv WITH CSV HEADER;
-</span></span><span style="display:flex;"><span>COPY 4332
+</li>
+</ul>
+<h2 id="2024-02-09">2024-02-09</h2>
+<ul>
+<li>Minor edits to CGSpace submission form</li>
+<li>Upload 55 ISNAR book chapters to CGSpace from Peter</li>
+</ul>
+<h2 id="2024-02-19">2024-02-19</h2>
+<ul>
+<li>Looking into the collection mapping issue on CGSpace
+<ul>
+<li>It seems to be by design in DSpace 7: <a href="https://github.com/DSpace/dspace-angular/issues/1203">https://github.com/DSpace/dspace-angular/issues/1203</a></li>
+<li>This is a massive setback for us&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-02-20">2024-02-20</h2>
+<ul>
+<li>Minor work on OpenRXV to fix a bug in the ng-select drop downs</li>
+<li>Minor work on the DSpace 7 nginx configuration to allow requesting robots.txt and sitemaps without hitting rate limits</li>
+</ul>
+<h2 id="2024-02-21">2024-02-21</h2>
+<ul>
+<li>Minor updates on OpenRXV, including one bug fix for missing mapped collections
+<ul>
+<li>Salem had to re-work the harvester for DSpace 7 since the mapped collections and parent collection list are separate!</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-02-22">2024-02-22</h2>
+<ul>
+<li>Discuss tagging of datasets and re-work the submission form to encourage use of DOI field for any item that has a DOI, and the normal URL field if not
+<ul>
+<li>The &ldquo;cg.identifier.dataurl&rdquo; field will be used for &ldquo;related&rdquo; datasets</li>
+<li>I still have to check and move some metadata for existing datasets</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-02-23">2024-02-23</h2>
+<ul>
+<li>This morning Tomcat died due to an OOM kill from the kernel:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>kernel: Out of memory: Killed process 698 (java) total-vm:14151300kB, anon-rss:9665812kB, file-rss:320kB, shmem-rss:0kB, UID:997 pgtables:20436kB oom_score_adj:0
 </span></span></code></pre></div><ul>
-<li>Address some feedback on DSpace 7 from users, including fileing some issues on GitHub
+<li>I don&rsquo;t see any abnormal pattern in my Grafana graphs, for JVM or system load&hellip; very weird</li>
+<li>I updated the submission form on CGSpace to include the new changes to URLs for datasets
 <ul>
-<li><a href="https://github.com/DSpace/dspace-angular/issues/2730">https://github.com/DSpace/dspace-angular/issues/2730</a>: List of available metadata fields is truncated when adding new metadata in &ldquo;Edit Item&rdquo;</li>
-</ul>
-</li>
-<li>The Alliance TIP team was having issues posting to one collection via the legacy DSpace 6 REST API
-<ul>
-<li>In the DSpace logs I see the same issue that they had last month:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>ERROR unknown unknown org.dspace.rest.Resource @ Something get wrong. Aborting context in finally statement.
-</code></pre><h2 id="2024-01-09">2024-01-09</h2>
-<ul>
-<li>I restarted Tomcat to see if it helps the REST issue</li>
-<li>After talking with Peter about publishers we decided to get a clean list of the top ~100 publishers and then make sure all CGIAR centers, Initiatives, and Impact Platforms are there as well
-<ul>
-<li>I exported a list from PostgreSQL and then filtered by count &gt; 40 in OpenRefine and then extracted the metadata values:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>$ csvcut -c dcterms.publisher ~/Downloads/2024-01-09-publishers4.csv | sed -e 1d -e &#39;s/&#34;//g&#39; &gt; /tmp/top-publishers.txt
-</code></pre><ul>
-<li>Export a list of ORCID identifiers from PostgreSQL to look them up on ORCID and update our controlled vocabulary:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ \COPY (SELECT DISTINCT(text_value) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id=247) to /tmp/2024-01-09-orcid-identifiers.txt;
-</span></span><span style="display:flex;"><span>localhost/dspace7= ☘ \q
-</span></span><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml /tmp/2024-01-09-orcid-identifiers.txt | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u &gt; /tmp/2024-01-09-orcids.txt
-</span></span><span style="display:flex;"><span>$ ./ilri/resolve_orcids.py -i /tmp/2024-01-09-orcids.txt -o /tmp/2024-01-09-orcids-names.txt -d
-</span></span></code></pre></div><ul>
-<li>Then I updated existing ORCID identifiers in CGSpace:</li>
-</ul>
-<pre tabindex="0"><code>$ ./ilri/update_orcids.py -i /tmp/2024-01-09-orcids-names.txt -db dspace -u dspace -p bahhhh
-</code></pre><ul>
-<li>Bizu seems to be having issues due to belonging to too many groups
-<ul>
-<li>I see some messages from Solr in the DSpace log:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>2024-01-09 06:23:35,893 ERROR unknown unknown org.dspace.authorize.AuthorizeServiceImpl @ Failed getting getting community/collection admin status for bahhhhh@cgiar.org The search error is: Error from server at http://localhost:8983/solr/search: org.apache.solr.search.SyntaxError: Cannot parse &#39;search.resourcetype:Community AND (admin:eef481147-daf3-4fd2-bb8d-e18af8131d8c OR admin:g80199ef9-bcd6-4961-9512-501dea076607 OR admin:g4ac29263-cf0c-48d0-8be7-7f09317d50ec OR admin:g0e594148-a0f6-4f00-970d-6b7812f89540 OR admin:g0265b87a-2183-4357-a971-7a5b0c7add3a OR admin:g371ae807-f014-4305-b4ec-f2a8f6f0dcfa OR admin:gdc5cb27c-4a5a-45c2-b656-a399fded70de OR admin:ge36d0ece-7a52-4925-afeb-6641d6a348cc OR admin:g15dc1173-7ddf-43cf-a89a-77a7f81c4cfc OR admin:gc3a599d3-c758-46cd-9855-c98f6ab58ae4 OR admin:g3d648c3e-58c3-4342-b500-07cba10ba52d OR admin:g82bf5168-65c1-4627-8eb4-724fa0ea51a7 OR admin:ge751e973-697d-419c-b59b-5a5644702874 OR admin:g44dd0a80-c1e6-4274-9be4-9f342d74928c OR admin:g4842f9c2-73ed-476a-a81a-7167d8aa7946 OR admin:g5f279b3f-c2ce-4c75-b151-1de52c1a540e OR admin:ga6df8adc-2e1d-40f2-8f1e-f77796d0eecd OR admin:gfdfc1621-382e-437a-8674-c9007627565c OR admin:g15cd114a-0b89-442b-a1b4-1febb6959571 OR admin:g12aede99-d018-4c00-b4d4-a732541d0017 OR admin:gc59529d7-002a-4216-b2e1-d909afd2d4a9 OR admin:gd0806714-bc13-460d-bedd-121bdd5436a4 OR admin:gce70739a-8820-4d56-b19c-f191855479e4 OR admin:g7d3409eb-81e3-4156-afb1-7f02de22065f OR admin:g54bc009e-2954-4dad-8c30-be6a09dc5093 OR admin:gc5e1d6b7-4603-40d7-852f-6654c159dec9 OR admin:g0046214d-c85b-4f12-a5e6-2f57a2c3abb0 OR admin:g4c7b4fd0-938f-40e9-ab3e-447c317296c1 OR admin:gcfae9b69-d8dd-4cf3-9a4e-d6e31ff68731 OR ... admin:g20f366c0-96c0-4416-ad0b-46884010925f)&#39;: too many boolean clauses The search resourceType filter was: search.resourcetype:Community
-</code></pre><ul>
-<li>There are 1,805 OR clauses in the full log!
-<ul>
-<li>We previous had this issue in 2020-01 and 2020-02 with DSpace 5 and DSpace 6</li>
-<li>At the time the solution was to increase the <code>maxBooleanClauses</code> in Solr and to disable access rights awareness, but I don&rsquo;t think we want to do the second one now</li>
-<li>I saw many users of Solr in other applications increasing this to obscenely high numbers, so I think we should be OK to increase it from 1024 to 2048</li>
-</ul>
-</li>
-<li>Re-visiting the DSpace user groomer to delete inactive users
-<ul>
-<li>In 2023-08 I noticed that this was now <a href="https://github.com/DSpace/DSpace/pull/2928">possible in DSpace 7</a></li>
-<li>As a test I tried to delete all users who have been inactive since six years ago (Janury 9, 2018):</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace dsrun org.dspace.eperson.Groomer -a -b 01/09/2018 -d
-</span></span></code></pre></div><ul>
-<li>I tested it on DSpace 7 Test and it worked&hellip; I am debating running it on CGSpace&hellip;
-<ul>
-<li>I see we have almost 9,000 users:</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace user -L &gt; /tmp/users-before.txt
-</span></span><span style="display:flex;"><span>$ wc -l /tmp/users-before.txt
-</span></span><span style="display:flex;"><span>8943 /tmp/users-before.txt
-</span></span></code></pre></div><ul>
-<li>I decided to do the same on CGSpace and it worked without errors</li>
-<li>I finished working on the controlled vocabulary for publishers</li>
-</ul>
-<h2 id="2024-01-10">2024-01-10</h2>
-<ul>
-<li>I spent some time deleting old groups on CGSpace</li>
-<li>I looked into the use of the <code>cg.identifier.ciatproject</code> field and found there are only a handful of uses, with some even seeming to be a mistake:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ SELECT DISTINCT text_value AS &#34;cg.identifier.ciatproject&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata
-</span></span><span style="display:flex;"><span>_field_id = 232 GROUP BY &#34;cg.identifier.ciatproject&#34; ORDER BY count DESC;
-</span></span><span style="display:flex;"><span> cg.identifier.ciatproject │ count
-</span></span><span style="display:flex;"><span>───────────────────────────┼───────
-</span></span><span style="display:flex;"><span> D145                      │     4
-</span></span><span style="display:flex;"><span> LAM_LivestockPlus         │     2
-</span></span><span style="display:flex;"><span> A215                      │     1
-</span></span><span style="display:flex;"><span> A217                      │     1
-</span></span><span style="display:flex;"><span> A220                      │     1
-</span></span><span style="display:flex;"><span> A223                      │     1
-</span></span><span style="display:flex;"><span> A224                      │     1
-</span></span><span style="display:flex;"><span> A227                      │     1
-</span></span><span style="display:flex;"><span> A229                      │     1
-</span></span><span style="display:flex;"><span> A230                      │     1
-</span></span><span style="display:flex;"><span> CLIMATE CHANGE MITIGATION │     1
-</span></span><span style="display:flex;"><span> LIVESTOCK                 │     1
-</span></span><span style="display:flex;"><span>(12 rows)
-</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>Time: 240.041 ms
-</span></span></code></pre></div><ul>
-<li>I think we can move those to a new <code>cg.identifier.project</code> if we create one</li>
-<li>The <code>cg.identifier.cpwfproject</code> field is similarly sparse, but the CCAFS ones are widely used</li>
-</ul>
-<h2 id="2024-01-12">2024-01-12</h2>
-<ul>
-<li>Export a list of affiliations to do some cleanup:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace7= ☘ \COPY (SELECT DISTINCT text_value AS &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 211 GROUP BY &#34;cg.contributor.affiliation&#34; ORDER BY count DESC) to /tmp/2024-01-affiliations.csv WITH CSV HEADER;
-</span></span><span style="display:flex;"><span>COPY 11719
-</span></span></code></pre></div><ul>
-<li>I first did some clustering and editing in OpenRefine, then I&rsquo;ll import those back into CGSpace and then do another export</li>
-<li>Troubleshooting the statistics pages that aren&rsquo;t working on DSpace 7
-<ul>
-<li>On a hunch, I queried for for Solr statistics documents that <strong>did not have an <code>id</code> matching the 36-character UUID pattern</strong>:</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/select?q=-id%3A%2F.\{36\}%2F&amp;rows=0&#39;</span>
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
-</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
-</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:0,
-</span></span><span style="display:flex;"><span>    &#34;params&#34;:{
-</span></span><span style="display:flex;"><span>      &#34;q&#34;:&#34;-id:/.{36}/&#34;,
-</span></span><span style="display:flex;"><span>      &#34;rows&#34;:&#34;0&#34;}},
-</span></span><span style="display:flex;"><span>  &#34;response&#34;:{&#34;numFound&#34;:800167,&#34;start&#34;:0,&#34;numFoundExact&#34;:true,&#34;docs&#34;:[]
-</span></span><span style="display:flex;"><span>  }}
-</span></span></code></pre></div><ul>
-<li>They seem to come mostly from 2020, 2023, and 2024:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/select?q=-id%3A%2F.\{36\}%2F&amp;facet.range=time&amp;facet=true&amp;facet.range.start=2010-01-01T00:00:00Z&amp;facet.range.end=NOW&amp;facet.range.gap=%2B1YEAR&amp;rows=0&#39;</span>
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
-</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
-</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:13,
-</span></span><span style="display:flex;"><span>    &#34;params&#34;:{
-</span></span><span style="display:flex;"><span>      &#34;facet.range&#34;:&#34;time&#34;,
-</span></span><span style="display:flex;"><span>      &#34;q&#34;:&#34;-id:/.{36}/&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet.range.gap&#34;:&#34;+1YEAR&#34;,
-</span></span><span style="display:flex;"><span>      &#34;rows&#34;:&#34;0&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet&#34;:&#34;true&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet.range.start&#34;:&#34;2010-01-01T00:00:00Z&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet.range.end&#34;:&#34;NOW&#34;}},
-</span></span><span style="display:flex;"><span>  &#34;response&#34;:{&#34;numFound&#34;:800168,&#34;start&#34;:0,&#34;numFoundExact&#34;:true,&#34;docs&#34;:[]
-</span></span><span style="display:flex;"><span>  },
-</span></span><span style="display:flex;"><span>  &#34;facet_counts&#34;:{
-</span></span><span style="display:flex;"><span>    &#34;facet_queries&#34;:{},
-</span></span><span style="display:flex;"><span>    &#34;facet_fields&#34;:{},
-</span></span><span style="display:flex;"><span>    &#34;facet_ranges&#34;:{
-</span></span><span style="display:flex;"><span>      &#34;time&#34;:{
-</span></span><span style="display:flex;"><span>        &#34;counts&#34;:[
-</span></span><span style="display:flex;"><span>          &#34;2010-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2011-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2012-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2013-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2014-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2015-01-01T00:00:00Z&#34;,89,
-</span></span><span style="display:flex;"><span>          &#34;2016-01-01T00:00:00Z&#34;,11,
-</span></span><span style="display:flex;"><span>          &#34;2017-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2018-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2019-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2020-01-01T00:00:00Z&#34;,1339,
-</span></span><span style="display:flex;"><span>          &#34;2021-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2022-01-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-01-01T00:00:00Z&#34;,653736,
-</span></span><span style="display:flex;"><span>          &#34;2024-01-01T00:00:00Z&#34;,144993],
-</span></span><span style="display:flex;"><span>        &#34;gap&#34;:&#34;+1YEAR&#34;,
-</span></span><span style="display:flex;"><span>        &#34;start&#34;:&#34;2010-01-01T00:00:00Z&#34;,
-</span></span><span style="display:flex;"><span>        &#34;end&#34;:&#34;2025-01-01T00:00:00Z&#34;}},
-</span></span><span style="display:flex;"><span>    &#34;facet_intervals&#34;:{},
-</span></span><span style="display:flex;"><span>    &#34;facet_heatmaps&#34;:{}}}
-</span></span></code></pre></div><ul>
-<li>They seem to come from 2023-08 until now (so way before we migrated to DSpace 7):</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;http://localhost:8983/solr/statistics/select?q=-id%3A%2F.\{36\}%2F&amp;facet.range=time&amp;facet=true&amp;facet.range.start=2023-01-01T00:00:00Z&amp;facet.range.end=NOW&amp;facet.range.gap=%2B1MONTH&amp;rows=0&#39;</span>
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  &#34;responseHeader&#34;:{
-</span></span><span style="display:flex;"><span>    &#34;status&#34;:0,
-</span></span><span style="display:flex;"><span>    &#34;QTime&#34;:196,
-</span></span><span style="display:flex;"><span>    &#34;params&#34;:{
-</span></span><span style="display:flex;"><span>      &#34;facet.range&#34;:&#34;time&#34;,
-</span></span><span style="display:flex;"><span>      &#34;q&#34;:&#34;-id:/.{36}/&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet.range.gap&#34;:&#34;+1MONTH&#34;,
-</span></span><span style="display:flex;"><span>      &#34;rows&#34;:&#34;0&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet&#34;:&#34;true&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet.range.start&#34;:&#34;2023-01-01T00:00:00Z&#34;,
-</span></span><span style="display:flex;"><span>      &#34;facet.range.end&#34;:&#34;NOW&#34;}},
-</span></span><span style="display:flex;"><span>  &#34;response&#34;:{&#34;numFound&#34;:800168,&#34;start&#34;:0,&#34;numFoundExact&#34;:true,&#34;docs&#34;:[]
-</span></span><span style="display:flex;"><span>  },
-</span></span><span style="display:flex;"><span>  &#34;facet_counts&#34;:{
-</span></span><span style="display:flex;"><span>    &#34;facet_queries&#34;:{},
-</span></span><span style="display:flex;"><span>    &#34;facet_fields&#34;:{},
-</span></span><span style="display:flex;"><span>    &#34;facet_ranges&#34;:{
-</span></span><span style="display:flex;"><span>      &#34;time&#34;:{
-</span></span><span style="display:flex;"><span>        &#34;counts&#34;:[
-</span></span><span style="display:flex;"><span>          &#34;2023-01-01T00:00:00Z&#34;,1,
-</span></span><span style="display:flex;"><span>          &#34;2023-02-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-03-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-04-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-05-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-06-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-07-01T00:00:00Z&#34;,0,
-</span></span><span style="display:flex;"><span>          &#34;2023-08-01T00:00:00Z&#34;,27621,
-</span></span><span style="display:flex;"><span>          &#34;2023-09-01T00:00:00Z&#34;,59165,
-</span></span><span style="display:flex;"><span>          &#34;2023-10-01T00:00:00Z&#34;,115338,
-</span></span><span style="display:flex;"><span>          &#34;2023-11-01T00:00:00Z&#34;,96147,
-</span></span><span style="display:flex;"><span>          &#34;2023-12-01T00:00:00Z&#34;,355464,
-</span></span><span style="display:flex;"><span>          &#34;2024-01-01T00:00:00Z&#34;,125429],
-</span></span><span style="display:flex;"><span>        &#34;gap&#34;:&#34;+1MONTH&#34;,
-</span></span><span style="display:flex;"><span>        &#34;start&#34;:&#34;2023-01-01T00:00:00Z&#34;,
-</span></span><span style="display:flex;"><span>        &#34;end&#34;:&#34;2024-02-01T00:00:00Z&#34;}},
-</span></span><span style="display:flex;"><span>    &#34;facet_intervals&#34;:{},
-</span></span><span style="display:flex;"><span>    &#34;facet_heatmaps&#34;:{}}}
-</span></span></code></pre></div><ul>
-<li>I see that we had 31,744 statistic events yesterday, and 799 have no <code>id</code>!</li>
-<li>I asked about this on Slack and will file an issue on GitHub if someone else also finds such records
-<ul>
-<li>Several people said they have them, so it&rsquo;s a bug of some sort in DSpace, not our configuration</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-13">2024-01-13</h2>
-<ul>
-<li>Yesterday alone we had 37,000 unique IPs making requests to nginx
-<ul>
-<li>I looked up the ASNs and found 6,000 IPs from this network in Amazon Singapore: 47.128.0.0/14</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-15">2024-01-15</h2>
-<ul>
-<li>Investigating the CSS selector warning that I&rsquo;ve seen in PM2 logs:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>0|dspace-ui  | 1 rules skipped due to selector errors:
-</span></span><span style="display:flex;"><span>0|dspace-ui  |   .custom-file-input:lang(en)~.custom-file-label -&gt; unmatched pseudo-class :lang
-</span></span></code></pre></div><ul>
-<li>It seems to be a bug in Angular, as this selector comes from Bootstrap 4.6.x and is not invalid
-<ul>
-<li>But that led me to a more interesting issue with <code>inlineCritical</code> optimization for styles in Angular SSR that might be responsible for causing high load in the frontend</li>
-<li>See: <a href="https://github.com/angular/angular/issues/42098">https://github.com/angular/angular/issues/42098</a></li>
-<li>See: <a href="https://github.com/angular/universal/issues/2106">https://github.com/angular/universal/issues/2106</a></li>
-<li>See: <a href="https://github.com/GoogleChromeLabs/critters/issues/78">https://github.com/GoogleChromeLabs/critters/issues/78</a></li>
-</ul>
-</li>
-<li>Since the production site was flapping a lot I decided to try disabling inlineCriticalCss</li>
-<li>There have been on and off load issues with the Angular frontend today
-<ul>
-<li>I think I will just block all data center network blocks for now</li>
-<li>In the last week I see almost 200,000 unique IPs:</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat -f /var/log/nginx/*access.log  /var/log/nginx/*access.log.1 /var/log/nginx/*access.log.2.gz /var/log/nginx/*access.log.3.gz /var/log/nginx/*access.log.4.gz /var/log/nginx/*access.log.5.gz /var/log/nginx/*access.log.6.gz | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort -u |
-</span></span><span style="display:flex;"><span>tee /tmp/ips.txt | wc -l
-</span></span><span style="display:flex;"><span>196493
-</span></span></code></pre></div><ul>
-<li>Looking these IPs up I see there are 18,000 coming from Comcast, 10,000 from AT&amp;T, 4110 from Charter, 3500 from Cox and dozens of other residential IPs
-<ul>
-<li>I highly doubt these are home users browsing CGSpace&hellip; seems super fishy</li>
-<li>Also, over 1,000 IPs from SpaceX Starlink in the last week. RIGHT</li>
-<li>I will temporarily add a few new datacenter ISP network blocks to our rate limit:
-<ul>
-<li>16509 Amazon-02</li>
-<li>701   UUNET</li>
-<li>8075  Microsoft</li>
-<li>15169 Google</li>
-<li>14618 Amazon-AES</li>
-<li>396982 Google Cloud</li>
-</ul>
-</li>
-<li>The load on the server <em>immediately</em> dropped</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-17">2024-01-17</h2>
-<ul>
-<li>It turns out AS701 (UUNET) is Verizon Business, which is used as an ISP for many staff at IFPRI
-<ul>
-<li>This was causing them to see HTTP 429 &ldquo;too many requests&rdquo; errors on CGSpace</li>
-<li>I removed this ASN from the rate limiting</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-18">2024-01-18</h2>
-<ul>
-<li>Start looking at Solr stats again
-<ul>
-<li>I found one statistics record that has 22,000 of the same collection in <code>owningColl</code> and 22,000 of the same community in <code>owningComm</code></li>
-<li>The record is from 2015 and think it would be easier to delete it than fix it:</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ curl http://localhost:8983/solr/statistics/update -H <span style="color:#e6db74">&#34;Content-type: text/xml&#34;</span> --data-binary <span style="color:#e6db74">&#39;&lt;delete&gt;&lt;query&gt;uid:3b4eefba-a302-4172-a286-dcb25d70129e&lt;/query&gt;&lt;/delete&gt;&#39;</span>
-</span></span></code></pre></div><ul>
-<li>Looking again, there are at least 1,000 of these so I will need to come up with an actual solution to fix these</li>
-<li>I&rsquo;m noticing we have 1,800+ links to defunct resources on bioversityinternational.org in the <code>cg.link.permalink</code> field
-<ul>
-<li>I should ask Alliance if they have any plans to fix those, or upload them to CGSpace</li>
-</ul>
-</li>
-</ul>
-<h2 id="2024-01-22">2024-01-22</h2>
-<ul>
-<li>Meeting with IWMI about ORCID integration on CGSpace now that we&rsquo;ve migrated to DSpace 7</li>
-<li>File an issue for the inaccurate DSpace statistics: <a href="https://github.com/DSpace/DSpace/issues/9275">https://github.com/DSpace/DSpace/issues/9275</a></li>
-</ul>
-<h2 id="2024-01-23">2024-01-23</h2>
-<ul>
-<li>Meeting with IWMI about ORCID integration and the DSpace API for use with WordPress</li>
-<li>IFPRI sent me an list of their author ORCIDs to add to our controlled vocabulary
-<ul>
-<li>I joined them with our current list and resolved their names on ORCID and updated them in our database:</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat ~/src/git/DSpace/dspace/config/controlled-vocabularies/cg-creator-identifier.xml ~/Downloads/IFPRI<span style="color:#ae81ff">\ </span>ORCiD<span style="color:#ae81ff">\ </span>All.csv | grep -oE <span style="color:#e6db74">&#39;[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}&#39;</span> | sort -u &gt; /tmp/2024-01-23-orcids.txt
-</span></span><span style="display:flex;"><span>$ ./ilri/resolve_orcids.py -i /tmp/2024-01-23-orcids.txt -o /tmp/2024-01-23-orcids-names.txt -d
-</span></span><span style="display:flex;"><span>$ ./ilri/update_orcids.py -i /tmp/2024-01-23-orcids-names.txt -db dspace -u dspace -p fuuu
-</span></span></code></pre></div><ul>
-<li>This adds about 400 new identifiers to the controlled vocabulary</li>
-<li>I consolidated our various project identifier fields for closed programs into one <code>cg.identifer.project</code>:
-<ul>
-<li><code>cg.identifier.ccafsproject</code></li>
-<li><code>cg.identifier.ccafsprojectpii</code></li>
-<li><code>cg.identifier.ciatproject</code></li>
-<li><code>cg.identifier.cpwfproject</code></li>
-</ul>
-</li>
-<li>I prefixed the existing 2,644 metadata values with &ldquo;CCAFS&rdquo;, &ldquo;CIAT&rdquo;, or &ldquo;CPWF&rdquo; so we can figure out where they came from if need be, and deleted the old fields from the metadata registry</li>
-</ul>
-<h2 id="2024-01-26">2024-01-26</h2>
-<ul>
-<li>Minor work on dspace-angular to clean up component styles</li>
-<li>Add <code>cg.identifier.publicationRank</code> to CGSpace metadata registry and submission form</li>
-</ul>
-<h2 id="2024-01-29">2024-01-29</h2>
-<ul>
-<li>Rework the nginx bot and network limits slightly to remove some old patterns/networks and remove Google
-<ul>
-<li>The Google Scholar team contacted me to ask why their requests were timing out (well&hellip;)</li>
+<li>I also updated about 80 datasets to move the URLs to the correct field</li>
 </ul>
 </li>
 </ul>
