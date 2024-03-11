@@ -19,7 +19,7 @@ It might be this issue: https://github.com/DSpace/dspace-angular/issues/2808
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-03/" />
 <meta property="article:published_time" content="2024-03-01T09:55:00+03:00" />
-<meta property="article:modified_time" content="2024-03-04T10:02:14+03:00" />
+<meta property="article:modified_time" content="2024-03-08T17:31:19+03:00" />
 
 
 
@@ -44,9 +44,9 @@ It might be this issue: https://github.com/DSpace/dspace-angular/issues/2808
   "@type": "BlogPosting",
   "headline": "March, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-03/",
-  "wordCount": "317",
+  "wordCount": "450",
   "datePublished": "2024-03-01T09:55:00+03:00",
-  "dateModified": "2024-03-04T10:02:14+03:00",
+  "dateModified": "2024-03-08T17:31:19+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -186,7 +186,32 @@ It might be this issue: https://github.com/DSpace/dspace-angular/issues/2808
 </span></span></code></pre></div><ul>
 <li>Note the use of two single quotes to escape the one in the name</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2024-03-11">2024-03-11</h2>
+<ul>
+<li>Experimenting with moving some of my Python scripts to the DSpace 7 REST API
+<ul>
+<li>I need a way to get UUIDs for Handles&hellip;</li>
+<li>Seems that I can use a Discovery query like: <a href="https://dspace7test.ilri.org/server/api/discover/search/objects?dsoType=item&amp;query=handle:10568/130864">https://dspace7test.ilri.org/server/api/discover/search/objects?dsoType=item&amp;query=handle:10568/130864</a></li>
+<li>Then just take the first result&hellip;?</li>
+</ul>
+</li>
+<li>I spent some time working on the script get abstracts from CGSpace, and found a bug in my logic
+<ul>
+<li>I also noticed that one item had two abstracts, but the first one was blank!</li>
+<li>Looking deeper, I found 113 blank metadata values so I deleted those:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">BEGIN</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> metadatavalue <span style="color:#66d9ef">WHERE</span> dspace_object_id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> uuid <span style="color:#66d9ef">FROM</span> item) <span style="color:#66d9ef">AND</span> text_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">COMMIT</span>;
+</span></span></code></pre></div><ul>
+<li>I also found a few dozen items with &ldquo;N/A&rdquo; for their citation, so I deleted those too:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">BEGIN</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> metadatavalue <span style="color:#66d9ef">WHERE</span> dspace_object_id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> uuid <span style="color:#66d9ef">FROM</span> item) <span style="color:#66d9ef">AND</span> text_value<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;N/A&#39;</span> <span style="color:#66d9ef">AND</span> metadata_field_id<span style="color:#f92672">=</span><span style="color:#ae81ff">146</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">COMMIT</span>;
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
