@@ -19,7 +19,7 @@ It might be this issue: https://github.com/DSpace/dspace-angular/issues/2808
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-03/" />
 <meta property="article:published_time" content="2024-03-01T09:55:00+03:00" />
-<meta property="article:modified_time" content="2024-03-11T18:04:40+03:00" />
+<meta property="article:modified_time" content="2024-03-11T21:58:15+03:00" />
 
 
 
@@ -44,9 +44,9 @@ It might be this issue: https://github.com/DSpace/dspace-angular/issues/2808
   "@type": "BlogPosting",
   "headline": "March, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-03/",
-  "wordCount": "512",
+  "wordCount": "627",
   "datePublished": "2024-03-01T09:55:00+03:00",
-  "dateModified": "2024-03-11T18:04:40+03:00",
+  "dateModified": "2024-03-11T21:58:15+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -217,6 +217,25 @@ It might be this issue: https://github.com/DSpace/dspace-angular/issues/2808
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,dc.title[en_US],dc.identifier.uri[en_US],cg.link.permalink[en_US]&#39;</span> ~/Downloads/2024-03-05-cgspace.csv <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | csvgrep -c &#39;cg.link.permalink[en_US]&#39; -r &#39;^.+$&#39; &gt; /tmp/2024-03-11-Bioversity-Permalinks.csv
+</span></span></code></pre></div><h2 id="2024-03-12">2024-03-12</h2>
+<ul>
+<li>Run the duplicate checker for IFPRI 2023 batch upload</li>
+</ul>
+<h2 id="2024-03-13">2024-03-13</h2>
+<ul>
+<li>I found about 428 duplicates in the IFPRI 2023 batch records
+<ul>
+<li>Alarmingly, I found about 18 that are duplicated on CGSpace as well!</li>
+<li>I looked closer and decided that 11 were duplicates, so I merged the metadata and withdrew the later ones</li>
+</ul>
+</li>
+<li>Alliance asked me to get him the Handles for items submitted by TIP that are not discoverable
+<ul>
+<li>I found it easiest to use the <code>ds6_item2itemhandle</code> <a href="https://wiki.lyrasis.org/display/DSPACE/Helper+SQL+functions+for+DSpace+6">DSpace SQL helper function</a> with a nested query on the provenance:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ds6_item2itemhandle(dspace_object_id) <span style="color:#66d9ef">AS</span> handle <span style="color:#66d9ef">FROM</span> metadatavalue <span style="color:#66d9ef">WHERE</span> dspace_object_id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> uuid <span style="color:#66d9ef">FROM</span> item <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> discoverable) <span style="color:#66d9ef">AND</span> metadata_field_id<span style="color:#f92672">=</span><span style="color:#ae81ff">28</span> <span style="color:#66d9ef">AND</span> text_value <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;Submitted by Alliance TIP Submit%&#39;</span>;
 </span></span></code></pre></div><!-- raw HTML omitted -->
 
   
