@@ -10,7 +10,7 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/categories/notes/" />
-<meta property="og:updated_time" content="2024-03-19T16:24:20+03:00" />
+<meta property="og:updated_time" content="2024-04-04T10:23:00+03:00" />
 
 
 
@@ -75,6 +75,38 @@
         <div class="col-sm-8 blog-main">
 
           
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2021-10/">October, 2021</a></h2>
+    <p class="blog-post-meta"><time datetime="2021-10-01T11:14:07+03:00">Fri Oct 01, 2021</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2021-10-01">2021-10-01</h2>
+<ul>
+<li>Export all affiliations on CGSpace and run them against the latest RoR data dump:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace63= &gt; \COPY (SELECT DISTINCT text_value as &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id IN (SELECT uuid FROM item) AND metadata_field_id = 211 GROUP BY text_value ORDER BY count DESC) to /tmp/2021-10-01-affiliations.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#ae81ff">1</span> /tmp/2021-10-01-affiliations.csv | sed 1d &gt; /tmp/2021-10-01-affiliations.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/ror-lookup.py -i /tmp/2021-10-01-affiliations.txt -r 2021-09-23-ror-data.json -o /tmp/2021-10-01-affili
+</span></span><span style="display:flex;"><span>ations-matching.csv
+</span></span><span style="display:flex;"><span>$ csvgrep -c matched -m true /tmp/2021-10-01-affiliations-matching.csv | sed 1d | wc -l 
+</span></span><span style="display:flex;"><span>1879
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/2021-10-01-affiliations.txt 
+</span></span><span style="display:flex;"><span>7100 /tmp/2021-10-01-affiliations.txt
+</span></span></code></pre></div><ul>
+<li>So we have 1879/7100 (26.46%) matching already</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2021-10/'>Read more →</a>
+</article> 
 
 
 
@@ -333,40 +365,6 @@
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2021-01/">January, 2021</a></h2>
-    <p class="blog-post-meta"><time datetime="2021-01-03T10:13:54+02:00">Sun Jan 03, 2021</time> by Alan Orth in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
-
-
-</p>
-  </header>
-  <h2 id="2021-01-03">2021-01-03</h2>
-<ul>
-<li>Peter notified me that some filters on AReS were broken again
-<ul>
-<li>It&rsquo;s the same issue with the field names getting <code>.keyword</code> appended to the end that I already <a href="https://github.com/ilri/OpenRXV/issues/66">filed an issue on OpenRXV about last month</a></li>
-<li>I fixed the broken filters (careful to not edit any others, lest they break too!)</li>
-</ul>
-</li>
-<li>Fix an issue with start page number for the DSpace REST API and statistics API in OpenRXV
-<ul>
-<li>The start page had been &ldquo;1&rdquo; in the UI, but in the backend they were doing some gymnastics to adjust to the zero-based offset/limit/page of the DSpace REST API and the statistics API</li>
-<li>I adjusted it to default to 0 and added a note to the admin screen</li>
-<li>I realized that this issue was actually causing the first page of 100 statistics to be missing&hellip;</li>
-<li>For example, <a href="https://cgspace.cgiar.org/handle/10568/66839">this item</a> has 51 views on CGSpace, but 0 on AReS</li>
-</ul>
-</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2021-01/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/categories/notes/page/3/" rel="prev" role="button">Previous page</a>
@@ -391,6 +389,8 @@
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2024-04/">April, 2024</a></li>
+
 <li><a href="/cgspace-notes/2024-03/">March, 2024</a></li>
 
 <li><a href="/cgspace-notes/2024-02/">February, 2024</a></li>
@@ -398,8 +398,6 @@
 <li><a href="/cgspace-notes/2024-01/">January, 2024</a></li>
 
 <li><a href="/cgspace-notes/2023-12/">December, 2023</a></li>
-
-<li><a href="/cgspace-notes/2023-11/">November, 2023</a></li>
 
     </ol>
   </section>
