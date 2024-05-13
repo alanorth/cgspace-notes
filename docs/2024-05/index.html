@@ -18,7 +18,7 @@ Then I did some work to add missing abstracts (about 900!), volumes, issues, lic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-05/" />
 <meta property="article:published_time" content="2024-05-01T10:39:00+03:00" />
-<meta property="article:modified_time" content="2024-05-05T21:43:52+03:00" />
+<meta property="article:modified_time" content="2024-05-13T08:21:17+03:00" />
 
 
 
@@ -42,9 +42,9 @@ Then I did some work to add missing abstracts (about 900!), volumes, issues, lic
   "@type": "BlogPosting",
   "headline": "May, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-05/",
-  "wordCount": "359",
+  "wordCount": "438",
   "datePublished": "2024-05-01T10:39:00+03:00",
-  "dateModified": "2024-05-05T21:43:52+03:00",
+  "dateModified": "2024-05-13T08:21:17+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -184,7 +184,24 @@ dspace=# \COPY (SELECT i.uuid, m.text_value AS submitted_by FROM item i JOIN met
 <li>This gives me an insight into who submitted at 334 of the duplicates over the past few years&hellip;</li>
 <li>I fixed a few hundred titles with leading/trailing whitespace, newlines, and ligatures like ﬀ, ﬁ, ﬂ, ﬃ, and ﬄ</li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2024-05-13">2024-05-13</h2>
+<ul>
+<li>Export a list of IFPRI information products with handle links and CONTENTdm links:</li>
+</ul>
+<pre tabindex="0"><code>$ csvgrep -c &#39;dc.description.provenance[en_US]&#39; -m &#39;CONTENTdm&#39; cgspace.csv \
+  | csvcut -c &#39;id,dc.description.provenance[en_US],dc.identifier.uri[en_US]&#39; \
+  | tee /tmp/ifpri-redirects.csv \
+  | csvstat --count
+2645
+</code></pre><ul>
+<li>I discovered the <code>/server/api/pid/find</code> endpoint today, which is much more direct and manageable than the <code>/server/api/discover/search/objects?query=</code> endpoint when trying to get metadata for a Handle (item, collection, or community)
+<ul>
+<li>The &ldquo;pid&rdquo; stands for permanent identifiers apparently, and we can use it like this:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>https://dspace7test.ilri.org/server/api/pid/find?id=10568/118424
+</code></pre><!-- raw HTML omitted -->
 
   
 
