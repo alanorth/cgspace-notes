@@ -18,7 +18,7 @@ Then I did some work to add missing abstracts (about 900!), volumes, issues, lic
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-05/" />
 <meta property="article:published_time" content="2024-05-01T10:39:00+03:00" />
-<meta property="article:modified_time" content="2024-05-13T08:21:17+03:00" />
+<meta property="article:modified_time" content="2024-05-13T16:24:11+03:00" />
 
 
 
@@ -32,7 +32,7 @@ Then I did some work to add missing abstracts (about 900!), volumes, issues, lic
 
 
 "/>
-<meta name="generator" content="Hugo 0.125.7">
+<meta name="generator" content="Hugo 0.126.1">
 
 
     
@@ -42,9 +42,9 @@ Then I did some work to add missing abstracts (about 900!), volumes, issues, lic
   "@type": "BlogPosting",
   "headline": "May, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-05/",
-  "wordCount": "438",
+  "wordCount": "652",
   "datePublished": "2024-05-01T10:39:00+03:00",
-  "dateModified": "2024-05-13T08:21:17+03:00",
+  "dateModified": "2024-05-13T16:24:11+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -201,7 +201,30 @@ dspace=# \COPY (SELECT i.uuid, m.text_value AS submitted_by FROM item i JOIN met
 </li>
 </ul>
 <pre tabindex="0"><code>https://dspace7test.ilri.org/server/api/pid/find?id=10568/118424
-</code></pre><!-- raw HTML omitted -->
+</code></pre><h2 id="2024-05-15">2024-05-15</h2>
+<ul>
+<li>I got journal titles for 2,900 journal articles that were missing them from Crossref</li>
+</ul>
+<h2 id="2024-05-16">2024-05-16</h2>
+<p>Helping IFPRI with some DSpace 7 API support, these are two queries for items issued in 2024:</p>
+<ul>
+<li><a href="https://dspace7test.ilri.org/server/api/discover/search/objects?query=dcterms.issued:2024">https://dspace7test.ilri.org/server/api/discover/search/objects?query=dcterms.issued:2024</a></li>
+<li><a href="https://dspace7test.ilri.org/server/api/discover/search/objects?query=dcterms.issued_dt%3A%5B2024-01-01T00%3A00%3A00Z%20TO%20%2A%5D">https://dspace7test.ilri.org/server/api/discover/search/objects?query=dcterms.issued_dt%3A%5B2024-01-01T00%3A00%3A00Z%20TO%20%2A%5D</a> — note the Lucene search syntax is URL encoded version of <code>:[2024-01-01T00:00:00Z TO *]</code></li>
+</ul>
+<p>Both of them return the same number of results and seem identitical as far as I can see, but the second one uses Solr date indexes and requires the full Lucene datetime and range syntax</p>
+<p>I wrote a new version of the <code>check_duplicates.py</code> script to help identify duplicates with different types</p>
+<ul>
+<li>Initially I called it <code>check_duplicates_fast.py</code> but it&rsquo;s actually not faster</li>
+<li>I need to find a way to deal with duplicates from IFPRI&rsquo;s repository because there are some mismatched types&hellip;</li>
+</ul>
+<h2 id="2024-05-20">2024-05-20</h2>
+<p>Continue working through alternative duplicate matching for IFPRI</p>
+<ul>
+<li>Their item types are sometimes different than ours&hellip;</li>
+<li>One thing I think I can say for sure is that the default similarity factor in my script is 0.6, and I rarely see legitimate duplicates with such similarity so I might increase this to 0.7 to reduce the number of items I have to check</li>
+<li>Also, the difference in issue dates is currently 365, but I should reduce that a bit, perhaps to 270 days (9 months)</li>
+</ul>
+<!-- raw HTML omitted -->
 
   
 
