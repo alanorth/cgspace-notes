@@ -19,7 +19,7 @@ We have both Handles and DOIs for these datasets, both from Harvard&rsquo;s Data
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-06/" />
 <meta property="article:published_time" content="2024-06-03T14:14:00+03:00" />
-<meta property="article:modified_time" content="2024-06-16T16:40:54+03:00" />
+<meta property="article:modified_time" content="2024-06-18T17:30:08+03:00" />
 
 
 
@@ -44,9 +44,9 @@ We have both Handles and DOIs for these datasets, both from Harvard&rsquo;s Data
   "@type": "BlogPosting",
   "headline": "June, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-06/",
-  "wordCount": "194",
+  "wordCount": "564",
   "datePublished": "2024-06-03T14:14:00+03:00",
-  "dateModified": "2024-06-16T16:40:54+03:00",
+  "dateModified": "2024-06-18T17:30:08+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -163,6 +163,73 @@ We have both Handles and DOIs for these datasets, both from Harvard&rsquo;s Data
 <li>There are 28 PDFs specified for these 176 duplicates, and a handful of them do not already exist on CGSpace so I will upload them</li>
 </ul>
 </li>
+</ul>
+<h2 id="2024-06-19">2024-06-19</h2>
+<ul>
+<li>Spent some time checking the remaining 3312 IFPRI 2016–2019 migration set for duplicates on CGSpace
+<ul>
+<li>There seem to be about 50 exact matches of title, type, and issue date</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-06-20">2024-06-20</h2>
+<ul>
+<li>Finalize merging and uploading metadata for 48 duplicates from the IFPRI 2016–2019 migration set</li>
+<li>Heavy load on both CGSpace and DSpace 7 Test this afternoon
+<ul>
+<li>Took me a while to figure out it was due to someone / something hammering <code>/search</code> for a bunch of facets</li>
+<li>The <code>pm2 logs</code> command was more useful than the nginx logs to see the requests at least, for example:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>0|dspace-ui  | GET /search?f.sdg=SDG%2013%20-%20Climate%20action,equals&amp;spc.page=1&amp;f.accessRights=Open%20Access,equals&amp;f.dateIssued.min=2023&amp;f.dateIssued.max=2024&amp;f.country=Colombia,equals&amp;f.subject=climate%20change,equals&amp;f.region=Latin%20America%20and%20the%20Caribbean,equals&amp;f.publisher=CGIAR%20FOCUS%20Climate%20Security,equals - - ms - -
+1|dspace-ui  | GET /search?f.accessRights=Open%20Access,equals&amp;spc.page=1&amp;f.sponsorship=CGIAR%20Trust%20Fund,equals&amp;f.impactArea=Climate%20adaptation%20and%20mitigation,equals&amp;f.region=Eastern%20Africa,equals&amp;f.publisher=International%20Institute%20of%20Tropical%20Agriculture,equals - - ms - -
+3|dspace-ui  | GET /search?f.sdg=SDG%2013%20-%20Climate%20action,equals&amp;f.sdg=SDG%2012%20-%20Responsible%20consumption%20and%20production,equals&amp;spc.page=1&amp;f.affiliation=CGIAR%20Research%20Program%20on%20Climate%20Change,%20Agriculture%20and%20Food%20Security,equals&amp;f.affiliation=Alliance%20of%20Bioversity%20International%20and%20CIAT,equals&amp;f.dateIssued.min=2020&amp;f.dateIssued.max=2021&amp;f.impactArea=Environmental%20health%20and%20biodiversity,equals - - ms - -
+</code></pre><ul>
+<li>Still difficult to find the client, because the logs are all <a href="https://github.com/DSpace/dspace-angular/issues/2902">coming from Angular&rsquo;s user agent</a> and IP
+<ul>
+<li>I changed the nginx logging to use the <code>X-Forwarded-For</code> header, as the default <code>combined</code> log format uses <code>$remote_addr</code> by default, which is only accurate if the request doesn&rsquo;t come from Angular (ie directly to the API)</li>
+<li>From what I can see now the IPs are all coming from Huawei Cloud and Tencent</li>
+<li>The ASNs are AS136907 (Huawei) and AS132203 (Tencent)</li>
+<li>For now I will just add those to the list of bot networks</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-06-21">2024-06-21</h2>
+<ul>
+<li>Update the nginx logging to use <a href="http://nginx.org/en/docs/http/ngx_http_realip_module.html">nginx&rsquo;s <code>real_ip</code> module</a> to log the correct client IP
+<ul>
+<li>I think this means we will start sending &lsquo;bot&rsquo; to the Angular / Express frontend because bot IPs will be properly classified now&hellip;</li>
+<li>I will have to re-work or at least re-think that nginx configuration for requests going to the frontend because the proposed fix in <a href="https://github.com/DSpace/dspace-angular/issues/2902">https://github.com/DSpace/dspace-angular/issues/2902</a> is to pass on the client&rsquo;s user-agent</li>
+</ul>
+</li>
+<li>Then I updated the list of bot networks:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wget https://asn.ipinfo.app/api/text/list/AS12876 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>     https://asn.ipinfo.app/api/text/list/AS132203 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS13238 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS136907 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS14061 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS14618 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS16276 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS16509 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS203020 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS204287 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS21859 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS23576 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS24940 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS396982 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS45102 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS50245 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS55286 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS6939 \
+</span></span><span style="display:flex;"><span>     https://asn.ipinfo.app/api/text/list/AS8075
+</span></span><span style="display:flex;"><span>$ cat AS* | ~/go/bin/mapcidr -a &gt; /tmp/networks.txt
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/networks.txt
+</span></span><span style="display:flex;"><span>8675 /tmp/networks.txt
+</span></span></code></pre></div><ul>
+<li>Update list of ORCID identifiers with new ones from Alliance and IFPRI</li>
+<li>Finalize uploading the remaining 3,264 items from IFPRI&rsquo;s 2016–2019 batch migration to CGSpace</li>
 </ul>
 <!-- raw HTML omitted -->
 
