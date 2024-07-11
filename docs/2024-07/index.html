@@ -19,7 +19,7 @@ I tried to delete all users who have been inactive since six years ago (July 1, 
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-07/" />
 <meta property="article:published_time" content="2024-07-01T09:37:00+03:00" />
-<meta property="article:modified_time" content="2024-07-01T09:37:00+03:00" />
+<meta property="article:modified_time" content="2024-07-02T11:12:03+03:00" />
 
 
 
@@ -34,7 +34,7 @@ A handful of book chapters, working papers, and journal articles using the wrong
 
 I tried to delete all users who have been inactive since six years ago (July 1, 2018):
 "/>
-<meta name="generator" content="Hugo 0.128.0">
+<meta name="generator" content="Hugo 0.128.2">
 
 
     
@@ -44,9 +44,9 @@ I tried to delete all users who have been inactive since six years ago (July 1, 
   "@type": "BlogPosting",
   "headline": "July, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-07/",
-  "wordCount": "64",
+  "wordCount": "222",
   "datePublished": "2024-07-01T09:37:00+03:00",
-  "dateModified": "2024-07-01T09:37:00+03:00",
+  "dateModified": "2024-07-02T11:12:03+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -133,7 +133,30 @@ I tried to delete all users who have been inactive since six years ago (July 1, 
 </span></span></code></pre></div><ul>
 <li>File an issue on DSpace GitHub: <a href="https://github.com/DSpace/DSpace/issues/9675">Allow configuring disallowed domains for self registration</a></li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2024-07-11">2024-07-11</h2>
+<ul>
+<li>Minor fixes to normalize the IFPRI CONTENTdm URLs in provenance fields:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace=# BEGIN;
+</span></span><span style="display:flex;"><span>BEGIN
+</span></span><span style="display:flex;"><span>dspace=*# UPDATE metadatavalue SET text_value = replace(text_value, &#39;cdm/ref&#39;, &#39;digital&#39;) WHERE text_value LIKE &#39;%CONTENTdm%cdm/ref/%&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 1876
+</span></span><span style="display:flex;"><span>dspace=*# UPDATE metadatavalue SET text_value = replace(text_value, &#39;CONTENTdm:  &#39;, &#39;CONTENTdm: &#39;) WHERE text_value LIKE &#39;%CONTENTdm:  %&#39;;
+</span></span><span style="display:flex;"><span>UPDATE 21
+</span></span><span style="display:flex;"><span>dspace=*# COMMIT;
+</span></span><span style="display:flex;"><span>COMMIT
+</span></span></code></pre></div><ul>
+<li>Then export a new list of CONTENTdm redirects, excluding withdrawn items:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace= ☘ \COPY (SELECT m.text_value, h.handle FROM metadatavalue m JOIN handle h on m.dspace_object_id = h.resource_id WHERE m.metadata_field_id=28 AND m.text_value LIKE &#39;%URL from IFPRI CONTENTdm%&#39; AND h.resource_type_id=2 AND m.dspace_object_id IN (SELECT uuid FROM item WHERE in_archive AND NOT withdrawn)) to /tmp/ifpri.csv CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 8568
+</span></span></code></pre></div><ul>
+<li>Similarly, get a list of withdrawn item redirects:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dspace= ☘ \COPY (SELECT m.text_value AS handle_from, h.handle AS handle_to FROM metadatavalue m JOIN handle h on m.dspace_object_id = h.resource_id WHERE m.metadata_field_
+</span></span><span style="display:flex;"><span>id=181 AND h.resource_type_id=2 AND h.resource_id IN (SELECT uuid FROM item WHERE in_archive AND NOT withdrawn)) to /tmp/handle-redirects.csv CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 396
+</span></span></code></pre></div><!-- raw HTML omitted -->
 
   
 
