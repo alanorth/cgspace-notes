@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="October, 2024" />
+<meta property="og:description" content="2024-10-03
+
+I had an idea to get abstracts from OpenAlex
+
+For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex library can convert them on the fly
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-10/" />
+<meta property="article:published_time" content="2024-10-03T11:01:00+03:00" />
+<meta property="article:modified_time" content="2024-10-03T11:01:00+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="October, 2024"/>
+<meta name="twitter:description" content="2024-10-03
+
+I had an idea to get abstracts from OpenAlex
+
+For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex library can convert them on the fly
+
+
+"/>
+<meta name="generator" content="Hugo 0.133.1">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "October, 2024",
+  "url": "https://alanorth.github.io/cgspace-notes/2024-10/",
+  "wordCount": "125",
+  "datePublished": "2024-10-03T11:01:00+03:00",
+  "dateModified": "2024-10-03T11:01:00+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2024-10/">
+
+    <title>October, 2024 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2024-10/">October, 2024</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2024-10-03T11:01:00+03:00">Thu Oct 03, 2024</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2024-10-03">2024-10-03</h2>
+<ul>
+<li>I had an idea to get abstracts from OpenAlex
+<ul>
+<li>For <a href="https://docs.openalex.org/api-entities/works/work-object#abstract_inverted_index">copyright reasons they don&rsquo;t include plain abstracts</a>, but the <a href="https://github.com/J535D165/pyalex">pyalex</a> library can convert them on the fly</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>I filtered for journal articles that were Creative Commons and missing abstracts:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;id,dc.title[en_US],dcterms.abstract[en_US],cg.identifier.doi[en_US],dcterms.type[en_US],dcterms.language[en_US],dcterms.license[en_US]&#39;</span> ~/Downloads/2024-09-30-cgspace.csv | csvgrep -c <span style="color:#e6db74">&#39;dcterms.type[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^Journal Article$&#39;</span> | csvgrep -c <span style="color:#e6db74">&#39;cg.identifier.doi[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^.+$&#39;</span> | csvgrep -c <span style="color:#e6db74">&#39;dcterms.license[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^CC-&#39;</span> | csvgrep -c <span style="color:#e6db74">&#39;dcterms.abstract[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^$&#39;</span> | csvgrep -c <span style="color:#e6db74">&#39;dcterms.language[en_US]&#39;</span> -r <span style="color:#e6db74">&#39;^en$&#39;</span> | grep -v <span style="color:#e6db74">&#34;||&#34;</span> | grep -v -- <span style="color:#e6db74">&#39;-ND&#39;</span> | grep -v -E <span style="color:#e6db74">&#39;https://doi.org/10.(2499|4160|17528)/&#39;</span> &gt; /tmp/missing-abstracts.csv
+</span></span></code></pre></div><ul>
+<li>Then wrote a script to get them from OpenAlex
+<ul>
+<li>After inspecting and cleaning a few dozen up in OpenRefine (removing &ldquo;Keywords:&rdquo; and copyright, and HTML entities, etc) I managed to get about 440</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2024-10/">October, 2024</a></li>
+
+<li><a href="/cgspace-notes/2024-09/">September, 2024</a></li>
+
+<li><a href="/cgspace-notes/2024-08/">August, 2024</a></li>
+
+<li><a href="/cgspace-notes/2024-07/">July, 2024</a></li>
+
+<li><a href="/cgspace-notes/2024-06/">June, 2024</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>
