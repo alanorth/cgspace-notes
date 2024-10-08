@@ -18,7 +18,7 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-10/" />
 <meta property="article:published_time" content="2024-10-03T11:01:00+03:00" />
-<meta property="article:modified_time" content="2024-10-03T11:01:00+03:00" />
+<meta property="article:modified_time" content="2024-10-03T11:51:44+03:00" />
 
 
 
@@ -42,9 +42,9 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
   "@type": "BlogPosting",
   "headline": "October, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-10/",
-  "wordCount": "125",
+  "wordCount": "417",
   "datePublished": "2024-10-03T11:01:00+03:00",
-  "dateModified": "2024-10-03T11:01:00+03:00",
+  "dateModified": "2024-10-03T11:51:44+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -134,6 +134,40 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
 <li>Then wrote a script to get them from OpenAlex
 <ul>
 <li>After inspecting and cleaning a few dozen up in OpenRefine (removing &ldquo;Keywords:&rdquo; and copyright, and HTML entities, etc) I managed to get about 440</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-10-06">2024-10-06</h2>
+<ul>
+<li>Since I increase Solr&rsquo;s heap from 2 to 3G a few weeks ago it seems like Solr is always using 100% CPU
+<ul>
+<li>I don&rsquo;t understand this because it was running well before, and I only increased it in anticipation of running the dspace-statistics-api-js, though never got around to it</li>
+<li>I just realized that this may be related to the JMX monitoring, as I&rsquo;ve seen gaps in the Grafana dashboards and remember that it took surprisingly long to scrape the metrics</li>
+<li>Maybe I need to change the scrape interval</li>
+</ul>
+</li>
+</ul>
+<h2 id="2024-10-08">2024-10-08</h2>
+<ul>
+<li>I checked the VictoriaMetrics vmagent dashboard and saw that there were thousands of errors scraping the <code>jvm_solr</code> target from Solr
+<ul>
+<li>So it seems like I do need to change the scrape interval</li>
+<li>I will increase it from 15s (global) to 20s for that job</li>
+<li>Reading some documentation I found <a href="https://www.robustperception.io/keep-it-simple-scrape_interval-id/">this reference from Brian Brazil that discusses this very problem</a></li>
+<li>He recommends keeping a single scrape interval for all targets, but also checking the slow exporter (<code>jmx_exporter</code> in this case) and seeing if we can limit the data we scrape</li>
+<li>To keep things simple for now I will increase the global scrape interval to 20s</li>
+<li>Long term I should limit the metrics&hellip;</li>
+<li>Oh wow, I found out that <a href="https://solr.apache.org/guide/8_11/monitoring-solr-with-prometheus-and-grafana.html">Solr ships with a Prometheus exporter!</a> and even includes a Grafana dashboard</li>
+</ul>
+</li>
+<li>I&rsquo;m trying to run the Solr prometheus-exporter as a one-off systemd unit to test it:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cd /opt/solr-8.11.3/contrib/prometheus-exporter
+</span></span><span style="display:flex;"><span># systemd-run --uid<span style="color:#f92672">=</span>victoriametrics --gid<span style="color:#f92672">=</span>victoriametrics --working-directory<span style="color:#f92672">=</span>/opt/solr-8.11.3/contrib/prometheus-exporter ./bin/solr-exporter -p <span style="color:#ae81ff">9854</span> -b http://localhost:8983/solr -f ./conf/solr-exporter-config.xml -s <span style="color:#ae81ff">20</span>
+</span></span></code></pre></div><ul>
+<li>The default scrape interval is 60 seconds, so if we scrape it more than that the metrics will be stale
+<ul>
+<li>From what I&rsquo;ve seen this returns in less than one second so it should be safe to reduce the scrape interval</li>
 </ul>
 </li>
 </ul>
