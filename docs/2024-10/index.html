@@ -18,7 +18,7 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2024-10/" />
 <meta property="article:published_time" content="2024-10-03T11:01:00+03:00" />
-<meta property="article:modified_time" content="2024-10-03T11:51:44+03:00" />
+<meta property="article:modified_time" content="2024-10-08T13:46:23+03:00" />
 
 
 
@@ -42,9 +42,9 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
   "@type": "BlogPosting",
   "headline": "October, 2024",
   "url": "https://alanorth.github.io/cgspace-notes/2024-10/",
-  "wordCount": "417",
+  "wordCount": "620",
   "datePublished": "2024-10-03T11:01:00+03:00",
-  "dateModified": "2024-10-03T11:51:44+03:00",
+  "dateModified": "2024-10-08T13:46:23+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -171,6 +171,42 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
 </ul>
 </li>
 </ul>
+<h2 id="2024-10-19">2024-10-19</h2>
+<ul>
+<li>Heavy load on CGSpace today
+<ul>
+<li>There is a noted increase just before 4PM local time</li>
+<li>I extracted a list of IPs:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep -E <span style="color:#e6db74">&#39;19/Oct/2024:1[567]&#39;</span> /var/log/nginx/api-access.log | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort -u &gt; /tmp/ips.txt
+</span></span></code></pre></div><ul>
+<li>I looked them up and found some data center IPs that were using normal user agents with hundreds of IPs, for example:
+<ul>
+<li>154.47.29.168 # 212238 (CDNEXT - Datacamp Limited, GB)</li>
+<li>91.210.64.12 # 29802 (HVC-AS, US) - HIVELOCITY, Inc.</li>
+<li>103.221.57.120 # 132817 (DZCRD-AS-AP DZCRD Networks Ltd, BD)</li>
+<li>109.107.150.136 # 201341 (CENTURION-INTERNET-SERVICES - trafficforce, UAB, LT) - Code200</li>
+<li>185.210.207.1 # 209709 (CODE200-ISP1 - UAB code200, LT)</li>
+<li>185.162.119.101 # 207223 (GLOBALCON - Global Connections Network LLC, US)</li>
+<li>173.244.35.101 # 64286 (LOGICWEB, US) - Tesonet</li>
+<li>139.28.160.141 # 396319 (US-INTERNET-396319, US) - OxyLabs</li>
+<li>104.143.89.112 # 62874 (WEB2OBJECTS, US) - Web2Objects LLC</li>
+</ul>
+</li>
+<li>I added some network blocks to the nginx conf</li>
+<li>Interestingly, I see so many IPs using the same user agent today:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># grep <span style="color:#e6db74">&#34;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.3&#34;</span> /var/log/nginx/api-access.log | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort -u | wc -l
+</span></span><span style="display:flex;"><span>767
+</span></span></code></pre></div><ul>
+<li>For reference, the current Chrome version is 129 or so&hellip;
+<ul>
+<li>This is definitely worth looking into because it seems like one massive botnet</li>
+</ul>
+</li>
+</ul>
 <!-- raw HTML omitted -->
 
   
@@ -192,6 +228,8 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2024-11/">November, 2024</a></li>
+
 <li><a href="/cgspace-notes/2024-10/">October, 2024</a></li>
 
 <li><a href="/cgspace-notes/2024-09/">September, 2024</a></li>
@@ -199,8 +237,6 @@ For copyright reasons they don&rsquo;t include plain abstracts, but the pyalex l
 <li><a href="/cgspace-notes/2024-08/">August, 2024</a></li>
 
 <li><a href="/cgspace-notes/2024-07/">July, 2024</a></li>
-
-<li><a href="/cgspace-notes/2024-06/">June, 2024</a></li>
 
     </ol>
   </section>
