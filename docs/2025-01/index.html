@@ -18,7 +18,7 @@ When searching via the Angular frontend I see an error in the Tomcat logs:
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2025-01/" />
 <meta property="article:published_time" content="2025-01-03T11:09:00+03:00" />
-<meta property="article:modified_time" content="2025-01-03T11:09:00+03:00" />
+<meta property="article:modified_time" content="2025-01-03T12:37:39+03:00" />
 
 
 
@@ -32,7 +32,7 @@ When searching via the Angular frontend I see an error in the Tomcat logs:
 
 
 "/>
-<meta name="generator" content="Hugo 0.133.1">
+<meta name="generator" content="Hugo 0.142.0">
 
 
     
@@ -42,9 +42,9 @@ When searching via the Angular frontend I see an error in the Tomcat logs:
   "@type": "BlogPosting",
   "headline": "January, 2025",
   "url": "https://alanorth.github.io/cgspace-notes/2025-01/",
-  "wordCount": "225",
+  "wordCount": "345",
   "datePublished": "2025-01-03T11:09:00+03:00",
-  "dateModified": "2025-01-03T11:09:00+03:00",
+  "dateModified": "2025-01-03T12:37:39+03:00",
   "author": {
     "@type": "Person",
     "name": "Alan Orth"
@@ -150,7 +150,17 @@ Jan 03 09:08:40 dspace tomcat9[876]:         at java.base/java.lang.Thread.run(T
 </ul>
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<h2 id="2025-01-27">2025-01-27</h2>
+<ul>
+<li>Export publishers, affiliations, and donors from CGSpace to do batch corrections:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspace= ☘  \COPY (SELECT DISTINCT text_value AS &#34;dcterms.publisher&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 178 GROUP BY &#34;dcterms.publisher&#34; ORDER BY count DESC) to /tmp/2025-01-publishers.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 4925
+</span></span><span style="display:flex;"><span>localhost/dspace= ☘  \COPY (SELECT DISTINCT text_value AS &#34;cg.contributor.affiliation&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 211 GROUP BY &#34;cg.contributor.affiliation&#34; ORDER BY count DESC) to /tmp/2025-01-affiliations.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 15264
+</span></span><span style="display:flex;"><span>localhost/dspace= ☘  \COPY (SELECT DISTINCT text_value AS &#34;cg.contributor.donor&#34;, count(*) FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id = 248 GROUP BY &#34;cg.contributor.donor&#34; ORDER BY count DESC) to /tmp/2025-01-donors.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 3531
+</span></span></code></pre></div>
 
   
 

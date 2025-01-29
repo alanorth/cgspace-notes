@@ -10,14 +10,14 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/" />
-<meta property="og:updated_time" content="2025-01-03T11:09:00+03:00" />
+<meta property="og:updated_time" content="2025-01-03T12:37:39+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGSpace Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.133.1">
+<meta name="generator" content="Hugo 0.142.0">
 
 
     
@@ -206,7 +206,167 @@
 
 </p>
   </header>
-  2022-04-01 I did G1GC tests on DSpace Test (linode26) to compliment the CMS tests I did yesterday The Discovery indexing took this long: real 334m33.625s user 227m51.331s sys 3m43.037s 2022-04-04 Start a full harvest on AReS Help Marianne with submit/approve access on a new collection on CGSpace Go back in Gaia&rsquo;s batch reports to find records that she indicated for replacing on CGSpace (ie, those with better new copies, new versions, etc) Looking at the Solr statistics for 2022-03 on CGSpace I see 54.
+  <h2 id="2022-04-01">2022-04-01</h2>
+<ul>
+<li>I did G1GC tests on DSpace Test (linode26) to compliment the CMS tests I did yesterday
+<ul>
+<li>The Discovery indexing took this long:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>real    334m33.625s
+</span></span><span style="display:flex;"><span>user    227m51.331s
+</span></span><span style="display:flex;"><span>sys     3m43.037s
+</span></span></code></pre></div><h2 id="2022-04-04">2022-04-04</h2>
+<ul>
+<li>Start a full harvest on AReS</li>
+<li>Help Marianne with submit/approve access on a new collection on CGSpace</li>
+<li>Go back in Gaia&rsquo;s batch reports to find records that she indicated for replacing on CGSpace (ie, those with better new copies, new versions, etc)</li>
+<li>Looking at the Solr statistics for 2022-03 on CGSpace
+<ul>
+<li>I see 54.229.218.204 on Amazon AWS made 49,000 requests, some of which with this user agent: <code>Apache-HttpClient/4.5.9 (Java/1.8.0_322)</code>, and many others with a normal browser agent, so that&rsquo;s fishy!</li>
+<li>The DSpace agent pattern <code>http.?agent</code> seems to have caught the first ones, but I&rsquo;ll purge the IP ones</li>
+<li>I see 40.77.167.80 is Bing or MSN Bot, but using a normal browser user agent, and if I search Solr for <code>dns:*msnbot* AND dns:*.msn.com.</code> I see over 100,000, which is a problem I noticed a few months ago too&hellip;</li>
+<li>I extracted the MSN Bot IPs from Solr using an IP facet, then used the <code>check-spider-ip-hits.sh</code> script to purge them</li>
+</ul>
+</li>
+</ul>
+<h2 id="2022-04-10">2022-04-10</h2>
+<ul>
+<li>Start a full harvest on AReS</li>
+</ul>
+<h2 id="2022-04-13">2022-04-13</h2>
+<ul>
+<li>UptimeRobot mailed to say that CGSpace was down
+<ul>
+<li>I looked and found the load at 44&hellip;</li>
+</ul>
+</li>
+<li>There seem to be a lot of locks from the XMLUI:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi)&#39;</span> | sort | uniq -c | sort -n
+</span></span><span style="display:flex;"><span>   3173 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>Looking at the top IPs in nginx&rsquo;s access log one IP in particular stands out:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>    941 66.249.66.222
+</span></span><span style="display:flex;"><span>   1224 95.108.213.28
+</span></span><span style="display:flex;"><span>   2074 157.90.209.76
+</span></span><span style="display:flex;"><span>   3064 66.249.66.221
+</span></span><span style="display:flex;"><span>  95743 185.192.69.15
+</span></span></code></pre></div><ul>
+<li>185.192.69.15 is in the UK</li>
+<li>I added a block for that IP in nginx and the load went down&hellip;</li>
+</ul>
+<h2 id="2022-04-16">2022-04-16</h2>
+<ul>
+<li>Start harvest on AReS</li>
+</ul>
+<h2 id="2022-04-18">2022-04-18</h2>
+<ul>
+<li>I woke up to several notices from UptimeRobot that CGSpace had gone down and up in the night (of course I&rsquo;m on holiday out of the country for Easter)
+<ul>
+<li>I see there are many locks in use from the XMLUI:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql -c <span style="color:#e6db74">&#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39;</span> | grep -o -E <span style="color:#e6db74">&#39;(dspaceWeb|dspaceApi)&#39;</span> | sort | uniq -c
+</span></span><span style="display:flex;"><span>   8932 dspaceWeb
+</span></span></code></pre></div><ul>
+<li>Looking at the top IPs making requests it seems they are Yandex, bingbot, and Googlebot:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort | uniq -c | sort -h
+</span></span><span style="display:flex;"><span>    752 69.162.124.231
+</span></span><span style="display:flex;"><span>    759 66.249.64.213
+</span></span><span style="display:flex;"><span>    864 66.249.66.222
+</span></span><span style="display:flex;"><span>    905 2a01:4f8:221:f::2
+</span></span><span style="display:flex;"><span>   1013 84.33.2.97
+</span></span><span style="display:flex;"><span>   1201 157.55.39.159
+</span></span><span style="display:flex;"><span>   1204 157.55.39.144
+</span></span><span style="display:flex;"><span>   1209 157.55.39.102
+</span></span><span style="display:flex;"><span>   1217 157.55.39.161
+</span></span><span style="display:flex;"><span>   1252 207.46.13.177
+</span></span><span style="display:flex;"><span>   1274 157.55.39.162
+</span></span><span style="display:flex;"><span>   2553 66.249.66.221
+</span></span><span style="display:flex;"><span>   2941 95.108.213.28
+</span></span></code></pre></div><ul>
+<li>One IP is using a stange user agent though:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>84.33.2.97 - - [18/Apr/2022:00:20:38 +0200] &#34;GET /bitstream/handle/10568/109581/Banana_Blomme%20_2020.pdf.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34;
+</span></span></code></pre></div><ul>
+<li>Overall, it seems we had 17,000 unique IPs connecting in the last nine hours (currently 9:14AM and log file rolled over at 00:00):</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /var/log/nginx/access.log | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>17314
+</span></span></code></pre></div><ul>
+<li>That&rsquo;s a lot of unique IPs, and I see some patterns of IPs in China making ten to twenty requests each
+<ul>
+<li>The ISPs I&rsquo;ve seen so far are ChinaNet and China Unicom</li>
+</ul>
+</li>
+<li>I extracted all the IPs from today and resolved them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># cat /var/log/nginx/access.log | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort | uniq &gt; /tmp/2022-04-18-ips.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/resolve-addresses-geoip2.py -i /tmp/2022-04-18-ips.txt -o /tmp/2022-04-18-ips.csv
+</span></span></code></pre></div><ul>
+<li>The top ASNs by IP are:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c <span style="color:#ae81ff">2</span> /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n <span style="color:#ae81ff">10</span> 
+</span></span><span style="display:flex;"><span>    102 GOOGLE
+</span></span><span style="display:flex;"><span>    139 Maxihost LTDA
+</span></span><span style="display:flex;"><span>    165 AMAZON-02
+</span></span><span style="display:flex;"><span>    393 &#34;China Mobile Communications Group Co., Ltd.&#34;
+</span></span><span style="display:flex;"><span>    473 AMAZON-AES
+</span></span><span style="display:flex;"><span>    616 China Mobile communications corporation
+</span></span><span style="display:flex;"><span>    642 M247 Ltd
+</span></span><span style="display:flex;"><span>   2336 HostRoyale Technologies Pvt Ltd
+</span></span><span style="display:flex;"><span>   4556 Chinanet
+</span></span><span style="display:flex;"><span>   5527 CHINA UNICOM China169 Backbone
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#ae81ff">4</span> /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>    139 262287
+</span></span><span style="display:flex;"><span>    165 16509
+</span></span><span style="display:flex;"><span>    180 204287
+</span></span><span style="display:flex;"><span>    393 9808
+</span></span><span style="display:flex;"><span>    473 14618
+</span></span><span style="display:flex;"><span>    615 56041
+</span></span><span style="display:flex;"><span>    642 9009
+</span></span><span style="display:flex;"><span>   2156 203020
+</span></span><span style="display:flex;"><span>   4556 4134
+</span></span><span style="display:flex;"><span>   5527 4837
+</span></span></code></pre></div><ul>
+<li>I spot checked a few IPs from each of these and they are definitely just making bullshit requests to Discovery and HTML sitemap etc</li>
+<li>I will download the IP blocks for each ASN except Google and Amazon and ban them</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wget https://asn.ipinfo.app/api/text/nginx/AS4837 https://asn.ipinfo.app/api/text/nginx/AS4134 https://asn.ipinfo.app/api/text/nginx/AS203020 https://asn.ipinfo.app/api/text/nginx/AS9009 https://asn.ipinfo.app/api/text/nginx/AS56041 https://asn.ipinfo.app/api/text/nginx/AS9808
+</span></span><span style="display:flex;"><span>$ cat AS* | sed -e <span style="color:#e6db74">&#39;/^$/d&#39;</span> -e <span style="color:#e6db74">&#39;/^#/d&#39;</span> -e <span style="color:#e6db74">&#39;/^{/d&#39;</span> -e <span style="color:#e6db74">&#39;s/deny //&#39;</span> -e <span style="color:#e6db74">&#39;s/;//&#39;</span> | sort | uniq | wc -l
+</span></span><span style="display:flex;"><span>20296
+</span></span></code></pre></div><ul>
+<li>I extracted the IPv4 and IPv6 networks:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ cat AS* | sed -e <span style="color:#e6db74">&#39;/^$/d&#39;</span> -e <span style="color:#e6db74">&#39;/^#/d&#39;</span> -e <span style="color:#e6db74">&#39;/^{/d&#39;</span> -e <span style="color:#e6db74">&#39;s/deny //&#39;</span> -e <span style="color:#e6db74">&#39;s/;//&#39;</span> | grep <span style="color:#e6db74">&#34;:&#34;</span> | sort &gt; /tmp/ipv6-networks.txt
+</span></span><span style="display:flex;"><span>$ cat AS* | sed -e <span style="color:#e6db74">&#39;/^$/d&#39;</span> -e <span style="color:#e6db74">&#39;/^#/d&#39;</span> -e <span style="color:#e6db74">&#39;/^{/d&#39;</span> -e <span style="color:#e6db74">&#39;s/deny //&#39;</span> -e <span style="color:#e6db74">&#39;s/;//&#39;</span> | grep -v <span style="color:#e6db74">&#34;:&#34;</span> | sort &gt; /tmp/ipv4-networks.txt
+</span></span></code></pre></div><ul>
+<li>I suspect we need to aggregate these networks since they are so many and nftables doesn&rsquo;t like it when they overlap:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ wc -l /tmp/ipv4-networks.txt
+</span></span><span style="display:flex;"><span>15464 /tmp/ipv4-networks.txt
+</span></span><span style="display:flex;"><span>$ aggregate6 /tmp/ipv4-networks.txt | wc -l
+</span></span><span style="display:flex;"><span>2781
+</span></span><span style="display:flex;"><span>$ wc -l /tmp/ipv6-networks.txt             
+</span></span><span style="display:flex;"><span>4833 /tmp/ipv6-networks.txt
+</span></span><span style="display:flex;"><span>$ aggregate6 /tmp/ipv6-networks.txt | wc -l
+</span></span><span style="display:flex;"><span>338
+</span></span></code></pre></div><ul>
+<li>I deployed these lists on CGSpace, ran all updates, and rebooted the server
+<ul>
+<li>This list is SURELY too broad because we will block legitimate users in China&hellip; but right now how can I discern?</li>
+<li>Also, I need to purge the hits from these 14,000 IPs in Solr when I get time</li>
+</ul>
+</li>
+<li>Looking back at the Munin graphs a few hours later I see this was indeed some kind of spike that was out of the ordinary:</li>
+</ul>
+<p><img src="/cgspace-notes/2022/04/postgres_connections_ALL-day.png" alt="PostgreSQL connections day">
+<img src="/cgspace-notes/2022/04/jmx_dspace_sessions-day.png" alt="DSpace sessions day"></p>
   <a href='https://alanorth.github.io/cgspace-notes/2022-04/'>Read more →</a>
 </article> 
 

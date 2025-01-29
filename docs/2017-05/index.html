@@ -7,7 +7,136 @@
 
 
 <meta property="og:title" content="May, 2017" />
-<meta property="og:description" content="2017-05-01 ICARDA apparently started working on CG Core on their MEL repository They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items: https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full https://cgspace.cgiar.org/handle/10568/73683 2017-05-02 Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request 2017-05-04 Sync DSpace Test with database and assetstore from CGSpace Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server Now I can see the workflow statistics and am able to select users, but everything returns 0 items Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace." />
+<meta property="og:description" content="2017-05-01
+
+ICARDA apparently started working on CG Core on their MEL repository
+They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items:
+
+https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full
+https://cgspace.cgiar.org/handle/10568/73683
+
+
+
+2017-05-02
+
+Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request
+
+2017-05-04
+
+Sync DSpace Test with database and assetstore from CGSpace
+Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server
+Now I can see the workflow statistics and am able to select users, but everything returns 0 items
+Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b
+Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace.cgiar.org/handle/10568/80731
+
+2017-05-05
+
+Discovered that CGSpace has ~700 items that are missing the cg.identifier.status field
+Need to perhaps try using the &ldquo;required metadata&rdquo; curation task to find fields missing these items:
+
+$ [dspace]/bin/dspace curate -t requiredmetadata -i 10568/1 -r - &gt; /tmp/curation.out
+
+It seems the curation task dies when it finds an item which has missing metadata
+
+2017-05-06
+
+Add &ldquo;Blog Post&rdquo; to dc.type
+Create ticket on Atmire tracker to ask about commissioning them to develop the feature to expose ORCID via REST/OAI: https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=510
+According to the DSpace curation docs the fact that the requiredmetadata curation task stops when it finds a missing metadata field is by design
+
+2017-05-07
+
+Testing one replacement for CCAFS Flagships (cg.subject.ccafs), first changed in the submission forms, and then in the database:
+
+$ ./fix-metadata-values.py -i ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
+
+Also, CCAFS wants to re-order their flagships to prioritize the Phase II ones
+Waiting for feedback from CCAFS, then I can merge #320
+
+2017-05-08
+
+Start working on CGIAR Library migration
+We decided to use AIP export to preserve the hierarchies and handles of communities and collections
+When ingesting some collections I was getting java.lang.OutOfMemoryError: GC overhead limit exceeded, which can be solved by disabling the GC timeout with -XX:-UseGCOverheadLimit
+Other times I was getting an error about heap space, so I kept bumping the RAM allocation by 512MB each time (up to 4096m!) it crashed
+This leads to tens of thousands of abandoned files in the assetstore, which need to be cleaned up using dspace cleanup -v, or else you&rsquo;ll run out of disk space
+In the end I realized it&rsquo;s better to use submission mode (-s) to ingest the community object as a single AIP without its children, followed by each of the collections:
+
+$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx2048m -XX:-UseGCOverheadLimit&#34;
+$ [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10568/87775 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+
+Note that in submission mode DSpace ignores the handle specified in mets.xml in the zip file, so you need to turn that off with -o ignoreHandle=false
+The -u option supresses prompts, to allow the process to run without user input
+Give feedback to CIFOR about their data quality:
+
+Suggestion: uppercase dc.subject, cg.coverage.region, and cg.coverage.subregion in your crosswalk so they match CGSpace and therefore can be faceted / reported on easier
+Suggestion: use CGSpace&rsquo;s CRP names (cg.contributor.crp), see: dspace/config/input-forms.xml
+Suggestion: clean up duplicates and errors in funders, perhaps use a controlled vocabulary like ours, see: dspace/config/controlled-vocabularies/dc-description-sponsorship.xml
+Suggestion: use dc.type &ldquo;Blog Post&rdquo; instead of &ldquo;Blog&rdquo; for your blog post items (we are also adding a &ldquo;Blog Post&rdquo; type to CGSpace soon)
+Question: many of your items use dc.document.uri AND cg.identifier.url with the same text value?
+
+
+Help Marianne from WLE with an Open Search query to show the latest WLE CRP outputs: https://cgspace.cgiar.org/open-search/discover?query=crpsubject:WATER%2C&#43;LAND&#43;AND&#43;ECOSYSTEMS&amp;sort_by=2&amp;order=DESC
+This uses the webui&rsquo;s item list sort options, see webui.itemlist.sort-option in dspace.cfg
+The equivalent Discovery search would be: https://cgspace.cgiar.org/discover?filtertype_1=crpsubject&amp;filter_relational_operator_1=equals&amp;filter_1=WATER%2C&#43;LAND&#43;AND&#43;ECOSYSTEMS&amp;submit_apply_filter=&amp;query=&amp;rpp=10&amp;sort_by=dc.date.issued_dt&amp;order=desc
+
+2017-05-09
+
+The CGIAR Library metadata has some blank metadata values, which leads to ||| in the Discovery facets
+Clean these up in the database using:
+
+dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+
+I ended up running into issues during data cleaning and decided to wipe out the entire community and re-sync DSpace Test assetstore and database from CGSpace rather than waiting for the cleanup task to clean up
+Hours into the re-ingestion I ran into more errors, and had to erase everything and start over again!
+Now, no matter what I do I keep getting foreign key errors&hellip;
+
+Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &#34;handle_pkey&#34;
+  Detail: Key (handle_id)=(80928) already exists.
+
+I think those errors actually come from me running the update-sequences.sql script while Tomcat/DSpace are running
+Apparently you need to stop Tomcat!
+
+2017-05-10
+
+Atmire says they are willing to extend the ORCID implementation, and I&rsquo;ve asked them to provide a quote
+I clarified that the scope of the implementation should be that ORCIDs are stored in the database and exposed via REST / API like other fields
+Finally finished importing all the CGIAR Library content, final method was:
+
+$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit&#34;
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2517/10947-2517.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2515/10947-2515.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2516/10947-2516.zip
+$ [dspace]/bin/dspace packager -s -t AIP -o ignoreHandle=false -e some@user.com -p 10568/80923 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+
+Basically, import the smaller communities using recursive AIP import (with skipIfParentMissing)
+Then, for the larger collection, create the community, collections, and items separately, ingesting the items one by one
+The -XX:-UseGCOverheadLimit JVM option helps with some issues in large imports
+After this I ran the update-sequences.sql script (with Tomcat shut down), and cleaned up the 200&#43; blank metadata records:
+
+dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+2017-05-13
+
+After quite a bit of troubleshooting with importing cleaned up data as CSV, it seems that there are actually NUL characters in the dc.description.abstract field (at least) on the lines where CSV importing was failing
+I tried to find a way to remove the characters in vim or Open Refine, but decided it was quicker to just remove the column temporarily and import it
+The import was successful and detected 2022 changes, which should likely be the rest that were failing to import before
+
+2017-05-15
+
+To delete the blank lines that cause isses during import we need to use a regex in vim g/^$/d
+After that I started looking in the dc.subject field to try to pull countries and regions out, but there are too many values in there
+Bump the Academicons dependency of the Mirage 2 themes from 1.6.0 to 1.8.0 because the upstream deleted the old tag and now the build is failing: #321
+Merge changes to CCAFS project identifiers and flagships: #320
+Run updates for CCAFS flagships on CGSpace:
+
+$ ./fix-metadata-values.py -i /tmp/ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p &#39;fuuu&#39;
+
+
+These include:" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-05/" />
 <meta property="article:published_time" content="2017-05-01T16:21:52+02:00" />
@@ -17,8 +146,137 @@
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="May, 2017"/>
-<meta name="twitter:description" content="2017-05-01 ICARDA apparently started working on CG Core on their MEL repository They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items: https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full https://cgspace.cgiar.org/handle/10568/73683 2017-05-02 Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request 2017-05-04 Sync DSpace Test with database and assetstore from CGSpace Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server Now I can see the workflow statistics and am able to select users, but everything returns 0 items Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace."/>
-<meta name="generator" content="Hugo 0.133.1">
+<meta name="twitter:description" content="2017-05-01
+
+ICARDA apparently started working on CG Core on their MEL repository
+They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items:
+
+https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full
+https://cgspace.cgiar.org/handle/10568/73683
+
+
+
+2017-05-02
+
+Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request
+
+2017-05-04
+
+Sync DSpace Test with database and assetstore from CGSpace
+Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server
+Now I can see the workflow statistics and am able to select users, but everything returns 0 items
+Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b
+Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace.cgiar.org/handle/10568/80731
+
+2017-05-05
+
+Discovered that CGSpace has ~700 items that are missing the cg.identifier.status field
+Need to perhaps try using the &ldquo;required metadata&rdquo; curation task to find fields missing these items:
+
+$ [dspace]/bin/dspace curate -t requiredmetadata -i 10568/1 -r - &gt; /tmp/curation.out
+
+It seems the curation task dies when it finds an item which has missing metadata
+
+2017-05-06
+
+Add &ldquo;Blog Post&rdquo; to dc.type
+Create ticket on Atmire tracker to ask about commissioning them to develop the feature to expose ORCID via REST/OAI: https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=510
+According to the DSpace curation docs the fact that the requiredmetadata curation task stops when it finds a missing metadata field is by design
+
+2017-05-07
+
+Testing one replacement for CCAFS Flagships (cg.subject.ccafs), first changed in the submission forms, and then in the database:
+
+$ ./fix-metadata-values.py -i ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
+
+Also, CCAFS wants to re-order their flagships to prioritize the Phase II ones
+Waiting for feedback from CCAFS, then I can merge #320
+
+2017-05-08
+
+Start working on CGIAR Library migration
+We decided to use AIP export to preserve the hierarchies and handles of communities and collections
+When ingesting some collections I was getting java.lang.OutOfMemoryError: GC overhead limit exceeded, which can be solved by disabling the GC timeout with -XX:-UseGCOverheadLimit
+Other times I was getting an error about heap space, so I kept bumping the RAM allocation by 512MB each time (up to 4096m!) it crashed
+This leads to tens of thousands of abandoned files in the assetstore, which need to be cleaned up using dspace cleanup -v, or else you&rsquo;ll run out of disk space
+In the end I realized it&rsquo;s better to use submission mode (-s) to ingest the community object as a single AIP without its children, followed by each of the collections:
+
+$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx2048m -XX:-UseGCOverheadLimit&#34;
+$ [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10568/87775 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+
+Note that in submission mode DSpace ignores the handle specified in mets.xml in the zip file, so you need to turn that off with -o ignoreHandle=false
+The -u option supresses prompts, to allow the process to run without user input
+Give feedback to CIFOR about their data quality:
+
+Suggestion: uppercase dc.subject, cg.coverage.region, and cg.coverage.subregion in your crosswalk so they match CGSpace and therefore can be faceted / reported on easier
+Suggestion: use CGSpace&rsquo;s CRP names (cg.contributor.crp), see: dspace/config/input-forms.xml
+Suggestion: clean up duplicates and errors in funders, perhaps use a controlled vocabulary like ours, see: dspace/config/controlled-vocabularies/dc-description-sponsorship.xml
+Suggestion: use dc.type &ldquo;Blog Post&rdquo; instead of &ldquo;Blog&rdquo; for your blog post items (we are also adding a &ldquo;Blog Post&rdquo; type to CGSpace soon)
+Question: many of your items use dc.document.uri AND cg.identifier.url with the same text value?
+
+
+Help Marianne from WLE with an Open Search query to show the latest WLE CRP outputs: https://cgspace.cgiar.org/open-search/discover?query=crpsubject:WATER%2C&#43;LAND&#43;AND&#43;ECOSYSTEMS&amp;sort_by=2&amp;order=DESC
+This uses the webui&rsquo;s item list sort options, see webui.itemlist.sort-option in dspace.cfg
+The equivalent Discovery search would be: https://cgspace.cgiar.org/discover?filtertype_1=crpsubject&amp;filter_relational_operator_1=equals&amp;filter_1=WATER%2C&#43;LAND&#43;AND&#43;ECOSYSTEMS&amp;submit_apply_filter=&amp;query=&amp;rpp=10&amp;sort_by=dc.date.issued_dt&amp;order=desc
+
+2017-05-09
+
+The CGIAR Library metadata has some blank metadata values, which leads to ||| in the Discovery facets
+Clean these up in the database using:
+
+dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+
+I ended up running into issues during data cleaning and decided to wipe out the entire community and re-sync DSpace Test assetstore and database from CGSpace rather than waiting for the cleanup task to clean up
+Hours into the re-ingestion I ran into more errors, and had to erase everything and start over again!
+Now, no matter what I do I keep getting foreign key errors&hellip;
+
+Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &#34;handle_pkey&#34;
+  Detail: Key (handle_id)=(80928) already exists.
+
+I think those errors actually come from me running the update-sequences.sql script while Tomcat/DSpace are running
+Apparently you need to stop Tomcat!
+
+2017-05-10
+
+Atmire says they are willing to extend the ORCID implementation, and I&rsquo;ve asked them to provide a quote
+I clarified that the scope of the implementation should be that ORCIDs are stored in the database and exposed via REST / API like other fields
+Finally finished importing all the CGIAR Library content, final method was:
+
+$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit&#34;
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2517/10947-2517.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2515/10947-2515.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2516/10947-2516.zip
+$ [dspace]/bin/dspace packager -s -t AIP -o ignoreHandle=false -e some@user.com -p 10568/80923 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+
+Basically, import the smaller communities using recursive AIP import (with skipIfParentMissing)
+Then, for the larger collection, create the community, collections, and items separately, ingesting the items one by one
+The -XX:-UseGCOverheadLimit JVM option helps with some issues in large imports
+After this I ran the update-sequences.sql script (with Tomcat shut down), and cleaned up the 200&#43; blank metadata records:
+
+dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+2017-05-13
+
+After quite a bit of troubleshooting with importing cleaned up data as CSV, it seems that there are actually NUL characters in the dc.description.abstract field (at least) on the lines where CSV importing was failing
+I tried to find a way to remove the characters in vim or Open Refine, but decided it was quicker to just remove the column temporarily and import it
+The import was successful and detected 2022 changes, which should likely be the rest that were failing to import before
+
+2017-05-15
+
+To delete the blank lines that cause isses during import we need to use a regex in vim g/^$/d
+After that I started looking in the dc.subject field to try to pull countries and regions out, but there are too many values in there
+Bump the Academicons dependency of the Mirage 2 themes from 1.6.0 to 1.8.0 because the upstream deleted the old tag and now the build is failing: #321
+Merge changes to CCAFS project identifiers and flagships: #320
+Run updates for CCAFS flagships on CGSpace:
+
+$ ./fix-metadata-values.py -i /tmp/ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p &#39;fuuu&#39;
+
+
+These include:"/>
+<meta name="generator" content="Hugo 0.142.0">
 
 
     

@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.133.1">
+<meta name="generator" content="Hugo 0.142.0">
 
 
     
@@ -181,7 +181,151 @@
 
 </p>
   </header>
-  2017-06-01 After discussion with WLE and CGSpace content people, we decided to just add one metadata field for the WLE Research Themes The cg.identifier.wletheme field will be used for both Phase I and Phase II Research Themes Then we&rsquo;ll create a new sub-community for Phase II and create collections for the research themes there The current &ldquo;Research Themes&rdquo; community will be renamed to &ldquo;WLE Phase I Research Themes&rdquo; Tagged all items in the current Phase I collections with their appropriate themes Create pull request to add Phase II research themes to the submission form: #328 Add cg.
+  <h2 id="2017-06-01">2017-06-01</h2>
+<ul>
+<li>After discussion with WLE and CGSpace content people, we decided to just add one metadata field for the WLE Research Themes</li>
+<li>The <code>cg.identifier.wletheme</code> field will be used for both Phase I and Phase II Research Themes</li>
+<li>Then we&rsquo;ll create a new sub-community for Phase II and create collections for the research themes there</li>
+<li>The current &ldquo;Research Themes&rdquo; community will be renamed to &ldquo;WLE Phase I Research Themes&rdquo;</li>
+<li>Tagged all items in the current Phase I collections with their appropriate themes</li>
+<li>Create pull request to add Phase II research themes to the submission form: <a href="https://github.com/ilri/DSpace/pull/328">#328</a></li>
+<li>Add <code>cg.subject.system</code> to CGSpace metadata registry, for subject from the upcoming CGIAR Library migration</li>
+</ul>
+<h2 id="2017-06-04">2017-06-04</h2>
+<ul>
+<li>After adding <code>cg.identifier.wletheme</code> to 1106 WLE items I can see the field on XMLUI but not in REST!</li>
+<li>Strangely it happens on DSpace Test AND on CGSpace!</li>
+<li>I tried to re-index Discovery but it didn&rsquo;t fix it</li>
+<li>Run all system updates on DSpace Test and reboot the server</li>
+<li>After rebooting the server (and therefore restarting Tomcat) the new metadata field is available</li>
+<li>I&rsquo;ve sent a message to the dspace-tech mailing list to ask if this is a bug and whether I should file a Jira ticket</li>
+</ul>
+<h2 id="2016-06-05">2016-06-05</h2>
+<ul>
+<li>Rename WLE&rsquo;s &ldquo;Research Themes&rdquo; sub-community to &ldquo;WLE Phase I Research Themes&rdquo; on DSpace Test so Macaroni Bros can continue their testing</li>
+<li>Macaroni Bros tested it and said it&rsquo;s fine, so I renamed it on CGSpace as well</li>
+<li>Working on how to automate the extraction of the CIAT Book chapters, doing some magic in OpenRefine to extract page from–to from cg.identifier.url and dc.format.extent, respectively:
+<ul>
+<li>cg.identifier.url: <code>value.split(&quot;page=&quot;, &quot;&quot;)[1]</code></li>
+<li>dc.format.extent: <code>value.replace(&quot;p. &quot;, &quot;&quot;).split(&quot;-&quot;)[1].toNumber() - value.replace(&quot;p. &quot;, &quot;&quot;).split(&quot;-&quot;)[0].toNumber()</code></li>
+</ul>
+</li>
+<li>Finally, after some filtering to see which small outliers there were (based on dc.format.extent using &ldquo;p. 1-14&rdquo; vs &ldquo;29 p.&rdquo;), create a new column with last page number:
+<ul>
+<li><code>cells[&quot;dc.page.from&quot;].value.toNumber() + cells[&quot;dc.format.pages&quot;].value.toNumber()</code></li>
+</ul>
+</li>
+<li>Then create a new, unique file name to be used in the output, based on a SHA1 of the dc.title and with a description:
+<ul>
+<li>dc.page.to: <code>value.split(&quot; &quot;)[0].replace(&quot;,&quot;,&quot;&quot;).toLowercase() + &quot;-&quot; + sha1(value).get(1,9) + &quot;.pdf__description:&quot; + cells[&quot;dc.type&quot;].value</code></li>
+</ul>
+</li>
+<li>Start processing 769 records after filtering the following (there are another 159 records that have some other format, or for example they have their own PDF which I will process later), using a modified <code>generate-thumbnails.py</code> script to read certain fields and then pass to GhostScript:
+<ul>
+<li>cg.identifier.url: <code>value.contains(&quot;page=&quot;)</code></li>
+<li>dc.format.extent: <code>or(value.contains(&quot;p. &quot;),value.contains(&quot; p.&quot;))</code></li>
+<li>Command like: <code>$ gs -dNOPAUSE -dBATCH -dFirstPage=14 -dLastPage=27 -sDEVICE=pdfwrite -sOutputFile=beans.pdf -f 12605-1.pdf</code></li>
+</ul>
+</li>
+<li>17 of the items have issues with incorrect page number ranges, and upon closer inspection they do not appear in the referenced PDF</li>
+<li>I&rsquo;ve flagged them and proceeded without them (752 total) on DSpace Test:</li>
+</ul>
+<pre tabindex="0"><code>$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/93843 --source /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
+</code></pre><ul>
+<li>I went and did some basic sanity checks on the remaining items in the CIAT Book Chapters and decided they are mostly fine (except one duplicate and the flagged ones), so I imported them to DSpace Test too (162 items)</li>
+<li>Total items in CIAT Book Chapters is 914, with the others being flagged for some reason, and we should send that back to CIAT</li>
+<li>Restart Tomcat on CGSpace so that the <code>cg.identifier.wletheme</code> field is available on REST API for Macaroni Bros</li>
+</ul>
+<h2 id="2017-06-07">2017-06-07</h2>
+<ul>
+<li>Testing <a href="https://github.com/ilri/DSpace/pull/319">Atmire&rsquo;s patch for the CUA Workflow Statistics again</a></li>
+<li>Still doesn&rsquo;t seem to give results I&rsquo;d expect, like there are no results for Maria Garruccio, or for the ILRI community!</li>
+<li>Then I&rsquo;ll file an update to the issue on Atmire&rsquo;s tracker</li>
+<li>Created a new branch with just the relevant changes, so I can send it to them</li>
+<li>One thing I noticed is that there is a failed database migration related to CUA:</li>
+</ul>
+<pre tabindex="0"><code>+----------------+----------------------------+---------------------+---------+
+| Version        | Description                | Installed on        | State   |
++----------------+----------------------------+---------------------+---------+
+| 1.1            | Initial DSpace 1.1 databas |                     | PreInit |
+| 1.2            | Upgrade to DSpace 1.2 sche |                     | PreInit |
+| 1.3            | Upgrade to DSpace 1.3 sche |                     | PreInit |
+| 1.3.9          | Drop constraint for DSpace |                     | PreInit |
+| 1.4            | Upgrade to DSpace 1.4 sche |                     | PreInit |
+| 1.5            | Upgrade to DSpace 1.5 sche |                     | PreInit |
+| 1.5.9          | Drop constraint for DSpace |                     | PreInit |
+| 1.6            | Upgrade to DSpace 1.6 sche |                     | PreInit |
+| 1.7            | Upgrade to DSpace 1.7 sche |                     | PreInit |
+| 1.8            | Upgrade to DSpace 1.8 sche |                     | PreInit |
+| 3.0            | Upgrade to DSpace 3.x sche |                     | PreInit |
+| 4.0            | Initializing from DSpace 4 | 2015-11-20 12:42:52 | Success |
+| 5.0.2014.08.08 | DS-1945 Helpdesk Request a | 2015-11-20 12:42:53 | Success |
+| 5.0.2014.09.25 | DS 1582 Metadata For All O | 2015-11-20 12:42:55 | Success |
+| 5.0.2014.09.26 | DS-1582 Metadata For All O | 2015-11-20 12:42:55 | Success |
+| 5.0.2015.01.27 | MigrateAtmireExtraMetadata | 2015-11-20 12:43:29 | Success |
+| 5.0.2017.04.28 | CUA eperson metadata migra | 2017-06-07 11:07:28 | OutOrde |
+| 5.5.2015.12.03 | Atmire CUA 4 migration     | 2016-11-27 06:39:05 | OutOrde |
+| 5.5.2015.12.03 | Atmire MQM migration       | 2016-11-27 06:39:06 | OutOrde |
+| 5.6.2016.08.08 | CUA emailreport migration  | 2017-01-29 11:18:56 | OutOrde |
++----------------+----------------------------+---------------------+---------+
+</code></pre><ul>
+<li>Merge the pull request for <a href="https://github.com/ilri/DSpace/pull/328">WLE Phase II themes</a></li>
+</ul>
+<h2 id="2017-06-18">2017-06-18</h2>
+<ul>
+<li>Redeploy CGSpace with latest changes from <code>5_x-prod</code>, run system updates, and reboot the server</li>
+<li>Continue working on ansible infrastructure changes for CGIAR Library</li>
+</ul>
+<h2 id="2017-06-20">2017-06-20</h2>
+<ul>
+<li>Import Abenet and Peter&rsquo;s changes to the CGIAR Library CRP community</li>
+<li>Due to them using Windows and renaming some columns there were formatting, encoding, and duplicate metadata value issues</li>
+<li>I had to remove some fields from the CSV and rename some back to, ie, <code>dc.subject[en_US]</code> just so DSpace would detect changes properly</li>
+<li>Now it looks much better: <a href="https://dspacetest.cgiar.org/handle/10947/2517">https://dspacetest.cgiar.org/handle/10947/2517</a></li>
+<li>Removing the HTML tags and HTML/XML entities using the following GREL:
+<ul>
+<li><code>replace(value,/&lt;\/?\w+((\s+\w+(\s*=\s*(?:&quot;.*?&quot;|'.*?'|[^'&quot;&gt;\s]+))?)+\s*|\s*)\/?&gt;/,'')</code></li>
+<li><code>value.unescape(&quot;html&quot;).unescape(&quot;xml&quot;)</code></li>
+</ul>
+</li>
+<li>Finally import 914 CIAT Book Chapters to CGSpace in two batches:</li>
+</ul>
+<pre tabindex="0"><code>$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
+$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books2.map &amp;&gt; /tmp/ciat-books2.log
+</code></pre><h2 id="2017-06-25">2017-06-25</h2>
+<ul>
+<li>WLE has said that one of their Phase II research themes is being renamed from <code>Regenerating Degraded Landscapes</code> to <code>Restoring Degraded Landscapes</code></li>
+<li>Pull request with the changes to <code>input-forms.xml</code>: <a href="https://github.com/ilri/DSpace/pull/329">#329</a></li>
+<li>As of now it doesn&rsquo;t look like there are any items using this research theme so we don&rsquo;t need to do any updates:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=237 and text_value like &#39;Regenerating Degraded Landscapes%&#39;;
+ text_value
+------------
+(0 rows)
+</code></pre><ul>
+<li>Marianne from WLE asked if they can have both Phase I and II research themes together in the item submission form</li>
+<li>Perhaps we can add them together in the same question for <code>cg.identifier.wletheme</code></li>
+</ul>
+<h2 id="2017-06-30">2017-06-30</h2>
+<ul>
+<li>CGSpace went down briefly, I see lots of these errors in the dspace logs:</li>
+</ul>
+<pre tabindex="0"><code>Java stacktrace: java.util.NoSuchElementException: Timeout waiting for idle object
+</code></pre><ul>
+<li>After looking at the Tomcat logs, Munin graphs, and PostgreSQL connection stats, it seems there is just a high load</li>
+<li>Might be a good time to adjust DSpace&rsquo;s database connection settings, like I first mentioned in April, 2017 after reading the <a href="https://wiki.lyrasis.org/display/cmtygp/DCAT+Meeting+April+2017">2017-04 DCAT comments</a></li>
+<li>I&rsquo;ve adjusted the following in CGSpace&rsquo;s config:
+<ul>
+<li><code>db.maxconnections</code> 30→70 (the default PostgreSQL config allows 100 connections, so DSpace&rsquo;s default of 30 is quite low)</li>
+<li><code>db.maxwait</code> 5000→10000</li>
+<li><code>db.maxidle</code> 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier)</li>
+</ul>
+</li>
+<li>We will need to adjust this again (as well as the <code>pg_hba.conf</code> settings) when we deploy tsega&rsquo;s REST API</li>
+<li>Whip up a test for Marianne of WLE to be able to show both their Phase I and II research themes in the CGSpace item submission form:</li>
+</ul>
+<p><img src="/cgspace-notes/2017/06/wle-theme-test-a.png" alt="Test A for displaying the Phase I and II research themes">
+<img src="/cgspace-notes/2017/06/wle-theme-test-b.png" alt="Test B for displaying the Phase I and II research themes"></p>
   <a href='https://alanorth.github.io/cgspace-notes/2017-06/'>Read more →</a>
 </article> 
 
@@ -199,7 +343,136 @@
 
 </p>
   </header>
-  2017-05-01 ICARDA apparently started working on CG Core on their MEL repository They have done a few cg.* fields, but not very consistent and even copy some of CGSpace items: https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full https://cgspace.cgiar.org/handle/10568/73683 2017-05-02 Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request 2017-05-04 Sync DSpace Test with database and assetstore from CGSpace Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server Now I can see the workflow statistics and am able to select users, but everything returns 0 items Megan says there are still some mapped items are not appearing since last week, so I forced a full index-discovery -b Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: https://cgspace.
+  <h2 id="2017-05-01">2017-05-01</h2>
+<ul>
+<li>ICARDA apparently started working on CG Core on their MEL repository</li>
+<li>They have done a few <code>cg.*</code> fields, but not very consistent and even copy some of CGSpace items:
+<ul>
+<li><a href="https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full">https://mel.cgiar.org/xmlui/handle/20.500.11766/6911?show=full</a></li>
+<li><a href="https://cgspace.cgiar.org/handle/10568/73683">https://cgspace.cgiar.org/handle/10568/73683</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="2017-05-02">2017-05-02</h2>
+<ul>
+<li>Atmire got back about the Workflow Statistics issue, and apparently it&rsquo;s a bug in the CUA module so they will send us a pull request</li>
+</ul>
+<h2 id="2017-05-04">2017-05-04</h2>
+<ul>
+<li>Sync DSpace Test with database and assetstore from CGSpace</li>
+<li>Re-deploy DSpace Test with Atmire&rsquo;s CUA patch for workflow statistics, run system updates, and restart the server</li>
+<li>Now I can see the workflow statistics and am able to select users, but everything returns 0 items</li>
+<li>Megan says there are still some mapped items are not appearing since last week, so I forced a full <code>index-discovery -b</code></li>
+<li>Need to remember to check if the collection has more items (currently 39 on CGSpace, but 118 on the freshly reindexed DSPace Test) tomorrow: <a href="https://cgspace.cgiar.org/handle/10568/80731">https://cgspace.cgiar.org/handle/10568/80731</a></li>
+</ul>
+<h2 id="2017-05-05">2017-05-05</h2>
+<ul>
+<li>Discovered that CGSpace has ~700 items that are missing the <code>cg.identifier.status</code> field</li>
+<li>Need to perhaps try using the &ldquo;required metadata&rdquo; curation task to find fields missing these items:</li>
+</ul>
+<pre tabindex="0"><code>$ [dspace]/bin/dspace curate -t requiredmetadata -i 10568/1 -r - &gt; /tmp/curation.out
+</code></pre><ul>
+<li>It seems the curation task dies when it finds an item which has missing metadata</li>
+</ul>
+<h2 id="2017-05-06">2017-05-06</h2>
+<ul>
+<li>Add &ldquo;Blog Post&rdquo; to <code>dc.type</code></li>
+<li>Create ticket on Atmire tracker to ask about commissioning them to develop the feature to expose ORCID via REST/OAI: <a href="https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=510">https://tracker.atmire.com/tickets-cgiar-ilri/view-ticket?id=510</a></li>
+<li>According to the <a href="https://wiki.lyrasis.org/display/DSDOC5x/Curation+System">DSpace curation docs</a> the fact that the <code>requiredmetadata</code> curation task stops when it finds a missing metadata field is by design</li>
+</ul>
+<h2 id="2017-05-07">2017-05-07</h2>
+<ul>
+<li>Testing one replacement for CCAFS Flagships (<code>cg.subject.ccafs</code>), first changed in the submission forms, and then in the database:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p fuuu
+</code></pre><ul>
+<li>Also, CCAFS wants to re-order their flagships to prioritize the Phase II ones</li>
+<li>Waiting for feedback from CCAFS, then I can merge <a href="https://github.com/ilri/DSpace/pull/320">#320</a></li>
+</ul>
+<h2 id="2017-05-08">2017-05-08</h2>
+<ul>
+<li>Start working on CGIAR Library migration</li>
+<li>We decided to use AIP export to preserve the hierarchies and handles of communities and collections</li>
+<li>When ingesting some collections I was getting <code>java.lang.OutOfMemoryError: GC overhead limit exceeded</code>, which can be solved by disabling the GC timeout with <code>-XX:-UseGCOverheadLimit</code></li>
+<li>Other times I was getting an error about heap space, so I kept bumping the RAM allocation by 512MB each time (up to 4096m!) it crashed</li>
+<li>This leads to tens of thousands of abandoned files in the assetstore, which need to be cleaned up using <code>dspace cleanup -v</code>, or else you&rsquo;ll run out of disk space</li>
+<li>In the end I realized it&rsquo;s better to use submission mode (<code>-s</code>) to ingest the community object as a single AIP without its children, followed by each of the collections:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx2048m -XX:-UseGCOverheadLimit&#34;
+$ [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10568/87775 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+</code></pre><ul>
+<li>Note that in submission mode DSpace ignores the handle specified in <code>mets.xml</code> in the zip file, so you need to turn that off with <code>-o ignoreHandle=false</code></li>
+<li>The <code>-u</code> option supresses prompts, to allow the process to run without user input</li>
+<li>Give feedback to CIFOR about their data quality:
+<ul>
+<li>Suggestion: uppercase dc.subject, cg.coverage.region, and cg.coverage.subregion in your crosswalk so they match CGSpace and therefore can be faceted / reported on easier</li>
+<li>Suggestion: use CGSpace&rsquo;s CRP names (cg.contributor.crp), see: dspace/config/input-forms.xml</li>
+<li>Suggestion: clean up duplicates and errors in funders, perhaps use a controlled vocabulary like ours, see: dspace/config/controlled-vocabularies/dc-description-sponsorship.xml</li>
+<li>Suggestion: use dc.type &ldquo;Blog Post&rdquo; instead of &ldquo;Blog&rdquo; for your blog post items (we are also adding a &ldquo;Blog Post&rdquo; type to CGSpace soon)</li>
+<li>Question: many of your items use dc.document.uri AND cg.identifier.url with the same text value?</li>
+</ul>
+</li>
+<li>Help Marianne from WLE with an Open Search query to show the latest WLE CRP outputs: <a href="https://cgspace.cgiar.org/open-search/discover?query=crpsubject:WATER%2C+LAND+AND+ECOSYSTEMS&amp;sort_by=2&amp;order=DESC">https://cgspace.cgiar.org/open-search/discover?query=crpsubject:WATER%2C+LAND+AND+ECOSYSTEMS&amp;sort_by=2&amp;order=DESC</a></li>
+<li>This uses the webui&rsquo;s item list sort options, see <code>webui.itemlist.sort-option</code> in <code>dspace.cfg</code></li>
+<li>The equivalent Discovery search would be: <a href="https://cgspace.cgiar.org/discover?filtertype_1=crpsubject&amp;filter_relational_operator_1=equals&amp;filter_1=WATER%2C+LAND+AND+ECOSYSTEMS&amp;submit_apply_filter=&amp;query=&amp;rpp=10&amp;sort_by=dc.date.issued_dt&amp;order=desc">https://cgspace.cgiar.org/discover?filtertype_1=crpsubject&amp;filter_relational_operator_1=equals&amp;filter_1=WATER%2C+LAND+AND+ECOSYSTEMS&amp;submit_apply_filter=&amp;query=&amp;rpp=10&amp;sort_by=dc.date.issued_dt&amp;order=desc</a></li>
+</ul>
+<h2 id="2017-05-09">2017-05-09</h2>
+<ul>
+<li>The CGIAR Library metadata has some blank metadata values, which leads to <code>|||</code> in the Discovery facets</li>
+<li>Clean these up in the database using:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+</code></pre><ul>
+<li>I ended up running into issues during data cleaning and decided to wipe out the entire community and re-sync DSpace Test assetstore and database from CGSpace rather than waiting for the cleanup task to clean up</li>
+<li>Hours into the re-ingestion I ran into more errors, and had to erase everything and start over <em>again</em>!</li>
+<li>Now, no matter what I do I keep getting foreign key errors&hellip;</li>
+</ul>
+<pre tabindex="0"><code>Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint &#34;handle_pkey&#34;
+  Detail: Key (handle_id)=(80928) already exists.
+</code></pre><ul>
+<li>I think those errors actually come from me running the <code>update-sequences.sql</code> script while Tomcat/DSpace are running</li>
+<li>Apparently you need to stop Tomcat!</li>
+</ul>
+<h2 id="2017-05-10">2017-05-10</h2>
+<ul>
+<li>Atmire says they are willing to extend the ORCID implementation, and I&rsquo;ve asked them to provide a quote</li>
+<li>I clarified that the scope of the implementation should be that ORCIDs are stored in the database and exposed via REST / API like other fields</li>
+<li>Finally finished importing all the CGIAR Library content, final method was:</li>
+</ul>
+<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx3072m -XX:-UseGCOverheadLimit&#34;
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2517/10947-2517.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2515/10947-2515.zip
+$ [dspace]/bin/dspace packager -r -a -t AIP -o skipIfParentMissing=true -e some@user.com -p 10568/80923 /home/aorth/10947-2516/10947-2516.zip
+$ [dspace]/bin/dspace packager -s -t AIP -o ignoreHandle=false -e some@user.com -p 10568/80923 /home/aorth/10947-1/10947-1.zip
+$ for collection in /home/aorth/10947-1/COLLECTION@10947-*; do [dspace]/bin/dspace packager -s -o ignoreHandle=false -t AIP -e some@user.com -p 10947/1 $collection; done
+$ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager -r -f -u -t AIP -e some@user.com $item; done
+</code></pre><ul>
+<li>Basically, import the smaller communities using recursive AIP import (with <code>skipIfParentMissing</code>)</li>
+<li>Then, for the larger collection, create the community, collections, and items separately, ingesting the items one by one</li>
+<li>The <code>-XX:-UseGCOverheadLimit</code> JVM option helps with some issues in large imports</li>
+<li>After this I ran the <code>update-sequences.sql</code> script (with Tomcat shut down), and cleaned up the 200+ blank metadata records:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# delete from metadatavalue where resource_type_id=2 and text_value=&#39;&#39;;
+</code></pre><h2 id="2017-05-13">2017-05-13</h2>
+<ul>
+<li>After quite a bit of troubleshooting with importing cleaned up data as CSV, it seems that there are actually <a href="https://en.wikipedia.org/wiki/Null_character">NUL</a> characters in the <code>dc.description.abstract</code> field (at least) on the lines where CSV importing was failing</li>
+<li>I tried to find a way to remove the characters in vim or Open Refine, but decided it was quicker to just remove the column temporarily and import it</li>
+<li>The import was successful and detected 2022 changes, which should likely be the rest that were failing to import before</li>
+</ul>
+<h2 id="2017-05-15">2017-05-15</h2>
+<ul>
+<li>To delete the blank lines that cause isses during import we need to use a regex in vim <code>g/^$/d</code></li>
+<li>After that I started looking in the <code>dc.subject</code> field to try to pull countries and regions out, but there are too many values in there</li>
+<li>Bump the Academicons dependency of the Mirage 2 themes from 1.6.0 to 1.8.0 because the upstream deleted the old tag and now the build is failing: <a href="https://github.com/ilri/DSpace/pull/321">#321</a></li>
+<li>Merge changes to CCAFS project identifiers and flagships: <a href="https://github.com/ilri/DSpace/pull/320">#320</a></li>
+<li>Run updates for CCAFS flagships on CGSpace:</li>
+</ul>
+<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/ccafs-flagships-may7.csv -f cg.subject.ccafs -t correct -m 210 -d dspace -u dspace -p &#39;fuuu&#39;
+</code></pre><ul>
+<li>
+<p>These include:</p>
   <a href='https://alanorth.github.io/cgspace-notes/2017-05/'>Read more →</a>
 </article> 
 
