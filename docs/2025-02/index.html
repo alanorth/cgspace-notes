@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="February, 2025" />
+<meta property="og:description" content="2025-02-21
+
+Battling with high load on CGSpace from bots a few times the past few weeks
+
+I think I need to re-work the bot filtering some how
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2025-02/" />
+<meta property="article:published_time" content="2025-02-21T11:09:00+03:00" />
+<meta property="article:modified_time" content="2025-02-21T11:09:00+03:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="February, 2025"/>
+<meta name="twitter:description" content="2025-02-21
+
+Battling with high load on CGSpace from bots a few times the past few weeks
+
+I think I need to re-work the bot filtering some how
+
+
+"/>
+<meta name="generator" content="Hugo 0.144.2">
+
+
+    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "February, 2025",
+  "url": "https://alanorth.github.io/cgspace-notes/2025-02/",
+  "wordCount": "261",
+  "datePublished": "2025-02-21T11:09:00+03:00",
+  "dateModified": "2025-02-21T11:09:00+03:00",
+  "author": {
+    "@type": "Person",
+    "name": "Alan Orth"
+  },
+  "keywords": "Notes"
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2025-02/">
+
+    <title>February, 2025 | CGSpace Notes</title>
+
+    
+    <!-- combined, minified CSS -->
+    
+    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    
+
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
+      </div>
+    </header>
+    
+    
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+          
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2025-02/">February, 2025</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2025-02-21T11:09:00+03:00">Fri Feb 21, 2025</time>
+ in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2025-02-21">2025-02-21</h2>
+<ul>
+<li>Battling with high load on CGSpace from bots a few times the past few weeks
+<ul>
+<li>I think I need to re-work the bot filtering some how</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>I extracted all the unique IPs from the past ~45 days:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span># zcat -f /var/log/nginx/api-access.log.* | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | sort | uniq &gt; /tmp/ips.txt
+</span></span><span style="display:flex;"><span># wc -l /tmp/ips.txt
+</span></span><span style="display:flex;"><span>449405 /tmp/ips.txt
+</span></span></code></pre></div><ul>
+<li>It&rsquo;s an impressive 450,000 IPs!</li>
+<li>I will run them through my <code>resolve_addresses_geoip2.py</code> script to tease out the large offenders
+<ul>
+<li>I had to split the file into 100,000 segments to get the script to run!</li>
+<li>Found some new datacenter networks to add to the list:
+<ul>
+<li>AS32934 Facebook (I&rsquo;m surprised this wasn&rsquo;t already there, as I know I&rsquo;ve blocked it in the past)</li>
+<li>AS209366 Semrush, which does user a proper user agent, but they don&rsquo;t respect robots.txt and give us no value</li>
+<li>AS13150 Datacenter ISP (CATON - CATO NETWORKS LTD, IL)</li>
+<li>AS20473 AS-VULTR, US</li>
+<li>AS13335 CLOUDFLARENET, US &hellip; wtf is Cloudflare doing? They made requests from 2,600 IPs in the last month???</li>
+<li>133499 (HOSTROYALETECHNOLOGIES-AS-AP HostRoyale Technologies Pvt Ltd, NZ)</li>
+<li>134450 (HOSTROYALETECHNOLOGIES-AS-AP HostRoyale Technologies Pvt Ltd, IN)</li>
+<li>207990 (HR-CUSTOMER - HostRoyale Technologies Pvt Ltd, IN)</li>
+<li>39486 (HOSTROYALE - HostRoyale Technologies Pvt Ltd, IN)</li>
+<li>44144 (OMEGASOFT - HostRoyale Technologies Pvt Ltd, IN)</li>
+<li>133944 (TRAFFICFORCE-INTERNET-SERVICES - trafficforce, UAB, LT)</li>
+<li>202496 (PRIENAI-SCIENCES-INTERNET - trafficforce, UAB, LT)</li>
+<li>19084 (COLOUP, US)</li>
+<li>21769 (AS-COLOAM, US)</li>
+<li>17252 (AS2-COLOAM, US)</li>
+<li>205964 (CODE200-180 - UAB code200, LT)</li>
+<li>203061 (ITPROXIMUS - UAB code200, LT)</li>
+<li>205659 (CODE200-ISP2 - UAB code200, LT)</li>
+<li>36352 (AS-COLOCROSSING, US)</li>
+<li>394474 (WHITELABELCOLO393, US)</li>
+<li>18779 (EGIHOSTING, US)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>The names above mostly come from <code>asn</code></li>
+</ul>
+
+  
+
+  
+
+</article> 
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
+
+<li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
+
+<li><a href="/cgspace-notes/2024-12/">December, 2024</a></li>
+
+<li><a href="/cgspace-notes/2024-11/">November, 2024</a></li>
+
+<li><a href="/cgspace-notes/2024-10/">October, 2024</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
+      
+      <li><a href="https://cgspace.cgiar.org">CGSpace</a></li>
+      
+      <li><a href="https://dspacetest.cgiar.org">DSpace Test</a></li>
+      
+      <li><a href="https://github.com/ilri/DSpace">CGSpace @ GitHub</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+    
+
+    
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
+
+  </body>
+
+</html>
