@@ -10,14 +10,14 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/posts/" />
-<meta property="og:updated_time" content="2025-02-21T11:09:00+03:00" />
+<meta property="og:updated_time" content="2025-03-17T15:48:00+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.144.2">
+<meta name="generator" content="Hugo 0.145.0">
 
 
     
@@ -31,7 +31,7 @@
     "@type": "Person",
     "name": "Alan Orth"
   },
-  "dateModified": "2025-02-21T11:09:00+03:00",
+  "dateModified": "2025-03-17T15:48:00+03:00",
   "keywords": "notes, migration, notes",
   "description":"Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."
 }
@@ -90,6 +90,39 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-11/">November, 2017</a></h2>
+    <p class="blog-post-meta"><time datetime="2017-11-02T09:37:54+02:00">Thu Nov 02, 2017</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2017-11-01">2017-11-01</h2>
+<ul>
+<li>The CORE developers responded to say they are looking into their bot not respecting our robots.txt</li>
+</ul>
+<h2 id="2017-11-02">2017-11-02</h2>
+<ul>
+<li>Today there have been no hits by CORE and no alerts from Linode (coincidence?)</li>
+</ul>
+<pre tabindex="0"><code># grep -c &#34;CORE&#34; /var/log/nginx/access.log
+0
+</code></pre><ul>
+<li>Generate list of authors on CGSpace for Peter to go through and correct:</li>
+</ul>
+<pre tabindex="0"><code>dspace=# \copy (select distinct text_value, count(*) as count from metadatavalue where metadata_field_id = (select metadata_field_id from metadatafieldregistry where element = &#39;contributor&#39; and qualifier = &#39;author&#39;) AND resource_type_id = 2 group by text_value order by count desc) to /tmp/authors.csv with csv;
+COPY 54701
+</code></pre>
+  <a href='https://alanorth.github.io/cgspace-notes/2017-11/'>Read more →</a>
+</article> 
 
 
 
@@ -606,40 +639,6 @@ $ for item in /home/aorth/10947-1/ITEM@10947-*; do [dspace]/bin/dspace packager 
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-02/">February, 2017</a></h2>
-    <p class="blog-post-meta"><time datetime="2017-02-07T07:04:52-08:00">Tue Feb 07, 2017</time> by Alan Orth in 
-
-<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/tags/notes/" rel="tag">Notes</a>
-
-</p>
-  </header>
-  <h2 id="2017-02-07">2017-02-07</h2>
-<ul>
-<li>An item was mapped twice erroneously again, so I had to remove one of the mappings manually:</li>
-</ul>
-<pre tabindex="0"><code>dspace=# select * from collection2item where item_id = &#39;80278&#39;;
-  id   | collection_id | item_id
--------+---------------+---------
- 92551 |           313 |   80278
- 92550 |           313 |   80278
- 90774 |          1051 |   80278
-(3 rows)
-dspace=# delete from collection2item where id = 92551 and item_id = 80278;
-DELETE 1
-</code></pre><ul>
-<li>Create issue on GitHub to track the addition of CCAFS Phase II project tags (<a href="https://github.com/ilri/DSpace/issues/301">#301</a>)</li>
-<li>Looks like we&rsquo;ll be using <code>cg.identifier.ccafsprojectpii</code> as the field name</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2017-02/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/posts/page/9/" rel="prev" role="button">Previous page</a>
@@ -664,6 +663,8 @@ DELETE 1
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2025-03/">March, 2025</a></li>
+
 <li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
@@ -671,8 +672,6 @@ DELETE 1
 <li><a href="/cgspace-notes/2024-12/">December, 2024</a></li>
 
 <li><a href="/cgspace-notes/2024-11/">November, 2024</a></li>
-
-<li><a href="/cgspace-notes/2024-10/">October, 2024</a></li>
 
     </ol>
   </section>

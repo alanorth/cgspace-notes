@@ -10,14 +10,14 @@
 <meta property="og:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://alanorth.github.io/cgspace-notes/" />
-<meta property="og:updated_time" content="2025-02-21T11:09:00+03:00" />
+<meta property="og:updated_time" content="2025-03-17T15:48:00+03:00" />
 
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CGSpace Notes"/>
 <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."/>
-<meta name="generator" content="Hugo 0.144.2">
+<meta name="generator" content="Hugo 0.145.0">
 
 
     
@@ -31,7 +31,7 @@
     "@type": "Person",
     "name": "Alan Orth"
   },
-  "dateModified": "2025-02-21T11:09:00+03:00",
+  "dateModified": "2025-03-17T15:48:00+03:00",
   "keywords": "notes, migration, notes",
   "description":"Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository."
 }
@@ -90,6 +90,376 @@
 
           
 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2023-07/">July, 2023</a></h2>
+    <p class="blog-post-meta"><time datetime="2023-07-01T17:14:36+03:00">Sat Jul 01, 2023</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2023-07-01">2023-07-01</h2>
+<ul>
+<li>Export CGSpace to check for missing Initiative collection mappings</li>
+<li>Start harvesting on AReS</li>
+</ul>
+<h2 id="2023-07-02">2023-07-02</h2>
+<ul>
+<li>Minor edits to the <code>crossref_doi_lookup.py</code> script while running some checks from 22,000 CGSpace DOIs</li>
+</ul>
+<h2 id="2023-07-03">2023-07-03</h2>
+<ul>
+<li>I analyzed the licenses declared by Crossref and found with high confidence that ~400 of ours were incorrect
+<ul>
+<li>I took the more accurate ones from Crossref and updated the items on CGSpace</li>
+<li>I took a few hundred ISBNs as well for where we were missing them</li>
+<li>I also tagged ~4,700 items with missing licenses as &ldquo;Copyrighted; all rights reserved&rdquo; based on their Crossref license status being TDM, mostly from Elsevier, Wiley, and Springer</li>
+<li>Checking a dozen or so manually, I confirmed that if Crossref only has a TDM license then it&rsquo;s usually copyrighted (could still be open access, but we can&rsquo;t tell via Crossref)</li>
+<li>I would be curious to write a script to check the Unpaywall API for open access status&hellip;</li>
+<li>In the past I found that their <em>license</em> status was not very accurate, but the open access status might be more reliable</li>
+</ul>
+</li>
+<li>More minor work on the DSpace 7 item views
+<ul>
+<li>I learned some new Angular template syntax</li>
+<li>I created a custom component to show Creative Commons licenses on the simple item page</li>
+<li>I also decided that I don&rsquo;t like the Impact Area icons as a component because they don&rsquo;t have any visual meaning</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-04">2023-07-04</h2>
+<ul>
+<li>Focus group meeting with CGSpace partners about DSpace 7</li>
+<li>I added a themed file selection component to the CGSpace theme
+<ul>
+<li>It displays the bistream description instead of the file name, just like we did in DSpace 6 XMLUI</li>
+</ul>
+</li>
+<li>I added a custom component to show share icons</li>
+</ul>
+<h2 id="2023-07-05">2023-07-05</h2>
+<ul>
+<li>I spent some time trying to update OpenRXV from Angular 9 to 10 to 11 to 12 to 13
+<ul>
+<li>Most things work but there are some minor bugs it seems</li>
+</ul>
+</li>
+<li>Mishell from CIP emailed me to say she was having problems approving an item on CGSpace
+<ul>
+<li>Looking at PostgreSQL I saw there were a dozen or so locks that were several hours and even over one day old so I killed those processes and told her to try again</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-06">2023-07-06</h2>
+<ul>
+<li>Types meeting</li>
+<li>I wrote a Python script to check Unpaywall for some information about DOIs</li>
+</ul>
+<h2 id="2023-07-7">2023-07-7</h2>
+<ul>
+<li>Continue exploring Unpaywall data for some of our DOIs
+<ul>
+<li>In the past I&rsquo;ve found their <em>licensing</em> information to not be very reliable (preferring Crossref), but I think their <em>open access status</em> is more reliable, especially when the provider is listed as being the publisher</li>
+<li>Even so, sometimes the version can be &ldquo;acceptedVersion&rdquo;, which is presumably the author&rsquo;s version, as opposed to the &ldquo;publishedVersion&rdquo;, which means it&rsquo;s available as open access on the publisher&rsquo;s website</li>
+<li>I did some quality assurance and found ~100 that were marked as Limited Access, but should have been Open Access, and fixed a handful of licenses</li>
+</ul>
+</li>
+<li>Delete duplicate metadata as described in my DSpace issue from last year: <a href="https://github.com/DSpace/DSpace/issues/8253">https://github.com/DSpace/DSpace/issues/8253</a></li>
+<li>Start working on some statistics on AGROVOC usage for my presenation next week
+<ul>
+<li>I used the following SQL query to dump values from all subject fields and lower case them:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>localhost/dspacetest= ☘ \COPY (SELECT DISTINCT(lower(text_value)) AS &#34;subject&#34; FROM metadatavalue WHERE dspace_object_id in (SELECT dspace_object_id FROM item) AND metadata_field_id IN (187, 120, 210, 122, 215, 127, 208, 124, 128, 123, 125, 135, 203, 236, 238, 119)) to /tmp/2023-07-07-cgspace-subjects.csv WITH CSV HEADER;
+</span></span><span style="display:flex;"><span>COPY 26443
+</span></span><span style="display:flex;"><span>Time: 2564.851 ms (00:02.565)
+</span></span></code></pre></div><ul>
+<li>Then I extracted the subjects and looked them up against AGROVOC:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvcut -c subject /tmp/2023-07-07-cgspace-subjects.csv | sed <span style="color:#e6db74">&#39;1d&#39;</span> &gt; /tmp/2023-07-07-cgspace-subjects.txt
+</span></span><span style="display:flex;"><span>$ ./ilri/agrovoc_lookup.py -i /tmp/2023-07-07-cgspace-subjects.txt -o /tmp/2023-07-07-cgspace-subjects-results.csv
+</span></span></code></pre></div><ul>
+<li>I did some more tests with Angular 13 on OpenRXV and found out why the repository type dropdown wasn&rsquo;t working
+<ul>
+<li>It was because of a missing 1-line JSON file in the data directory, which is runtime data, not code</li>
+<li>I copied the data directory from the production serve and rebuild and the site is working well now</li>
+<li>I did a full harvest with plugins and it worked!</li>
+<li>So it seems Angular 13.4.0 will work, yay</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-08">2023-07-08</h2>
+<ul>
+<li>Export CGSpace to check for missing Initiative collection mappings
+<ul>
+<li>Start a harvest on AReS</li>
+</ul>
+</li>
+<li>The AGROVOC lookup finished, so I checked the number of matches:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ csvgrep -c <span style="color:#e6db74">&#39;match type&#39;</span> -r <span style="color:#e6db74">&#39;^.+$&#39;</span> ~/Downloads/2023-07-07-cgspace-subjects-resolved.csv | sed 1d | wc -l
+</span></span><span style="display:flex;"><span>12528
+</span></span></code></pre></div><ul>
+<li>So that&rsquo;s 12,528 out of 26,443 unique terms (47.3%)</li>
+<li>I did a LOT of work on the OpenRXV frontend build dependencies to bring more in line with Angular 13</li>
+</ul>
+<h2 id="2023-07-10">2023-07-10</h2>
+<ul>
+<li>I did a lot more work on OpenRXV to test and update dependencies</li>
+<li>I deployed the latest version on the production server</li>
+</ul>
+<h2 id="2023-07-12">2023-07-12</h2>
+<ul>
+<li>CGSpace upgrade meeting with Americas and Africa group</li>
+</ul>
+<h2 id="2023-07-13">2023-07-13</h2>
+<ul>
+<li>Michael Victor asked me to help Aditi extract some information from CGSpace
+<ul>
+<li>She was interested in journal articles published between 2018 and 2023 with a range of subjects related to drought, flooding, resilience, etc</li>
+<li>I used an advanced query with some AGROVOC terms:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>dcterms.issued:[2018 TO 2023] AND dcterms.type:&#34;Journal Article&#34; AND (dcterms.subject:flooding OR dcterms.subject:flood OR dcterms.subject:&#34;extreme weather events&#34; OR dcterms.subject:drought OR dcterms.subject:&#34;drought resistance&#34; OR dcterms.subject:&#34;drought tolerance&#34; OR dcterms.subject:&#34;soil salinity&#34; OR dcterms.subject:&#34;pests of plants&#34; OR dcterms.subject:pests OR dcterms.subject:heat OR dcterms.subject:fertilizers OR dcterms.subject:&#34;fertilizer technology&#34; OR dcterms.subject:&#34;rice fields&#34; OR dcterms.subject:&#34;landscape conservation&#34; OR dcterms.subject:&#34;landscape restoration&#34; OR dcterms.subject:livestock)
+</span></span></code></pre></div><ul>
+<li>Interestingly, some variations of this same exact query produce no search results, and I see this error in the DSpace log:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse &#39;dcterms.issued:[2018 TO 2023] AND dcterms.type:&#34;Journal Article&#34; AND (dcterms.subject:flooding OR dcterms.subject:flood OR dcterms.subject:&#34;extreme weather events&#34; OR dcterms.subject:drought OR dcterms.subject:&#34;drought resistance&#34; OR dcterms.subject:&#34;drought tolerance&#34; OR dcterms.subject:&#34;soil salinity&#34; OR dcterms.subject:&#34;pests of plants&#34; OR dcterms.subject:pests OR dcterms.subject:heat OR dcterms.subject:fertilizers OR dcterms.subject:&#34;fertilizer technology&#34; OR dcterms.subject:&#34;rice fields&#34; OR dcterms.subject:livestock OR dcterms.subject:&#34;landscape conservation&#34; OR dcterms.subject:&#34;landscape restoration\&#34;\)&#39;: Lexical error at line 1, column 617.  Encountered: &lt;EOF&gt; after : &#34;\&#34;landscape restoration\\\&#34;\\)&#34;
+</span></span></code></pre></div><ul>
+<li>It seems to be when there is a quoted search term at the end of the parenthesized group
+<ul>
+<li>For what it&rsquo;s worth this same query worked fine on DSpace 7.6</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-15">2023-07-15</h2>
+<ul>
+<li>Export CGSpace to fix missing Initiative collection mappings</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-07-17">2023-07-17</h2>
+<ul>
+<li>Rasika had sent me a list of new ORCID identifiers for new IWMI staff so I combined them with our existing list and ran <code>resolve_orcids.py</code> to refresh the names in our database
+<ul>
+<li>I updated the list, updated names in the database, and tagged new authors with missing identifiers in existing items</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-18">2023-07-18</h2>
+<ul>
+<li>Meeting with IWMI, IRRI, and IITA colleagues about CGSpace upgrade plans</li>
+<li>Maria from the Alliance mentioned having some submissions stuck on CGSpace
+<ul>
+<li>I looked and found a number of locks stuck for many nineteen, eighteen, and more hours&hellip;</li>
+<li>I killed them and told her to try again</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql &lt; locks-age.sql | less -S
+</span></span><span style="display:flex;"><span>$ psql &lt; locks-age.sql | grep -E <span style="color:#e6db74">&#34; (19|18|17|16|12):&#34;</span> | awk -F<span style="color:#e6db74">&#34;|&#34;</span> <span style="color:#e6db74">&#39;{print $10}&#39;</span> | sort -u | xargs kill
+</span></span></code></pre></div><h2 id="2023-07-19">2023-07-19</h2>
+<ul>
+<li>I had to kill a bunch more locked processes in PostgreSQL, I&rsquo;m not sure what&rsquo;s going on</li>
+<li>After some discussion about an advanced search bug with Tim on Slack, I filed <a href="https://github.com/DSpace/DSpace/issues/8962">an issue on GitHub</a></li>
+</ul>
+<h2 id="2023-07-20">2023-07-20</h2>
+<ul>
+<li>I added a new metadata field for CGIAR Impact Platforms (<code>cg.subject.impactPlatform</code>) to CGSpace</li>
+</ul>
+<h2 id="2023-07-22">2023-07-22</h2>
+<ul>
+<li>Export CGSpace tp fix missing Initiative collections</li>
+<li>Start a harvest on AReS</li>
+</ul>
+<h2 id="2023-07-24">2023-07-24</h2>
+<ul>
+<li>Test Salem&rsquo;s new JavaScript-based DSpace Statistics API and send him some feedback</li>
+<li>I noticed a few times that the Solr service on my DSpace 7 instance is getting OOM killed
+<ul>
+<li>I had been using a 4g Solr heap, but maybe we don&rsquo;t need that much</li>
+<li>Tomcat is also using 4.6GB, and then there&rsquo;s PostgreSQL&hellip; so perhaps it&rsquo;s all a bit much on this system now</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-25">2023-07-25</h2>
+<ul>
+<li>Start testing exporting DSpace 6 Solr cores to import on DSpace 7:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> dspace solr-export-statistics -i statistics
+</span></span></code></pre></div><ul>
+<li>I&rsquo;m curious how long it takes and how much data there will be
+<ul>
+<li>The size of the Solr data directory is currently 82GB</li>
+<li>The export took about 2.5 hours and created 6,000 individual CSVs, one for each day of Solr stats</li>
+<li>The size of the exported CSVs is about 88GB</li>
+<li>I will copy just a few years to import on the DSpace 7 test server</li>
+<li>So importing these is going to require removing the Atmire custom fields:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace solr-import-statistics -i statistics
+</span></span><span style="display:flex;"><span>Exception: Error from server at http://localhost:8983/solr/statistics: ERROR: [doc=1a92472e-e39d-4602-9b4d-da022df8f233] unknown field &#39;containerCommunity&#39;
+</span></span><span style="display:flex;"><span>org.apache.solr.client.solrj.impl.HttpSolrClient$RemoteSolrException: Error from server at http://localhost:8983/solr/statistics: ERROR: [doc=1a92472e-e39d-4602-9b4d-da022df8f233] unknown field &#39;containerCommunity&#39;
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.executeMethod(HttpSolrClient.java:681)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:266)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:248)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.request(SolrClient.java:1290)
+</span></span><span style="display:flex;"><span>        at org.dspace.util.SolrImportExport.importIndex(SolrImportExport.java:465)
+</span></span><span style="display:flex;"><span>        at org.dspace.util.SolrImportExport.main(SolrImportExport.java:148)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+</span></span><span style="display:flex;"><span>        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+</span></span><span style="display:flex;"><span>        at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.runOneCommand(ScriptLauncher.java:277)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.handleScript(ScriptLauncher.java:133)
+</span></span><span style="display:flex;"><span>        at org.dspace.app.launcher.ScriptLauncher.main(ScriptLauncher.java:98)
+</span></span></code></pre></div><ul>
+<li>I will try using solr-import-export-json, which I&rsquo;ve used in the past to skip Atmire custom fields in Solr:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2022.json -f <span style="color:#e6db74">&#39;time:[2022-01-01T00\:00\:00Z TO 2022-12-31T23\:59\:59Z]&#39;</span> -k uid -S author_mtdt,author_mtdt_search,iso_mtdt_search,iso_mtdt,subject_mtdt,subject_mtdt_search,containerCollection,containerCommunity,containerItem,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,geoipcountrycode,geoIpCountryCode,ip_ngram,ip_search,isArchived,isInternal,isWithdrawn,containerBitstream,file_id,referrer_ngram,referrer_search,userAgent_ngram,userAgent_search,version_id,complete_query,complete_query_search,filterquery,ngram_query_search,ngram_simplequery_search,simple_query,simple_query_search,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,actingGroupId,actorMemberGroupId,bitstreamCount,solr_update_time_stamp,bitstreamId,core_update_run_nb
+</span></span></code></pre></div><ul>
+<li>Some users complained that CGSpace was slow and I found a handful of locks that were hours and days old&hellip;
+<ul>
+<li>I killed those and told them to try again</li>
+</ul>
+</li>
+<li>After importing the Solr statistics into DSpace 7 I realized that my DSpace Statistics API will work fine
+<ul>
+<li>I made some minor modifications to the Ansible infrastructure scripts to make sure it is enabled and then activated it on DSpace 7 Test</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-26">2023-07-26</h2>
+<ul>
+<li>Debugging lock issues on CGSpace
+<ul>
+<li>I see the blocking PIDs for some long-held locks are &ldquo;idle in transaction&rdquo;:</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ ps auxw | grep -E <span style="color:#e6db74">&#34;(1864132|1659487)&#34;</span>
+</span></span><span style="display:flex;"><span>postgres 1659487  0.0  0.5 3269900 197120 ?      Ss   Jul25   0:03 postgres: 14/main: cgspace cgspace 127.0.0.1(61648) idle in transaction
+</span></span><span style="display:flex;"><span>postgres 1864132  0.1  0.7 3275704 254528 ?      Ss   07:27   0:08 postgres: 14/main: cgspace cgspace 127.0.0.1(36998) idle in transaction
+</span></span><span style="display:flex;"><span>postgres 1880388  0.0  0.0   9208  2432 pts/3    S+   08:48   0:00 grep -E (1864132|1659487)
+</span></span></code></pre></div><ul>
+<li>I used some other scripts and found that those processes were executing the following statement:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>select nextval (&#39;public.tasklistitem_seq&#39;)
+</span></span></code></pre></div><ul>
+<li>I don&rsquo;t know why these can get blocked for hours without resolution, but for now I just killed them
+<ul>
+<li>For what it&rsquo;s worth <a href="https://github.com/DSpace/DSpace/commit/16ae96b4c3d833c2a4acd1f05985d424c3a52bd7">these sequences were removed in DSpace 7.0</a> along with the &ldquo;traditional&rdquo; item workflow—maybe that means we won&rsquo;t have such contention issues in DSpace 7!</li>
+</ul>
+</li>
+<li>I wrote a slightly longer regex to match locks that have been stuck for more than 1 hour based on the output of the <code>locks-age.sql</code> script and killed them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql &lt; locks-age.sql | awk -F<span style="color:#e6db74">&#34;|&#34;</span> <span style="color:#e6db74">&#39;/ [[:digit:]][1-9]:[[:digit:]]{2}:[[:digit:]]{2}\./ {print $10}&#39;</span> | sort -u | xargs kill
+</span></span></code></pre></div><ul>
+<li>I filed <a href="https://github.com/DSpace/dspace-angular/issues/2400">an issue for missing Altmetric badges on DSpace 7 Angular</a></li>
+</ul>
+<h2 id="2023-07-27">2023-07-27</h2>
+<ul>
+<li>Export CGSpace to check countries, regions, types, and Initiatives
+<ul>
+<li>There were a few minor issues in countries and regions, and I noticed 186 items without types!</li>
+<li>Then I ran the file through csv-metadata-quality to make sure items with countries have appropriate regions</li>
+</ul>
+</li>
+<li>Brief discussion about OpenRXV bugs and fixes with Moayad</li>
+<li>I was toying with the idea of using an expanded whitespace check/fix based on <a href="https://eslint.org/docs/latest/rules/no-irregular-whitespace">ESLint&rsquo;s no-irregular-whitespace</a> rule in csv-metadata-quality
+<ul>
+<li>I found 176 items in CGSpace with such whitespace in their titles alone</li>
+<li>I compared the results of removing these characters and replacing them with a space</li>
+<li>In <em>most</em> cases removing it is the correct thing to do, for example &ldquo;Pesticides : une arme à double tranchant&rdquo; → &ldquo;Pesticides: une arme à double tranchant&rdquo;</li>
+<li>But in some items it is tricky, for example &ldquo;L&rsquo;environnement juridique est-il propice à la gestion&rdquo; → &ldquo;L&rsquo;environnement juridique est-il propice àla gestion&rdquo;</li>
+<li>I guess it would really need some good heuristics or a human to verify&hellip;</li>
+</ul>
+</li>
+<li>I upgraded OpenRXV to Angular v14</li>
+</ul>
+<h2 id="2023-07-28">2023-07-28</h2>
+<ul>
+<li>After a bit more testing I merged the <a href="https://github.com/ilri/OpenRXV/pull/184">Angular v14 changes to OpenRXV master</a></li>
+<li>I am getting an error trying to import the 2020 Solr statistics from CGSpace to DSpace 7:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>Exception in thread &#34;main&#34; org.apache.solr.client.solrj.impl.BaseHttpSolrClient$RemoteSolrException: Error from server at http://localhost:8983/solr/statistics: ERROR: [doc=0008a7c1-e552-4a4e-93e4-4d23bf39964b] Error adding field &#39;workflowItemId&#39;=&#39;0812be47-1bfe-45e2-9208-5bf10ee46f81&#39; msg=For input string: &#34;0812be47-1bfe-45e2-9208-5bf10ee46f81&#34;
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.executeMethod(HttpSolrClient.java:745)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:259)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.impl.HttpSolrClient.request(HttpSolrClient.java:240)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrRequest.process(SolrRequest.java:234)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.add(SolrClient.java:102)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.add(SolrClient.java:69)
+</span></span><span style="display:flex;"><span>        at org.apache.solr.client.solrj.SolrClient.add(SolrClient.java:82)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.insertBatch(App.java:295)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.lambda$writeAllDocuments$10(App.java:276)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.BatchCollector.lambda$accumulator$0(BatchCollector.java:71)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.ReduceOps$3ReducingSink.accept(ReduceOps.java:169)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1845)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+</span></span><span style="display:flex;"><span>        at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.writeAllDocuments(App.java:252)
+</span></span><span style="display:flex;"><span>        at it.damore.solr.importexport.App.main(App.java:150)
+</span></span></code></pre></div><ul>
+<li>Ahhhh, in DSpace 6 this field was a string in the Solr statistics schema, but in DSpace 7 it is an integer&hellip;?
+<ul>
+<li>Oh, it seems to be an Atmire change in our DSpace 6&hellip; hmmm, so we need to ignore the <code>workflowItemId</code> field when exporting
+<ul>
+<li>Upstream: <a href="https://github.com/DSpace/DSpace/blob/dspace-6_x/dspace/solr/statistics/conf/schema.xml#L328">https://github.com/DSpace/DSpace/blob/dspace-6_x/dspace/solr/statistics/conf/schema.xml#L328</a></li>
+<li>ILRI: <a href="https://github.com/ilri/DSpace/blob/6_x-prod/dspace/solr/statistics/conf/schema.xml#L344">https://github.com/ilri/DSpace/blob/6_x-prod/dspace/solr/statistics/conf/schema.xml#L344</a></li>
+</ul>
+</li>
+<li>I am wondering if we can skip all these workflow fields since I don&rsquo;t think we are using any aspects of statistics related to workflows</li>
+<li>I diffed our Solr statistics schema with the one from vanilla DSpace 6 and got a list of all the fields that were different:</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code>isInternal,workflowItemId,containerCommunity,containerCollection,containerItem,containerBitstream,dateYear,dateYearMonth,filterquery,complete_query,simple_query,complete_query_search,simple_query_search,ngram_query_search,ngram_simplequery_search,text,storage_statistics_type,storage_size,storage_nb_of_bitstreams,name,first_name,last_name,p_communities_id,p_communities_name,p_communities_map,p_group_id,p_group_name,p_group_map,group_id,group_name,group_map,parent_count,bitstreamId,bitstreamCount,actingGroupId,actorMemberGroupId,actingGroupParentId,rangeDescription,range,version_id,file_id,cua_version,core_update_run_nb,orphaned
+</code></pre><ul>
+<li>I will combine it with the other fields I was skipping above and try the export again:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ chrt -b <span style="color:#ae81ff">0</span> ./run.sh -s http://localhost:8081/solr/statistics -a export -o /tmp/statistics-2020.json -f <span style="color:#e6db74">&#39;time:[2020-01-01T00\:00\:00Z TO 2020-12-31T23\:59\:59Z]&#39;</span> -k uid -S actingGroupId,actingGroupParentId,actorMemberGroupId,author_mtdt,author_mtdt_search,bitstreamCount,bitstreamId,complete_query,complete_query_search,containerBitstream,containerCollection,containerCommunity,containerItem,core_update_run_nb,countryCode_ngram,countryCode_search,cua_version,dateYear,dateYearMonth,file_id,filterquery,first_name,geoipcountrycode,geoIpCountryCode,group_id,group_map,group_name,ip_ngram,ip_search,isArchived,isInternal,iso_mtdt,iso_mtdt_search,isWithdrawn,last_name,name,ngram_query_search,ngram_simplequery_search,orphaned,parent_count,p_communities_id,p_communities_map,p_communities_name,p_group_id,p_group_map,p_group_name,range,rangeDescription,rangeDescription_ngram,rangeDescription_search,range_ngram,range_search,referrer_ngram,referrer_search,simple_query,simple_query_search,solr_update_time_stamp,storage_nb_of_bitstreams,storage_size,storage_statistics_type,subject_mtdt,subject_mtdt_search,text,userAgent_ngram,userAgent_search,version_id,workflowItemId
+</span></span></code></pre></div><ul>
+<li>Export a list of affiliations from the Initiatives community for Peter:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ dspace metadata-export -i 10568/115087 -f /tmp/2023-07-28-initiatives.csv
+</span></span><span style="display:flex;"><span>$ csvcut -c <span style="color:#e6db74">&#39;cg.contributor.affiliation[en_US]&#39;</span> ~/Downloads/2023-07-28-initiatives.csv <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | sed -e 1d -e &#39;s/^&#34;//&#39; -e &#39;s/&#34;$//&#39; -e &#39;s/||/\n/g&#39; -e &#39;/^$/d&#39;            \
+</span></span><span style="display:flex;"><span>  | sort | uniq -c | sort -hr                                              \
+</span></span><span style="display:flex;"><span>  | awk &#39;BEGIN { FS = &#34;^[[:space:]]+[[:digit:]]+[[:space:]]+&#34; } {print $2}&#39;\
+</span></span><span style="display:flex;"><span>  | sed -e &#39;1i cg.contributor.affiliation&#39; -e &#39;s/^\(.*\)$/&#34;\1&#34;/&#39;           \
+</span></span><span style="display:flex;"><span>  &gt; /tmp/2023-07-28-initiatives-affiliations.csv
+</span></span></code></pre></div><ul>
+<li>This is a method I first used in 2023-01 to export affiliations ONLY used in items in the Initiatives community
+<ul>
+<li>I did the same for authors and investors</li>
+</ul>
+</li>
+</ul>
+<h2 id="2023-07-29">2023-07-29</h2>
+<ul>
+<li>Export CGSpace to look for missing Initiative collection mappings</li>
+<li>I found a bunch of locks waiting for many hours and killed them:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ psql &lt; locks-age.sql | awk -F<span style="color:#e6db74">&#34;|&#34;</span> <span style="color:#e6db74">&#39;$9 ~ / [[:digit:]][1-9]:[[:digit:]]{2}:[[:digit:]]{2}\./ {print $10}&#39;</span> | sort -u | xargs kill
+</span></span></code></pre></div><ul>
+<li>This looks for a pattern matching something like <code>11:30:48.598436</code> in the age column (not 00:00:00) and kills them</li>
+<li>Start a harvest on AReS</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2023-07/'>Read more →</a>
+</article> 
 
 
 
@@ -344,38 +714,6 @@
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2022-09/">September, 2022</a></h2>
-    <p class="blog-post-meta"><time datetime="2022-09-01T09:41:36+03:00">Thu Sep 01, 2022</time> by Alan Orth in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
-
-
-</p>
-  </header>
-  <h2 id="2022-09-01">2022-09-01</h2>
-<ul>
-<li>A bit of work on the &ldquo;Mapping CG Core–CGSpace–MEL–MARLO Types&rdquo; spreadsheet</li>
-<li>I tested an item submission on DSpace Test with the Cocoon <code>org.apache.cocoon.uploads.autosave=false</code> change
-<ul>
-<li>The submission works as expected</li>
-</ul>
-</li>
-<li>Start debugging some region-related issues with csv-metadata-quality
-<ul>
-<li>I created a new test file <code>test-geography.csv</code> with some different scenarios</li>
-<li>I also fixed a few bugs and improved the region-matching logic</li>
-</ul>
-</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2022-09/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/page/2/" rel="prev" role="button">Previous page</a>
@@ -400,6 +738,8 @@
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2025-03/">March, 2025</a></li>
+
 <li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
@@ -407,8 +747,6 @@
 <li><a href="/cgspace-notes/2024-12/">December, 2024</a></li>
 
 <li><a href="/cgspace-notes/2024-11/">November, 2024</a></li>
-
-<li><a href="/cgspace-notes/2024-10/">October, 2024</a></li>
 
     </ol>
   </section>
