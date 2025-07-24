@@ -1,344 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" >
 
-  <head>
+  <head><script src="/cgspace-notes/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=cgspace-notes/livereload" data-no-instant defer></script>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-<meta property="og:title" content="April, 2022" />
-<meta property="og:description" content="2022-04-01
-
-I did G1GC tests on DSpace Test (linode26) to compliment the CMS tests I did yesterday
-
-The Discovery indexing took this long:
-
-
-
-real    334m33.625s
-user    227m51.331s
-sys     3m43.037s
-2022-04-04
-
-Start a full harvest on AReS
-Help Marianne with submit/approve access on a new collection on CGSpace
-Go back in Gaia&rsquo;s batch reports to find records that she indicated for replacing on CGSpace (ie, those with better new copies, new versions, etc)
-Looking at the Solr statistics for 2022-03 on CGSpace
-
-I see 54.229.218.204 on Amazon AWS made 49,000 requests, some of which with this user agent: Apache-HttpClient/4.5.9 (Java/1.8.0_322), and many others with a normal browser agent, so that&rsquo;s fishy!
-The DSpace agent pattern http.?agent seems to have caught the first ones, but I&rsquo;ll purge the IP ones
-I see 40.77.167.80 is Bing or MSN Bot, but using a normal browser user agent, and if I search Solr for dns:*msnbot* AND dns:*.msn.com. I see over 100,000, which is a problem I noticed a few months ago too&hellip;
-I extracted the MSN Bot IPs from Solr using an IP facet, then used the check-spider-ip-hits.sh script to purge them
-
-
-
-2022-04-10
-
-Start a full harvest on AReS
-
-2022-04-13
-
-UptimeRobot mailed to say that CGSpace was down
-
-I looked and found the load at 44&hellip;
-
-
-There seem to be a lot of locks from the XMLUI:
-
-$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c | sort -n
-   3173 dspaceWeb
-
-Looking at the top IPs in nginx&rsquo;s access log one IP in particular stands out:
-
-    941 66.249.66.222
-   1224 95.108.213.28
-   2074 157.90.209.76
-   3064 66.249.66.221
-  95743 185.192.69.15
-
-185.192.69.15 is in the UK
-I added a block for that IP in nginx and the load went down&hellip;
-
-2022-04-16
-
-Start harvest on AReS
-
-2022-04-18
-
-I woke up to several notices from UptimeRobot that CGSpace had gone down and up in the night (of course I&rsquo;m on holiday out of the country for Easter)
-
-I see there are many locks in use from the XMLUI:
-
-
-
-$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c
-   8932 dspaceWeb
-
-Looking at the top IPs making requests it seems they are Yandex, bingbot, and Googlebot:
-
-# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | awk &#39;{print $1}&#39; | sort | uniq -c | sort -h
-    752 69.162.124.231
-    759 66.249.64.213
-    864 66.249.66.222
-    905 2a01:4f8:221:f::2
-   1013 84.33.2.97
-   1201 157.55.39.159
-   1204 157.55.39.144
-   1209 157.55.39.102
-   1217 157.55.39.161
-   1252 207.46.13.177
-   1274 157.55.39.162
-   2553 66.249.66.221
-   2941 95.108.213.28
-
-One IP is using a stange user agent though:
-
-84.33.2.97 - - [18/Apr/2022:00:20:38 &#43;0200] &#34;GET /bitstream/handle/10568/109581/Banana_Blomme%20_2020.pdf.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34;
-
-Overall, it seems we had 17,000 unique IPs connecting in the last nine hours (currently 9:14AM and log file rolled over at 00:00):
-
-# cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq | wc -l
-17314
-
-That&rsquo;s a lot of unique IPs, and I see some patterns of IPs in China making ten to twenty requests each
-
-The ISPs I&rsquo;ve seen so far are ChinaNet and China Unicom
-
-
-I extracted all the IPs from today and resolved them:
-
-# cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq &gt; /tmp/2022-04-18-ips.txt
-$ ./ilri/resolve-addresses-geoip2.py -i /tmp/2022-04-18-ips.txt -o /tmp/2022-04-18-ips.csv
-
-The top ASNs by IP are:
-
-$ csvcut -c 2 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10 
-    102 GOOGLE
-    139 Maxihost LTDA
-    165 AMAZON-02
-    393 &#34;China Mobile Communications Group Co., Ltd.&#34;
-    473 AMAZON-AES
-    616 China Mobile communications corporation
-    642 M247 Ltd
-   2336 HostRoyale Technologies Pvt Ltd
-   4556 Chinanet
-   5527 CHINA UNICOM China169 Backbone
-$ csvcut -c 4 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10
-    139 262287
-    165 16509
-    180 204287
-    393 9808
-    473 14618
-    615 56041
-    642 9009
-   2156 203020
-   4556 4134
-   5527 4837
-
-I spot checked a few IPs from each of these and they are definitely just making bullshit requests to Discovery and HTML sitemap etc
-I will download the IP blocks for each ASN except Google and Amazon and ban them
-
-$ wget https://asn.ipinfo.app/api/text/nginx/AS4837 https://asn.ipinfo.app/api/text/nginx/AS4134 https://asn.ipinfo.app/api/text/nginx/AS203020 https://asn.ipinfo.app/api/text/nginx/AS9009 https://asn.ipinfo.app/api/text/nginx/AS56041 https://asn.ipinfo.app/api/text/nginx/AS9808
-$ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | sort | uniq | wc -l
-20296
-
-I extracted the IPv4 and IPv6 networks:
-
-$ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep &#34;:&#34; | sort &gt; /tmp/ipv6-networks.txt
-$ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep -v &#34;:&#34; | sort &gt; /tmp/ipv4-networks.txt
-
-I suspect we need to aggregate these networks since they are so many and nftables doesn&rsquo;t like it when they overlap:
-
-$ wc -l /tmp/ipv4-networks.txt
-15464 /tmp/ipv4-networks.txt
-$ aggregate6 /tmp/ipv4-networks.txt | wc -l
-2781
-$ wc -l /tmp/ipv6-networks.txt             
-4833 /tmp/ipv6-networks.txt
-$ aggregate6 /tmp/ipv6-networks.txt | wc -l
-338
-
-I deployed these lists on CGSpace, ran all updates, and rebooted the server
-
-This list is SURELY too broad because we will block legitimate users in China&hellip; but right now how can I discern?
-Also, I need to purge the hits from these 14,000 IPs in Solr when I get time
-
-
-Looking back at the Munin graphs a few hours later I see this was indeed some kind of spike that was out of the ordinary:
-
-
-" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2022-04/" />
-<meta property="article:published_time" content="2022-04-01T10:53:39+03:00" />
-<meta property="article:modified_time" content="2022-05-04T11:09:45+03:00" />
-
-
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="April, 2022"/>
-<meta name="twitter:description" content="2022-04-01
-
-I did G1GC tests on DSpace Test (linode26) to compliment the CMS tests I did yesterday
-
-The Discovery indexing took this long:
-
-
-
-real    334m33.625s
-user    227m51.331s
-sys     3m43.037s
-2022-04-04
-
-Start a full harvest on AReS
-Help Marianne with submit/approve access on a new collection on CGSpace
-Go back in Gaia&rsquo;s batch reports to find records that she indicated for replacing on CGSpace (ie, those with better new copies, new versions, etc)
-Looking at the Solr statistics for 2022-03 on CGSpace
-
-I see 54.229.218.204 on Amazon AWS made 49,000 requests, some of which with this user agent: Apache-HttpClient/4.5.9 (Java/1.8.0_322), and many others with a normal browser agent, so that&rsquo;s fishy!
-The DSpace agent pattern http.?agent seems to have caught the first ones, but I&rsquo;ll purge the IP ones
-I see 40.77.167.80 is Bing or MSN Bot, but using a normal browser user agent, and if I search Solr for dns:*msnbot* AND dns:*.msn.com. I see over 100,000, which is a problem I noticed a few months ago too&hellip;
-I extracted the MSN Bot IPs from Solr using an IP facet, then used the check-spider-ip-hits.sh script to purge them
-
-
-
-2022-04-10
-
-Start a full harvest on AReS
-
-2022-04-13
-
-UptimeRobot mailed to say that CGSpace was down
-
-I looked and found the load at 44&hellip;
-
-
-There seem to be a lot of locks from the XMLUI:
-
-$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c | sort -n
-   3173 dspaceWeb
-
-Looking at the top IPs in nginx&rsquo;s access log one IP in particular stands out:
-
-    941 66.249.66.222
-   1224 95.108.213.28
-   2074 157.90.209.76
-   3064 66.249.66.221
-  95743 185.192.69.15
-
-185.192.69.15 is in the UK
-I added a block for that IP in nginx and the load went down&hellip;
-
-2022-04-16
-
-Start harvest on AReS
-
-2022-04-18
-
-I woke up to several notices from UptimeRobot that CGSpace had gone down and up in the night (of course I&rsquo;m on holiday out of the country for Easter)
-
-I see there are many locks in use from the XMLUI:
-
-
-
-$ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c
-   8932 dspaceWeb
-
-Looking at the top IPs making requests it seems they are Yandex, bingbot, and Googlebot:
-
-# cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | awk &#39;{print $1}&#39; | sort | uniq -c | sort -h
-    752 69.162.124.231
-    759 66.249.64.213
-    864 66.249.66.222
-    905 2a01:4f8:221:f::2
-   1013 84.33.2.97
-   1201 157.55.39.159
-   1204 157.55.39.144
-   1209 157.55.39.102
-   1217 157.55.39.161
-   1252 207.46.13.177
-   1274 157.55.39.162
-   2553 66.249.66.221
-   2941 95.108.213.28
-
-One IP is using a stange user agent though:
-
-84.33.2.97 - - [18/Apr/2022:00:20:38 &#43;0200] &#34;GET /bitstream/handle/10568/109581/Banana_Blomme%20_2020.pdf.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34;
-
-Overall, it seems we had 17,000 unique IPs connecting in the last nine hours (currently 9:14AM and log file rolled over at 00:00):
-
-# cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq | wc -l
-17314
-
-That&rsquo;s a lot of unique IPs, and I see some patterns of IPs in China making ten to twenty requests each
-
-The ISPs I&rsquo;ve seen so far are ChinaNet and China Unicom
-
-
-I extracted all the IPs from today and resolved them:
-
-# cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq &gt; /tmp/2022-04-18-ips.txt
-$ ./ilri/resolve-addresses-geoip2.py -i /tmp/2022-04-18-ips.txt -o /tmp/2022-04-18-ips.csv
-
-The top ASNs by IP are:
-
-$ csvcut -c 2 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10 
-    102 GOOGLE
-    139 Maxihost LTDA
-    165 AMAZON-02
-    393 &#34;China Mobile Communications Group Co., Ltd.&#34;
-    473 AMAZON-AES
-    616 China Mobile communications corporation
-    642 M247 Ltd
-   2336 HostRoyale Technologies Pvt Ltd
-   4556 Chinanet
-   5527 CHINA UNICOM China169 Backbone
-$ csvcut -c 4 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10
-    139 262287
-    165 16509
-    180 204287
-    393 9808
-    473 14618
-    615 56041
-    642 9009
-   2156 203020
-   4556 4134
-   5527 4837
-
-I spot checked a few IPs from each of these and they are definitely just making bullshit requests to Discovery and HTML sitemap etc
-I will download the IP blocks for each ASN except Google and Amazon and ban them
-
-$ wget https://asn.ipinfo.app/api/text/nginx/AS4837 https://asn.ipinfo.app/api/text/nginx/AS4134 https://asn.ipinfo.app/api/text/nginx/AS203020 https://asn.ipinfo.app/api/text/nginx/AS9009 https://asn.ipinfo.app/api/text/nginx/AS56041 https://asn.ipinfo.app/api/text/nginx/AS9808
-$ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | sort | uniq | wc -l
-20296
-
-I extracted the IPv4 and IPv6 networks:
-
-$ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep &#34;:&#34; | sort &gt; /tmp/ipv6-networks.txt
-$ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep -v &#34;:&#34; | sort &gt; /tmp/ipv4-networks.txt
-
-I suspect we need to aggregate these networks since they are so many and nftables doesn&rsquo;t like it when they overlap:
-
-$ wc -l /tmp/ipv4-networks.txt
-15464 /tmp/ipv4-networks.txt
-$ aggregate6 /tmp/ipv4-networks.txt | wc -l
-2781
-$ wc -l /tmp/ipv6-networks.txt             
-4833 /tmp/ipv6-networks.txt
-$ aggregate6 /tmp/ipv6-networks.txt | wc -l
-338
-
-I deployed these lists on CGSpace, ran all updates, and rebooted the server
-
-This list is SURELY too broad because we will block legitimate users in China&hellip; but right now how can I discern?
-Also, I need to purge the hits from these 14,000 IPs in Solr when I get time
-
-
-Looking back at the Munin graphs a few hours later I see this was indeed some kind of spike that was out of the ordinary:
-
-
-"/>
-<meta name="generator" content="Hugo 0.145.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta property="og:url" content="http://localhost:1313/cgspace-notes/2022-04/">
+  <meta property="og:site_name" content="CGSpace Notes">
+  <meta property="og:title" content="April, 2022">
+  <meta property="og:description" content="2022-04-01 I did G1GC tests on DSpace Test (linode26) to compliment the CMS tests I did yesterday The Discovery indexing took this long: real 334m33.625s user 227m51.331s sys 3m43.037s 2022-04-04 Start a full harvest on AReS Help Marianne with submit/approve access on a new collection on CGSpace Go back in Gaia’s batch reports to find records that she indicated for replacing on CGSpace (ie, those with better new copies, new versions, etc) Looking at the Solr statistics for 2022-03 on CGSpace I see 54.229.218.204 on Amazon AWS made 49,000 requests, some of which with this user agent: Apache-HttpClient/4.5.9 (Java/1.8.0_322), and many others with a normal browser agent, so that’s fishy! The DSpace agent pattern http.?agent seems to have caught the first ones, but I’ll purge the IP ones I see 40.77.167.80 is Bing or MSN Bot, but using a normal browser user agent, and if I search Solr for dns:*msnbot* AND dns:*.msn.com. I see over 100,000, which is a problem I noticed a few months ago too… I extracted the MSN Bot IPs from Solr using an IP facet, then used the check-spider-ip-hits.sh script to purge them 2022-04-10 Start a full harvest on AReS 2022-04-13 UptimeRobot mailed to say that CGSpace was down I looked and found the load at 44… There seem to be a lot of locks from the XMLUI: $ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c | sort -n 3173 dspaceWeb Looking at the top IPs in nginx’s access log one IP in particular stands out: 941 66.249.66.222 1224 95.108.213.28 2074 157.90.209.76 3064 66.249.66.221 95743 185.192.69.15 185.192.69.15 is in the UK I added a block for that IP in nginx and the load went down… 2022-04-16 Start harvest on AReS 2022-04-18 I woke up to several notices from UptimeRobot that CGSpace had gone down and up in the night (of course I’m on holiday out of the country for Easter) I see there are many locks in use from the XMLUI: $ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c 8932 dspaceWeb Looking at the top IPs making requests it seems they are Yandex, bingbot, and Googlebot: # cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | awk &#39;{print $1}&#39; | sort | uniq -c | sort -h 752 69.162.124.231 759 66.249.64.213 864 66.249.66.222 905 2a01:4f8:221:f::2 1013 84.33.2.97 1201 157.55.39.159 1204 157.55.39.144 1209 157.55.39.102 1217 157.55.39.161 1252 207.46.13.177 1274 157.55.39.162 2553 66.249.66.221 2941 95.108.213.28 One IP is using a stange user agent though: 84.33.2.97 - - [18/Apr/2022:00:20:38 &#43;0200] &#34;GET /bitstream/handle/10568/109581/Banana_Blomme%20_2020.pdf.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34; Overall, it seems we had 17,000 unique IPs connecting in the last nine hours (currently 9:14AM and log file rolled over at 00:00): # cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq | wc -l 17314 That’s a lot of unique IPs, and I see some patterns of IPs in China making ten to twenty requests each The ISPs I’ve seen so far are ChinaNet and China Unicom I extracted all the IPs from today and resolved them: # cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq &gt; /tmp/2022-04-18-ips.txt $ ./ilri/resolve-addresses-geoip2.py -i /tmp/2022-04-18-ips.txt -o /tmp/2022-04-18-ips.csv The top ASNs by IP are: $ csvcut -c 2 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10 102 GOOGLE 139 Maxihost LTDA 165 AMAZON-02 393 &#34;China Mobile Communications Group Co., Ltd.&#34; 473 AMAZON-AES 616 China Mobile communications corporation 642 M247 Ltd 2336 HostRoyale Technologies Pvt Ltd 4556 Chinanet 5527 CHINA UNICOM China169 Backbone $ csvcut -c 4 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10 139 262287 165 16509 180 204287 393 9808 473 14618 615 56041 642 9009 2156 203020 4556 4134 5527 4837 I spot checked a few IPs from each of these and they are definitely just making bullshit requests to Discovery and HTML sitemap etc I will download the IP blocks for each ASN except Google and Amazon and ban them $ wget https://asn.ipinfo.app/api/text/nginx/AS4837 https://asn.ipinfo.app/api/text/nginx/AS4134 https://asn.ipinfo.app/api/text/nginx/AS203020 https://asn.ipinfo.app/api/text/nginx/AS9009 https://asn.ipinfo.app/api/text/nginx/AS56041 https://asn.ipinfo.app/api/text/nginx/AS9808 $ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | sort | uniq | wc -l 20296 I extracted the IPv4 and IPv6 networks: $ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep &#34;:&#34; | sort &gt; /tmp/ipv6-networks.txt $ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep -v &#34;:&#34; | sort &gt; /tmp/ipv4-networks.txt I suspect we need to aggregate these networks since they are so many and nftables doesn’t like it when they overlap: $ wc -l /tmp/ipv4-networks.txt 15464 /tmp/ipv4-networks.txt $ aggregate6 /tmp/ipv4-networks.txt | wc -l 2781 $ wc -l /tmp/ipv6-networks.txt 4833 /tmp/ipv6-networks.txt $ aggregate6 /tmp/ipv6-networks.txt | wc -l 338 I deployed these lists on CGSpace, ran all updates, and rebooted the server This list is SURELY too broad because we will block legitimate users in China… but right now how can I discern? Also, I need to purge the hits from these 14,000 IPs in Solr when I get time Looking back at the Munin graphs a few hours later I see this was indeed some kind of spike that was out of the ordinary:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-04-01T10:53:39+03:00">
+    <meta property="article:modified_time" content="2022-05-04T11:09:45+03:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="April, 2022">
+  <meta name="twitter:description" content="2022-04-01 I did G1GC tests on DSpace Test (linode26) to compliment the CMS tests I did yesterday The Discovery indexing took this long: real 334m33.625s user 227m51.331s sys 3m43.037s 2022-04-04 Start a full harvest on AReS Help Marianne with submit/approve access on a new collection on CGSpace Go back in Gaia’s batch reports to find records that she indicated for replacing on CGSpace (ie, those with better new copies, new versions, etc) Looking at the Solr statistics for 2022-03 on CGSpace I see 54.229.218.204 on Amazon AWS made 49,000 requests, some of which with this user agent: Apache-HttpClient/4.5.9 (Java/1.8.0_322), and many others with a normal browser agent, so that’s fishy! The DSpace agent pattern http.?agent seems to have caught the first ones, but I’ll purge the IP ones I see 40.77.167.80 is Bing or MSN Bot, but using a normal browser user agent, and if I search Solr for dns:*msnbot* AND dns:*.msn.com. I see over 100,000, which is a problem I noticed a few months ago too… I extracted the MSN Bot IPs from Solr using an IP facet, then used the check-spider-ip-hits.sh script to purge them 2022-04-10 Start a full harvest on AReS 2022-04-13 UptimeRobot mailed to say that CGSpace was down I looked and found the load at 44… There seem to be a lot of locks from the XMLUI: $ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c | sort -n 3173 dspaceWeb Looking at the top IPs in nginx’s access log one IP in particular stands out: 941 66.249.66.222 1224 95.108.213.28 2074 157.90.209.76 3064 66.249.66.221 95743 185.192.69.15 185.192.69.15 is in the UK I added a block for that IP in nginx and the load went down… 2022-04-16 Start harvest on AReS 2022-04-18 I woke up to several notices from UptimeRobot that CGSpace had gone down and up in the night (of course I’m on holiday out of the country for Easter) I see there are many locks in use from the XMLUI: $ psql -c &#39;SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa ON pl.pid = psa.pid;&#39; | grep -o -E &#39;(dspaceWeb|dspaceApi)&#39; | sort | uniq -c 8932 dspaceWeb Looking at the top IPs making requests it seems they are Yandex, bingbot, and Googlebot: # cat /var/log/nginx/access.log /var/log/nginx/access.log.1 | awk &#39;{print $1}&#39; | sort | uniq -c | sort -h 752 69.162.124.231 759 66.249.64.213 864 66.249.66.222 905 2a01:4f8:221:f::2 1013 84.33.2.97 1201 157.55.39.159 1204 157.55.39.144 1209 157.55.39.102 1217 157.55.39.161 1252 207.46.13.177 1274 157.55.39.162 2553 66.249.66.221 2941 95.108.213.28 One IP is using a stange user agent though: 84.33.2.97 - - [18/Apr/2022:00:20:38 &#43;0200] &#34;GET /bitstream/handle/10568/109581/Banana_Blomme%20_2020.pdf.jpg HTTP/1.1&#34; 404 10890 &#34;-&#34; &#34;SomeRandomText&#34; Overall, it seems we had 17,000 unique IPs connecting in the last nine hours (currently 9:14AM and log file rolled over at 00:00): # cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq | wc -l 17314 That’s a lot of unique IPs, and I see some patterns of IPs in China making ten to twenty requests each The ISPs I’ve seen so far are ChinaNet and China Unicom I extracted all the IPs from today and resolved them: # cat /var/log/nginx/access.log | awk &#39;{print $1}&#39; | sort | uniq &gt; /tmp/2022-04-18-ips.txt $ ./ilri/resolve-addresses-geoip2.py -i /tmp/2022-04-18-ips.txt -o /tmp/2022-04-18-ips.csv The top ASNs by IP are: $ csvcut -c 2 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10 102 GOOGLE 139 Maxihost LTDA 165 AMAZON-02 393 &#34;China Mobile Communications Group Co., Ltd.&#34; 473 AMAZON-AES 616 China Mobile communications corporation 642 M247 Ltd 2336 HostRoyale Technologies Pvt Ltd 4556 Chinanet 5527 CHINA UNICOM China169 Backbone $ csvcut -c 4 /tmp/2022-04-18-ips.csv | sed 1d | sort | uniq -c | sort -n | tail -n 10 139 262287 165 16509 180 204287 393 9808 473 14618 615 56041 642 9009 2156 203020 4556 4134 5527 4837 I spot checked a few IPs from each of these and they are definitely just making bullshit requests to Discovery and HTML sitemap etc I will download the IP blocks for each ASN except Google and Amazon and ban them $ wget https://asn.ipinfo.app/api/text/nginx/AS4837 https://asn.ipinfo.app/api/text/nginx/AS4134 https://asn.ipinfo.app/api/text/nginx/AS203020 https://asn.ipinfo.app/api/text/nginx/AS9009 https://asn.ipinfo.app/api/text/nginx/AS56041 https://asn.ipinfo.app/api/text/nginx/AS9808 $ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | sort | uniq | wc -l 20296 I extracted the IPv4 and IPv6 networks: $ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep &#34;:&#34; | sort &gt; /tmp/ipv6-networks.txt $ cat AS* | sed -e &#39;/^$/d&#39; -e &#39;/^#/d&#39; -e &#39;/^{/d&#39; -e &#39;s/deny //&#39; -e &#39;s/;//&#39; | grep -v &#34;:&#34; | sort &gt; /tmp/ipv4-networks.txt I suspect we need to aggregate these networks since they are so many and nftables doesn’t like it when they overlap: $ wc -l /tmp/ipv4-networks.txt 15464 /tmp/ipv4-networks.txt $ aggregate6 /tmp/ipv4-networks.txt | wc -l 2781 $ wc -l /tmp/ipv6-networks.txt 4833 /tmp/ipv6-networks.txt $ aggregate6 /tmp/ipv6-networks.txt | wc -l 338 I deployed these lists on CGSpace, ran all updates, and rebooted the server This list is SURELY too broad because we will block legitimate users in China… but right now how can I discern? Also, I need to purge the hits from these 14,000 IPs in Solr when I get time Looking back at the Munin graphs a few hours later I see this was indeed some kind of spike that was out of the ordinary:">
+<meta name="generator" content="Hugo 0.148.1">
 
 
     
@@ -347,7 +25,7 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
   "@context": "http://schema.org",
   "@type": "BlogPosting",
   "headline": "April, 2022",
-  "url": "https://alanorth.github.io/cgspace-notes/2022-04/",
+  "url": "http://localhost:1313/cgspace-notes/2022-04/",
   "wordCount": "2015",
   "datePublished": "2022-04-01T10:53:39+03:00",
   "dateModified": "2022-05-04T11:09:45+03:00",
@@ -361,19 +39,19 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
 
 
 
-    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2022-04/">
+    <link rel="canonical" href="http://localhost:1313/cgspace-notes/2022-04/">
 
     <title>April, 2022 | CGSpace Notes</title>
 
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    <link href="http://localhost:1313/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
     
 
     <!-- minified Font Awesome for SVG icons -->
     
-    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+    <script defer src="http://localhost:1313/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
 
     <!-- RSS 2.0 feed -->
     
@@ -388,7 +66,7 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
     <div class="blog-masthead">
       <div class="container">
         <nav class="nav blog-nav">
-          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+          <a class="nav-link " href="http://localhost:1313/cgspace-notes/">Home</a>
         </nav>
       </div>
     </div>
@@ -398,7 +76,7 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
     
     <header class="blog-header">
       <div class="container">
-        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <h1 class="blog-title" dir="auto"><a href="http://localhost:1313/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
         <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
       </div>
     </header>
@@ -415,7 +93,7 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
 
 <article class="blog-post">
   <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2022-04/">April, 2022</a></h2>
+    <h2 class="blog-post-title" dir="auto"><a href="http://localhost:1313/cgspace-notes/2022-04/">April, 2022</a></h2>
     <p class="blog-post-meta">
 <time datetime="2022-04-01T10:53:39+03:00">Fri Apr 01, 2022</time>
  in 
@@ -828,6 +506,8 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2025-07/">July, 2025</a></li>
+
 <li><a href="/cgspace-notes/2025-04/">April, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-03/">March, 2025</a></li>
@@ -835,8 +515,6 @@ Looking back at the Munin graphs a few hours later I see this was indeed some ki
 <li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
-
-<li><a href="/cgspace-notes/2024-12/">December, 2024</a></li>
 
     </ol>
   </section>

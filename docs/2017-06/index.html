@@ -1,312 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" >
 
-  <head>
+  <head><script src="/cgspace-notes/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=cgspace-notes/livereload" data-no-instant defer></script>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-<meta property="og:title" content="June, 2017" />
-<meta property="og:description" content="2017-06-01
-
-After discussion with WLE and CGSpace content people, we decided to just add one metadata field for the WLE Research Themes
-The cg.identifier.wletheme field will be used for both Phase I and Phase II Research Themes
-Then we&rsquo;ll create a new sub-community for Phase II and create collections for the research themes there
-The current &ldquo;Research Themes&rdquo; community will be renamed to &ldquo;WLE Phase I Research Themes&rdquo;
-Tagged all items in the current Phase I collections with their appropriate themes
-Create pull request to add Phase II research themes to the submission form: #328
-Add cg.subject.system to CGSpace metadata registry, for subject from the upcoming CGIAR Library migration
-
-2017-06-04
-
-After adding cg.identifier.wletheme to 1106 WLE items I can see the field on XMLUI but not in REST!
-Strangely it happens on DSpace Test AND on CGSpace!
-I tried to re-index Discovery but it didn&rsquo;t fix it
-Run all system updates on DSpace Test and reboot the server
-After rebooting the server (and therefore restarting Tomcat) the new metadata field is available
-I&rsquo;ve sent a message to the dspace-tech mailing list to ask if this is a bug and whether I should file a Jira ticket
-
-2016-06-05
-
-Rename WLE&rsquo;s &ldquo;Research Themes&rdquo; sub-community to &ldquo;WLE Phase I Research Themes&rdquo; on DSpace Test so Macaroni Bros can continue their testing
-Macaroni Bros tested it and said it&rsquo;s fine, so I renamed it on CGSpace as well
-Working on how to automate the extraction of the CIAT Book chapters, doing some magic in OpenRefine to extract page from–to from cg.identifier.url and dc.format.extent, respectively:
-
-cg.identifier.url: value.split(&quot;page=&quot;, &quot;&quot;)[1]
-dc.format.extent: value.replace(&quot;p. &quot;, &quot;&quot;).split(&quot;-&quot;)[1].toNumber() - value.replace(&quot;p. &quot;, &quot;&quot;).split(&quot;-&quot;)[0].toNumber()
-
-
-Finally, after some filtering to see which small outliers there were (based on dc.format.extent using &ldquo;p. 1-14&rdquo; vs &ldquo;29 p.&rdquo;), create a new column with last page number:
-
-cells[&quot;dc.page.from&quot;].value.toNumber() &#43; cells[&quot;dc.format.pages&quot;].value.toNumber()
-
-
-Then create a new, unique file name to be used in the output, based on a SHA1 of the dc.title and with a description:
-
-dc.page.to: value.split(&quot; &quot;)[0].replace(&quot;,&quot;,&quot;&quot;).toLowercase() &#43; &quot;-&quot; &#43; sha1(value).get(1,9) &#43; &quot;.pdf__description:&quot; &#43; cells[&quot;dc.type&quot;].value
-
-
-Start processing 769 records after filtering the following (there are another 159 records that have some other format, or for example they have their own PDF which I will process later), using a modified generate-thumbnails.py script to read certain fields and then pass to GhostScript:
-
-cg.identifier.url: value.contains(&quot;page=&quot;)
-dc.format.extent: or(value.contains(&quot;p. &quot;),value.contains(&quot; p.&quot;))
-Command like: $ gs -dNOPAUSE -dBATCH -dFirstPage=14 -dLastPage=27 -sDEVICE=pdfwrite -sOutputFile=beans.pdf -f 12605-1.pdf
-
-
-17 of the items have issues with incorrect page number ranges, and upon closer inspection they do not appear in the referenced PDF
-I&rsquo;ve flagged them and proceeded without them (752 total) on DSpace Test:
-
-$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/93843 --source /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
-
-I went and did some basic sanity checks on the remaining items in the CIAT Book Chapters and decided they are mostly fine (except one duplicate and the flagged ones), so I imported them to DSpace Test too (162 items)
-Total items in CIAT Book Chapters is 914, with the others being flagged for some reason, and we should send that back to CIAT
-Restart Tomcat on CGSpace so that the cg.identifier.wletheme field is available on REST API for Macaroni Bros
-
-2017-06-07
-
-Testing Atmire&rsquo;s patch for the CUA Workflow Statistics again
-Still doesn&rsquo;t seem to give results I&rsquo;d expect, like there are no results for Maria Garruccio, or for the ILRI community!
-Then I&rsquo;ll file an update to the issue on Atmire&rsquo;s tracker
-Created a new branch with just the relevant changes, so I can send it to them
-One thing I noticed is that there is a failed database migration related to CUA:
-
-&#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43;
-| Version        | Description                | Installed on        | State   |
-&#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43;
-| 1.1            | Initial DSpace 1.1 databas |                     | PreInit |
-| 1.2            | Upgrade to DSpace 1.2 sche |                     | PreInit |
-| 1.3            | Upgrade to DSpace 1.3 sche |                     | PreInit |
-| 1.3.9          | Drop constraint for DSpace |                     | PreInit |
-| 1.4            | Upgrade to DSpace 1.4 sche |                     | PreInit |
-| 1.5            | Upgrade to DSpace 1.5 sche |                     | PreInit |
-| 1.5.9          | Drop constraint for DSpace |                     | PreInit |
-| 1.6            | Upgrade to DSpace 1.6 sche |                     | PreInit |
-| 1.7            | Upgrade to DSpace 1.7 sche |                     | PreInit |
-| 1.8            | Upgrade to DSpace 1.8 sche |                     | PreInit |
-| 3.0            | Upgrade to DSpace 3.x sche |                     | PreInit |
-| 4.0            | Initializing from DSpace 4 | 2015-11-20 12:42:52 | Success |
-| 5.0.2014.08.08 | DS-1945 Helpdesk Request a | 2015-11-20 12:42:53 | Success |
-| 5.0.2014.09.25 | DS 1582 Metadata For All O | 2015-11-20 12:42:55 | Success |
-| 5.0.2014.09.26 | DS-1582 Metadata For All O | 2015-11-20 12:42:55 | Success |
-| 5.0.2015.01.27 | MigrateAtmireExtraMetadata | 2015-11-20 12:43:29 | Success |
-| 5.0.2017.04.28 | CUA eperson metadata migra | 2017-06-07 11:07:28 | OutOrde |
-| 5.5.2015.12.03 | Atmire CUA 4 migration     | 2016-11-27 06:39:05 | OutOrde |
-| 5.5.2015.12.03 | Atmire MQM migration       | 2016-11-27 06:39:06 | OutOrde |
-| 5.6.2016.08.08 | CUA emailreport migration  | 2017-01-29 11:18:56 | OutOrde |
-&#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43;
-
-Merge the pull request for WLE Phase II themes
-
-2017-06-18
-
-Redeploy CGSpace with latest changes from 5_x-prod, run system updates, and reboot the server
-Continue working on ansible infrastructure changes for CGIAR Library
-
-2017-06-20
-
-Import Abenet and Peter&rsquo;s changes to the CGIAR Library CRP community
-Due to them using Windows and renaming some columns there were formatting, encoding, and duplicate metadata value issues
-I had to remove some fields from the CSV and rename some back to, ie, dc.subject[en_US] just so DSpace would detect changes properly
-Now it looks much better: https://dspacetest.cgiar.org/handle/10947/2517
-Removing the HTML tags and HTML/XML entities using the following GREL:
-
-replace(value,/&lt;\/?\w&#43;((\s&#43;\w&#43;(\s*=\s*(?:&quot;.*?&quot;|&#39;.*?&#39;|[^&#39;&quot;&gt;\s]&#43;))?)&#43;\s*|\s*)\/?&gt;/,&#39;&#39;)
-value.unescape(&quot;html&quot;).unescape(&quot;xml&quot;)
-
-
-Finally import 914 CIAT Book Chapters to CGSpace in two batches:
-
-$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
-$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books2.map &amp;&gt; /tmp/ciat-books2.log
-2017-06-25
-
-WLE has said that one of their Phase II research themes is being renamed from Regenerating Degraded Landscapes to Restoring Degraded Landscapes
-Pull request with the changes to input-forms.xml: #329
-As of now it doesn&rsquo;t look like there are any items using this research theme so we don&rsquo;t need to do any updates:
-
-dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=237 and text_value like &#39;Regenerating Degraded Landscapes%&#39;;
- text_value
-------------
-(0 rows)
-
-Marianne from WLE asked if they can have both Phase I and II research themes together in the item submission form
-Perhaps we can add them together in the same question for cg.identifier.wletheme
-
-2017-06-30
-
-CGSpace went down briefly, I see lots of these errors in the dspace logs:
-
-Java stacktrace: java.util.NoSuchElementException: Timeout waiting for idle object
-
-After looking at the Tomcat logs, Munin graphs, and PostgreSQL connection stats, it seems there is just a high load
-Might be a good time to adjust DSpace&rsquo;s database connection settings, like I first mentioned in April, 2017 after reading the 2017-04 DCAT comments
-I&rsquo;ve adjusted the following in CGSpace&rsquo;s config:
-
-db.maxconnections 30→70 (the default PostgreSQL config allows 100 connections, so DSpace&rsquo;s default of 30 is quite low)
-db.maxwait 5000→10000
-db.maxidle 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier)
-
-
-We will need to adjust this again (as well as the pg_hba.conf settings) when we deploy tsega&rsquo;s REST API
-Whip up a test for Marianne of WLE to be able to show both their Phase I and II research themes in the CGSpace item submission form:
-
-
-" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://alanorth.github.io/cgspace-notes/2017-06/" />
-<meta property="article:published_time" content="2017-06-01T10:14:52+03:00" />
-<meta property="article:modified_time" content="2020-04-13T15:30:24+03:00" />
-
-
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="June, 2017"/>
-<meta name="twitter:description" content="2017-06-01
-
-After discussion with WLE and CGSpace content people, we decided to just add one metadata field for the WLE Research Themes
-The cg.identifier.wletheme field will be used for both Phase I and Phase II Research Themes
-Then we&rsquo;ll create a new sub-community for Phase II and create collections for the research themes there
-The current &ldquo;Research Themes&rdquo; community will be renamed to &ldquo;WLE Phase I Research Themes&rdquo;
-Tagged all items in the current Phase I collections with their appropriate themes
-Create pull request to add Phase II research themes to the submission form: #328
-Add cg.subject.system to CGSpace metadata registry, for subject from the upcoming CGIAR Library migration
-
-2017-06-04
-
-After adding cg.identifier.wletheme to 1106 WLE items I can see the field on XMLUI but not in REST!
-Strangely it happens on DSpace Test AND on CGSpace!
-I tried to re-index Discovery but it didn&rsquo;t fix it
-Run all system updates on DSpace Test and reboot the server
-After rebooting the server (and therefore restarting Tomcat) the new metadata field is available
-I&rsquo;ve sent a message to the dspace-tech mailing list to ask if this is a bug and whether I should file a Jira ticket
-
-2016-06-05
-
-Rename WLE&rsquo;s &ldquo;Research Themes&rdquo; sub-community to &ldquo;WLE Phase I Research Themes&rdquo; on DSpace Test so Macaroni Bros can continue their testing
-Macaroni Bros tested it and said it&rsquo;s fine, so I renamed it on CGSpace as well
-Working on how to automate the extraction of the CIAT Book chapters, doing some magic in OpenRefine to extract page from–to from cg.identifier.url and dc.format.extent, respectively:
-
-cg.identifier.url: value.split(&quot;page=&quot;, &quot;&quot;)[1]
-dc.format.extent: value.replace(&quot;p. &quot;, &quot;&quot;).split(&quot;-&quot;)[1].toNumber() - value.replace(&quot;p. &quot;, &quot;&quot;).split(&quot;-&quot;)[0].toNumber()
-
-
-Finally, after some filtering to see which small outliers there were (based on dc.format.extent using &ldquo;p. 1-14&rdquo; vs &ldquo;29 p.&rdquo;), create a new column with last page number:
-
-cells[&quot;dc.page.from&quot;].value.toNumber() &#43; cells[&quot;dc.format.pages&quot;].value.toNumber()
-
-
-Then create a new, unique file name to be used in the output, based on a SHA1 of the dc.title and with a description:
-
-dc.page.to: value.split(&quot; &quot;)[0].replace(&quot;,&quot;,&quot;&quot;).toLowercase() &#43; &quot;-&quot; &#43; sha1(value).get(1,9) &#43; &quot;.pdf__description:&quot; &#43; cells[&quot;dc.type&quot;].value
-
-
-Start processing 769 records after filtering the following (there are another 159 records that have some other format, or for example they have their own PDF which I will process later), using a modified generate-thumbnails.py script to read certain fields and then pass to GhostScript:
-
-cg.identifier.url: value.contains(&quot;page=&quot;)
-dc.format.extent: or(value.contains(&quot;p. &quot;),value.contains(&quot; p.&quot;))
-Command like: $ gs -dNOPAUSE -dBATCH -dFirstPage=14 -dLastPage=27 -sDEVICE=pdfwrite -sOutputFile=beans.pdf -f 12605-1.pdf
-
-
-17 of the items have issues with incorrect page number ranges, and upon closer inspection they do not appear in the referenced PDF
-I&rsquo;ve flagged them and proceeded without them (752 total) on DSpace Test:
-
-$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/93843 --source /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
-
-I went and did some basic sanity checks on the remaining items in the CIAT Book Chapters and decided they are mostly fine (except one duplicate and the flagged ones), so I imported them to DSpace Test too (162 items)
-Total items in CIAT Book Chapters is 914, with the others being flagged for some reason, and we should send that back to CIAT
-Restart Tomcat on CGSpace so that the cg.identifier.wletheme field is available on REST API for Macaroni Bros
-
-2017-06-07
-
-Testing Atmire&rsquo;s patch for the CUA Workflow Statistics again
-Still doesn&rsquo;t seem to give results I&rsquo;d expect, like there are no results for Maria Garruccio, or for the ILRI community!
-Then I&rsquo;ll file an update to the issue on Atmire&rsquo;s tracker
-Created a new branch with just the relevant changes, so I can send it to them
-One thing I noticed is that there is a failed database migration related to CUA:
-
-&#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43;
-| Version        | Description                | Installed on        | State   |
-&#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43;
-| 1.1            | Initial DSpace 1.1 databas |                     | PreInit |
-| 1.2            | Upgrade to DSpace 1.2 sche |                     | PreInit |
-| 1.3            | Upgrade to DSpace 1.3 sche |                     | PreInit |
-| 1.3.9          | Drop constraint for DSpace |                     | PreInit |
-| 1.4            | Upgrade to DSpace 1.4 sche |                     | PreInit |
-| 1.5            | Upgrade to DSpace 1.5 sche |                     | PreInit |
-| 1.5.9          | Drop constraint for DSpace |                     | PreInit |
-| 1.6            | Upgrade to DSpace 1.6 sche |                     | PreInit |
-| 1.7            | Upgrade to DSpace 1.7 sche |                     | PreInit |
-| 1.8            | Upgrade to DSpace 1.8 sche |                     | PreInit |
-| 3.0            | Upgrade to DSpace 3.x sche |                     | PreInit |
-| 4.0            | Initializing from DSpace 4 | 2015-11-20 12:42:52 | Success |
-| 5.0.2014.08.08 | DS-1945 Helpdesk Request a | 2015-11-20 12:42:53 | Success |
-| 5.0.2014.09.25 | DS 1582 Metadata For All O | 2015-11-20 12:42:55 | Success |
-| 5.0.2014.09.26 | DS-1582 Metadata For All O | 2015-11-20 12:42:55 | Success |
-| 5.0.2015.01.27 | MigrateAtmireExtraMetadata | 2015-11-20 12:43:29 | Success |
-| 5.0.2017.04.28 | CUA eperson metadata migra | 2017-06-07 11:07:28 | OutOrde |
-| 5.5.2015.12.03 | Atmire CUA 4 migration     | 2016-11-27 06:39:05 | OutOrde |
-| 5.5.2015.12.03 | Atmire MQM migration       | 2016-11-27 06:39:06 | OutOrde |
-| 5.6.2016.08.08 | CUA emailreport migration  | 2017-01-29 11:18:56 | OutOrde |
-&#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43;
-
-Merge the pull request for WLE Phase II themes
-
-2017-06-18
-
-Redeploy CGSpace with latest changes from 5_x-prod, run system updates, and reboot the server
-Continue working on ansible infrastructure changes for CGIAR Library
-
-2017-06-20
-
-Import Abenet and Peter&rsquo;s changes to the CGIAR Library CRP community
-Due to them using Windows and renaming some columns there were formatting, encoding, and duplicate metadata value issues
-I had to remove some fields from the CSV and rename some back to, ie, dc.subject[en_US] just so DSpace would detect changes properly
-Now it looks much better: https://dspacetest.cgiar.org/handle/10947/2517
-Removing the HTML tags and HTML/XML entities using the following GREL:
-
-replace(value,/&lt;\/?\w&#43;((\s&#43;\w&#43;(\s*=\s*(?:&quot;.*?&quot;|&#39;.*?&#39;|[^&#39;&quot;&gt;\s]&#43;))?)&#43;\s*|\s*)\/?&gt;/,&#39;&#39;)
-value.unescape(&quot;html&quot;).unescape(&quot;xml&quot;)
-
-
-Finally import 914 CIAT Book Chapters to CGSpace in two batches:
-
-$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log
-$ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books2.map &amp;&gt; /tmp/ciat-books2.log
-2017-06-25
-
-WLE has said that one of their Phase II research themes is being renamed from Regenerating Degraded Landscapes to Restoring Degraded Landscapes
-Pull request with the changes to input-forms.xml: #329
-As of now it doesn&rsquo;t look like there are any items using this research theme so we don&rsquo;t need to do any updates:
-
-dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=237 and text_value like &#39;Regenerating Degraded Landscapes%&#39;;
- text_value
-------------
-(0 rows)
-
-Marianne from WLE asked if they can have both Phase I and II research themes together in the item submission form
-Perhaps we can add them together in the same question for cg.identifier.wletheme
-
-2017-06-30
-
-CGSpace went down briefly, I see lots of these errors in the dspace logs:
-
-Java stacktrace: java.util.NoSuchElementException: Timeout waiting for idle object
-
-After looking at the Tomcat logs, Munin graphs, and PostgreSQL connection stats, it seems there is just a high load
-Might be a good time to adjust DSpace&rsquo;s database connection settings, like I first mentioned in April, 2017 after reading the 2017-04 DCAT comments
-I&rsquo;ve adjusted the following in CGSpace&rsquo;s config:
-
-db.maxconnections 30→70 (the default PostgreSQL config allows 100 connections, so DSpace&rsquo;s default of 30 is quite low)
-db.maxwait 5000→10000
-db.maxidle 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier)
-
-
-We will need to adjust this again (as well as the pg_hba.conf settings) when we deploy tsega&rsquo;s REST API
-Whip up a test for Marianne of WLE to be able to show both their Phase I and II research themes in the CGSpace item submission form:
-
-
-"/>
-<meta name="generator" content="Hugo 0.145.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta property="og:url" content="http://localhost:1313/cgspace-notes/2017-06/">
+  <meta property="og:site_name" content="CGSpace Notes">
+  <meta property="og:title" content="June, 2017">
+  <meta property="og:description" content="2017-06-01 After discussion with WLE and CGSpace content people, we decided to just add one metadata field for the WLE Research Themes The cg.identifier.wletheme field will be used for both Phase I and Phase II Research Themes Then we’ll create a new sub-community for Phase II and create collections for the research themes there The current “Research Themes” community will be renamed to “WLE Phase I Research Themes” Tagged all items in the current Phase I collections with their appropriate themes Create pull request to add Phase II research themes to the submission form: #328 Add cg.subject.system to CGSpace metadata registry, for subject from the upcoming CGIAR Library migration 2017-06-04 After adding cg.identifier.wletheme to 1106 WLE items I can see the field on XMLUI but not in REST! Strangely it happens on DSpace Test AND on CGSpace! I tried to re-index Discovery but it didn’t fix it Run all system updates on DSpace Test and reboot the server After rebooting the server (and therefore restarting Tomcat) the new metadata field is available I’ve sent a message to the dspace-tech mailing list to ask if this is a bug and whether I should file a Jira ticket 2016-06-05 Rename WLE’s “Research Themes” sub-community to “WLE Phase I Research Themes” on DSpace Test so Macaroni Bros can continue their testing Macaroni Bros tested it and said it’s fine, so I renamed it on CGSpace as well Working on how to automate the extraction of the CIAT Book chapters, doing some magic in OpenRefine to extract page from–to from cg.identifier.url and dc.format.extent, respectively: cg.identifier.url: value.split(&#34;page=&#34;, &#34;&#34;)[1] dc.format.extent: value.replace(&#34;p. &#34;, &#34;&#34;).split(&#34;-&#34;)[1].toNumber() - value.replace(&#34;p. &#34;, &#34;&#34;).split(&#34;-&#34;)[0].toNumber() Finally, after some filtering to see which small outliers there were (based on dc.format.extent using “p. 1-14” vs “29 p.”), create a new column with last page number: cells[&#34;dc.page.from&#34;].value.toNumber() &#43; cells[&#34;dc.format.pages&#34;].value.toNumber() Then create a new, unique file name to be used in the output, based on a SHA1 of the dc.title and with a description: dc.page.to: value.split(&#34; &#34;)[0].replace(&#34;,&#34;,&#34;&#34;).toLowercase() &#43; &#34;-&#34; &#43; sha1(value).get(1,9) &#43; &#34;.pdf__description:&#34; &#43; cells[&#34;dc.type&#34;].value Start processing 769 records after filtering the following (there are another 159 records that have some other format, or for example they have their own PDF which I will process later), using a modified generate-thumbnails.py script to read certain fields and then pass to GhostScript: cg.identifier.url: value.contains(&#34;page=&#34;) dc.format.extent: or(value.contains(&#34;p. &#34;),value.contains(&#34; p.&#34;)) Command like: $ gs -dNOPAUSE -dBATCH -dFirstPage=14 -dLastPage=27 -sDEVICE=pdfwrite -sOutputFile=beans.pdf -f 12605-1.pdf 17 of the items have issues with incorrect page number ranges, and upon closer inspection they do not appear in the referenced PDF I’ve flagged them and proceeded without them (752 total) on DSpace Test: $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/93843 --source /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log I went and did some basic sanity checks on the remaining items in the CIAT Book Chapters and decided they are mostly fine (except one duplicate and the flagged ones), so I imported them to DSpace Test too (162 items) Total items in CIAT Book Chapters is 914, with the others being flagged for some reason, and we should send that back to CIAT Restart Tomcat on CGSpace so that the cg.identifier.wletheme field is available on REST API for Macaroni Bros 2017-06-07 Testing Atmire’s patch for the CUA Workflow Statistics again Still doesn’t seem to give results I’d expect, like there are no results for Maria Garruccio, or for the ILRI community! Then I’ll file an update to the issue on Atmire’s tracker Created a new branch with just the relevant changes, so I can send it to them One thing I noticed is that there is a failed database migration related to CUA: &#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43; | Version | Description | Installed on | State | &#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43; | 1.1 | Initial DSpace 1.1 databas | | PreInit | | 1.2 | Upgrade to DSpace 1.2 sche | | PreInit | | 1.3 | Upgrade to DSpace 1.3 sche | | PreInit | | 1.3.9 | Drop constraint for DSpace | | PreInit | | 1.4 | Upgrade to DSpace 1.4 sche | | PreInit | | 1.5 | Upgrade to DSpace 1.5 sche | | PreInit | | 1.5.9 | Drop constraint for DSpace | | PreInit | | 1.6 | Upgrade to DSpace 1.6 sche | | PreInit | | 1.7 | Upgrade to DSpace 1.7 sche | | PreInit | | 1.8 | Upgrade to DSpace 1.8 sche | | PreInit | | 3.0 | Upgrade to DSpace 3.x sche | | PreInit | | 4.0 | Initializing from DSpace 4 | 2015-11-20 12:42:52 | Success | | 5.0.2014.08.08 | DS-1945 Helpdesk Request a | 2015-11-20 12:42:53 | Success | | 5.0.2014.09.25 | DS 1582 Metadata For All O | 2015-11-20 12:42:55 | Success | | 5.0.2014.09.26 | DS-1582 Metadata For All O | 2015-11-20 12:42:55 | Success | | 5.0.2015.01.27 | MigrateAtmireExtraMetadata | 2015-11-20 12:43:29 | Success | | 5.0.2017.04.28 | CUA eperson metadata migra | 2017-06-07 11:07:28 | OutOrde | | 5.5.2015.12.03 | Atmire CUA 4 migration | 2016-11-27 06:39:05 | OutOrde | | 5.5.2015.12.03 | Atmire MQM migration | 2016-11-27 06:39:06 | OutOrde | | 5.6.2016.08.08 | CUA emailreport migration | 2017-01-29 11:18:56 | OutOrde | &#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43; Merge the pull request for WLE Phase II themes 2017-06-18 Redeploy CGSpace with latest changes from 5_x-prod, run system updates, and reboot the server Continue working on ansible infrastructure changes for CGIAR Library 2017-06-20 Import Abenet and Peter’s changes to the CGIAR Library CRP community Due to them using Windows and renaming some columns there were formatting, encoding, and duplicate metadata value issues I had to remove some fields from the CSV and rename some back to, ie, dc.subject[en_US] just so DSpace would detect changes properly Now it looks much better: https://dspacetest.cgiar.org/handle/10947/2517 Removing the HTML tags and HTML/XML entities using the following GREL: replace(value,/&lt;\/?\w&#43;((\s&#43;\w&#43;(\s*=\s*(?:&#34;.*?&#34;|&#39;.*?&#39;|[^&#39;&#34;&gt;\s]&#43;))?)&#43;\s*|\s*)\/?&gt;/,&#39;&#39;) value.unescape(&#34;html&#34;).unescape(&#34;xml&#34;) Finally import 914 CIAT Book Chapters to CGSpace in two batches: $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books2.map &amp;&gt; /tmp/ciat-books2.log 2017-06-25 WLE has said that one of their Phase II research themes is being renamed from Regenerating Degraded Landscapes to Restoring Degraded Landscapes Pull request with the changes to input-forms.xml: #329 As of now it doesn’t look like there are any items using this research theme so we don’t need to do any updates: dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=237 and text_value like &#39;Regenerating Degraded Landscapes%&#39;; text_value ------------ (0 rows) Marianne from WLE asked if they can have both Phase I and II research themes together in the item submission form Perhaps we can add them together in the same question for cg.identifier.wletheme 2017-06-30 CGSpace went down briefly, I see lots of these errors in the dspace logs: Java stacktrace: java.util.NoSuchElementException: Timeout waiting for idle object After looking at the Tomcat logs, Munin graphs, and PostgreSQL connection stats, it seems there is just a high load Might be a good time to adjust DSpace’s database connection settings, like I first mentioned in April, 2017 after reading the 2017-04 DCAT comments I’ve adjusted the following in CGSpace’s config: db.maxconnections 30→70 (the default PostgreSQL config allows 100 connections, so DSpace’s default of 30 is quite low) db.maxwait 5000→10000 db.maxidle 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier) We will need to adjust this again (as well as the pg_hba.conf settings) when we deploy tsega’s REST API Whip up a test for Marianne of WLE to be able to show both their Phase I and II research themes in the CGSpace item submission form:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2017-06-01T10:14:52+03:00">
+    <meta property="article:modified_time" content="2020-04-13T15:30:24+03:00">
+    <meta property="article:tag" content="Notes">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="June, 2017">
+  <meta name="twitter:description" content="2017-06-01 After discussion with WLE and CGSpace content people, we decided to just add one metadata field for the WLE Research Themes The cg.identifier.wletheme field will be used for both Phase I and Phase II Research Themes Then we’ll create a new sub-community for Phase II and create collections for the research themes there The current “Research Themes” community will be renamed to “WLE Phase I Research Themes” Tagged all items in the current Phase I collections with their appropriate themes Create pull request to add Phase II research themes to the submission form: #328 Add cg.subject.system to CGSpace metadata registry, for subject from the upcoming CGIAR Library migration 2017-06-04 After adding cg.identifier.wletheme to 1106 WLE items I can see the field on XMLUI but not in REST! Strangely it happens on DSpace Test AND on CGSpace! I tried to re-index Discovery but it didn’t fix it Run all system updates on DSpace Test and reboot the server After rebooting the server (and therefore restarting Tomcat) the new metadata field is available I’ve sent a message to the dspace-tech mailing list to ask if this is a bug and whether I should file a Jira ticket 2016-06-05 Rename WLE’s “Research Themes” sub-community to “WLE Phase I Research Themes” on DSpace Test so Macaroni Bros can continue their testing Macaroni Bros tested it and said it’s fine, so I renamed it on CGSpace as well Working on how to automate the extraction of the CIAT Book chapters, doing some magic in OpenRefine to extract page from–to from cg.identifier.url and dc.format.extent, respectively: cg.identifier.url: value.split(&#34;page=&#34;, &#34;&#34;)[1] dc.format.extent: value.replace(&#34;p. &#34;, &#34;&#34;).split(&#34;-&#34;)[1].toNumber() - value.replace(&#34;p. &#34;, &#34;&#34;).split(&#34;-&#34;)[0].toNumber() Finally, after some filtering to see which small outliers there were (based on dc.format.extent using “p. 1-14” vs “29 p.”), create a new column with last page number: cells[&#34;dc.page.from&#34;].value.toNumber() &#43; cells[&#34;dc.format.pages&#34;].value.toNumber() Then create a new, unique file name to be used in the output, based on a SHA1 of the dc.title and with a description: dc.page.to: value.split(&#34; &#34;)[0].replace(&#34;,&#34;,&#34;&#34;).toLowercase() &#43; &#34;-&#34; &#43; sha1(value).get(1,9) &#43; &#34;.pdf__description:&#34; &#43; cells[&#34;dc.type&#34;].value Start processing 769 records after filtering the following (there are another 159 records that have some other format, or for example they have their own PDF which I will process later), using a modified generate-thumbnails.py script to read certain fields and then pass to GhostScript: cg.identifier.url: value.contains(&#34;page=&#34;) dc.format.extent: or(value.contains(&#34;p. &#34;),value.contains(&#34; p.&#34;)) Command like: $ gs -dNOPAUSE -dBATCH -dFirstPage=14 -dLastPage=27 -sDEVICE=pdfwrite -sOutputFile=beans.pdf -f 12605-1.pdf 17 of the items have issues with incorrect page number ranges, and upon closer inspection they do not appear in the referenced PDF I’ve flagged them and proceeded without them (752 total) on DSpace Test: $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/93843 --source /home/aorth/src/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log I went and did some basic sanity checks on the remaining items in the CIAT Book Chapters and decided they are mostly fine (except one duplicate and the flagged ones), so I imported them to DSpace Test too (162 items) Total items in CIAT Book Chapters is 914, with the others being flagged for some reason, and we should send that back to CIAT Restart Tomcat on CGSpace so that the cg.identifier.wletheme field is available on REST API for Macaroni Bros 2017-06-07 Testing Atmire’s patch for the CUA Workflow Statistics again Still doesn’t seem to give results I’d expect, like there are no results for Maria Garruccio, or for the ILRI community! Then I’ll file an update to the issue on Atmire’s tracker Created a new branch with just the relevant changes, so I can send it to them One thing I noticed is that there is a failed database migration related to CUA: &#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43; | Version | Description | Installed on | State | &#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43; | 1.1 | Initial DSpace 1.1 databas | | PreInit | | 1.2 | Upgrade to DSpace 1.2 sche | | PreInit | | 1.3 | Upgrade to DSpace 1.3 sche | | PreInit | | 1.3.9 | Drop constraint for DSpace | | PreInit | | 1.4 | Upgrade to DSpace 1.4 sche | | PreInit | | 1.5 | Upgrade to DSpace 1.5 sche | | PreInit | | 1.5.9 | Drop constraint for DSpace | | PreInit | | 1.6 | Upgrade to DSpace 1.6 sche | | PreInit | | 1.7 | Upgrade to DSpace 1.7 sche | | PreInit | | 1.8 | Upgrade to DSpace 1.8 sche | | PreInit | | 3.0 | Upgrade to DSpace 3.x sche | | PreInit | | 4.0 | Initializing from DSpace 4 | 2015-11-20 12:42:52 | Success | | 5.0.2014.08.08 | DS-1945 Helpdesk Request a | 2015-11-20 12:42:53 | Success | | 5.0.2014.09.25 | DS 1582 Metadata For All O | 2015-11-20 12:42:55 | Success | | 5.0.2014.09.26 | DS-1582 Metadata For All O | 2015-11-20 12:42:55 | Success | | 5.0.2015.01.27 | MigrateAtmireExtraMetadata | 2015-11-20 12:43:29 | Success | | 5.0.2017.04.28 | CUA eperson metadata migra | 2017-06-07 11:07:28 | OutOrde | | 5.5.2015.12.03 | Atmire CUA 4 migration | 2016-11-27 06:39:05 | OutOrde | | 5.5.2015.12.03 | Atmire MQM migration | 2016-11-27 06:39:06 | OutOrde | | 5.6.2016.08.08 | CUA emailreport migration | 2017-01-29 11:18:56 | OutOrde | &#43;----------------&#43;----------------------------&#43;---------------------&#43;---------&#43; Merge the pull request for WLE Phase II themes 2017-06-18 Redeploy CGSpace with latest changes from 5_x-prod, run system updates, and reboot the server Continue working on ansible infrastructure changes for CGIAR Library 2017-06-20 Import Abenet and Peter’s changes to the CGIAR Library CRP community Due to them using Windows and renaming some columns there were formatting, encoding, and duplicate metadata value issues I had to remove some fields from the CSV and rename some back to, ie, dc.subject[en_US] just so DSpace would detect changes properly Now it looks much better: https://dspacetest.cgiar.org/handle/10947/2517 Removing the HTML tags and HTML/XML entities using the following GREL: replace(value,/&lt;\/?\w&#43;((\s&#43;\w&#43;(\s*=\s*(?:&#34;.*?&#34;|&#39;.*?&#39;|[^&#39;&#34;&gt;\s]&#43;))?)&#43;\s*|\s*)\/?&gt;/,&#39;&#39;) value.unescape(&#34;html&#34;).unescape(&#34;xml&#34;) Finally import 914 CIAT Book Chapters to CGSpace in two batches: $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books.map &amp;&gt; /tmp/ciat-books.log $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import --add --eperson=aorth@mjanja.ch --collection=10568/35701 --source /home/aorth/CIAT-Books/SimpleArchiveFormat/ --mapfile=/tmp/ciat-books2.map &amp;&gt; /tmp/ciat-books2.log 2017-06-25 WLE has said that one of their Phase II research themes is being renamed from Regenerating Degraded Landscapes to Restoring Degraded Landscapes Pull request with the changes to input-forms.xml: #329 As of now it doesn’t look like there are any items using this research theme so we don’t need to do any updates: dspace=# select text_value from metadatavalue where resource_type_id=2 and metadata_field_id=237 and text_value like &#39;Regenerating Degraded Landscapes%&#39;; text_value ------------ (0 rows) Marianne from WLE asked if they can have both Phase I and II research themes together in the item submission form Perhaps we can add them together in the same question for cg.identifier.wletheme 2017-06-30 CGSpace went down briefly, I see lots of these errors in the dspace logs: Java stacktrace: java.util.NoSuchElementException: Timeout waiting for idle object After looking at the Tomcat logs, Munin graphs, and PostgreSQL connection stats, it seems there is just a high load Might be a good time to adjust DSpace’s database connection settings, like I first mentioned in April, 2017 after reading the 2017-04 DCAT comments I’ve adjusted the following in CGSpace’s config: db.maxconnections 30→70 (the default PostgreSQL config allows 100 connections, so DSpace’s default of 30 is quite low) db.maxwait 5000→10000 db.maxidle 8→20 (DSpace default is -1, unlimited, but we had set it to 8 earlier) We will need to adjust this again (as well as the pg_hba.conf settings) when we deploy tsega’s REST API Whip up a test for Marianne of WLE to be able to show both their Phase I and II research themes in the CGSpace item submission form:">
+<meta name="generator" content="Hugo 0.148.1">
 
 
     
@@ -315,7 +26,7 @@ Whip up a test for Marianne of WLE to be able to show both their Phase I and II 
   "@context": "http://schema.org",
   "@type": "BlogPosting",
   "headline": "June, 2017",
-  "url": "https://alanorth.github.io/cgspace-notes/2017-06/",
+  "url": "http://localhost:1313/cgspace-notes/2017-06/",
   "wordCount": "1261",
   "datePublished": "2017-06-01T10:14:52+03:00",
   "dateModified": "2020-04-13T15:30:24+03:00",
@@ -329,19 +40,19 @@ Whip up a test for Marianne of WLE to be able to show both their Phase I and II 
 
 
 
-    <link rel="canonical" href="https://alanorth.github.io/cgspace-notes/2017-06/">
+    <link rel="canonical" href="http://localhost:1313/cgspace-notes/2017-06/">
 
     <title>June, 2017 | CGSpace Notes</title>
 
     
     <!-- combined, minified CSS -->
     
-    <link href="https://alanorth.github.io/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
+    <link href="http://localhost:1313/cgspace-notes/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
     
 
     <!-- minified Font Awesome for SVG icons -->
     
-    <script defer src="https://alanorth.github.io/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+    <script defer src="http://localhost:1313/cgspace-notes/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
 
     <!-- RSS 2.0 feed -->
     
@@ -356,7 +67,7 @@ Whip up a test for Marianne of WLE to be able to show both their Phase I and II 
     <div class="blog-masthead">
       <div class="container">
         <nav class="nav blog-nav">
-          <a class="nav-link " href="https://alanorth.github.io/cgspace-notes/">Home</a>
+          <a class="nav-link " href="http://localhost:1313/cgspace-notes/">Home</a>
         </nav>
       </div>
     </div>
@@ -366,7 +77,7 @@ Whip up a test for Marianne of WLE to be able to show both their Phase I and II 
     
     <header class="blog-header">
       <div class="container">
-        <h1 class="blog-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
+        <h1 class="blog-title" dir="auto"><a href="http://localhost:1313/cgspace-notes/" rel="home">CGSpace Notes</a></h1>
         <p class="lead blog-description" dir="auto">Documenting day-to-day work on the <a href="https://cgspace.cgiar.org">CGSpace</a> repository.</p>
       </div>
     </header>
@@ -383,7 +94,7 @@ Whip up a test for Marianne of WLE to be able to show both their Phase I and II 
 
 <article class="blog-post">
   <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2017-06/">June, 2017</a></h2>
+    <h2 class="blog-post-title" dir="auto"><a href="http://localhost:1313/cgspace-notes/2017-06/">June, 2017</a></h2>
     <p class="blog-post-meta">
 <time datetime="2017-06-01T10:14:52+03:00">Thu Jun 01, 2017</time>
  in 
@@ -558,6 +269,8 @@ $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2025-07/">July, 2025</a></li>
+
 <li><a href="/cgspace-notes/2025-04/">April, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-03/">March, 2025</a></li>
@@ -565,8 +278,6 @@ $ JAVA_OPTS=&#34;-Xmx1024m -Dfile.encoding=UTF-8&#34; [dspace]/bin/dspace import
 <li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
-
-<li><a href="/cgspace-notes/2024-12/">December, 2024</a></li>
 
     </ol>
   </section>
