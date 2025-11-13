@@ -13,7 +13,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Notes">
   <meta name="twitter:description" content="Documenting day-to-day work on the [CGSpace](https://cgspace.cgiar.org) repository.">
-<meta name="generator" content="Hugo 0.148.2">
+<meta name="generator" content="Hugo 0.152.2">
 
 
     
@@ -71,6 +71,33 @@
         <div class="col-sm-8 blog-main">
 
           
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2020-08/">August, 2020</a></h2>
+    <p class="blog-post-meta"><time datetime="2020-08-02T15:35:54+03:00">Sun Aug 02, 2020</time> by Alan Orth in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
+
+
+</p>
+  </header>
+  <h2 id="2020-08-02">2020-08-02</h2>
+<ul>
+<li>I spent a few days working on a Java-based curation task to tag items with ISO 3166-1 Alpha2 country codes based on their <code>cg.coverage.country</code> text values
+<ul>
+<li>It looks up the names in ISO 3166-1 first, and then in our CGSpace countries mapping (which has five or so of Peter&rsquo;s preferred &ldquo;display&rdquo; country names)</li>
+<li>It implements a &ldquo;force&rdquo; mode too that will clear existing country codes and re-tag everything</li>
+<li>It is class based so I can easily add support for other vocabularies, and the technique could even be used for organizations with mappings to ROR and Clarisa&hellip;</li>
+</ul>
+</li>
+</ul>
+  <a href='https://alanorth.github.io/cgspace-notes/2020-08/'>Read more →</a>
+</article> 
 
 
 
@@ -355,282 +382,6 @@
 
 
 
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://alanorth.github.io/cgspace-notes/2019-10/">October, 2019</a></h2>
-    <p class="blog-post-meta"><time datetime="2019-10-01T13:20:51+03:00">Tue Oct 01, 2019</time> by Alan Orth in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/notes/" rel="category tag">Notes</a>
-
-
-</p>
-  </header>
-  <h2 id="2019-10-01">2019-10-01</h2>
-<ul>
-<li>Udana from IWMI asked me for a CSV export of their community on CGSpace
-<ul>
-<li>I exported it, but a quick run through the <code>csv-metadata-quality</code> tool shows that there are some low-hanging fruits we can fix before I send him the data</li>
-<li>I will limit the scope to the titles, regions, subregions, and river basins for now to manually fix some non-breaking spaces (U+00A0) there that would otherwise be removed by the csv-metadata-quality script&rsquo;s &ldquo;unneccesary Unicode&rdquo; fix:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>$ csvcut -c &#39;id,dc.title[en_US],cg.coverage.region[en_US],cg.coverage.subregion[en_US],cg.river.basin[en_US]&#39; ~/Downloads/10568-16814.csv &gt; /tmp/iwmi-title-region-subregion-river.csv
-</code></pre><ul>
-<li>Then I replace them in vim with <code>:% s/\%u00a0/ /g</code> because I can&rsquo;t figure out the correct sed syntax to do it directly from the pipe above</li>
-<li>I uploaded those to CGSpace and then re-exported the metadata</li>
-<li>Now that I think about it, I shouldn&rsquo;t be removing non-breaking spaces (U+00A0), I should be replacing them with normal spaces!</li>
-<li>I modified the script so it replaces the non-breaking spaces instead of removing them</li>
-<li>Then I ran the csv-metadata-quality script to do some general cleanups (though I temporarily commented out the whitespace fixes because it was too many thousands of rows):</li>
-</ul>
-<pre tabindex="0"><code>$ csv-metadata-quality -i ~/Downloads/10568-16814.csv -o /tmp/iwmi.csv -x &#39;dc.date.issued,dc.date.issued[],dc.date.issued[en_US]&#39; -u
-</code></pre><ul>
-<li>That fixed 153 items (unnecessary Unicode, duplicates, comma–space fixes, etc)</li>
-<li>Release <a href="https://github.com/ilri/csv-metadata-quality/releases/tag/v0.3.1">version 0.3.1 of the csv-metadata-quality script</a> with the non-breaking spaces change</li>
-</ul>
-<h2 id="2019-10-03">2019-10-03</h2>
-<ul>
-<li>Upload the 117 IITA records that we had been working on last month (aka 20196th.xls aka Sept 6) to CGSpace</li>
-</ul>
-<h2 id="2019-10-04">2019-10-04</h2>
-<ul>
-<li>Create an account for Bioversity&rsquo;s ICT consultant Francesco on DSpace Test:</li>
-</ul>
-<pre tabindex="0"><code>$ dspace user -a -m blah@mail.it -g Francesco -s Vernocchi -p &#39;fffff&#39;
-</code></pre><ul>
-<li>Email Francesca and Carol to ask for follow up about the test upload I did on 2019-09-21
-<ul>
-<li>I suggested that if they still want to do value addition of those records (like adding countries, regions, etc) that they could maybe do it after we migrate the records to CGSpace</li>
-<li>Carol responded to tell me where to map the items with type Brochure, Journal Item, and Thesis, so I applied them to the <a href="https://dspacetest.cgiar.org/handle/10568/103688">collection on DSpace Test</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-06">2019-10-06</h2>
-<ul>
-<li>Hector from CCAFS responded about my feedback of their CLARISA API
-<ul>
-<li>He made some fixes to the metadata values they are using based on my feedback and said they are happy if we would use it</li>
-</ul>
-</li>
-<li>Gabriela from CIP asked me if it was possible to generate an RSS feed of items that have the CIP subject &ldquo;POTATO AGRI-FOOD SYSTEMS&rdquo;
-<ul>
-<li>I notice that there is a similar term &ldquo;SWEETPOTATO AGRI-FOOD SYSTEMS&rdquo; so I had to come up with a way to exclude that using the boolean &ldquo;AND NOT&rdquo; in the <a href="https://cgspace.cgiar.org/open-search/discover?query=cipsubject:POTATO%20AGRI%E2%80%90FOOD%20SYSTEMS%20AND%20NOT%20cipsubject:SWEETPOTATO%20AGRI%E2%80%90FOOD%20SYSTEMS&amp;scope=10568/51671&amp;sort_by=3&amp;order=DESC">OpenSearch query</a></li>
-<li>Again, the <code>sort_by=3</code> parameter is the accession date, as configured in <code>dspace.cfg</code></li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-08">2019-10-08</h2>
-<ul>
-<li>Fix 108 more issues with authors in the ongoing Bioversity migration on DSpace Test, for example:
-<ul>
-<li>Europeanooperative Programme for Plant Genetic Resources</li>
-<li>Bioversity International. Capacity Development Unit</li>
-<li>W.M. van der Heide, W.M., Tripp, R.</li>
-<li>Internationallant Genetic Resources Institute</li>
-</ul>
-</li>
-<li>Start looking at duplicates in the Bioversity migration data on DSpace Test
-<ul>
-<li>I&rsquo;m keeping track of the originals and duplicates in a Google Docs spreadsheet that I will share with Bioversity</li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-09">2019-10-09</h2>
-<ul>
-<li>Continue working on identifying duplicates in the Bioversity migration
-<ul>
-<li>I have been recording the originals and duplicates in a spreadsheet so I can map them later</li>
-<li>For now I am just reconciling any incorrect or missing metadata in the original items on CGSpace, deleting the duplicate from DSpace Test, and mapping the original to the correct place on CGSpace</li>
-<li>So far I have deleted thirty duplicates and mapped fourteen</li>
-</ul>
-</li>
-<li>Run all system updates on DSpace Test (linode19) and reboot the server</li>
-</ul>
-<h2 id="2019-10-10">2019-10-10</h2>
-<ul>
-<li>Felix Shaw from Earlham emailed me to ask about his admin account on DSpace Test
-<ul>
-<li>His old one got lost when I re-sync&rsquo;d DSpace Test with CGSpace a few weeks ago</li>
-<li>I added a new account for him and added it to the Administrators group:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>$ dspace user -a -m wow@me.com -g Felix -s Shaw -p &#39;fuananaaa&#39;
-</code></pre><h2 id="2019-10-11">2019-10-11</h2>
-<ul>
-<li>I ran the DSpace cleanup function on CGSpace and it found some errors:</li>
-</ul>
-<pre tabindex="0"><code>$ dspace cleanup -v
-...
-Error: ERROR: update or delete on table &#34;bitstream&#34; violates foreign key constraint &#34;bundle_primary_bitstream_id_fkey&#34; on table &#34;bundle&#34;
-  Detail: Key (bitstream_id)=(171221) is still referenced from table &#34;bundle&#34;.
-</code></pre><ul>
-<li>The solution, as always, is (repeat as many times as needed):</li>
-</ul>
-<pre tabindex="0"><code># su - postgres
-$ psql dspace -c &#39;update bundle set primary_bitstream_id=NULL where primary_bitstream_id in (171221);&#39;
-UPDATE 1
-</code></pre><h2 id="2019-10-12">2019-10-12</h2>
-<ul>
-<li>More work on identifying duplicates in the Bioversity migration data on DSpace Test
-<ul>
-<li>I mapped twenty-five more items on CGSpace and deleted them from the migration test collection on DSpace Test</li>
-<li>After a few hours I think I finished all the duplicates that were identified by Atmire&rsquo;s Duplicate Checker module</li>
-<li>According to my spreadsheet there were fifty-two in total</li>
-</ul>
-</li>
-<li>I was preparing to check the affiliations on the Bioversity records when I noticed that the last list of top affiliations I generated has some anomalies
-<ul>
-<li>I made some corrections in a CSV:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>from,to
-CIAT,International Center for Tropical Agriculture
-International Centre for Tropical Agriculture,International Center for Tropical Agriculture
-International Maize and Wheat Improvement Center (CIMMYT),International Maize and Wheat Improvement Center
-International Centre for Agricultural Research in the Dry Areas,International Center for Agricultural Research in the Dry Areas
-International Maize and Wheat Improvement Centre,International Maize and Wheat Improvement Center
-&#34;Agricultural Information Resource Centre, Kenya.&#34;,&#34;Agricultural Information Resource Centre, Kenya&#34;
-&#34;Centre for Livestock and Agricultural Development, Cambodia&#34;,&#34;Centre for Livestock and Agriculture Development, Cambodia&#34;
-</code></pre><ul>
-<li>Then I applied it with my <code>fix-metadata-values.py</code> script on CGSpace:</li>
-</ul>
-<pre tabindex="0"><code>$ ./fix-metadata-values.py -i /tmp/affiliations.csv -db dspace -u dspace -p &#39;fuuu&#39; -f from -m 211 -t to
-</code></pre><ul>
-<li>I did some manual curation of about 300 authors in OpenRefine in preparation for telling Peter and Abenet that the migration is almost ready
-<ul>
-<li>I would still like to perhaps (re)move institutional authors from <code>dc.contributor.author</code> to <code>cg.contributor.affiliation</code>, but I will have to run that by Francesca, Carol, and Abenet</li>
-<li>I could use a custom text facet like this in OpenRefine to find authors that likely match the &ldquo;Last, F.&rdquo; pattern: <code>isNotNull(value.match(/^.*, \p{Lu}\.?.*$/))</code></li>
-<li>The <code>\p{Lu}</code> is a cool <a href="https://www.regular-expressions.info/unicode.html">regex character class</a> to make sure this works for letters with accents</li>
-<li>As cool as that is, it&rsquo;s actually more effective to just search for authors that have &ldquo;.&rdquo; in them!</li>
-<li>I&rsquo;ve decided to add a <code>cg.contributor.affiliation</code> column to 1,025 items based on the logic above where the author name is not an actual person</li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-13">2019-10-13</h2>
-<ul>
-<li>More cleanup work on the authors in the Bioversity migration
-<ul>
-<li>Now I sent the final feedback to Francesca, Carol, and Abenet</li>
-</ul>
-</li>
-<li>Peter is still seeing some authors listed with &ldquo;|&rdquo; in the &ldquo;Top Authors&rdquo; statistics for some collections
-<ul>
-<li>I looked in some of the items that are listed and the author field does not contain those invalid separators</li>
-<li>I decided to try doing a full Discovery re-indexing on CGSpace (linode18):</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>$ time schedtool -B -e ionice -c2 -n7 nice -n19 dspace index-discovery -b
-
-real    82m35.993s
-</code></pre><ul>
-<li>After the re-indexing the top authors still list the following:</li>
-</ul>
-<pre tabindex="0"><code>Jagwe, J.|Ouma, E.A.|Brandes-van Dorresteijn, D.|Kawuma, Brian|Smith, J.
-</code></pre><ul>
-<li>I looked in the database to find authors that had &ldquo;|&rdquo; in them:</li>
-</ul>
-<pre tabindex="0"><code>dspace=# SELECT text_value, resource_id FROM metadatavalue WHERE resource_type_id=2 AND metadata_field_id=3 AND text_value LIKE &#39;%|%&#39;;
-            text_value            | resource_id 
-----------------------------------+-------------
- Anandajayasekeram, P.|Puskur, R. |         157
- Morales, J.|Renner, I.           |       22779
- Zahid, A.|Haque, M.A.            |       25492
-(3 rows)
-</code></pre><ul>
-<li>Then I found their handles and corrected them, for example:</li>
-</ul>
-<pre tabindex="0"><code>dspacetest=# select handle from item, handle where handle.resource_id = item.item_id AND item.item_id = &#39;157&#39; and handle.resource_type_id=2;
-  handle   
------------
- 10568/129
-(1 row)
-</code></pre><ul>
-<li>So I&rsquo;m still not sure where these weird authors in the &ldquo;Top Author&rdquo; stats are coming from</li>
-</ul>
-<h2 id="2019-10-14">2019-10-14</h2>
-<ul>
-<li>I talked to Peter about the Bioversity items and he said that we should add the institutional authors back to <code>dc.contributor.author</code>, because I had moved them to <code>cg.contributor.affiliation</code>
-<ul>
-<li>Otherwise he said the data looks good</li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-15">2019-10-15</h2>
-<ul>
-<li>I did a test export / import of the Bioversity migration items on DSpace Test
-<ul>
-<li>First export them:</li>
-</ul>
-</li>
-</ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&#39;-Dfile.encoding=UTF-8 -Xmx512m&#39;
-$ mkdir 2019-10-15-Bioversity
-$ dspace export -i 10568/108684 -t COLLECTION -m -n 0 -d 2019-10-15-Bioversity
-$ sed -i &#39;/&lt;dcvalue element=&#34;identifier&#34; qualifier=&#34;uri&#34;&gt;/d&#39; 2019-10-15-Bioversity/*/dublin_core.xml
-</code></pre><ul>
-<li>It&rsquo;s really stupid, but for some reason the handles are included even though I specified the <code>-m</code> option, so after the export I removed the <code>dc.identifier.uri</code> metadata values from the items</li>
-<li>Then I imported a test subset of them in my local test environment:</li>
-</ul>
-<pre tabindex="0"><code>$ ~/dspace/bin/dspace import -a -c 10568/104049 -e fuu@cgiar.org -m 2019-10-15-Bioversity.map -s /tmp/2019-10-15-Bioversity
-</code></pre><ul>
-<li>I had forgotten (again) that the <code>dspace export</code> command doesn&rsquo;t preserve collection ownership or mappings, so I will have to create a temporary collection on CGSpace to import these to, then do the mappings again after import&hellip;</li>
-<li>On CGSpace I will increase the RAM of the command line Java process for good luck before import&hellip;</li>
-</ul>
-<pre tabindex="0"><code>$ export JAVA_OPTS=&#34;-Dfile.encoding=UTF-8 -Xmx1024m&#34;
-$ dspace import -a -c 10568/104057 -e fuu@cgiar.org -m 2019-10-15-Bioversity.map -s 2019-10-15-Bioversity
-</code></pre><ul>
-<li>After importing the 1,367 items I re-exported the metadata, changed the owning collections to those based on their type, then re-imported them</li>
-</ul>
-<h2 id="2019-10-21">2019-10-21</h2>
-<ul>
-<li>Re-sync the DSpace Test database and assetstore with CGSpace</li>
-<li>Run system updates on DSpace Test (linode19) and reboot it</li>
-</ul>
-<h2 id="2019-10-24">2019-10-24</h2>
-<ul>
-<li>Create a test user for Mohammad Salem to test depositing from MEL to DSpace Test, as the last one I had created in 2019-08 was cleared when we re-syncronized DSpace Test with CGSpace recently.</li>
-</ul>
-<h2 id="2019-10-25">2019-10-25</h2>
-<ul>
-<li>Give a presentationa (via WebEx) about open source software to the ILRI Open Access Week
-<ul>
-<li>The title was <em>Making ILRI code open: Software as an International Public Good</em></li>
-<li>It is available on CGSpace: <a href="https://hdl.handle.net/10568/105514">https://hdl.handle.net/10568/105514</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-28">2019-10-28</h2>
-<ul>
-<li>Move the CGSpace CG Core v2 notes from a <a href="https://gist.github.com/alanorth/2db39e91f48d116e00a4edffd6ba6409">GitHub Gist</a> to a <a href="/cgspace-notes/cgspace-cgcorev2-migration/">page</a> on this site for archive and searchability sake</li>
-<li>Work on the CG Core v2 implementation testing
-<ul>
-<li>I noticed that the page title is messed up on the item view, and after over an hour of troubleshooting it I couldn&rsquo;t figure out why</li>
-<li>It seems to be because the <code>dc.title</code>→<code>dcterms.title</code> modifications cause the title metadata to disappear from DRI&rsquo;s <code>&lt;pageMeta&gt;</code> and therefore the title is not accessible to the XSL transformation</li>
-<li>Also, I noticed a few places in the Java code where <code>dc.title</code> is hard coded so I think this might be one of the fields that we just assume DSpace relies on internally</li>
-<li>I will revert all changes to <code>dc.title</code> and <code>dc.title.alternative</code></li>
-<li>TODO: there are similar issues with the <code>citation_author</code> metadata element missing from DRI, so I might have to revert those changes too</li>
-</ul>
-</li>
-</ul>
-<h2 id="2019-10-29">2019-10-29</h2>
-<ul>
-<li>After more digging in the source I found out why the <code>dcterms.title</code> and <code>dcterms.creator</code> fields are not present in the DRI <code>pageMeta</code>&hellip;
-<ul>
-<li>The <code>pageMeta</code> element is constructed in <code>dspace-xmlui/src/main/java/org/dspace/app/xmlui/wing/IncludePageMeta.java</code> and the code does not consider any other schemas besides DC</li>
-<li>I moved title and creator back to the original DC fields and then everything was working as expected in the pageMeta, so I guess we cannot use these in DCTERMS either!</li>
-</ul>
-</li>
-<li>Assist Maria from Bioversity with community and collection subscriptions</li>
-</ul>
-  <a href='https://alanorth.github.io/cgspace-notes/2019-10/'>Read more →</a>
-</article> 
-
-
-
-
-
 <nav class="blog-pagination">
   
   <a class="btn btn-outline-primary" href="/cgspace-notes/categories/notes/page/6/" rel="prev" role="button">Previous page</a>
@@ -655,6 +406,8 @@ $ dspace import -a -c 10568/104057 -e fuu@cgiar.org -m 2019-10-15-Bioversity.map
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2025-11/">November, 2025</a></li>
+
 <li><a href="/cgspace-notes/2025-07/">July, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-04/">April, 2025</a></li>
@@ -662,8 +415,6 @@ $ dspace import -a -c 10568/104057 -e fuu@cgiar.org -m 2019-10-15-Bioversity.map
 <li><a href="/cgspace-notes/2025-03/">March, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
-
-<li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
 
     </ol>
   </section>

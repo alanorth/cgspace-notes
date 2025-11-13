@@ -16,7 +16,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="January, 2018">
   <meta name="twitter:description" content="2018-01-02 Uptime Robot noticed that CGSpace went down and up a few times last night, for a few minutes each time I didn’t get any load alerts from Linode and the REST and XMLUI logs don’t show anything out of the ordinary The nginx logs show HTTP 200s until 02/Jan/2018:11:27:17 &#43;0000 when Uptime Robot got an HTTP 500 In dspace.log around that time I see many errors like “Client closed the connection before file download was complete” And just before that I see this: Caused by: org.apache.tomcat.jdbc.pool.PoolExhaustedException: [http-bio-127.0.0.1-8443-exec-980] Timeout: Pool empty. Unable to fetch a connection in 5 seconds, none available[size:50; busy:50; idle:0; lastwait:5000]. Ah hah! So the pool was actually empty! I need to increase that, let’s try to bump it up from 50 to 75 After that one client got an HTTP 499 but then the rest were HTTP 200, so I don’t know what the hell Uptime Robot saw I notice this error quite a few times in dspace.log: 2018-01-02 01:21:19,137 ERROR org.dspace.app.xmlui.aspect.discovery.SidebarFacetsTransformer @ Error while searching for sidebar facets org.dspace.discovery.SearchServiceException: org.apache.solr.search.SyntaxError: Cannot parse &#39;dateIssued_keyword:[1976&#43;TO&#43;1979]&#39;: Encountered &#34; &#34;]&#34; &#34;] &#34;&#34; at line 1, column 32. And there are many of these errors every day for the past month: $ grep -c &#34;Error while searching for sidebar facets&#34; dspace.log.* dspace.log.2017-11-21:4 dspace.log.2017-11-22:1 dspace.log.2017-11-23:4 dspace.log.2017-11-24:11 dspace.log.2017-11-25:0 dspace.log.2017-11-26:1 dspace.log.2017-11-27:7 dspace.log.2017-11-28:21 dspace.log.2017-11-29:31 dspace.log.2017-11-30:15 dspace.log.2017-12-01:15 dspace.log.2017-12-02:20 dspace.log.2017-12-03:38 dspace.log.2017-12-04:65 dspace.log.2017-12-05:43 dspace.log.2017-12-06:72 dspace.log.2017-12-07:27 dspace.log.2017-12-08:15 dspace.log.2017-12-09:29 dspace.log.2017-12-10:35 dspace.log.2017-12-11:20 dspace.log.2017-12-12:44 dspace.log.2017-12-13:36 dspace.log.2017-12-14:59 dspace.log.2017-12-15:104 dspace.log.2017-12-16:53 dspace.log.2017-12-17:66 dspace.log.2017-12-18:83 dspace.log.2017-12-19:101 dspace.log.2017-12-20:74 dspace.log.2017-12-21:55 dspace.log.2017-12-22:66 dspace.log.2017-12-23:50 dspace.log.2017-12-24:85 dspace.log.2017-12-25:62 dspace.log.2017-12-26:49 dspace.log.2017-12-27:30 dspace.log.2017-12-28:54 dspace.log.2017-12-29:68 dspace.log.2017-12-30:89 dspace.log.2017-12-31:53 dspace.log.2018-01-01:45 dspace.log.2018-01-02:34 Danny wrote to ask for help renewing the wildcard ilri.org certificate and I advised that we should probably use Let’s Encrypt if it’s just a handful of domains">
-<meta name="generator" content="Hugo 0.148.2">
+<meta name="generator" content="Hugo 0.152.2">
 
 
     
@@ -1318,6 +1318,8 @@ Catalina:type=Manager,context=/,host=localhost  activeSessions  8
     <ol class="list-unstyled">
 
 
+<li><a href="/cgspace-notes/2025-11/">November, 2025</a></li>
+
 <li><a href="/cgspace-notes/2025-07/">July, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-04/">April, 2025</a></li>
@@ -1325,8 +1327,6 @@ Catalina:type=Manager,context=/,host=localhost  activeSessions  8
 <li><a href="/cgspace-notes/2025-03/">March, 2025</a></li>
 
 <li><a href="/cgspace-notes/2025-02/">February, 2025</a></li>
-
-<li><a href="/cgspace-notes/2025-01/">January, 2025</a></li>
 
     </ol>
   </section>
